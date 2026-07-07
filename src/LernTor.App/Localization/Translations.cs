@@ -8,6 +8,19 @@ public static class Translations
         new Dictionary<string, IReadOnlyDictionary<AppLanguage, string>>
         {
             ["App_Title"] = L("LernTor", "LernTor"),
+
+            ["Profile_Title"] = L("Wer möchte heute lernen?", "Bugün kim öğrenmek istiyor?"),
+            ["Profile_AgeAndClass"] = L("{0} Jahre, Klasse {1}", "{0} yaşında, {1}. sınıf"),
+            ["Profile_NewProfile"] = L("Neues Profil ➕", "Yeni profil ➕"),
+            ["Profile_NameLabel"] = L("Name:", "İsim:"),
+            ["Profile_AgeLabel"] = L("Alter (optional):", "Yaş (isteğe bağlı):"),
+            ["Profile_ClassLabel"] = L("Klasse (z.B. 7b, optional):", "Sınıf (örn. 7b, isteğe bağlı):"),
+            ["Profile_GradeLevelLabel"] = L("Lehrplan-Stufe:", "Müfredat seviyesi:"),
+            ["Profile_CreateButton"] = L("Profil erstellen", "Profil oluştur"),
+            ["Profile_CancelButton"] = L("Abbrechen", "İptal"),
+            ["Profile_NameRequired"] = L("Bitte einen Namen eingeben.", "Lütfen bir isim gir."),
+
+            ["Welcome_Greeting"] = L("Hallo, {0}!", "Merhaba, {0}!"),
             ["Welcome_Title"] = L("Willkommen bei LernTor!", "LernTor'a Hoş Geldin!"),
             ["Welcome_Subtitle"] = L(
                 "Bevor du den PC benutzen kannst, lernen wir gemeinsam ein bisschen. Los geht's!",
@@ -68,6 +81,7 @@ public static class Translations
             ["Parent_DisabledSubjects"] = L("Bereiche deaktivieren:", "Bölümleri devre dışı bırak:"),
             ["Parent_TimeLimit"] = L("Tägliches Zeitlimit (Minuten, 0 = kein Limit):", "Günlük süre sınırı (dakika, 0 = sınırsız):"),
             ["Parent_ActivityLog"] = L("Letzte Aktivitäten:", "Son etkinlikler:"),
+            ["Parent_ActivityLogFor"] = L("Aktivitäten anzeigen für:", "Etkinlikleri göster:"),
             ["Parent_SkipUnlock"] = L("Sofort freischalten (überspringen)", "Hemen kilidi aç (atla)"),
             ["Parent_Save"] = L("Speichern", "Kaydet"),
             ["Parent_Close"] = L("Schließen", "Kapat"),

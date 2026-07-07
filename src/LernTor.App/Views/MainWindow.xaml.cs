@@ -16,6 +16,12 @@ public partial class MainWindow : Window
     {
         var window = ((App)Application.Current).Services.GetRequiredService<ParentSettingsWindow>();
         window.Owner = this;
+
+        if (window.DataContext is ParentSettingsViewModel parentViewModel && DataContext is MainViewModel mainViewModel)
+        {
+            parentViewModel.PreselectProfileId = mainViewModel.CurrentProfile?.Id;
+        }
+
         window.ShowDialog();
     }
 }

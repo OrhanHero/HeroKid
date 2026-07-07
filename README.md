@@ -7,9 +7,18 @@ Abschlussquiz mit mindestens 50% bestanden hat. Erst dann wird der PC freigegebe
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
 am Berliner Rahmenlehrplan, Klasse 6 und 9 (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
 
+## Profile
+
+Mehrere Kinder am selben PC wählen beim Start ihr eigenes Profil (Name, Alter, Klasse) aus einer
+Kachel-Auswahl, oder legen über "Neues Profil ➕" ein weiteres Profil mit eigener Klassenstufe
+(6 oder 9) an. Jedes Profil hat seinen eigenen Fortschritt, sein eigenes Abschlussquiz-Ergebnis
+und sein eigenes Aktivitätsprotokoll (im Eltern-Bereich per Dropdown auswählbar). Beim ersten
+Start werden automatisch zwei Beispielprofile angelegt.
+
 ## Ablauf für das Kind
 
-1. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei,
+1. **Profil wählen**
+2. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei,
    je 1-2 Verständnisfragen pro Artikel.
 2. **Mathematik** – automatisch generierte Aufgaben (Klasse 6: Bruchrechnung, Prozentrechnung, Flächen,
    Maßstab; Klasse 9: lineare/quadratische Gleichungen, Pythagoras, Zinsrechnung, Binomische Formeln).

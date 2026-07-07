@@ -8,7 +8,6 @@ public sealed class AppSettings
     public string AdminPasswordSalt { get; set; } = string.Empty;
 
     public AppLanguage DefaultLanguage { get; set; } = AppLanguage.Deutsch;
-    public GradeLevel StudentGradeLevel { get; set; } = GradeLevel.Klasse6;
 
     /// <summary>Fachbereiche, die Eltern temporär deaktivieren können (übersprungen, gelten als erledigt).</summary>
     public HashSet<Subject> DisabledSubjects { get; set; } = new();

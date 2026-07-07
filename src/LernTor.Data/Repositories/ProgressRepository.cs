@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 namespace LernTor.Data.Repositories;
 
 /// <summary>
-/// Lädt/speichert den Fortschritt des aktuellen Lerntages. Wird nach jedem Schritt aufgerufen,
-/// damit ein Absturz oder Neustart des PCs keinen Fortschritt verliert.
+/// Lädt/speichert den Fortschritt des aktuellen Lerntages, getrennt je Kind-Profil.
+/// Wird nach jedem Schritt aufgerufen, damit ein Absturz oder Neustart des PCs keinen
+/// Fortschritt verliert.
 /// </summary>
 public sealed class ProgressRepository
 {
@@ -19,19 +20,20 @@ public sealed class ProgressRepository
         _db = db;
     }
 
-    public async Task<StudentProgress> LoadOrCreateTodayAsync(CancellationToken cancellationToken = default)
+    public async Task<StudentProgress> LoadOrCreateTodayAsync(string profileId, CancellationToken cancellationToken = default)
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
         var entity = await _db.Progress
-            .FirstOrDefaultAsync(p => p.SessionDate == today, cancellationToken);
+            .FirstOrDefaultAsync(p => p.ProfileId == profileId && p.SessionDate == today, cancellationToken);
 
         if (entity is null)
         {
-            return new StudentProgress { SessionDate = today };
+            return new StudentProgress { ProfileId = profileId, SessionDate = today };
         }
 
         return new StudentProgress
         {
+            ProfileId = entity.ProfileId,
             SessionDate = entity.SessionDate,
             CurrentStage = Enum.Parse<LearningStage>(entity.CurrentStage),
             CompletedNewsArticleIds = JsonSerializer.Deserialize<HashSet<string>>(entity.CompletedNewsArticleIdsJson) ?? new(),
@@ -47,11 +49,11 @@ public sealed class ProgressRepository
     public async Task SaveAsync(StudentProgress progress, CancellationToken cancellationToken = default)
     {
         var entity = await _db.Progress
-            .FirstOrDefaultAsync(p => p.SessionDate == progress.SessionDate, cancellationToken);
+            .FirstOrDefaultAsync(p => p.ProfileId == progress.ProfileId && p.SessionDate == progress.SessionDate, cancellationToken);
 
         if (entity is null)
         {
-            entity = new ProgressEntity { SessionDate = progress.SessionDate };
+            entity = new ProgressEntity { ProfileId = progress.ProfileId, SessionDate = progress.SessionDate };
             _db.Progress.Add(entity);
         }
 

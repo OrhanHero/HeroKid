@@ -22,7 +22,7 @@ public class ProgressGateServiceTests
     [Fact]
     public void ApplyQuizResult_PassingScore_UnlocksAndClearsRetryList()
     {
-        var progress = new StudentProgress { CurrentStage = LearningStage.Abschlussquiz };
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.Abschlussquiz };
         var outcomes = Enumerable.Range(0, 10)
             .Select(i => new QuestionOutcome { QuestionId = $"q{i}", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = i < 6 })
             .ToList();
@@ -39,7 +39,7 @@ public class ProgressGateServiceTests
     [Fact]
     public void ApplyQuizResult_FailingScore_KeepsLockedAndFillsRetryList()
     {
-        var progress = new StudentProgress { CurrentStage = LearningStage.Abschlussquiz };
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.Abschlussquiz };
         var outcomes = new[]
         {
             new QuestionOutcome { QuestionId = "q1", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
@@ -59,7 +59,7 @@ public class ProgressGateServiceTests
     [Fact]
     public void CanEnterStage_BlocksSkippingUncompletedSubject()
     {
-        var progress = new StudentProgress { CurrentStage = LearningStage.News };
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.News };
         progress.CompletedNewsArticleIds.Add("a1");
 
         var canSkipToDeutsch = _gate.CanEnterStage(progress, LearningStage.Deutsch, new HashSet<Subject>());
@@ -70,7 +70,7 @@ public class ProgressGateServiceTests
     [Fact]
     public void CanEnterStage_AllowsSkippingDisabledSubject()
     {
-        var progress = new StudentProgress { CurrentStage = LearningStage.News };
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.News };
         progress.CompletedNewsArticleIds.Add("a1");
 
         var disabled = new HashSet<Subject> { Subject.Mathematik };

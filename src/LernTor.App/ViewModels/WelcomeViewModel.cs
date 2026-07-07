@@ -9,8 +9,11 @@ public sealed partial class WelcomeViewModel : ObservableObject
     private readonly Action _onContinue;
     private readonly Action<AppLanguage> _onSwitchLanguage;
 
-    public WelcomeViewModel(Action onContinue, Action<AppLanguage> onSwitchLanguage)
+    public string ProfileName { get; }
+
+    public WelcomeViewModel(string profileName, Action onContinue, Action<AppLanguage> onSwitchLanguage)
     {
+        ProfileName = profileName;
         _onContinue = onContinue;
         _onSwitchLanguage = onSwitchLanguage;
     }

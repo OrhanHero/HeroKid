@@ -66,7 +66,16 @@ Das fertige Setup landet in `dist\LernTor-Setup-1.0.0.exe`. Der Installer:
 .\src\LernTor.Installer\install-autostart.ps1 -Action uninstall -ExePath "C:\Pfad\zu\LernTor.exe"
 ```
 
-## 6. Erststart / Eltern-Passwort
+## 6. Datenbankschema wurde erweitert (Profile)
+
+Falls du LernTor schon vorher getestet hast, existiert bereits eine `lerntor.db` unter
+`%LOCALAPPDATA%\LernTor\`. Das Profile-Feature hat neue Tabellen/Spalten hinzugefügt; da die App
+`EnsureCreated` statt echter EF-Core-Migrationen nutzt, wird eine bereits vorhandene Datenbank
+NICHT automatisch aktualisiert. Bitte vor dem nächsten Start diese Datei löschen (Fortschritt geht
+dabei verloren, das ist in dieser Entwicklungsphase unkritisch) - die App legt beim nächsten Start
+automatisch eine neue Datenbank inkl. der beiden Beispielprofile an.
+
+## 7. Erststart / Eltern-Passwort
 
 Beim allerersten Start ist noch kein Admin-Passwort gesetzt. Über das dezente Zahnrad-Symbol
 (unten rechts im Kiosk-Fenster) gelangt man in den Eltern-Bereich und legt beim ersten Mal ein

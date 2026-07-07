@@ -8,6 +8,7 @@ namespace LernTor.Core.Models;
 /// </summary>
 public sealed class StudentProgress
 {
+    public required string ProfileId { get; set; }
     public DateOnly SessionDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public LearningStage CurrentStage { get; set; } = LearningStage.Willkommen;
 

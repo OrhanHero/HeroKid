@@ -12,6 +12,9 @@
         Background="{StaticResource BackgroundBrush}">
 
     <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:ProfileSelectionViewModel}">
+            <views:ProfileSelectionView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
             <views:WelcomeView />
         </DataTemplate>

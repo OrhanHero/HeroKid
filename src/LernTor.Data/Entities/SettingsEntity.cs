@@ -7,7 +7,6 @@ public sealed class SettingsEntity
     public string AdminPasswordHash { get; set; } = string.Empty;
     public string AdminPasswordSalt { get; set; } = string.Empty;
     public string DefaultLanguage { get; set; } = "Deutsch";
-    public int StudentGradeLevel { get; set; } = 6;
     public string DisabledSubjectsJson { get; set; } = "[]";
     public int? DailyTimeLimitMinutes { get; set; }
     public bool HardLockShellReplacementEnabled { get; set; }

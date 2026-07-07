@@ -3,6 +3,7 @@ namespace LernTor.Data.Entities;
 public sealed class ProgressEntity
 {
     public int Id { get; set; }
+    public string ProfileId { get; set; } = string.Empty;
     public DateOnly SessionDate { get; set; }
     public string CurrentStage { get; set; } = string.Empty;
 

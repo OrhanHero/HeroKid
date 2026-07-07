@@ -9,6 +9,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<ActivityLogEntity> ActivityLog => Set<ActivityLogEntity>();
     public DbSet<QuizAttemptEntity> QuizAttempts => Set<QuizAttemptEntity>();
     public DbSet<SettingsEntity> Settings => Set<SettingsEntity>();
+    public DbSet<StudentProfileEntity> Profiles => Set<StudentProfileEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -19,7 +20,12 @@ public sealed class LernTorDbContext : DbContext
         modelBuilder.Entity<ProgressEntity>(e =>
         {
             e.HasKey(p => p.Id);
-            e.HasIndex(p => p.SessionDate);
+            e.HasIndex(p => new { p.ProfileId, p.SessionDate });
+        });
+
+        modelBuilder.Entity<StudentProfileEntity>(e =>
+        {
+            e.HasKey(p => p.Id);
         });
 
         modelBuilder.Entity<ActivityLogEntity>(e =>

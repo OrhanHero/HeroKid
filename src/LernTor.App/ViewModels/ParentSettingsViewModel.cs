@@ -13,10 +13,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 {
     private readonly SettingsRepository _settingsRepo;
     private readonly ActivityLogRepository _activityLogRepo;
-    private readonly ProgressRepository _progressRepo;
+    private readonly StudentProfileRepository _profileRepo;
     private readonly KioskLockService _kioskLock;
 
     private AppSettings _settings = new();
+
+    /// <summary>Wird vom Aufrufer gesetzt, um beim Öffnen direkt das gerade aktive Kind-Profil vorauszuwählen.</summary>
+    public string? PreselectProfileId { get; set; }
 
     [ObservableProperty]
     private bool isAuthenticated;
@@ -40,11 +43,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private bool disableNaturwissenschaften;
 
     [ObservableProperty]
-    private bool isGrade9;
-
-    [ObservableProperty]
     private int timeLimitMinutes;
 
+    [ObservableProperty]
+    private StudentProfile? selectedProfile;
+
+    public ObservableCollection<StudentProfile> Profiles { get; } = new();
     public ObservableCollection<ActivityLogEntity> RecentActivity { get; } = new();
     public ObservableCollection<QuizAttemptEntity> QuizHistory { get; } = new();
 
@@ -53,12 +57,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     public ParentSettingsViewModel(
         SettingsRepository settingsRepo,
         ActivityLogRepository activityLogRepo,
-        ProgressRepository progressRepo,
+        StudentProfileRepository profileRepo,
         KioskLockService kioskLock)
     {
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
-        _progressRepo = progressRepo;
+        _profileRepo = profileRepo;
         _kioskLock = kioskLock;
     }
 
@@ -108,19 +112,38 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         DisableDeutsch = _settings.DisabledSubjects.Contains(Subject.Deutsch);
         DisableTuerkisch = _settings.DisabledSubjects.Contains(Subject.Tuerkisch);
         DisableNaturwissenschaften = _settings.DisabledSubjects.Contains(Subject.Naturwissenschaften);
-        IsGrade9 = _settings.StudentGradeLevel == GradeLevel.Klasse9;
         TimeLimitMinutes = _settings.DailyTimeLimitMinutes ?? 0;
 
-        var activity = await _activityLogRepo.GetRecentActivityAsync();
+        Profiles.Clear();
+        foreach (var profile in await _profileRepo.GetAllAsync())
+        {
+            Profiles.Add(profile);
+        }
+
+        SelectedProfile = Profiles.FirstOrDefault(p => p.Id == PreselectProfileId) ?? Profiles.FirstOrDefault();
+    }
+
+    partial void OnSelectedProfileChanged(StudentProfile? value)
+    {
+        _ = ReloadActivityForSelectedProfileAsync();
+    }
+
+    private async Task ReloadActivityForSelectedProfileAsync()
+    {
         RecentActivity.Clear();
-        foreach (var entry in activity)
+        QuizHistory.Clear();
+
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        foreach (var entry in await _activityLogRepo.GetRecentActivityAsync(SelectedProfile.Id))
         {
             RecentActivity.Add(entry);
         }
 
-        var quizHistory = await _activityLogRepo.GetQuizHistoryAsync();
-        QuizHistory.Clear();
-        foreach (var attempt in quizHistory)
+        foreach (var attempt in await _activityLogRepo.GetQuizHistoryAsync(SelectedProfile.Id))
         {
             QuizHistory.Add(attempt);
         }
@@ -135,7 +158,6 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         if (DisableTuerkisch) _settings.DisabledSubjects.Add(Subject.Tuerkisch);
         if (DisableNaturwissenschaften) _settings.DisabledSubjects.Add(Subject.Naturwissenschaften);
 
-        _settings.StudentGradeLevel = IsGrade9 ? GradeLevel.Klasse9 : GradeLevel.Klasse6;
         _settings.DailyTimeLimitMinutes = TimeLimitMinutes > 0 ? TimeLimitMinutes : null;
 
         await _settingsRepo.SaveAsync(_settings);
@@ -143,13 +165,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SkipUnlockAsync()
+    private void SkipUnlock()
     {
-        var progress = await _progressRepo.LoadOrCreateTodayAsync();
-        progress.IsUnlocked = true;
-        progress.CurrentStage = LearningStage.Freigeschaltet;
-        await _progressRepo.SaveAsync(progress);
-
+        // Sofort-Freischaltung ist ein reiner Notfall-Override: entsperrt den PC unabhängig
+        // davon, ob/welches Kind-Profil gerade aktiv war, ohne dessen Fortschritt zu verändern.
         _kioskLock.Unlock();
         System.Windows.Application.Current.Shutdown();
     }

@@ -4,6 +4,7 @@ namespace LernTor.Data.Entities;
 public sealed class ActivityLogEntity
 {
     public int Id { get; set; }
+    public string ProfileId { get; set; } = string.Empty;
     public DateTimeOffset Timestamp { get; set; }
     public string Subject { get; set; } = string.Empty;
     public string Topic { get; set; } = string.Empty;
@@ -17,6 +18,7 @@ public sealed class ActivityLogEntity
 public sealed class QuizAttemptEntity
 {
     public int Id { get; set; }
+    public string ProfileId { get; set; } = string.Empty;
     public DateTimeOffset Timestamp { get; set; }
     public int TotalQuestions { get; set; }
     public int CorrectCount { get; set; }

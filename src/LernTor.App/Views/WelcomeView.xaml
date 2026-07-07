@@ -10,6 +10,14 @@
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
             <TextBlock Text="🎓" FontSize="90" HorizontalAlignment="Center" Margin="0,0,0,20" />
+            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,8">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Greeting]" />
+                        <Binding Path="ProfileName" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Title]}"
                        Style="{StaticResource HeadlineText}" FontSize="44" TextAlignment="Center" HorizontalAlignment="Center" />
             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Subtitle]}"

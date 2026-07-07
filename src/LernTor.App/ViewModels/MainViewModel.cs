@@ -11,8 +11,9 @@ using LernTor.Security;
 namespace LernTor.App.ViewModels;
 
 /// <summary>
-/// Navigations-Host: hält den aktuellen Lernfortschritt und wechselt je nach <see cref="LearningStage"/>
-/// das angezeigte Kind-ViewModel. Kind-ViewModels melden ihren Abschluss über Callbacks zurück.
+/// Navigations-Host: zeigt zunächst die Profilauswahl, danach hält es je gewähltem Kind-Profil
+/// den Lernfortschritt und wechselt je nach <see cref="LearningStage"/> das angezeigte
+/// Kind-ViewModel. Kind-ViewModels melden ihren Abschluss über Callbacks zurück.
 /// </summary>
 public sealed partial class MainViewModel : ObservableObject
 {
@@ -21,6 +22,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ProgressRepository _progressRepo;
     private readonly SettingsRepository _settingsRepo;
     private readonly ActivityLogRepository _activityLogRepo;
+    private readonly StudentProfileRepository _profileRepo;
     private readonly RssNewsService _newsService;
     private readonly QuizComposer _quizComposer;
     private readonly KioskLockService _kioskLock;
@@ -31,7 +33,8 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private object? currentViewModel;
 
-    public StudentProgress Progress { get; private set; } = new();
+    public StudentProfile? CurrentProfile { get; private set; }
+    public StudentProgress Progress { get; private set; } = new() { ProfileId = string.Empty };
     public AppSettings Settings { get; private set; } = new();
 
     public MainViewModel(
@@ -40,6 +43,7 @@ public sealed partial class MainViewModel : ObservableObject
         ProgressRepository progressRepo,
         SettingsRepository settingsRepo,
         ActivityLogRepository activityLogRepo,
+        StudentProfileRepository profileRepo,
         RssNewsService newsService,
         QuizComposer quizComposer,
         KioskLockService kioskLock)
@@ -49,6 +53,7 @@ public sealed partial class MainViewModel : ObservableObject
         _progressRepo = progressRepo;
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
+        _profileRepo = profileRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
@@ -56,10 +61,18 @@ public sealed partial class MainViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        Progress = await _progressRepo.LoadOrCreateTodayAsync();
         Settings = await _settingsRepo.LoadAsync();
         LocalizationService.Instance.CurrentLanguage = Settings.DefaultLanguage;
 
+        var profileSelection = new ProfileSelectionViewModel(_profileRepo, OnProfileSelected);
+        CurrentViewModel = profileSelection;
+        await profileSelection.InitializeAsync();
+    }
+
+    private async void OnProfileSelected(StudentProfile profile)
+    {
+        CurrentProfile = profile;
+        Progress = await _progressRepo.LoadOrCreateTodayAsync(profile.Id);
         await NavigateToStageAsync(Progress.CurrentStage);
     }
 
@@ -82,7 +95,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         CurrentViewModel = stage switch
         {
-            LearningStage.Willkommen => new WelcomeViewModel(OnWelcomeContinue, SwitchLanguage),
+            LearningStage.Willkommen => new WelcomeViewModel(CurrentProfile!.Name, OnWelcomeContinue, SwitchLanguage),
             LearningStage.News => await BuildNewsViewModelAsync(),
             LearningStage.Mathematik => BuildExerciseViewModel(Subject.Mathematik),
             LearningStage.Deutsch => BuildExerciseViewModel(Subject.Deutsch),
@@ -127,7 +140,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)
     {
         Progress.CompletedNewsArticleIds.Add(article.Id);
-        await _activityLogRepo.LogAnswerAsync(outcome, question.Topic, question.Prompt);
+        await _activityLogRepo.LogAnswerAsync(CurrentProfile!.Id, outcome, question.Topic, question.Prompt);
         await PersistProgressAsync();
     }
 
@@ -140,13 +153,13 @@ public sealed partial class MainViewModel : ObservableObject
 
     private ExerciseViewModel BuildExerciseViewModel(Subject subject)
     {
-        var questions = _quizComposer.GenerateExercises(subject, Settings.StudentGradeLevel, 6, _random);
+        var questions = _quizComposer.GenerateExercises(subject, CurrentProfile!.GradeLevel, 6, _random);
         return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject));
     }
 
     private async void OnExerciseQuestionAnswered(Subject subject, QuestionOutcome outcome, QuizQuestion question)
     {
-        await _activityLogRepo.LogAnswerAsync(outcome, question.Topic, question.Prompt);
+        await _activityLogRepo.LogAnswerAsync(CurrentProfile!.Id, outcome, question.Topic, question.Prompt);
     }
 
     private async void OnExerciseSubjectCompleted(Subject subject)
@@ -158,18 +171,19 @@ public sealed partial class MainViewModel : ObservableObject
 
     private FinalQuizViewModel BuildFinalQuizViewModel()
     {
+        var grade = CurrentProfile!.GradeLevel;
         var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
         IReadOnlyList<QuizQuestion> questions;
 
         if (relevantSubjects is not null)
         {
-            questions = _quizComposer.ComposeRetryExercises(relevantSubjects, Settings.StudentGradeLevel, _random, countPerSubject: 6)
-                .Concat(_quizComposer.ComposeFinalQuiz(Settings.StudentGradeLevel, _random, newsQuestions: null, perSubjectCount: 2))
+            questions = _quizComposer.ComposeRetryExercises(relevantSubjects, grade, _random, countPerSubject: 6)
+                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, newsQuestions: null, perSubjectCount: 2))
                 .ToList();
         }
         else
         {
-            questions = _quizComposer.ComposeFinalQuiz(Settings.StudentGradeLevel, _random, _collectedNewsQuestions, perSubjectCount: 5);
+            questions = _quizComposer.ComposeFinalQuiz(grade, _random, _collectedNewsQuestions, perSubjectCount: 5);
         }
 
         return new FinalQuizViewModel(questions, OnFinalQuizCompleted);
@@ -178,7 +192,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)
     {
         var result = _scoring.BuildResult(outcomes);
-        await _activityLogRepo.LogQuizAttemptAsync(result);
+        await _activityLogRepo.LogQuizAttemptAsync(CurrentProfile!.Id, result);
         _gate.ApplyQuizResult(Progress, result);
         await PersistProgressAsync();
 

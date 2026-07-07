@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LernTor.Data.Repositories;
 
-/// <summary>Protokolliert bearbeitete Aufgaben und Quiz-Ergebnisse für die Elternübersicht.</summary>
+/// <summary>Protokolliert bearbeitete Aufgaben und Quiz-Ergebnisse je Kind-Profil für die Elternübersicht.</summary>
 public sealed class ActivityLogRepository
 {
     private readonly LernTorDbContext _db;
@@ -14,10 +14,11 @@ public sealed class ActivityLogRepository
         _db = db;
     }
 
-    public async Task LogAnswerAsync(QuestionOutcome outcome, string topic, string prompt, CancellationToken cancellationToken = default)
+    public async Task LogAnswerAsync(string profileId, QuestionOutcome outcome, string topic, string prompt, CancellationToken cancellationToken = default)
     {
         _db.ActivityLog.Add(new ActivityLogEntity
         {
+            ProfileId = profileId,
             Timestamp = DateTimeOffset.Now,
             Subject = outcome.Subject.ToString(),
             Topic = topic,
@@ -30,10 +31,11 @@ public sealed class ActivityLogRepository
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task LogQuizAttemptAsync(QuizResult result, CancellationToken cancellationToken = default)
+    public async Task LogQuizAttemptAsync(string profileId, QuizResult result, CancellationToken cancellationToken = default)
     {
         _db.QuizAttempts.Add(new QuizAttemptEntity
         {
+            ProfileId = profileId,
             Timestamp = DateTimeOffset.Now,
             TotalQuestions = result.TotalQuestions,
             CorrectCount = result.CorrectCount,
@@ -44,17 +46,19 @@ public sealed class ActivityLogRepository
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<ActivityLogEntity>> GetRecentActivityAsync(int take = 200, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ActivityLogEntity>> GetRecentActivityAsync(string profileId, int take = 200, CancellationToken cancellationToken = default)
     {
         return await _db.ActivityLog
+            .Where(a => a.ProfileId == profileId)
             .OrderByDescending(a => a.Timestamp)
             .Take(take)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<QuizAttemptEntity>> GetQuizHistoryAsync(int take = 50, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<QuizAttemptEntity>> GetQuizHistoryAsync(string profileId, int take = 50, CancellationToken cancellationToken = default)
     {
         return await _db.QuizAttempts
+            .Where(q => q.ProfileId == profileId)
             .OrderByDescending(q => q.Timestamp)
             .Take(take)
             .ToListAsync(cancellationToken);
