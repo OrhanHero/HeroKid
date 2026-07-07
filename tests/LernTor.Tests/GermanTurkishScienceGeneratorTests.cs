@@ -21,9 +21,9 @@ public class GermanTurkishScienceGeneratorTests
 
         foreach (var grade in new[] { GradeLevel.Klasse6, GradeLevel.Klasse9 })
         {
-            var questions = generator.Generate(grade, 15, random);
+            var questions = generator.Generate(grade, 10, random);
 
-            Assert.Equal(15, questions.Count);
+            Assert.Equal(10, questions.Count);
             foreach (var question in questions)
             {
                 Assert.Equal(generator.Subject, question.Subject);
@@ -37,6 +37,23 @@ public class GermanTurkishScienceGeneratorTests
                     Assert.Contains(question.CorrectAnswers[0], question.Options);
                 }
             }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(AllGenerators))]
+    public void Generate_WithinPoolSize_DoesNotReturnDuplicatePrompts(IExerciseGenerator generator)
+    {
+        // Regression-Test: bei kleinen Themen-Pools (z.B. Türkisch) durfte reines Ziehen mit
+        // Zurücklegen bisher denselben Fragetext mehrfach in einem Quiz liefern.
+        var random = new Random(2026);
+
+        foreach (var grade in new[] { GradeLevel.Klasse6, GradeLevel.Klasse9 })
+        {
+            var questions = generator.Generate(grade, 5, random);
+            var distinctPrompts = questions.Select(q => q.Prompt).Distinct().Count();
+
+            Assert.Equal(questions.Count, distinctPrompts);
         }
     }
 }

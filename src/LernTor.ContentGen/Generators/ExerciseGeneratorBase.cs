@@ -21,7 +21,27 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
         }
 
         var questions = new List<QuizQuestion>(count);
-        for (var i = 0; i < count; i++)
+        var seenPrompts = new HashSet<string>();
+
+        // Themen-Pools sind teils klein (z.B. nur 3-5 feste Beispiele je Thema), daher würde
+        // reines Ziehen mit Zurücklegen schnell denselben Fragetext doppelt liefern. Bei einer
+        // Kollision wird neu gezogen, bis genug einzigartige Fragen da sind oder der Pool
+        // (Sicherheitsgrenze) erschöpft ist.
+        var maxAttempts = count * 20;
+        for (var attempt = 0; attempt < maxAttempts && questions.Count < count; attempt++)
+        {
+            var topic = topics[random.Next(topics.Count)];
+            var question = topic(random);
+
+            if (seenPrompts.Add(question.Prompt))
+            {
+                questions.Add(question);
+            }
+        }
+
+        // Falls der Pool wirklich zu klein für `count` einzigartige Fragen ist, lieber mit
+        // (dann zwangsläufig wiederholten) Fragen auffüllen als weniger als angefordert liefern.
+        while (questions.Count < count)
         {
             var topic = topics[random.Next(topics.Count)];
             questions.Add(topic(random));
