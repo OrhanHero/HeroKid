@@ -18,6 +18,7 @@ namespace LernTor.App;
 public partial class App : Application
 {
     private IHost? _host;
+    private bool _isFatallyShuttingDown;
 
     public IServiceProvider Services => _host!.Services;
 
@@ -27,16 +28,30 @@ public partial class App : Application
 
         // Ohne diese Handler stirbt eine WPF-App bei einer unbehandelten Exception beim Start
         // kommentarlos (weißer Bildschirm, dann Prozessende) - genau das soll hiermit sichtbar werden.
+        // _isFatallyShuttingDown verhindert, dass währenddessen jeder weitere Layout-/Render-Durchlauf
+        // dieselbe Exception erneut auslöst und ein ganzer Stapel von Dialogen aufpoppt.
         DispatcherUnhandledException += (_, args) =>
         {
+            args.Handled = true;
+            if (_isFatallyShuttingDown)
+            {
+                return;
+            }
+
+            _isFatallyShuttingDown = true;
             MessageBox.Show(
                 $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.Exception}",
                 "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-            args.Handled = true;
             Shutdown(1);
         };
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
+            if (_isFatallyShuttingDown)
+            {
+                return;
+            }
+
+            _isFatallyShuttingDown = true;
             MessageBox.Show(
                 $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.ExceptionObject}",
                 "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);

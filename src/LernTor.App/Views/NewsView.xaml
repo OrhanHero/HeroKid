@@ -13,12 +13,12 @@
         <StackPanel Grid.Row="0" Margin="32,24">
             <TextBlock Style="{StaticResource HeadlineText}" Foreground="{StaticResource NewsBrush}">
                 <Run Text="📰 " />
-                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_News]}" />
+                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_News], Mode=OneWay}" />
             </TextBlock>
             <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
-                <Run Text="{Binding DisplayIndex}" />
+                <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
                 <Run Text=" / " />
-                <Run Text="{Binding TotalArticles}" />
+                <Run Text="{Binding TotalArticles, Mode=OneWay}" />
             </TextBlock>
             <ProgressBar Style="{StaticResource ChildProgressBar}" Margin="0,12,0,0"
                          Minimum="0" Maximum="{Binding TotalArticles}" Value="{Binding DisplayIndex, Mode=OneWay}" />

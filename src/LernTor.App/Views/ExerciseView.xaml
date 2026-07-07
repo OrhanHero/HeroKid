@@ -15,9 +15,9 @@
                        Style="{StaticResource HeadlineText}"
                        Foreground="{Binding Subject, Converter={StaticResource SubjectToBrush}}" />
             <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
-                <Run Text="{Binding DisplayIndex}" />
+                <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
                 <Run Text=" / " />
-                <Run Text="{Binding TotalQuestions}" />
+                <Run Text="{Binding TotalQuestions, Mode=OneWay}" />
             </TextBlock>
             <ProgressBar Style="{StaticResource ChildProgressBar}" Margin="0,12,0,0"
                          Minimum="0" Maximum="{Binding TotalQuestions}" Value="{Binding DisplayIndex, Mode=OneWay}"
