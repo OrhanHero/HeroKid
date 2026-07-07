@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using LernTor.App.ViewModels;
 using LernTor.App.Views;
@@ -24,6 +25,38 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // Ohne diese Handler stirbt eine WPF-App bei einer unbehandelten Exception beim Start
+        // kommentarlos (weißer Bildschirm, dann Prozessende) - genau das soll hiermit sichtbar werden.
+        DispatcherUnhandledException += (_, args) =>
+        {
+            MessageBox.Show(
+                $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.Exception}",
+                "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+            Shutdown(1);
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            MessageBox.Show(
+                $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.ExceptionObject}",
+                "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+
+        try
+        {
+            await StartUpInternalAsync(e);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"LernTor konnte nicht gestartet werden:\n\n{ex}",
+                "LernTor - Startfehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+        }
+    }
+
+    private async Task StartUpInternalAsync(StartupEventArgs e)
+    {
         // Wird vom Installer (Inno Setup) bzw. Deinstaller aufgerufen, um den Autostart-Task
         // zu registrieren/entfernen, ohne die Kiosk-UI zu starten.
         if (e.Args.Contains("--register-autostart"))
