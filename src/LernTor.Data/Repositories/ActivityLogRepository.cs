@@ -48,19 +48,21 @@ public sealed class ActivityLogRepository
 
     public async Task<IReadOnlyList<ActivityLogEntity>> GetRecentActivityAsync(string profileId, int take = 200, CancellationToken cancellationToken = default)
     {
-        return await _db.ActivityLog
+        // Sortierung erst nach dem Laden (in-memory): SQLite/EF Core kann ORDER BY auf
+        // DateTimeOffset-Spalten nicht serverseitig übersetzen.
+        var entities = await _db.ActivityLog
             .Where(a => a.ProfileId == profileId)
-            .OrderByDescending(a => a.Timestamp)
-            .Take(take)
             .ToListAsync(cancellationToken);
+
+        return entities.OrderByDescending(a => a.Timestamp).Take(take).ToList();
     }
 
     public async Task<IReadOnlyList<QuizAttemptEntity>> GetQuizHistoryAsync(string profileId, int take = 50, CancellationToken cancellationToken = default)
     {
-        return await _db.QuizAttempts
+        var entities = await _db.QuizAttempts
             .Where(q => q.ProfileId == profileId)
-            .OrderByDescending(q => q.Timestamp)
-            .Take(take)
             .ToListAsync(cancellationToken);
+
+        return entities.OrderByDescending(q => q.Timestamp).Take(take).ToList();
     }
 }

@@ -47,8 +47,10 @@ public sealed class StudentProfileRepository
 
     public async Task<IReadOnlyList<StudentProfile>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _db.Profiles.OrderBy(p => p.CreatedAt).ToListAsync(cancellationToken);
-        return entities.Select(ToModel).ToList();
+        // Sortierung erst nach dem Laden (in-memory): SQLite/EF Core kann ORDER BY auf
+        // DateTimeOffset-Spalten nicht serverseitig übersetzen.
+        var entities = await _db.Profiles.ToListAsync(cancellationToken);
+        return entities.OrderBy(p => p.CreatedAt).Select(ToModel).ToList();
     }
 
     public async Task<StudentProfile> CreateAsync(string name, int? age, string? classLabel, GradeLevel gradeLevel, CancellationToken cancellationToken = default)
