@@ -1,0 +1,49 @@
+<Window x:Class="LernTor.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:LernTor.App.ViewModels"
+        xmlns:views="clr-namespace:LernTor.App.Views"
+        Title="LernTor"
+        WindowStyle="None"
+        WindowState="Maximized"
+        ResizeMode="NoResize"
+        Topmost="True"
+        ShowInTaskbar="False"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
+            <views:WelcomeView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NewsViewModel}">
+            <views:NewsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ExerciseViewModel}">
+            <views:ExerciseView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FinalQuizViewModel}">
+            <views:FinalQuizView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ResultViewModel}">
+            <views:ResultView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <ContentControl Content="{Binding CurrentViewModel}" />
+
+        <!-- Unauffälliger Eltern-Zugang, immer erreichbar, aber passwortgeschützt -->
+        <Button x:Name="ParentAccessButton"
+                Content="⚙"
+                Width="40" Height="40"
+                FontSize="18"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,12,12"
+                Opacity="0.35"
+                Background="Transparent"
+                BorderThickness="0"
+                Cursor="Hand"
+                Click="ParentAccessButton_Click"
+                ToolTip="Eltern-Bereich" />
+    </Grid>
+</Window>

@@ -1,0 +1,207 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using LernTor.App.Localization;
+using LernTor.ContentGen;
+using LernTor.Core.Enums;
+using LernTor.Core.Models;
+using LernTor.Core.Services;
+using LernTor.Data.Repositories;
+using LernTor.News;
+using LernTor.Security;
+
+namespace LernTor.App.ViewModels;
+
+/// <summary>
+/// Navigations-Host: hält den aktuellen Lernfortschritt und wechselt je nach <see cref="LearningStage"/>
+/// das angezeigte Kind-ViewModel. Kind-ViewModels melden ihren Abschluss über Callbacks zurück.
+/// </summary>
+public sealed partial class MainViewModel : ObservableObject
+{
+    private readonly ProgressGateService _gate;
+    private readonly ScoringService _scoring;
+    private readonly ProgressRepository _progressRepo;
+    private readonly SettingsRepository _settingsRepo;
+    private readonly ActivityLogRepository _activityLogRepo;
+    private readonly RssNewsService _newsService;
+    private readonly QuizComposer _quizComposer;
+    private readonly KioskLockService _kioskLock;
+    private readonly Random _random = new();
+
+    private readonly List<QuizQuestion> _collectedNewsQuestions = new();
+
+    [ObservableProperty]
+    private object? currentViewModel;
+
+    public StudentProgress Progress { get; private set; } = new();
+    public AppSettings Settings { get; private set; } = new();
+
+    public MainViewModel(
+        ProgressGateService gate,
+        ScoringService scoring,
+        ProgressRepository progressRepo,
+        SettingsRepository settingsRepo,
+        ActivityLogRepository activityLogRepo,
+        RssNewsService newsService,
+        QuizComposer quizComposer,
+        KioskLockService kioskLock)
+    {
+        _gate = gate;
+        _scoring = scoring;
+        _progressRepo = progressRepo;
+        _settingsRepo = settingsRepo;
+        _activityLogRepo = activityLogRepo;
+        _newsService = newsService;
+        _quizComposer = quizComposer;
+        _kioskLock = kioskLock;
+    }
+
+    public async Task InitializeAsync()
+    {
+        Progress = await _progressRepo.LoadOrCreateTodayAsync();
+        Settings = await _settingsRepo.LoadAsync();
+        LocalizationService.Instance.CurrentLanguage = Settings.DefaultLanguage;
+
+        await NavigateToStageAsync(Progress.CurrentStage);
+    }
+
+    private async Task PersistProgressAsync()
+    {
+        await _progressRepo.SaveAsync(Progress);
+    }
+
+    private async Task NavigateToStageAsync(LearningStage stage)
+    {
+        // Automatisch deaktivierte Fachbereiche überspringen.
+        while (TryGetSubjectForStage(stage, out var disabledSubject) && Settings.DisabledSubjects.Contains(disabledSubject))
+        {
+            Progress.CompletedExerciseSubjects.Add(disabledSubject);
+            stage = _gate.GetNextStage(stage);
+        }
+
+        Progress.CurrentStage = stage;
+        await PersistProgressAsync();
+
+        CurrentViewModel = stage switch
+        {
+            LearningStage.Willkommen => new WelcomeViewModel(OnWelcomeContinue, SwitchLanguage),
+            LearningStage.News => await BuildNewsViewModelAsync(),
+            LearningStage.Mathematik => BuildExerciseViewModel(Subject.Mathematik),
+            LearningStage.Deutsch => BuildExerciseViewModel(Subject.Deutsch),
+            LearningStage.Tuerkisch => BuildExerciseViewModel(Subject.Tuerkisch),
+            LearningStage.Naturwissenschaften => BuildExerciseViewModel(Subject.Naturwissenschaften),
+            LearningStage.Abschlussquiz => BuildFinalQuizViewModel(),
+            LearningStage.Freigeschaltet => BuildResultViewModel(passed: true, result: null),
+            _ => CurrentViewModel
+        };
+    }
+
+    private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject)
+    {
+        switch (stage)
+        {
+            case LearningStage.Mathematik: subject = Subject.Mathematik; return true;
+            case LearningStage.Deutsch: subject = Subject.Deutsch; return true;
+            case LearningStage.Tuerkisch: subject = Subject.Tuerkisch; return true;
+            case LearningStage.Naturwissenschaften: subject = Subject.Naturwissenschaften; return true;
+            default: subject = default; return false;
+        }
+    }
+
+    private void SwitchLanguage(AppLanguage language)
+    {
+        LocalizationService.Instance.CurrentLanguage = language;
+        Settings.DefaultLanguage = language;
+        _ = _settingsRepo.SaveAsync(Settings);
+    }
+
+    private async void OnWelcomeContinue()
+    {
+        await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Willkommen));
+    }
+
+    private async Task<NewsViewModel> BuildNewsViewModelAsync()
+    {
+        var articles = await _newsService.LoadCuratedArticlesAsync();
+        return new NewsViewModel(articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted);
+    }
+
+    private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)
+    {
+        Progress.CompletedNewsArticleIds.Add(article.Id);
+        await _activityLogRepo.LogAnswerAsync(outcome, question.Topic, question.Prompt);
+        await PersistProgressAsync();
+    }
+
+    private async void OnNewsSectionCompleted(IReadOnlyList<QuizQuestion> askedQuestions)
+    {
+        _collectedNewsQuestions.Clear();
+        _collectedNewsQuestions.AddRange(askedQuestions);
+        await NavigateToStageAsync(_gate.GetNextStage(LearningStage.News));
+    }
+
+    private ExerciseViewModel BuildExerciseViewModel(Subject subject)
+    {
+        var questions = _quizComposer.GenerateExercises(subject, Settings.StudentGradeLevel, 6, _random);
+        return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject));
+    }
+
+    private async void OnExerciseQuestionAnswered(Subject subject, QuestionOutcome outcome, QuizQuestion question)
+    {
+        await _activityLogRepo.LogAnswerAsync(outcome, question.Topic, question.Prompt);
+    }
+
+    private async void OnExerciseSubjectCompleted(Subject subject)
+    {
+        Progress.CompletedExerciseSubjects.Add(subject);
+        var currentStage = Progress.CurrentStage;
+        await NavigateToStageAsync(_gate.GetNextStage(currentStage));
+    }
+
+    private FinalQuizViewModel BuildFinalQuizViewModel()
+    {
+        var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
+        IReadOnlyList<QuizQuestion> questions;
+
+        if (relevantSubjects is not null)
+        {
+            questions = _quizComposer.ComposeRetryExercises(relevantSubjects, Settings.StudentGradeLevel, _random, countPerSubject: 6)
+                .Concat(_quizComposer.ComposeFinalQuiz(Settings.StudentGradeLevel, _random, newsQuestions: null, perSubjectCount: 2))
+                .ToList();
+        }
+        else
+        {
+            questions = _quizComposer.ComposeFinalQuiz(Settings.StudentGradeLevel, _random, _collectedNewsQuestions, perSubjectCount: 5);
+        }
+
+        return new FinalQuizViewModel(questions, OnFinalQuizCompleted);
+    }
+
+    private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)
+    {
+        var result = _scoring.BuildResult(outcomes);
+        await _activityLogRepo.LogQuizAttemptAsync(result);
+        _gate.ApplyQuizResult(Progress, result);
+        await PersistProgressAsync();
+
+        if (result.Passed)
+        {
+            _kioskLock.Unlock();
+        }
+
+        CurrentViewModel = BuildResultViewModel(result.Passed, result);
+    }
+
+    private ResultViewModel BuildResultViewModel(bool passed, QuizResult? result)
+    {
+        return new ResultViewModel(passed, result, OnRetryWeakSubjectsRequested, OnUnlockConfirmed);
+    }
+
+    private async void OnRetryWeakSubjectsRequested()
+    {
+        await NavigateToStageAsync(LearningStage.Abschlussquiz);
+    }
+
+    private void OnUnlockConfirmed()
+    {
+        System.Windows.Application.Current.Shutdown();
+    }
+}

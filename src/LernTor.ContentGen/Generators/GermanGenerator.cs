@@ -1,0 +1,313 @@
+using LernTor.Core.Enums;
+using LernTor.Core.Models;
+
+namespace LernTor.ContentGen.Generators;
+
+/// <summary>
+/// Deutsch-Aufgabengenerator: Grammatik, Rechtschreibung, Zeitformen, Satzglieder (Klasse 6)
+/// sowie Aktiv/Passiv, Satzgefüge, Kommasetzung (Klasse 9), jeweils nach Berliner Rahmenlehrplan.
+/// </summary>
+public sealed class GermanGenerator : ExerciseGeneratorBase
+{
+    public override Subject Subject => Subject.Deutsch;
+
+    protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
+        new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
+        {
+            [GradeLevel.Klasse6] = new List<TopicFactory>
+            {
+                Wortarten,
+                Zeitformen,
+                Satzglieder,
+                GrossKleinschreibung,
+                AdjektivSteigerung
+            },
+            [GradeLevel.Klasse9] = new List<TopicFactory>
+            {
+                AktivPassiv,
+                Konjunktionen,
+                Kommasetzung,
+                DassOderDas,
+                Wortarten9
+            }
+        };
+
+    private static readonly (string Wort, string Wortart)[] WortartenBeispiele =
+    {
+        ("Haus", "Nomen"), ("laufen", "Verb"), ("schnell", "Adjektiv"), ("Berlin", "Nomen"),
+        ("lachen", "Verb"), ("bunt", "Adjektiv"), ("Schule", "Nomen"), ("singen", "Verb"),
+        ("groß", "Adjektiv"), ("Lehrerin", "Nomen"), ("springen", "Verb"), ("freundlich", "Adjektiv")
+    };
+
+    private static QuizQuestion Wortarten(Random r)
+    {
+        var (wort, wortart) = WortartenBeispiele[r.Next(WortartenBeispiele.Length)];
+        var alleWortarten = new[] { "Nomen", "Verb", "Adjektiv" };
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wortarten",
+            Type = QuestionType.MultipleChoice,
+            Prompt = $"Welche Wortart hat das Wort \"{wort}\"?",
+            Options = alleWortarten,
+            CorrectAnswers = new[] { wortart },
+            Explanation = $"\"{wort}\" ist ein {wortart}. " +
+                          (wortart == "Nomen" ? "Nomen (Hauptwörter) benennen Dinge, Lebewesen oder Begriffe und werden großgeschrieben." :
+                           wortart == "Verb" ? "Verben (Tätigkeitswörter) beschreiben Handlungen oder Zustände." :
+                           "Adjektive (Eigenschaftswörter) beschreiben, wie etwas ist.")
+        };
+    }
+
+    private static readonly (string Praesens, string Praeteritum, string Perfekt, string Infinitiv)[] Verben =
+    {
+        ("ich gehe", "ich ging", "ich bin gegangen", "gehen"),
+        ("ich spiele", "ich spielte", "ich habe gespielt", "spielen"),
+        ("ich esse", "ich aß", "ich habe gegessen", "essen"),
+        ("ich schreibe", "ich schrieb", "ich habe geschrieben", "schreiben"),
+        ("ich fahre", "ich fuhr", "ich bin gefahren", "fahren")
+    };
+
+    private static QuizQuestion Zeitformen(Random r)
+    {
+        var v = Verben[r.Next(Verben.Length)];
+        var zeitformen = new[] { "Präsens (Gegenwart)", "Präteritum (Vergangenheit)", "Perfekt (vollendete Gegenwart)" };
+        int wahl = r.Next(3);
+        string frage = wahl switch
+        {
+            0 => $"\"{v.Praesens}\" – in welcher Zeitform steht dieser Satz?",
+            1 => $"\"{v.Praeteritum}\" – in welcher Zeitform steht dieser Satz?",
+            _ => $"\"{v.Perfekt}\" – in welcher Zeitform steht dieser Satz?"
+        };
+        string antwort = zeitformen[wahl];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Zeitformen (Tempus)",
+            Type = QuestionType.MultipleChoice,
+            Prompt = frage,
+            Options = zeitformen,
+            CorrectAnswers = new[] { antwort },
+            Explanation = $"Grundform (Infinitiv) des Verbs ist \"{v.Infinitiv}\". " +
+                          $"Präsens: \"{v.Praesens}\", Präteritum: \"{v.Praeteritum}\", Perfekt: \"{v.Perfekt}\"."
+        };
+    }
+
+    private static readonly (string Satz, string Subjekt, string Praedikat, string Objekt)[] Saetze =
+    {
+        ("Der Hund jagt den Ball.", "Der Hund", "jagt", "den Ball"),
+        ("Die Lehrerin erklärt die Aufgabe.", "Die Lehrerin", "erklärt", "die Aufgabe"),
+        ("Mein Bruder liest ein Buch.", "Mein Bruder", "liest", "ein Buch"),
+        ("Die Kinder spielen Fußball.", "Die Kinder", "spielen", "Fußball")
+    };
+
+    private static QuizQuestion Satzglieder(Random r)
+    {
+        var s = Saetze[r.Next(Saetze.Length)];
+        var teile = new[] { "Subjekt", "Prädikat", "Objekt" };
+        int wahl = r.Next(3);
+        string gesuchtesTeil = teile[wahl];
+        string antwort = wahl switch { 0 => s.Subjekt, 1 => s.Praedikat, _ => s.Objekt };
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Satzglieder",
+            Type = QuestionType.OpenText,
+            Prompt = $"Satz: \"{s.Satz}\" – Wie lautet das {gesuchtesTeil}?",
+            CorrectAnswers = new[] { antwort },
+            Explanation = $"Subjekt: \"{s.Subjekt}\" (wer/was handelt), " +
+                          $"Prädikat: \"{s.Praedikat}\" (die Handlung/das Verb), " +
+                          $"Objekt: \"{s.Objekt}\" (worauf sich die Handlung bezieht)."
+        };
+    }
+
+    private static readonly (string Satz, string Loesung, string Regel)[] GrossKlein =
+    {
+        ("ich gehe heute ins ___ (kino).", "Kino", "Nomen werden immer großgeschrieben."),
+        ("das ist mein ___ (lieblings)buch.", "Lieblingsbuch", "Zusammengesetzte Nomen werden großgeschrieben."),
+        ("wir treffen uns am ___ (montag).", "Montag", "Wochentage sind Nomen und werden großgeschrieben."),
+        ("sie ist sehr ___ (fleissig).", "fleißig", "Adjektive werden kleingeschrieben, außer am Satzanfang.")
+    };
+
+    private static QuizQuestion GrossKleinschreibung(Random r)
+    {
+        var g = GrossKlein[r.Next(GrossKlein.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Groß- und Kleinschreibung",
+            Type = QuestionType.OpenText,
+            Prompt = $"Setze das Wort in Klammern richtig geschrieben ein: \"{g.Satz}\"",
+            CorrectAnswers = new[] { g.Loesung },
+            Explanation = $"Richtig: \"{g.Loesung}\". Regel: {g.Regel}"
+        };
+    }
+
+    private static readonly (string Grund, string Komparativ, string Superlativ)[] Adjektive =
+    {
+        ("schön", "schöner", "am schönsten"),
+        ("groß", "größer", "am größten"),
+        ("klein", "kleiner", "am kleinsten"),
+        ("gut", "besser", "am besten"),
+        ("gerne", "lieber", "am liebsten")
+    };
+
+    private static QuizQuestion AdjektivSteigerung(Random r)
+    {
+        var a = Adjektive[r.Next(Adjektive.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Steigerung von Adjektiven",
+            Type = QuestionType.OpenText,
+            Prompt = $"Wie lautet der Superlativ von \"{a.Grund}\"? (Form: \"am ___en\")",
+            CorrectAnswers = new[] { a.Superlativ },
+            Explanation = $"Positiv: {a.Grund}, Komparativ: {a.Komparativ}, Superlativ: {a.Superlativ}."
+        };
+    }
+
+    private static readonly (string Aktiv, string Passiv)[] AktivPassivBeispiele =
+    {
+        ("Der Gärtner gießt die Blumen.", "Die Blumen werden von dem Gärtner gegossen."),
+        ("Die Firma baut das Haus.", "Das Haus wird von der Firma gebaut."),
+        ("Der Lehrer korrigiert die Klassenarbeit.", "Die Klassenarbeit wird von dem Lehrer korrigiert."),
+        ("Die Köchin kocht die Suppe.", "Die Suppe wird von der Köchin gekocht.")
+    };
+
+    private static QuizQuestion AktivPassiv(Random r)
+    {
+        var a = AktivPassivBeispiele[r.Next(AktivPassivBeispiele.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Aktiv und Passiv",
+            Type = QuestionType.OpenText,
+            Prompt = $"Wandle den Aktivsatz \"{a.Aktiv}\" in die Passivform (Vorgangspassiv) um.",
+            CorrectAnswers = new[] { a.Passiv },
+            Explanation = $"Passivform: \"{a.Passiv}\". Beim Passiv rückt das Objekt des Aktivsatzes an die Subjektstelle, " +
+                          "das Verb wird mit \"werden\" + Partizip II gebildet."
+        };
+    }
+
+    private static readonly (string Satz, string Konjunktion, string Typ)[] KonjunktionsBeispiele =
+    {
+        ("Wir bleiben zu Hause, ___ es regnet.", "weil", "kausal (Grund)"),
+        ("Sie lernt viel, ___ sie eine gute Note bekommt.", "damit", "final (Zweck)"),
+        ("___ er müde war, ging er trotzdem joggen.", "Obwohl", "konzessiv (Einräumung)"),
+        ("Er ruft an, ___ er ankommt.", "sobald", "temporal (Zeit)")
+    };
+
+    private static QuizQuestion Konjunktionen(Random r)
+    {
+        var k = KonjunktionsBeispiele[r.Next(KonjunktionsBeispiele.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Satzgefüge und Konjunktionen",
+            Type = QuestionType.OpenText,
+            Prompt = $"Setze die passende Konjunktion ein: \"{k.Satz}\"",
+            CorrectAnswers = new[] { k.Konjunktion },
+            Explanation = $"Richtig: \"{k.Konjunktion}\" – dies ist eine {k.Typ}e Konjunktion, die einen Nebensatz einleitet."
+        };
+    }
+
+    private static readonly (string SatzMitLuecke, string Loesung, string Regel)[] KommaBeispiele =
+    {
+        ("Nachdem er gegessen hatte___ ging er schlafen.", ",", "Vor Nebensätzen steht immer ein Komma."),
+        ("Ich möchte Pizza___ Pasta oder Salat bestellen.", "", "Bei einer einfachen Aufzählung mit \"oder\" steht meist kein Komma."),
+        ("Er sagte___ dass er komme.", ",", "Vor \"dass\"-Sätzen steht immer ein Komma."),
+        ("Sie kaufte Äpfel___ Birnen und Bananen.", ",", "Bei Aufzählungen ohne Bindewort steht ein Komma.")
+    };
+
+    private static QuizQuestion Kommasetzung(Random r)
+    {
+        var k = KommaBeispiele[r.Next(KommaBeispiele.Length)];
+        string komma = string.IsNullOrEmpty(k.Loesung) ? "(kein Komma)" : "\",\"";
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Kommasetzung",
+            Type = QuestionType.OpenText,
+            Prompt = $"Gehört an die Lücke ein Komma? Antworte mit \"ja\" oder \"nein\": \"{k.SatzMitLuecke}\"",
+            CorrectAnswers = new[] { string.IsNullOrEmpty(k.Loesung) ? "nein" : "ja" },
+            Explanation = $"Regel: {k.Regel}"
+        };
+    }
+
+    private static readonly (string Satz, string Loesung)[] DassDas =
+    {
+        ("Ich weiß, ___ du kommst.", "dass"),
+        ("Das Buch, ___ auf dem Tisch liegt, gehört mir.", "das"),
+        ("Er hofft, ___ alles gut geht.", "dass"),
+        ("Das Auto, ___ dort steht, ist neu.", "das")
+    };
+
+    private static QuizQuestion DassOderDas(Random r)
+    {
+        var d = DassDas[r.Next(DassDas.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "\"dass\" oder \"das\"",
+            Type = QuestionType.OpenText,
+            Prompt = $"Setze richtig ein: \"{d.Satz}\"",
+            CorrectAnswers = new[] { d.Loesung },
+            Explanation = d.Loesung == "dass"
+                ? "\"dass\" leitet hier einen Nebensatz ein (Konjunktion) und kann nicht durch \"welches\" ersetzt werden."
+                : "\"das\" ist hier ein Relativpronomen/Artikel und kann durch \"welches\" ersetzt werden."
+        };
+    }
+
+    private static readonly (string Satz, string Wort, string Wortart)[] Wortarten9Beispiele =
+    {
+        ("Trotzdem kam sie pünktlich.", "Trotzdem", "Adverb"),
+        ("Das Buch liegt auf dem Tisch.", "auf", "Präposition"),
+        ("Er und sie gehen ins Kino.", "und", "Konjunktion"),
+        ("Sie rannte sehr schnell.", "sehr", "Adverb")
+    };
+
+    private static QuizQuestion Wortarten9(Random r)
+    {
+        var w = Wortarten9Beispiele[r.Next(Wortarten9Beispiele.Length)];
+        var optionen = new[] { "Adverb", "Präposition", "Konjunktion", "Pronomen" };
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Wortarten (vertieft)",
+            Type = QuestionType.MultipleChoice,
+            Prompt = $"Satz: \"{w.Satz}\" – Welche Wortart ist \"{w.Wort}\"?",
+            Options = optionen,
+            CorrectAnswers = new[] { w.Wortart },
+            Explanation = $"\"{w.Wort}\" ist hier ein {w.Wortart}."
+        };
+    }
+}

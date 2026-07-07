@@ -1,0 +1,109 @@
+using System.Windows;
+using LernTor.App.ViewModels;
+using LernTor.App.Views;
+using LernTor.ContentGen;
+using LernTor.Core.Services;
+using LernTor.Data;
+using LernTor.Data.Repositories;
+using LernTor.News;
+using LernTor.Security;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace LernTor.App;
+
+public partial class App : Application
+{
+    private IHost? _host;
+
+    public IServiceProvider Services => _host!.Services;
+
+    protected override async void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+
+        // Wird vom Installer (Inno Setup) bzw. Deinstaller aufgerufen, um den Autostart-Task
+        // zu registrieren/entfernen, ohne die Kiosk-UI zu starten.
+        if (e.Args.Contains("--register-autostart"))
+        {
+            AutostartService.Register(Environment.ProcessPath ?? Environment.GetCommandLineArgs()[0]);
+            Shutdown();
+            return;
+        }
+
+        if (e.Args.Contains("--unregister-autostart"))
+        {
+            AutostartService.Unregister();
+            Shutdown();
+            return;
+        }
+
+        _host = Host.CreateDefaultBuilder()
+            .ConfigureServices((_, services) =>
+            {
+                // Singleton statt Scoped: einfache Single-User-Desktop-App ohne parallele Requests,
+                // ViewModels (Singletons) greifen direkt auf die Repositories zu.
+                services.AddDbContext<LernTorDbContext>(options =>
+                    options.UseSqlite($"Data Source={LernTorDbContext.GetDefaultDbPath()}"),
+                    ServiceLifetime.Singleton);
+
+                services.AddSingleton<HttpClient>();
+                services.AddSingleton<ITextSimplifier, RuleBasedTextSimplifier>();
+                services.AddSingleton<IComprehensionQuestionGenerator, HeuristicComprehensionQuestionGenerator>();
+                services.AddSingleton<RssNewsService>();
+
+                services.AddSingleton<QuizComposer>();
+                services.AddSingleton<ProgressGateService>();
+                services.AddSingleton<ScoringService>();
+
+                services.AddSingleton<ProgressRepository>();
+                services.AddSingleton<ActivityLogRepository>();
+                services.AddSingleton<SettingsRepository>();
+
+                services.AddSingleton<KioskLockService>();
+
+                services.AddSingleton<MainViewModel>();
+                services.AddSingleton<MainWindow>();
+
+                services.AddTransient<ParentSettingsViewModel>();
+                services.AddTransient<ParentSettingsWindow>();
+            })
+            .Build();
+
+        await _host.StartAsync();
+
+        using (var scope = _host.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<LernTorDbContext>();
+            await db.Database.EnsureCreatedAsync();
+        }
+
+        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+        mainWindow.Show();
+
+        var shouldSkipKioskLock =
+            Environment.GetEnvironmentVariable("LERNTOR_SKIP_LOCK") == "1" ||
+            System.Diagnostics.Debugger.IsAttached;
+
+        if (!shouldSkipKioskLock)
+        {
+            _host.Services.GetRequiredService<KioskLockService>().Lock();
+        }
+
+        var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
+        await mainViewModel.InitializeAsync();
+    }
+
+    protected override async void OnExit(ExitEventArgs e)
+    {
+        if (_host is not null)
+        {
+            _host.Services.GetService<KioskLockService>()?.Unlock();
+            await _host.StopAsync();
+            _host.Dispose();
+        }
+
+        base.OnExit(e);
+    }
+}

@@ -1,0 +1,46 @@
+<UserControl x:Class="LernTor.App.Views.ExerciseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls">
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="32,24">
+            <TextBlock Text="{Binding Subject, Converter={StaticResource SubjectToTitle}}"
+                       Style="{StaticResource HeadlineText}"
+                       Foreground="{Binding Subject, Converter={StaticResource SubjectToBrush}}" />
+            <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
+                <Run Text="{Binding DisplayIndex}" />
+                <Run Text=" / " />
+                <Run Text="{Binding TotalQuestions}" />
+            </TextBlock>
+            <ProgressBar Style="{StaticResource ChildProgressBar}" Margin="0,12,0,0"
+                         Minimum="0" Maximum="{Binding TotalQuestions}" Value="{Binding DisplayIndex, Mode=OneWay}"
+                         Foreground="{Binding Subject, Converter={StaticResource SubjectToBrush}}" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" Margin="32,0">
+                <controls:QuestionCard DataContext="{Binding CurrentQuestion}" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,32">
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_NextQuestion]}"
+                    Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                    Visibility="{Binding IsLastQuestion, Converter={StaticResource InverseBoolToVis}}"
+                    IsEnabled="{Binding CurrentQuestion.IsSubmitted}"
+                    Command="{Binding NextCommand}" />
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_FinishSubject]}"
+                    Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                    Visibility="{Binding IsLastQuestion, Converter={StaticResource BoolToVis}}"
+                    IsEnabled="{Binding CurrentQuestion.IsSubmitted}"
+                    Command="{Binding NextCommand}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

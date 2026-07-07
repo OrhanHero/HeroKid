@@ -1,0 +1,46 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    # windows-latest ist nötig, weil LernTor.App (WPF) und LernTor.Security (net8.0-windows,
+    # Win32-P/Invoke) nur unter Windows kompilieren.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 8 SDK einrichten
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: NuGet-Pakete wiederherstellen
+        run: dotnet restore LernTor.sln
+
+      - name: Solution bauen (Release)
+        run: dotnet build LernTor.sln --configuration Release --no-restore
+
+      - name: Unit-Tests ausführen
+        run: dotnet test tests/LernTor.Tests/LernTor.Tests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Self-contained Windows-Build veröffentlichen
+        run: >
+          dotnet publish src/LernTor.App/LernTor.App.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=false
+          --output publish/win-x64
+
+      - name: Build-Artefakt hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: LernTor-win-x64
+          path: publish/win-x64
