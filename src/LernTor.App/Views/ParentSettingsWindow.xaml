@@ -21,9 +21,14 @@
                        Visibility="{Binding IsFirstTimeSetup, Converter={StaticResource InverseBoolToVis}}" />
             <PasswordBox x:Name="PasswordInput" FontSize="18" Padding="10" />
             <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource ErrorBrush}" Margin="0,8,0,0" TextWrapping="Wrap" />
-            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Login]}"
-                    Style="{StaticResource RoundedButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
-                    Click="LoginButton_Click" />
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Login]}"
+                        Style="{StaticResource RoundedButton}" Margin="0,0,12,0" HorizontalAlignment="Left"
+                        Click="LoginButton_Click" />
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_UnlockAndExit]}"
+                        Style="{StaticResource RoundedButton}" Background="{StaticResource ErrorBrush}" HorizontalAlignment="Left"
+                        Click="UnlockAndExitButton_Click" />
+            </StackPanel>
         </StackPanel>
 
         <!-- Eltern-Einstellungen -->

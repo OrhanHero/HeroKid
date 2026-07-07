@@ -75,6 +75,7 @@ public static class Translations
             ["Parent_LoginTitle"] = L("Eltern-Bereich", "Ebeveyn Alanı"),
             ["Parent_PasswordPrompt"] = L("Admin-Passwort eingeben:", "Yönetici şifresini gir:"),
             ["Parent_Login"] = L("Anmelden", "Giriş yap"),
+            ["Parent_UnlockAndExit"] = L("PC entsperren & beenden 🔓", "Bilgisayarın kilidini aç ve kapat 🔓"),
             ["Parent_SetupPasswordPrompt"] = L(
                 "Noch kein Passwort gesetzt. Bitte lege ein Admin-Passwort fest:", "Henüz şifre yok. Lütfen bir yönetici şifresi belirle:"),
             ["Parent_WrongPassword"] = L("Falsches Passwort.", "Yanlış şifre."),

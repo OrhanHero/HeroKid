@@ -40,7 +40,15 @@ public sealed class RssNewsService
             }
         }
 
-        var ranked = allRawItems
+        // Verschiedene Feeds (oder URL-Varianten desselben Anbieters) liefern gelegentlich exakt
+        // dieselbe Meldung - ohne Deduplizierung nach Titel würde derselbe Artikel doppelt
+        // hintereinander im News-Bereich (und darüber auch im Abschlussquiz) auftauchen.
+        var deduplicated = allRawItems
+            .GroupBy(x => NormalizeTitleForDeduplication(x.Item.Title?.Text))
+            .Select(group => group.First())
+            .ToList();
+
+        var ranked = deduplicated
             .OrderByDescending(x => CountPriorityMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
             .ThenByDescending(x => x.Item.PublishDate)
             .Take(targetCount)
@@ -54,6 +62,9 @@ public sealed class RssNewsService
 
         return articles;
     }
+
+    private static string NormalizeTitleForDeduplication(string? title) =>
+        (title ?? string.Empty).Trim().ToLowerInvariant();
 
     private static int CountPriorityMatches(string? title, string? summary)
     {

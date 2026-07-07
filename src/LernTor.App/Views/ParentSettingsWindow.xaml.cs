@@ -23,4 +23,10 @@ public partial class ParentSettingsWindow : Window
         await _viewModel.LoginCommand.ExecuteAsync(PasswordInput.Password);
         PasswordInput.Clear();
     }
+
+    private void UnlockAndExitButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.UnlockAndExitCommand.Execute(PasswordInput.Password);
+        PasswordInput.Clear();
+    }
 }

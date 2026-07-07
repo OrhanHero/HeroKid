@@ -44,7 +44,14 @@ public sealed class QuizComposer
             questions.AddRange(generator.Generate(grade, perSubjectCount, random));
         }
 
-        return questions.OrderBy(_ => random.Next()).ToList();
+        // Zusätzliche Absicherung: falls trotz der Deduplizierung in den Generatoren/News
+        // irgendwo doch derselbe Fragetext zweimal zusammenkommt, hier ein letztes Mal filtern.
+        var distinctQuestions = questions
+            .GroupBy(q => q.Prompt)
+            .Select(group => group.First())
+            .ToList();
+
+        return distinctQuestions.OrderBy(_ => random.Next()).ToList();
     }
 
     /// <summary>Erzeugt zusätzliche Übungsfragen für gezielt schwache Fachbereiche nach nicht bestandenem Quiz.</summary>

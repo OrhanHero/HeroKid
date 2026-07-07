@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LernTor.App.Localization;
 using LernTor.ContentGen;
@@ -29,9 +31,13 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly Random _random = new();
 
     private readonly List<QuizQuestion> _collectedNewsQuestions = new();
+    private readonly DispatcherTimer _clockTimer;
 
     [ObservableProperty]
     private object? currentViewModel;
+
+    [ObservableProperty]
+    private string currentDateTimeDisplay = string.Empty;
 
     public StudentProfile? CurrentProfile { get; private set; }
     public StudentProgress Progress { get; private set; } = new() { ProfileId = string.Empty };
@@ -57,6 +63,21 @@ public sealed partial class MainViewModel : ObservableObject
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
+
+        // Zeigt Datum/Uhrzeit im Kiosk-Fenster an - nutzt die lokale PC-Systemuhr (DateTime.Now),
+        // keine Netzwerkzeit.
+        UpdateClock();
+        _clockTimer = new DispatcherTimer(DispatcherPriority.Background)
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        _clockTimer.Tick += (_, _) => UpdateClock();
+        _clockTimer.Start();
+    }
+
+    private void UpdateClock()
+    {
+        CurrentDateTimeDisplay = DateTime.Now.ToString("dddd, d. MMMM yyyy – HH:mm:ss", CultureInfo.GetCultureInfo("de-DE"));
     }
 
     public async Task InitializeAsync()

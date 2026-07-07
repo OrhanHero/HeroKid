@@ -35,6 +35,11 @@
     <Grid>
         <ContentControl Content="{Binding CurrentViewModel}" />
 
+        <!-- Datum/Uhrzeit (PC-Systemuhr), immer sichtbar, unauffällig -->
+        <TextBlock Text="{Binding CurrentDateTimeDisplay}"
+                   FontFamily="Segoe UI" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,12" Opacity="0.7" />
+
         <!-- Unauffälliger Eltern-Zugang, immer erreichbar, aber passwortgeschützt -->
         <Button x:Name="ParentAccessButton"
                 Content="⚙"

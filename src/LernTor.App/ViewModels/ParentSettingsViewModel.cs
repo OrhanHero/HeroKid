@@ -173,6 +173,31 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         System.Windows.Application.Current.Shutdown();
     }
 
+    /// <summary>
+    /// Direkter Weg auf dem Login-Bildschirm: Passwort eingeben und sofort entsperren/beenden,
+    /// ohne erst in die volle Einstellungsansicht wechseln zu müssen.
+    /// </summary>
+    [RelayCommand]
+    private void UnlockAndExit(string password)
+    {
+        ErrorMessage = string.Empty;
+
+        if (IsFirstTimeSetup)
+        {
+            ErrorMessage = "Bitte zuerst über \"Anmelden\" ein Admin-Passwort festlegen.";
+            return;
+        }
+
+        if (AdminAuthService.Verify(password, _settings.AdminPasswordHash, _settings.AdminPasswordSalt))
+        {
+            SkipUnlock();
+        }
+        else
+        {
+            ErrorMessage = "Falsches Passwort.";
+        }
+    }
+
     [RelayCommand]
     private void Close() => RequestClose?.Invoke();
 }
