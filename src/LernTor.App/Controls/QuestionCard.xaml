@@ -33,9 +33,26 @@
 
             <!-- Offene Frage: Textfeld + Prüfen-Button -->
             <StackPanel Visibility="{Binding IsOpenText, Converter={StaticResource BoolToVis}}">
-                <TextBox Text="{Binding GivenAnswerText, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox x:Name="AnswerTextBox"
+                         Text="{Binding GivenAnswerText, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="20" Padding="14" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="2"
                          IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+
+                <!-- Türkische Sonderzeichen, die es auf einer deutschen Tastatur nicht gibt -->
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                            Visibility="{Binding ShowTurkishCharacterHelper, Converter={StaticResource BoolToVis}}">
+                    <Button Content="ç" Tag="ç" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="ğ" Tag="ğ" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="ı" Tag="ı" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="İ" Tag="İ" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="ş" Tag="ş" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                </StackPanel>
+
                 <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_SubmitAnswer]}"
                         Style="{StaticResource RoundedButton}"
                         HorizontalAlignment="Left"

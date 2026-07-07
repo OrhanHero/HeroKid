@@ -19,6 +19,12 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
     public bool IsOpenText => Question.Type == QuestionType.OpenText;
     public bool IsChoice => !IsOpenText;
 
+    /// <summary>
+    /// Zeigt bei offenen Türkisch-Fragen eine Reihe von Sonderzeichen-Buttons (ç ğ ı ş) an,
+    /// da diese auf einer deutschen Tastatur nicht direkt eingebbar sind.
+    /// </summary>
+    public bool ShowTurkishCharacterHelper => IsOpenText && Question.Subject == Subject.Tuerkisch;
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SubmitOpenTextCommand))]
     private string givenAnswerText = string.Empty;

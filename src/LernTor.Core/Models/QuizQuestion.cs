@@ -1,3 +1,4 @@
+using System.Text;
 using LernTor.Core.Enums;
 
 namespace LernTor.Core.Models;
@@ -30,14 +31,43 @@ public sealed class QuizQuestion
             return false;
         }
 
-        var normalizedGiven = givenAnswer.Trim();
+        var trimmedGiven = givenAnswer.Trim();
+        var normalizedGiven = ToLatinKeyboardForm(trimmedGiven);
 
         return Type switch
         {
             QuestionType.OpenText => CorrectAnswers.Any(correct =>
-                normalizedGiven.Contains(correct, StringComparison.OrdinalIgnoreCase)),
+                trimmedGiven.Contains(correct, StringComparison.OrdinalIgnoreCase) ||
+                normalizedGiven.Contains(ToLatinKeyboardForm(correct), StringComparison.Ordinal)),
             _ => CorrectAnswers.Any(correct =>
-                string.Equals(correct, normalizedGiven, StringComparison.OrdinalIgnoreCase))
+                string.Equals(correct, trimmedGiven, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(ToLatinKeyboardForm(correct), normalizedGiven, StringComparison.Ordinal))
         };
+    }
+
+    /// <summary>
+    /// Vereinfacht Sonderzeichen (v.a. türkisch: ç ğ ı İ ş, dazu ö ü) auf ihre nächste auf einer
+    /// deutschen Tastatur eingebbare Näherung und wandelt in Kleinbuchstaben um. Wird nur als
+    /// zusätzlicher Vergleich genutzt (Kinder ohne türkische Tastatur können trotzdem antworten),
+    /// die exakte Schreibweise wird weiterhin zuerst geprüft.
+    /// </summary>
+    private static string ToLatinKeyboardForm(string text)
+    {
+        var builder = new StringBuilder(text.Length);
+        foreach (var ch in text)
+        {
+            builder.Append(ch switch
+            {
+                'ç' or 'Ç' => 'c',
+                'ğ' or 'Ğ' => 'g',
+                'ı' or 'İ' => 'i',
+                'ş' or 'Ş' => 's',
+                'ö' or 'Ö' => 'o',
+                'ü' or 'Ü' => 'u',
+                _ => ch
+            });
+        }
+
+        return builder.ToString().ToLowerInvariant().Trim();
     }
 }
