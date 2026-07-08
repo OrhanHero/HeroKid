@@ -114,17 +114,36 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
 
 ## Bekannte Grenzen / nächste Schritte
 
-- **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word)**: aktuell nicht umgesetzt. Der manuelle
-  Editor (siehe "Eltern-Features") deckt den Kernbedarf ("eigene Themen/Aufgaben einpflegen") aber
-  bereits ab. Automatische Extraktion aus hochgeladenen Dateien bräuchte zusätzlich:
-  - Ein LLM (lokal via Ollama oder über eine API) zur Interpretation des Dokumentinhalts und zur
-    Umwandlung in strukturierte `QuizQuestion`-Objekte (Prompt/Optionen/richtige Antwort/Erklärung).
-  - Eine PDF-/Word-Textextraktions-Bibliothek (z.B. `PdfPig`/`DocumentFormat.OpenXml`), da WPF selbst
-    keine Dokumentparser mitbringt.
-  - Einen Review-Schritt im Eltern-Bereich vor dem Speichern (LLM-Vorschläge können falsch sein -
-    ungeprüft übernommene Fragen mit falscher "richtiger Antwort" wären schlimmer als keine Frage).
-  - Eine bewusste Entscheidung, ob/welcher LLM-Anbieter Dateien der Kinder verarbeiten darf
-    (Datenschutz bei extern gehosteten Modellen vs. Ressourcenbedarf bei lokalen Modellen).
+- **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word)**: Architektur vorbereitet (siehe
+  `src/LernTor.ContentGen/TeacherImport/`), aber noch nicht mit einer echten LLM-Anbindung verdrahtet
+  und noch nicht an eine Eltern-Bereich-UI angebunden. Der manuelle Editor (siehe "Eltern-Features")
+  deckt den Kernbedarf ("eigene Themen/Aufgaben einpflegen") in der Zwischenzeit bereits ab.
+  - **Vorbereitete Schnittstellen**: `ITeacherDocumentTextExtractor` (Datei → Fließtext, pro
+    Dateiformat austauschbar), `ITeacherQuestionSuggester` (Fließtext → Liste von
+    `ExtractedQuestionDraft`-Vorschlägen, i.d.R. per LLM), `TeacherDocumentImportService`
+    (orchestriert beides). Bewusst getrennt, damit Textextraktion (reine Bibliotheksarbeit) und
+    LLM-Anbindung unabhängig voneinander implementiert/getestet werden können.
+  - **`ExtractedQuestionDraft`** ist absichtlich kein `QuizQuestion`: alle Felder sind veränderlich
+    und es gibt ein `SourceExcerpt`-Feld (Originaltextstelle), damit Eltern jeden Vorschlag im
+    Eltern-Bereich gegen die Quelle prüfen/korrigieren können, bevor er über
+    `CustomQuestionRepository.AddAsync` dauerhaft gespeichert wird - kein automatisches Übernehmen
+    ohne menschliche Kontrolle, da eine falsch erkannte "richtige Antwort" schlimmer wäre als gar
+    keine automatisch erzeugte Frage.
+  - **`NotConfiguredTeacherQuestionSuggester`** ist der aktuelle Platzhalter für `ITeacherQuestionSuggester`
+    und wirft absichtlich eine `NotSupportedException` mit Erklärung, statt still leere Vorschlagslisten
+    zurückzugeben - eine versehentliche Verdrahtung würde sonst den Eindruck erwecken, das Feature
+    funktioniere bereits, obwohl kein LLM-Anbieter konfiguriert ist.
+  - **Noch zu klären, bevor eine echte Implementierung entsteht**:
+    - Konkreter LLM-Anbieter: lokal via Ollama (Phi-3, Gemma 2, Llama 3.1 - kein Datenabfluss nach
+      außen, braucht aber Ressourcen auf dem Kiosk-PC) vs. externe API (leistungsfähiger, aber
+      Dokumente der Kinder/Lehrer verlassen den PC - Datenschutzabwägung, die die Eltern selbst
+      treffen sollten, z.B. über eine Einstellung im Eltern-Bereich).
+    - `PdfPig` (PDF) und `DocumentFormat.OpenXml` (.docx) als konkrete `ITeacherDocumentTextExtractor`-
+      Implementierungen - beides reine .NET-Bibliotheken ohne Windows-Abhängigkeit, aber noch nicht
+      als NuGet-Referenz eingebunden.
+    - UI im Eltern-Bereich: Datei-Upload-Dialog, Vorschlagsliste mit Inline-Bearbeitung je Entwurf
+      (analog zum bestehenden "Eigene Aufgaben"-Formular), Fach/Klassenstufe-Auswahl vor dem Senden
+      an den Suggester.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
   KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von
