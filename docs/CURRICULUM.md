@@ -152,3 +152,38 @@ Neues Thema hinzufügen (Beispiel Mathematik):
 
 Kein Codeänderung an `ExerciseGeneratorBase`, `QuizComposer` oder den ViewModels nötig – die
 Zufallsauswahl und Quiz-Zusammenstellung funktioniert automatisch mit neuen Themen.
+
+## Abgleich mit dem offiziellen Rahmenlehrplan 1-10 (kompakt)
+
+Die obige Themenauswahl wurde stichprobenartig mit der offiziellen Broschüre "Rahmenlehrplan 1-10
+kompakt" (Senatsverwaltung für Bildung, Berlin, 1. Auflage 2017) abgeglichen. Die Broschüre selbst
+ist urheberrechtlich geschützt, darf laut Impressum aber "für die Zwecke der Schule" verwendet
+werden – sie diente hier nur als interne Orientierung, es wurden keine Textpassagen übernommen.
+Ergebnis des Abgleichs, mit konkreten Ideen für künftige Themenerweiterungen:
+
+- **Mathematik**: Die offizielle Leitidee **"Daten und Zufall"** (Statistik, Wahrscheinlichkeiten,
+  Zählstrategien) fehlt in `MathGenerator.cs` bisher komplett – die anderen vier Leitideen (Zahlen
+  und Operationen, Größen und Messen, Raum und Form, Gleichungen und Funktionen) sind über die
+  bestehenden Themen gut abgedeckt. Naheliegende Ergänzung: ein Themenfeld "Mittelwert/Median" oder
+  "Wahrscheinlichkeit beim Würfeln" für Klasse 6/9.
+- **Chemie**: Der RLP nennt zusätzlich die Themenfelder Salze, Metalle sowie (9/10) organische Chemie
+  (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester) – aktuell in `ChemieGenerator.cs` nicht
+  vertreten. Die vorhandenen Themen (Stoffgemische, Verbrennung, Säuren/Laugen, Atommodell,
+  Reaktionen, Periodensystem) decken den Kern aber ab.
+- **Biologie**: Der RLP führt Biologie als eigenständiges Fach erst ab Doppeljahrgangsstufe 7/8; in
+  5/6 ist es Teil des integrierten Fachs Naturwissenschaften. Unsere Klasse-6-Themen (menschlicher
+  Körper, Fotosynthese, Wirbeltierklassen) sind trotzdem sinnvoll, da die App Bio/Chemie/Physik aus
+  Vereinfachungsgründen als getrennte Fächer ab Klasse 6 führt.
+- **Türkisch**: Der RLP gliedert das Fach in kommunikative Themenfelder (Individuum und Gesellschaft,
+  Gesellschaft und öffentliches Leben, Kultur und historischer Hintergrund, Natur und Umwelt) statt
+  nach Grammatikthemen. `TurkishGenerator.cs` ist bewusst grammatikorientiert (Zeiten, Satzglieder,
+  Rechtschreibung), was für automatisch geprüfbare Übungsfragen praktikabler ist – künftige
+  Themen könnten aber zusätzlich Wortschatz zu Alltag/Kultur/Umwelt abdecken, um näher am RLP zu sein.
+- **Geografie, Ethik, Politische Bildung, Gesellschaftswissenschaften 5/6, Physik, Informatik**: Die
+  vorhandenen Themen bilden jeweils eine plausible Teilmenge der RLP-Themenfelder ab (z.B.
+  Geografie: Klimazonen/Klimawandel und Kontinente/Verstädterung passen zu "Klimawandel und
+  Klimaschutz" bzw. "Vielfalt der Erde"); eine vollständige 1:1-Abdeckung aller RLP-Themenfelder ist
+  weiterhin nicht das Ziel dieser App (siehe Hinweis am Anfang dieser Datei).
+
+Dieser Abgleich ist eine Momentaufnahme, keine abgeschlossene Analyse – die Broschüre deckt alle
+Fächer und Jahrgangsstufen 1-10 ab, während die App sich auf Klasse 6 und 9 konzentriert.
