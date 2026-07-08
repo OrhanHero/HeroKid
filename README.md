@@ -1,8 +1,10 @@
 # LernTor
 
 Eine kindersichere Windows-Kiosk-Lern-App: Nach dem Login startet LernTor im Vollbild und
-sperrt den PC, bis das Kind News gelesen, Übungsaufgaben in vier Fächern bearbeitet und das
-Abschlussquiz mit mindestens 50% bestanden hat. Erst dann wird der PC freigegeben.
+sperrt den PC, bis das Kind News gelesen, Übungsaufgaben in den freigeschalteten Fächern
+bearbeitet und das Abschlussquiz mit mindestens 50% bestanden hat. Erst dann wird der PC
+freigegeben. Eltern legen im Eltern-Bereich fest, welche der 12 verfügbaren Fächer für den
+Tag/das Profil überhaupt aktiv sind (siehe "Bereiche deaktivieren").
 
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
 am Berliner Rahmenlehrplan, Klasse 6 und 9 (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
@@ -18,15 +20,14 @@ Start werden automatisch zwei Beispielprofile angelegt.
 ## Ablauf für das Kind
 
 1. **Profil wählen**
-2. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei,
-   je 1-2 Verständnisfragen pro Artikel.
-2. **Mathematik** – automatisch generierte Aufgaben (Klasse 6: Bruchrechnung, Prozentrechnung, Flächen,
-   Maßstab; Klasse 9: lineare/quadratische Gleichungen, Pythagoras, Zinsrechnung, Binomische Formeln).
-3. **Deutsch** – Grammatik, Zeitformen, Rechtschreibung, Satzgefüge (Klasse 6/9).
-4. **Türkisch** – Zeitformen, Wortschatz, Satzglieder, Fiilimsi (Klasse 6/9).
-5. **Naturwissenschaften** – Physik/Chemie/Biologie kombiniert.
-6. **Abschlussquiz** – 20-25 gemischte Fragen, ≥50% richtig → PC wird freigeschaltet. Bei Nichtbestehen
-   werden gezielt mehr Fragen aus den schwachen Fächern gestellt.
+2. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei
+   (Berlin-Lokalnachrichten werden garantiert einbezogen), je 1-2 Verständnisfragen pro Artikel.
+3. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
+   Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
+   Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.
+4. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl passt sich automatisch an, wie
+   viele Fächer aktiv sind), ≥50% richtig → PC wird freigeschaltet. Bei Nichtbestehen werden gezielt mehr
+   Fragen aus den schwachen Fächern gestellt.
 
 Fortschritt wird laufend in einer lokalen SQLite-Datenbank gespeichert (`%LOCALAPPDATA%\LernTor\lerntor.db`),
 ein Absturz oder Neustart verliert also keinen Fortschritt.

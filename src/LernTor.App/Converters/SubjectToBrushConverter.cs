@@ -15,7 +15,7 @@ public sealed class SubjectToBrushConverter : IValueConverter
             Subject.Mathematik => "MathBrush",
             Subject.Deutsch => "GermanBrush",
             Subject.Tuerkisch => "TurkishBrush",
-            Subject.Naturwissenschaften => "ScienceBrush",
+            Subject.Biologie or Subject.Chemie or Subject.Physik => "ScienceBrush",
             Subject.News => "NewsBrush",
             _ => "PrimaryBrush"
         };

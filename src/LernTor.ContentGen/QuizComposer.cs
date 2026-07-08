@@ -5,7 +5,7 @@ using LernTor.Core.Models;
 namespace LernTor.ContentGen;
 
 /// <summary>
-/// Stellt das gemischte Abschlussquiz aus allen Fachbereichen zusammen (20-25 Fragen)
+/// Stellt das gemischte Abschlussquiz aus allen aktiven Fachbereichen zusammen (Ziel: 20-25 Fragen)
 /// und kann gezielt schwache Bereiche für eine Wiederholung nachliefern.
 /// </summary>
 public sealed class QuizComposer
@@ -13,7 +13,12 @@ public sealed class QuizComposer
     private readonly IReadOnlyList<IExerciseGenerator> _generators;
 
     public QuizComposer()
-        : this(new IExerciseGenerator[] { new MathGenerator(), new GermanGenerator(), new TurkishGenerator(), new ScienceGenerator() })
+        : this(new IExerciseGenerator[]
+        {
+            new MathGenerator(), new GermanGenerator(), new TurkishGenerator(), new EnglischGenerator(),
+            new BiologieGenerator(), new ChemieGenerator(), new PhysikGenerator(),
+            new GewiGenerator(), new PolitikGenerator(), new GeoGenerator(), new EthikGenerator(), new ItgGenerator()
+        })
     {
     }
 
@@ -23,25 +28,38 @@ public sealed class QuizComposer
     }
 
     /// <summary>
-    /// Baut das Abschlussquiz: standardmäßig je 4-5 Fragen aus Mathe/Deutsch/Türkisch/NaWi
-    /// plus alle mitgegebenen News-Verständnisfragen, insgesamt 20-25 Fragen.
+    /// Baut das Abschlussquiz aus allen NICHT deaktivierten Fachbereichen plus den mitgegebenen
+    /// News-Verständnisfragen. Die Fragenzahl pro Fach wird dynamisch so verteilt, dass insgesamt
+    /// ungefähr <paramref name="targetTotalQuestions"/> Fragen herauskommen - unabhängig davon, ob
+    /// gerade 3 oder 12 Fächer aktiv sind (bei mehr aktiven Fächern also weniger Fragen je Fach).
     /// </summary>
     public IReadOnlyList<QuizQuestion> ComposeFinalQuiz(
         GradeLevel grade,
         Random random,
         IReadOnlyList<QuizQuestion>? newsQuestions = null,
-        int perSubjectCount = 5)
+        IReadOnlySet<Subject>? disabledSubjects = null,
+        int targetTotalQuestions = 22)
     {
+        disabledSubjects ??= new HashSet<Subject>();
+        var activeGenerators = _generators.Where(g => !disabledSubjects.Contains(g.Subject)).ToList();
+
         var questions = new List<QuizQuestion>();
 
-        if (newsQuestions is not null)
-        {
-            questions.AddRange(newsQuestions);
-        }
+        // News höchstens etwa ein Drittel des Quiz - sonst würde ein Tag mit vielen Artikeln
+        // das Quiz allein schon sprengen.
+        var newsPool = (newsQuestions ?? Array.Empty<QuizQuestion>()).OrderBy(_ => random.Next()).ToList();
+        var maxNewsQuestions = Math.Min(newsPool.Count, Math.Max(1, targetTotalQuestions / 3));
+        questions.AddRange(newsPool.Take(maxNewsQuestions));
 
-        foreach (var generator in _generators)
+        if (activeGenerators.Count > 0)
         {
-            questions.AddRange(generator.Generate(grade, perSubjectCount, random));
+            var remainingBudget = Math.Max(targetTotalQuestions - questions.Count, activeGenerators.Count);
+            var perSubjectCount = Math.Max(1, remainingBudget / activeGenerators.Count);
+
+            foreach (var generator in activeGenerators)
+            {
+                questions.AddRange(generator.Generate(grade, perSubjectCount, random));
+            }
         }
 
         // Zusätzliche Absicherung: falls trotz der Deduplizierung in den Generatoren/News

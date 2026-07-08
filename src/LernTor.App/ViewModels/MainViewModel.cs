@@ -118,27 +118,15 @@ public sealed partial class MainViewModel : ObservableObject
         {
             LearningStage.Willkommen => new WelcomeViewModel(CurrentProfile!.Name, OnWelcomeContinue, SwitchLanguage),
             LearningStage.News => await BuildNewsViewModelAsync(),
-            LearningStage.Mathematik => BuildExerciseViewModel(Subject.Mathematik),
-            LearningStage.Deutsch => BuildExerciseViewModel(Subject.Deutsch),
-            LearningStage.Tuerkisch => BuildExerciseViewModel(Subject.Tuerkisch),
-            LearningStage.Naturwissenschaften => BuildExerciseViewModel(Subject.Naturwissenschaften),
             LearningStage.Abschlussquiz => BuildFinalQuizViewModel(),
             LearningStage.Freigeschaltet => BuildResultViewModel(passed: true, result: null),
+            _ when LearningStageSubjects.TryGetSubject(stage, out var subjectForStage) => BuildExerciseViewModel(subjectForStage),
             _ => CurrentViewModel
         };
     }
 
-    private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject)
-    {
-        switch (stage)
-        {
-            case LearningStage.Mathematik: subject = Subject.Mathematik; return true;
-            case LearningStage.Deutsch: subject = Subject.Deutsch; return true;
-            case LearningStage.Tuerkisch: subject = Subject.Tuerkisch; return true;
-            case LearningStage.Naturwissenschaften: subject = Subject.Naturwissenschaften; return true;
-            default: subject = default; return false;
-        }
-    }
+    private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
+        LearningStageSubjects.TryGetSubject(stage, out subject);
 
     private void SwitchLanguage(AppLanguage language)
     {
@@ -193,18 +181,19 @@ public sealed partial class MainViewModel : ObservableObject
     private FinalQuizViewModel BuildFinalQuizViewModel()
     {
         var grade = CurrentProfile!.GradeLevel;
+        var disabledSubjects = Settings.DisabledSubjects;
         var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
         IReadOnlyList<QuizQuestion> questions;
 
         if (relevantSubjects is not null)
         {
             questions = _quizComposer.ComposeRetryExercises(relevantSubjects, grade, _random, countPerSubject: 6)
-                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, newsQuestions: null, perSubjectCount: 2))
+                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, null, disabledSubjects, targetTotalQuestions: 10))
                 .ToList();
         }
         else
         {
-            questions = _quizComposer.ComposeFinalQuiz(grade, _random, _collectedNewsQuestions, perSubjectCount: 5);
+            questions = _quizComposer.ComposeFinalQuiz(grade, _random, _collectedNewsQuestions, disabledSubjects, targetTotalQuestions: 22);
         }
 
         return new FinalQuizViewModel(questions, OnFinalQuizCompleted);

@@ -16,7 +16,15 @@ public sealed class ProgressGateService
         LearningStage.Mathematik,
         LearningStage.Deutsch,
         LearningStage.Tuerkisch,
-        LearningStage.Naturwissenschaften,
+        LearningStage.Englisch,
+        LearningStage.Biologie,
+        LearningStage.Chemie,
+        LearningStage.Physik,
+        LearningStage.Gewi,
+        LearningStage.Politik,
+        LearningStage.Geo,
+        LearningStage.Ethik,
+        LearningStage.Itg,
         LearningStage.Abschlussquiz,
         LearningStage.Freigeschaltet
     };
@@ -57,21 +65,22 @@ public sealed class ProgressGateService
 
     private static bool IsStageSatisfied(StudentProgress progress, LearningStage stage, HashSet<Subject> disabledSubjects)
     {
-        return stage switch
+        if (stage == LearningStage.Willkommen || stage == LearningStage.Abschlussquiz)
         {
-            LearningStage.Willkommen => true,
-            LearningStage.News => progress.CompletedNewsArticleIds.Count > 0,
-            LearningStage.Mathematik => disabledSubjects.Contains(Subject.Mathematik)
-                || progress.CompletedExerciseSubjects.Contains(Subject.Mathematik),
-            LearningStage.Deutsch => disabledSubjects.Contains(Subject.Deutsch)
-                || progress.CompletedExerciseSubjects.Contains(Subject.Deutsch),
-            LearningStage.Tuerkisch => disabledSubjects.Contains(Subject.Tuerkisch)
-                || progress.CompletedExerciseSubjects.Contains(Subject.Tuerkisch),
-            LearningStage.Naturwissenschaften => disabledSubjects.Contains(Subject.Naturwissenschaften)
-                || progress.CompletedExerciseSubjects.Contains(Subject.Naturwissenschaften),
-            LearningStage.Abschlussquiz => true,
-            _ => true
-        };
+            return true;
+        }
+
+        if (stage == LearningStage.News)
+        {
+            return progress.CompletedNewsArticleIds.Count > 0;
+        }
+
+        if (LearningStageSubjects.TryGetSubject(stage, out var subject))
+        {
+            return disabledSubjects.Contains(subject) || progress.CompletedExerciseSubjects.Contains(subject);
+        }
+
+        return true;
     }
 
     /// <summary>Verarbeitet ein Quizergebnis: entweder Freischaltung, oder gezielte Wiederholung der Schwächen.</summary>

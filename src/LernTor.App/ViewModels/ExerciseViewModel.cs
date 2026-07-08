@@ -6,8 +6,9 @@ using LernTor.Core.Models;
 namespace LernTor.App.ViewModels;
 
 /// <summary>
-/// Generisches Übungs-ViewModel für Mathematik/Deutsch/Türkisch/Naturwissenschaften:
-/// zeigt eine Frage nach der anderen mit Erklärung, bis der Fachbereich abgeschlossen ist.
+/// Generisches Übungs-ViewModel für jedes Fach (Mathematik, Deutsch, Türkisch, Englisch,
+/// Biologie, Chemie, Physik, Gewi, Politik, Geo, Ethik, ITG): zeigt eine Frage nach der
+/// anderen mit Erklärung, bis der Fachbereich abgeschlossen ist.
 /// </summary>
 public sealed partial class ExerciseViewModel : ObservableObject
 {

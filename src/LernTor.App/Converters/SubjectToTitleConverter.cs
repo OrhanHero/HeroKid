@@ -14,7 +14,15 @@ public sealed class SubjectToTitleConverter : IValueConverter
             Subject.Mathematik => "Stage_Mathematik",
             Subject.Deutsch => "Stage_Deutsch",
             Subject.Tuerkisch => "Stage_Tuerkisch",
-            Subject.Naturwissenschaften => "Stage_Naturwissenschaften",
+            Subject.Englisch => "Stage_Englisch",
+            Subject.Biologie => "Stage_Biologie",
+            Subject.Chemie => "Stage_Chemie",
+            Subject.Physik => "Stage_Physik",
+            Subject.Gewi => "Stage_Gewi",
+            Subject.Politik => "Stage_Politik",
+            Subject.Geo => "Stage_Geo",
+            Subject.Ethik => "Stage_Ethik",
+            Subject.Itg => "Stage_Itg",
             Subject.News => "Stage_News",
             _ => string.Empty
         };

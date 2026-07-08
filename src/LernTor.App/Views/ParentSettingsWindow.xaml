@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:LernTor.App.Localization"
         Title="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_LoginTitle]}"
-        Width="640" Height="720"
+        Width="760" Height="800"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}">
     <Grid Margin="28">
@@ -37,10 +37,19 @@
             <StackPanel>
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DisabledSubjects]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,8" />
-                <CheckBox Content="Mathematik" IsChecked="{Binding DisableMathematik}" Margin="0,4" FontSize="16" />
-                <CheckBox Content="Deutsch" IsChecked="{Binding DisableDeutsch}" Margin="0,4" FontSize="16" />
-                <CheckBox Content="Türkisch" IsChecked="{Binding DisableTuerkisch}" Margin="0,4" FontSize="16" />
-                <CheckBox Content="Naturwissenschaften" IsChecked="{Binding DisableNaturwissenschaften}" Margin="0,4" FontSize="16" />
+                <ItemsControl ItemsSource="{Binding SubjectToggles}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding DisplayName}" IsChecked="{Binding IsDisabled}"
+                                      Margin="0,4,24,4" FontSize="16" MinWidth="200" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_TimeLimit]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />

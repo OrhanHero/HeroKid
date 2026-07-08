@@ -48,11 +48,26 @@ public sealed class RssNewsService
             .Select(group => group.First())
             .ToList();
 
-        var ranked = deduplicated
+        // Berlin-Lokalnachrichten sind ausdrücklich sehr wichtig und sollen nicht zufällig
+        // untergehen, nur weil sie im allgemeinen Ranking knapp nicht vorne landen - deshalb wird
+        // zuerst ein garantiertes Kontingent an aktuellen Berlin-Artikeln reserviert, bevor der
+        // Rest der Plätze nach der üblichen Prioritäts-Rangliste aufgefüllt wird.
+        var minBerlinSlots = Math.Max(2, targetCount / 3);
+        var berlinArticles = deduplicated
+            .Where(x => x.Source.RegionFocus == NewsRegionFocus.Berlin)
+            .OrderByDescending(x => x.Item.PublishDate)
+            .Take(minBerlinSlots)
+            .ToList();
+
+        var remainingSlots = Math.Max(0, targetCount - berlinArticles.Count);
+        var rankedRemaining = deduplicated
+            .Where(x => x.Source.RegionFocus != NewsRegionFocus.Berlin)
             .OrderByDescending(x => CountPriorityMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
             .ThenByDescending(x => x.Item.PublishDate)
-            .Take(targetCount)
+            .Take(remainingSlots)
             .ToList();
+
+        var ranked = berlinArticles.Concat(rankedRemaining).ToList();
 
         var articles = new List<NewsArticle>();
         foreach (var (item, source) in ranked)

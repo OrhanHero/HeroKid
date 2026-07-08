@@ -28,7 +28,7 @@ public sealed class SettingsRepository
             AdminPasswordHash = entity.AdminPasswordHash,
             AdminPasswordSalt = entity.AdminPasswordSalt,
             DefaultLanguage = Enum.Parse<AppLanguage>(entity.DefaultLanguage),
-            DisabledSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.DisabledSubjectsJson) ?? new(),
+            DisabledSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.DisabledSubjectsJson, JsonOptions.Default) ?? new(),
             DailyTimeLimitMinutes = entity.DailyTimeLimitMinutes,
             HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled
         };
@@ -46,7 +46,7 @@ public sealed class SettingsRepository
         entity.AdminPasswordHash = settings.AdminPasswordHash;
         entity.AdminPasswordSalt = settings.AdminPasswordSalt;
         entity.DefaultLanguage = settings.DefaultLanguage.ToString();
-        entity.DisabledSubjectsJson = JsonSerializer.Serialize(settings.DisabledSubjects);
+        entity.DisabledSubjectsJson = JsonSerializer.Serialize(settings.DisabledSubjects, JsonOptions.Default);
         entity.DailyTimeLimitMinutes = settings.DailyTimeLimitMinutes;
         entity.HardLockShellReplacementEnabled = settings.HardLockShellReplacementEnabled;
 

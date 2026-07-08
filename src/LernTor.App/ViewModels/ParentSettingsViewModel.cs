@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.App.Localization;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Data.Entities;
@@ -18,6 +19,23 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     private AppSettings _settings = new();
 
+    /// <summary>Alle deaktivierbaren Fachbereiche (News zählt bewusst nicht dazu, ist Pflicht).</summary>
+    private static readonly (Subject Subject, string TranslationKey)[] ToggleableSubjects =
+    {
+        (Subject.Mathematik, "Stage_Mathematik"),
+        (Subject.Deutsch, "Stage_Deutsch"),
+        (Subject.Tuerkisch, "Stage_Tuerkisch"),
+        (Subject.Englisch, "Stage_Englisch"),
+        (Subject.Biologie, "Stage_Biologie"),
+        (Subject.Chemie, "Stage_Chemie"),
+        (Subject.Physik, "Stage_Physik"),
+        (Subject.Gewi, "Stage_Gewi"),
+        (Subject.Politik, "Stage_Politik"),
+        (Subject.Geo, "Stage_Geo"),
+        (Subject.Ethik, "Stage_Ethik"),
+        (Subject.Itg, "Stage_Itg"),
+    };
+
     /// <summary>Wird vom Aufrufer gesetzt, um beim Öffnen direkt das gerade aktive Kind-Profil vorauszuwählen.</summary>
     public string? PreselectProfileId { get; set; }
 
@@ -31,23 +49,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private string errorMessage = string.Empty;
 
     [ObservableProperty]
-    private bool disableMathematik;
-
-    [ObservableProperty]
-    private bool disableDeutsch;
-
-    [ObservableProperty]
-    private bool disableTuerkisch;
-
-    [ObservableProperty]
-    private bool disableNaturwissenschaften;
-
-    [ObservableProperty]
     private int timeLimitMinutes;
 
     [ObservableProperty]
     private StudentProfile? selectedProfile;
 
+    public ObservableCollection<SubjectToggle> SubjectToggles { get; } = new();
     public ObservableCollection<StudentProfile> Profiles { get; } = new();
     public ObservableCollection<ActivityLogEntity> RecentActivity { get; } = new();
     public ObservableCollection<QuizAttemptEntity> QuizHistory { get; } = new();
@@ -108,10 +115,15 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         IsAuthenticated = true;
 
-        DisableMathematik = _settings.DisabledSubjects.Contains(Subject.Mathematik);
-        DisableDeutsch = _settings.DisabledSubjects.Contains(Subject.Deutsch);
-        DisableTuerkisch = _settings.DisabledSubjects.Contains(Subject.Tuerkisch);
-        DisableNaturwissenschaften = _settings.DisabledSubjects.Contains(Subject.Naturwissenschaften);
+        SubjectToggles.Clear();
+        foreach (var (subject, translationKey) in ToggleableSubjects)
+        {
+            SubjectToggles.Add(new SubjectToggle(
+                subject,
+                LocalizationService.Instance[translationKey],
+                _settings.DisabledSubjects.Contains(subject)));
+        }
+
         TimeLimitMinutes = _settings.DailyTimeLimitMinutes ?? 0;
 
         Profiles.Clear();
@@ -153,10 +165,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private async Task SaveAsync()
     {
         _settings.DisabledSubjects.Clear();
-        if (DisableMathematik) _settings.DisabledSubjects.Add(Subject.Mathematik);
-        if (DisableDeutsch) _settings.DisabledSubjects.Add(Subject.Deutsch);
-        if (DisableTuerkisch) _settings.DisabledSubjects.Add(Subject.Tuerkisch);
-        if (DisableNaturwissenschaften) _settings.DisabledSubjects.Add(Subject.Naturwissenschaften);
+        foreach (var toggle in SubjectToggles)
+        {
+            if (toggle.IsDisabled)
+            {
+                _settings.DisabledSubjects.Add(toggle.Subject);
+            }
+        }
 
         _settings.DailyTimeLimitMinutes = TimeLimitMinutes > 0 ? TimeLimitMinutes : null;
 

@@ -37,26 +37,100 @@ ergänzt werden können.
 | Eş Anlamlı Kelimeler (Synonyme) | Yazım Kuralları (Rechtschreibung) |
 | Zıt Anlamlı Kelimeler (Antonyme) | Fiilimsi (Partizip/Verbalnomen) |
 
-## Naturwissenschaften (`ScienceGenerator.cs`, kombiniert Physik/Chemie/Biologie)
+## Physik (`PhysikGenerator.cs`)
 
 | Klasse 6 | Klasse 9 |
 |---|---|
-| Aggregatzustände (Physik) | Atommodell (Chemie) |
-| Einfacher Stromkreis (Physik) | Ohmsches Gesetz (Physik) |
-| Der menschliche Körper (Biologie) | Zellbiologie |
-| Fotosynthese (Biologie) | Chemische Reaktionen |
-| Magnetismus (Physik) | Vererbung/Genetik |
+| Aggregatzustände | Ohmsches Gesetz |
+| Einfacher Stromkreis | Energieerhaltung |
+| Magnetismus | Newtonsche Gesetze |
+
+## Chemie (`ChemieGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Stoffgemische trennen | Atommodell |
+| Verbrennung | Chemische Reaktionen |
+| Säuren und Laugen | Periodensystem |
+
+## Biologie (`BiologieGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Der menschliche Körper | Zellbiologie |
+| Fotosynthese | Vererbung/Genetik |
+| Wirbeltierklassen | Ökosysteme |
+
+## Englisch (`EnglischGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Simple Present vs. Present Progressive | Simple Past vs. Present Perfect |
+| Unregelmäßige Pluralformen | Conditional Sentences (Type 1) |
+| Question Words | Passive Voice |
+
+## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Geschichtliche Epochen | Grundgesetz |
+| Kartenkunde und Himmelsrichtungen | Wirtschaftskreislauf |
+| Kinderrechte | Medien und Gesellschaft |
+
+## Politik (`PolitikGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Was ist Demokratie? | Gewaltenteilung |
+| Berlin und seine Bezirke | Bundestag und Bundesrat |
+| Wahlrecht | Wahlsystem |
+
+## Geografie (`GeoGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Kontinente und Ozeane | Plattentektonik |
+| Klimazonen | Klimawandel |
+| Deutschland: Bundesländer | Verstädterung |
+
+## Ethik (`EthikGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Werte und Regeln | Verantwortung und Pflicht |
+| Freundschaft und Konflikte | Meinungsfreiheit und Grenzen |
+| Weltreligionen | Digitale Ethik |
+
+## Medienbildung / ITG (`ItgGenerator.cs`)
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Datenschutz-Grundlagen | Cybermobbing |
+| Sichere Passwörter | Fake News erkennen |
+| Urheberrecht im Internet | Algorithmen-Grundbegriff |
 
 ## News (`LernTor.News`)
 
 Kuratierte, kostenlose RSS-Quellen (siehe `NewsFeedSource.cs`):
 
-- **Deutschland/Berlin**: tagesschau.de, rbb24 Berlin
+- **Deutschland/Berlin**: tagesschau.de, rbb24 Berlin, Tagesspiegel Berlin
 - **Türkei/Istanbul/Samsun/Ünye**: Hürriyet, Sabah
 
 Artikel werden nach Schlüsselwörtern priorisiert (Berlin, Deutschland, Istanbul, Samsun, Ünye,
-Türkei) und auf die 5-8 relevantesten/aktuellsten reduziert. Pro Artikel werden automatisch zwei
-Verständnisfragen erzeugt (Herkunfts-/Regionsfrage + Schlüsselwort-Frage aus der Überschrift).
+Türkei) und auf die 5-8 relevantesten/aktuellsten reduziert. Berlin-Lokalnachrichten sind explizit
+sehr wichtig: mindestens 2 (bzw. ein Drittel von `targetCount`) aktuelle Berlin-Artikel werden
+garantiert aufgenommen, bevor die restlichen Plätze nach allgemeiner Priorität aufgefüllt werden.
+Artikel, die inhaltlich (Titel) doppelt vorkommen - z.B. weil zwei Feeds dieselbe Meldung führen -
+werden vorher herausgefiltert. Pro Artikel werden automatisch zwei Verständnisfragen erzeugt
+(Herkunfts-/Regionsfrage + Schlüsselwort-Frage aus der Überschrift).
+
+## Abschlussquiz-Zusammenstellung bei vielen Fächern
+
+`QuizComposer.ComposeFinalQuiz` verteilt die Fragenzahl dynamisch auf alle nicht deaktivierten
+Fächer, damit das Quiz bei 12 möglichen Fächern nicht auf 60+ Fragen anwächst: Sind z.B. nur 4
+Fächer aktiv, bekommt jedes davon mehr Fragen; sind alle 12 aktiv, entsprechend weniger pro Fach.
+Eltern steuern über "Bereiche deaktivieren" im Eltern-Bereich, welche Fächer täglich überhaupt
+Teil des Ablaufs und des Abschlussquiz sind.
 
 ## Erweiterung um weitere Themen
 

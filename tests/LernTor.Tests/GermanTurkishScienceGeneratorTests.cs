@@ -4,13 +4,22 @@ using Xunit;
 
 namespace LernTor.Tests;
 
+/// <summary>Generische Tests, die für jeden nicht-mathematischen Aufgabengenerator gelten.</summary>
 public class GermanTurkishScienceGeneratorTests
 {
     public static IEnumerable<object[]> AllGenerators()
     {
         yield return new object[] { new GermanGenerator() };
         yield return new object[] { new TurkishGenerator() };
-        yield return new object[] { new ScienceGenerator() };
+        yield return new object[] { new EnglischGenerator() };
+        yield return new object[] { new BiologieGenerator() };
+        yield return new object[] { new ChemieGenerator() };
+        yield return new object[] { new PhysikGenerator() };
+        yield return new object[] { new GewiGenerator() };
+        yield return new object[] { new PolitikGenerator() };
+        yield return new object[] { new GeoGenerator() };
+        yield return new object[] { new EthikGenerator() };
+        yield return new object[] { new ItgGenerator() };
     }
 
     [Theory]

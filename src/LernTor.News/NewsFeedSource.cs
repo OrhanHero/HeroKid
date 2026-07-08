@@ -15,6 +15,7 @@ public static class CuratedNewsFeeds
     {
         new NewsFeedSource("tagesschau.de", "https://www.tagesschau.de/xml/rss2/", NewsRegionFocus.Deutschland, IsGerman: true),
         new NewsFeedSource("rbb24 Berlin", "https://www.rbb24.de/aktuell/index.xml", NewsRegionFocus.Berlin, IsGerman: true),
+        new NewsFeedSource("Tagesspiegel Berlin", "https://www.tagesspiegel.de/contentexport/feed/home", NewsRegionFocus.Berlin, IsGerman: true),
         new NewsFeedSource("Hürriyet", "https://www.hurriyet.com.tr/rss/anasayfa", NewsRegionFocus.Tuerkei, IsGerman: false),
         new NewsFeedSource("Sabah", "https://www.sabah.com.tr/rss/anasayfa.xml", NewsRegionFocus.Tuerkei, IsGerman: false),
     };

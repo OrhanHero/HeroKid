@@ -6,5 +6,13 @@ public enum Subject
     Mathematik,
     Deutsch,
     Tuerkisch,
-    Naturwissenschaften
+    Englisch,
+    Biologie,
+    Chemie,
+    Physik,
+    Gewi,
+    Politik,
+    Geo,
+    Ethik,
+    Itg
 }
