@@ -176,10 +176,18 @@ public sealed partial class MainViewModel : ObservableObject
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.News));
     }
 
+    /// <summary>
+    /// Fragen, die dem aktuellen Profil innerhalb dieses Zeitraums schon gestellt wurden, werden bei
+    /// der Auswahl neuer Übungs-/Quizfragen bevorzugt vermieden (siehe ExerciseGeneratorBase.Generate) -
+    /// so wiederholen sich die kleinen, fest hinterlegten Themen-Pools nicht ständig identisch.
+    /// </summary>
+    private static readonly TimeSpan RecentPromptsWindow = TimeSpan.FromDays(21);
+
     private async Task<ExerciseViewModel> BuildExerciseViewModelAsync(Subject subject)
     {
         var grade = CurrentProfile!.GradeLevel;
-        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random);
+        var recentlySeen = await _activityLogRepo.GetRecentPromptsAsync(CurrentProfile!.Id, RecentPromptsWindow);
+        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, recentlySeen);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
         var questions = generated.Concat(custom).OrderBy(_ => _random.Next()).ToList();
         return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject));
@@ -202,16 +210,17 @@ public sealed partial class MainViewModel : ObservableObject
         var grade = CurrentProfile!.GradeLevel;
         var disabledSubjects = Settings.DisabledSubjects;
         var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
+        var recentlySeen = await _activityLogRepo.GetRecentPromptsAsync(CurrentProfile!.Id, RecentPromptsWindow);
         IEnumerable<QuizQuestion> questions;
 
         if (relevantSubjects is not null)
         {
-            questions = _quizComposer.ComposeRetryExercises(relevantSubjects, grade, _random, countPerSubject: 6)
-                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, null, disabledSubjects, targetTotalQuestions: 10));
+            questions = _quizComposer.ComposeRetryExercises(relevantSubjects, grade, _random, countPerSubject: 6, recentlySeenPrompts: recentlySeen)
+                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, null, disabledSubjects, targetTotalQuestions: 10, recentlySeenPrompts: recentlySeen));
         }
         else
         {
-            questions = _quizComposer.ComposeFinalQuiz(grade, _random, _collectedNewsQuestions, disabledSubjects, targetTotalQuestions: 22);
+            questions = _quizComposer.ComposeFinalQuiz(grade, _random, _collectedNewsQuestions, disabledSubjects, targetTotalQuestions: 22, recentlySeenPrompts: recentlySeen);
         }
 
         // Eigene (von den Eltern eingetragene) Aufgaben ergänzen additiv - unabhängig vom

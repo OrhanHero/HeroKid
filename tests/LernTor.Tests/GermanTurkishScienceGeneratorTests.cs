@@ -65,4 +65,23 @@ public class GermanTurkishScienceGeneratorTests
             Assert.Equal(questions.Count, distinctPrompts);
         }
     }
+
+    [Fact]
+    public void Generate_PrefersPromptsNotInRecentlySeenSet()
+    {
+        // Ermittelt zunächst das gesamte Prompt-Universum von GewiGenerator/Klasse6 (fest
+        // hinterlegter Themen-Pool), markiert dann alle bis auf einen Prompt als "kürzlich
+        // gestellt" und prüft, dass der eine übrig gebliebene, frische Prompt bevorzugt gezogen
+        // wird statt einer der bereits gesehenen Wiederholungen.
+        var generator = new GewiGenerator();
+        var allPrompts = generator.Generate(GradeLevel.Klasse6, 30, new Random(1)).Select(q => q.Prompt).Distinct().ToList();
+        Assert.True(allPrompts.Count > 1, "Testaufbau erwartet mehrere unterschiedliche Prompts im Pool.");
+
+        var freshPrompt = allPrompts[0];
+        var recentlySeen = allPrompts.Skip(1).ToHashSet();
+
+        var result = generator.Generate(GradeLevel.Klasse6, 3, new Random(2), recentlySeen);
+
+        Assert.Contains(freshPrompt, result.Select(q => q.Prompt));
+    }
 }

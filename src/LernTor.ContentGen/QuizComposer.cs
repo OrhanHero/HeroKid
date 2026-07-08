@@ -38,7 +38,8 @@ public sealed class QuizComposer
         Random random,
         IReadOnlyList<QuizQuestion>? newsQuestions = null,
         IReadOnlySet<Subject>? disabledSubjects = null,
-        int targetTotalQuestions = 22)
+        int targetTotalQuestions = 22,
+        IReadOnlySet<string>? recentlySeenPrompts = null)
     {
         disabledSubjects ??= new HashSet<Subject>();
         var activeGenerators = _generators.Where(g => !disabledSubjects.Contains(g.Subject)).ToList();
@@ -58,7 +59,7 @@ public sealed class QuizComposer
 
             foreach (var generator in activeGenerators)
             {
-                questions.AddRange(generator.Generate(grade, perSubjectCount, random));
+                questions.AddRange(generator.Generate(grade, perSubjectCount, random, recentlySeenPrompts));
             }
         }
 
@@ -77,7 +78,8 @@ public sealed class QuizComposer
         IReadOnlyList<Subject> weakSubjects,
         GradeLevel grade,
         Random random,
-        int countPerSubject = 5)
+        int countPerSubject = 5,
+        IReadOnlySet<string>? recentlySeenPrompts = null)
     {
         var questions = new List<QuizQuestion>();
 
@@ -86,16 +88,17 @@ public sealed class QuizComposer
             var generator = _generators.FirstOrDefault(g => g.Subject == subject);
             if (generator is not null)
             {
-                questions.AddRange(generator.Generate(grade, countPerSubject, random));
+                questions.AddRange(generator.Generate(grade, countPerSubject, random, recentlySeenPrompts));
             }
         }
 
         return questions;
     }
 
-    public IReadOnlyList<QuizQuestion> GenerateExercises(Subject subject, GradeLevel grade, int count, Random random)
+    public IReadOnlyList<QuizQuestion> GenerateExercises(
+        Subject subject, GradeLevel grade, int count, Random random, IReadOnlySet<string>? recentlySeenPrompts = null)
     {
         var generator = _generators.FirstOrDefault(g => g.Subject == subject);
-        return generator?.Generate(grade, count, random) ?? Array.Empty<QuizQuestion>();
+        return generator?.Generate(grade, count, random, recentlySeenPrompts) ?? Array.Empty<QuizQuestion>();
     }
 }

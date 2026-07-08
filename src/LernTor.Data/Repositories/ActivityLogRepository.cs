@@ -65,4 +65,21 @@ public sealed class ActivityLogRepository
 
         return entities.OrderByDescending(q => q.Timestamp).Take(take).ToList();
     }
+
+    /// <summary>
+    /// Fragetexte, die diesem Profil innerhalb von <paramref name="window"/> bereits gestellt wurden.
+    /// Wird genutzt, um bei der Aufgabenauswahl frische (in letzter Zeit nicht gesehene) Fragen zu
+    /// bevorzugen, statt bei den kleinen, fest hinterlegten Themen-Pools ständig dieselben Beispiele
+    /// zu wiederholen.
+    /// </summary>
+    public async Task<IReadOnlySet<string>> GetRecentPromptsAsync(string profileId, TimeSpan window, CancellationToken cancellationToken = default)
+    {
+        var cutoff = DateTimeOffset.Now - window;
+
+        // Erst laden, dann filtern (in-memory): SQLite/EF Core kann Vergleiche auf
+        // DateTimeOffset-Spalten nicht zuverlässig serverseitig übersetzen.
+        var entities = await _db.ActivityLog.Where(a => a.ProfileId == profileId).ToListAsync(cancellationToken);
+
+        return entities.Where(a => a.Timestamp >= cutoff).Select(a => a.Prompt).ToHashSet();
+    }
 }

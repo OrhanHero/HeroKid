@@ -13,7 +13,7 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
     /// <summary>Liste der pro Klassenstufe verfügbaren Themen-Generatoren.</summary>
     protected abstract IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; }
 
-    public IReadOnlyList<QuizQuestion> Generate(GradeLevel grade, int count, Random random)
+    public IReadOnlyList<QuizQuestion> Generate(GradeLevel grade, int count, Random random, IReadOnlySet<string>? recentlySeenPrompts = null)
     {
         if (!TopicsByGrade.TryGetValue(grade, out var topics) || topics.Count == 0)
         {
@@ -21,7 +21,13 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
         }
 
         var questions = new List<QuizQuestion>(count);
-        var seenPrompts = new HashSet<string>();
+
+        // Vorbelegt mit kürzlich gestellten Fragen (aus dem Aktivitätsprotokoll, siehe
+        // ActivityLogRepository.GetRecentPromptsAsync) - dadurch bevorzugt die Auswahl unten
+        // frische Fragen, bevor überhaupt erst auf Wiederholungen zurückgegriffen wird.
+        var seenPrompts = recentlySeenPrompts is null
+            ? new HashSet<string>()
+            : new HashSet<string>(recentlySeenPrompts);
 
         // Themen-Pools sind teils klein (z.B. nur 3-5 feste Beispiele je Thema), daher würde
         // reines Ziehen mit Zurücklegen schnell denselben Fragetext doppelt liefern. Bei einer
