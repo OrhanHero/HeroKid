@@ -110,6 +110,7 @@ public partial class App : Application
                 services.AddSingleton<ActivityLogRepository>();
                 services.AddSingleton<SettingsRepository>();
                 services.AddSingleton<StudentProfileRepository>();
+                services.AddSingleton<DatabaseMaintenanceRepository>();
 
                 services.AddSingleton<KioskLockService>();
 

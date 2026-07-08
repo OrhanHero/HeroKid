@@ -68,7 +68,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Explanation = $"Gemeinsamer Nenner ist {commonDenominator}. " +
                           $"{z1}/{n1} = {z1 * (commonDenominator / n1)}/{commonDenominator}, " +
                           $"{z2}/{n2} = {z2 * (commonDenominator / n2)}/{commonDenominator}. " +
-                          $"Zähler addieren: {zaehlerSumme}/{commonDenominator} = {ergebnis} (gekürzt)."
+                          $"Zähler addieren: {zaehlerSumme}/{commonDenominator} = {ergebnis} (gekürzt).",
+            HelpHint = "Erst beide Brüche auf denselben (gemeinsamen) Nenner bringen, dann die Zähler addieren, am Ende kürzen."
         };
     }
 
@@ -90,7 +91,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Prompt = $"Berechne: {z1}/{n1} · {z2}/{n2} = ? (gekürzt als z/n)",
             CorrectAnswers = new[] { ergebnis },
             Explanation = $"Bei der Multiplikation von Brüchen werden Zähler mal Zähler und Nenner mal Nenner gerechnet: " +
-                          $"({z1}·{z2})/({n1}·{n2}) = {z1 * z2}/{n1 * n2} = {ergebnis} (gekürzt)."
+                          $"({z1}·{z2})/({n1}·{n2}) = {z1 * z2}/{n1 * n2} = {ergebnis} (gekürzt).",
+            HelpHint = "Zähler mal Zähler, Nenner mal Nenner - danach das Ergebnis kürzen, falls möglich."
         };
     }
 
@@ -110,7 +112,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Wie viel sind {prozent}% von {grundwert}?",
             CorrectAnswers = new[] { ergebnis.ToString() },
-            Explanation = $"Prozentwert = Grundwert · Prozentsatz / 100 = {grundwert} · {prozent} / 100 = {ergebnis}."
+            Explanation = $"Prozentwert = Grundwert · Prozentsatz / 100 = {grundwert} · {prozent} / 100 = {ergebnis}.",
+            HelpHint = "Formel: Prozentwert = Grundwert · Prozentsatz / 100."
         };
     }
 
@@ -132,7 +135,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { ergebnis.ToString() },
             Explanation = b < 0
                 ? $"Addition einer negativen Zahl ist wie Subtraktion: {a} + ({b}) = {a} - {Math.Abs(b)} = {ergebnis}."
-                : $"{a} + {b} = {ergebnis}."
+                : $"{a} + {b} = {ergebnis}.",
+            HelpHint = "Eine negative Zahl zu addieren ist dasselbe wie die positive Zahl zu subtrahieren."
         };
     }
 
@@ -153,7 +157,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Prompt = $"Ein Rechteck ist {laenge} cm lang und {breite} cm breit. Wie groß ist der Flächeninhalt in cm²?",
             CorrectAnswers = new[] { flaeche.ToString() },
             Explanation = $"Flächeninhalt = Länge · Breite = {laenge} · {breite} = {flaeche} cm² " +
-                          $"(Zum Vergleich: der Umfang wäre 2·({laenge}+{breite}) = {umfang} cm)."
+                          $"(Zum Vergleich: der Umfang wäre 2·({laenge}+{breite}) = {umfang} cm).",
+            HelpHint = "Formel für den Flächeninhalt eines Rechtecks: Fläche = Länge · Breite."
         };
     }
 
@@ -175,7 +180,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Prompt = $"Auf einer Karte im Maßstab 1:{massstab} misst du eine Strecke von {kartenCm} cm. " +
                      "Wie viele Meter sind das in Wirklichkeit?",
             CorrectAnswers = new[] { realMeter.ToString() },
-            Explanation = $"Wirkliche Länge = Kartenlänge · Maßstabsfaktor = {kartenCm} cm · {massstab} = {realCm} cm = {realMeter} m."
+            Explanation = $"Wirkliche Länge = Kartenlänge · Maßstabsfaktor = {kartenCm} cm · {massstab} = {realCm} cm = {realMeter} m.",
+            HelpHint = "Wirkliche Länge = Kartenlänge · Maßstabsfaktor. Am Ende von cm in Meter umrechnen (durch 100 teilen)."
         };
     }
 
@@ -198,7 +204,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { x.ToString() },
             Explanation = $"{a}x {bTerm} = {c}  |  {(b < 0 ? "+" : "-")} {Math.Abs(b)}\n" +
                           $"{a}x = {c - b}  |  : {a}\n" +
-                          $"x = {x}"
+                          $"x = {x}",
+            HelpHint = "Erst die Zahl ohne x auf die andere Seite bringen (Gegenoperation), dann durch die Zahl vor dem x teilen."
         };
     }
 
@@ -220,7 +227,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Prompt = $"Gegeben ist die lineare Funktion f(x) = {steigung}x {(achsenabschnitt >= 0 ? "+ " + achsenabschnitt : "- " + Math.Abs(achsenabschnitt))}. " +
                      $"Berechne f({x}).",
             CorrectAnswers = new[] { y.ToString() },
-            Explanation = $"f({x}) = {steigung}·({x}) {(achsenabschnitt >= 0 ? "+ " + achsenabschnitt : "- " + Math.Abs(achsenabschnitt))} = {y}."
+            Explanation = $"f({x}) = {steigung}·({x}) {(achsenabschnitt >= 0 ? "+ " + achsenabschnitt : "- " + Math.Abs(achsenabschnitt))} = {y}.",
+            HelpHint = "Setze den gegebenen x-Wert in f(x) = m·x + b ein und rechne aus."
         };
     }
 
@@ -247,7 +255,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { string.Join(",", loesungen) },
             Explanation = $"Mit der pq-Formel: x = -p/2 ± √((p/2)² - q), p={p}, q={q}. " +
                           $"Die Lösungen sind x₁={Math.Min(x1, x2)} und x₂={Math.Max(x1, x2)} " +
-                          $"(Probe: x₁+x₂ = -p = {-p}, x₁·x₂ = q = {q})."
+                          $"(Probe: x₁+x₂ = -p = {-p}, x₁·x₂ = q = {q}).",
+            HelpHint = "pq-Formel: x = -p/2 ± √((p/2)² - q). Bringe die Gleichung zuerst in die Form x² + px + q = 0."
         };
     }
 
@@ -269,7 +278,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { kc.ToString() },
             Explanation = $"Nach dem Satz des Pythagoras gilt: a² + b² = c². " +
                           $"{ka}² + {kb}² = {ka * ka} + {kb * kb} = {ka * ka + kb * kb} = c². " +
-                          $"Also c = √{ka * ka + kb * kb} = {kc} cm."
+                          $"Also c = √{ka * ka + kb * kb} = {kc} cm.",
+            HelpHint = "Satz des Pythagoras: a² + b² = c² (c ist die Hypotenuse, die längste Seite). Am Ende die Wurzel ziehen."
         };
     }
 
@@ -290,7 +300,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             Prompt = $"Ein Kapital von {kapital}€ wird für {jahre} Jahre zu {zinssatz}% Zinsen pro Jahr angelegt " +
                      "(einfache Zinsrechnung, ohne Zinseszins). Wie viel Zinsen kommen insgesamt zusammen?",
             CorrectAnswers = new[] { zinsen.ToString() },
-            Explanation = $"Zinsen = Kapital · Zinssatz · Jahre / 100 = {kapital} · {zinssatz} · {jahre} / 100 = {zinsen}€."
+            Explanation = $"Zinsen = Kapital · Zinssatz · Jahre / 100 = {kapital} · {zinssatz} · {jahre} / 100 = {zinsen}€.",
+            HelpHint = "Formel (einfache Zinsen, ohne Zinseszins): Zinsen = Kapital · Zinssatz · Jahre / 100."
         };
     }
 
@@ -319,7 +330,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { loesung },
             Explanation = plus
                 ? $"(x+{b})² = x² + 2·x·{b} + {b}² = x² + {twoAb}x + {bb}"
-                : $"(x-{b})² = x² - 2·x·{b} + {b}² = x² - {twoAb}x + {bb}"
+                : $"(x-{b})² = x² - 2·x·{b} + {b}² = x² - {twoAb}x + {bb}",
+            HelpHint = "1./2. binomische Formel: (a±b)² = a² ± 2ab + b². Hier ist a = x."
         };
     }
 }

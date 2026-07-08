@@ -21,8 +21,22 @@ public sealed class QuizQuestion
     /// <summary>Ausführliche Erklärung / Lösungsweg, wird nach Beantwortung gezeigt.</summary>
     public required string Explanation { get; init; }
 
+    /// <summary>
+    /// Optionaler Tipp/Formel-Hinweis, den man sich VOR dem Beantworten anzeigen lassen kann (z.B.
+    /// "Prozentwert = Grundwert · Prozentsatz / 100"). Anders als <see cref="Explanation"/> verrät er
+    /// nicht die konkrete Lösung dieser Aufgabe, sondern nur den Rechenweg/das Vorgehen.
+    /// </summary>
+    public string? HelpHint { get; init; }
+
     /// <summary>Optionales Bild (z.B. für News-Artikel-Fragen).</summary>
     public string? ImageUrl { get; init; }
+
+    /// <summary>
+    /// Zeigt bei offenen Fragen die türkische Sonderzeichen-Hilfe (ç ğ ı İ ş) an, auch wenn
+    /// <see cref="Subject"/> nicht Tuerkisch ist - z.B. bei News-Fragen zu türkischsprachigen
+    /// Artikeln, deren erwartete Antwort türkische Sonderzeichen enthalten kann.
+    /// </summary>
+    public bool RequiresTurkishCharacters { get; init; }
 
     public bool CheckAnswer(string givenAnswer)
     {

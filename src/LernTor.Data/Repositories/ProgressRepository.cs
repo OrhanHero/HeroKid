@@ -36,6 +36,7 @@ public sealed class ProgressRepository
             ProfileId = entity.ProfileId,
             SessionDate = entity.SessionDate,
             CurrentStage = Enum.Parse<LearningStage>(entity.CurrentStage),
+            HasCompletedReading = entity.HasCompletedReading,
             CompletedNewsArticleIds = JsonSerializer.Deserialize<HashSet<string>>(entity.CompletedNewsArticleIdsJson) ?? new(),
             CompletedExerciseSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.CompletedSubjectsJson, JsonOptions.Default) ?? new(),
             FinalQuizAttempts = entity.FinalQuizAttempts,
@@ -58,6 +59,7 @@ public sealed class ProgressRepository
         }
 
         entity.CurrentStage = progress.CurrentStage.ToString();
+        entity.HasCompletedReading = progress.HasCompletedReading;
         entity.CompletedNewsArticleIdsJson = JsonSerializer.Serialize(progress.CompletedNewsArticleIds);
         entity.CompletedSubjectsJson = JsonSerializer.Serialize(progress.CompletedExerciseSubjects, JsonOptions.Default);
         entity.FinalQuizAttempts = progress.FinalQuizAttempts;

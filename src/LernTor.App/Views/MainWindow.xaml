@@ -18,6 +18,9 @@
         <DataTemplate DataType="{x:Type vm:WelcomeViewModel}">
             <views:WelcomeView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReadingViewModel}">
+            <views:ReadingView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:NewsViewModel}">
             <views:NewsView />
         </DataTemplate>

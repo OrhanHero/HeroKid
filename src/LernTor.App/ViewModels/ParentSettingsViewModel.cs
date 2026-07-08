@@ -15,6 +15,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly SettingsRepository _settingsRepo;
     private readonly ActivityLogRepository _activityLogRepo;
     private readonly StudentProfileRepository _profileRepo;
+    private readonly DatabaseMaintenanceRepository _maintenanceRepo;
     private readonly KioskLockService _kioskLock;
 
     private AppSettings _settings = new();
@@ -65,11 +66,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         SettingsRepository settingsRepo,
         ActivityLogRepository activityLogRepo,
         StudentProfileRepository profileRepo,
+        DatabaseMaintenanceRepository maintenanceRepo,
         KioskLockService kioskLock)
     {
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
+        _maintenanceRepo = maintenanceRepo;
         _kioskLock = kioskLock;
     }
 
@@ -215,4 +218,36 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     [RelayCommand]
     private void Close() => RequestClose?.Invoke();
+
+    /// <summary>
+    /// Löscht unwiderruflich alle Profile, Fortschritte, Aktivitätsprotokolle und Einstellungen.
+    /// Vorher ging das nur manuell über das Löschen der lerntor.db-Datei. Erfordert eine explizite
+    /// Ja/Nein-Bestätigung, damit ein Klick während der normalen Nutzung nicht versehentlich alles
+    /// zurücksetzt.
+    /// </summary>
+    [RelayCommand]
+    private async Task ResetAllDataAsync()
+    {
+        var confirmed = System.Windows.MessageBox.Show(
+            "Wirklich ALLE Profile, Fortschritte und Einstellungen unwiderruflich löschen?\n\nDas kann nicht rückgängig gemacht werden.",
+            "Datenbank zurücksetzen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning,
+            System.Windows.MessageBoxResult.No);
+
+        if (confirmed != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        await _maintenanceRepo.ResetAllDataAsync();
+
+        System.Windows.MessageBox.Show(
+            "Zurückgesetzt. LernTor wird jetzt beendet - beim nächsten Start werden wieder die Standardprofile angelegt.",
+            "Datenbank zurückgesetzt",
+            System.Windows.MessageBoxButton.OK,
+            System.Windows.MessageBoxImage.Information);
+
+        System.Windows.Application.Current.Shutdown();
+    }
 }

@@ -12,6 +12,7 @@ public sealed class ProgressGateService
     private static readonly LearningStage[] SequentialOrder =
     {
         LearningStage.Willkommen,
+        LearningStage.Vorlesen,
         LearningStage.News,
         LearningStage.Mathematik,
         LearningStage.Deutsch,
@@ -68,6 +69,11 @@ public sealed class ProgressGateService
         if (stage == LearningStage.Willkommen || stage == LearningStage.Abschlussquiz)
         {
             return true;
+        }
+
+        if (stage == LearningStage.Vorlesen)
+        {
+            return progress.HasCompletedReading;
         }
 
         if (stage == LearningStage.News)

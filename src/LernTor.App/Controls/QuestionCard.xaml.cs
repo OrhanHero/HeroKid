@@ -26,4 +26,13 @@ public partial class QuestionCard : UserControl
         AnswerTextBox.SelectionStart = caretIndex + character.Length;
         AnswerTextBox.Focus();
     }
+
+    /// <summary>Übernimmt das aktuelle Taschenrechner-Ergebnis an der Cursor-Position im Antwortfeld.</summary>
+    private void Calculator_InsertRequested(object? sender, string result)
+    {
+        var caretIndex = AnswerTextBox.SelectionStart;
+        AnswerTextBox.Text = AnswerTextBox.Text.Insert(caretIndex, result);
+        AnswerTextBox.SelectionStart = caretIndex + result.Length;
+        AnswerTextBox.Focus();
+    }
 }

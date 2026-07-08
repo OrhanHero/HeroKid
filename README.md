@@ -20,14 +20,22 @@ Start werden automatisch zwei Beispielprofile angelegt.
 ## Ablauf für das Kind
 
 1. **Profil wählen**
-2. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei
+2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Gedicht/wichtiges Werk (Mix aus
+   Deutsch/Türkisch/Englisch/Allgemeinwissen, siehe `LernTor.Core/Services/ReadingContentProvider.cs`),
+   soll **laut vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst danach nutzbar - es gibt
+   bewusst keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde, kann technisch nicht geprüft
+   werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion.
+3. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei
    (Berlin-Lokalnachrichten werden garantiert einbezogen), je 1-2 Verständnisfragen pro Artikel.
-3. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
+4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.
-4. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl passt sich automatisch an, wie
+   Bei offenen Mathematik-Aufgaben steht ein Taschenrechner zur Verfügung; Aufgaben mit hinterlegtem
+   Tipp zeigen einen abrufbaren Formel-/Vorgehens-Hinweis (verrät nicht die Lösung).
+5. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl passt sich automatisch an, wie
    viele Fächer aktiv sind), ≥50% richtig → PC wird freigeschaltet. Bei Nichtbestehen werden gezielt mehr
-   Fragen aus den schwachen Fächern gestellt.
+   Fragen aus den schwachen Fächern gestellt. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder
+   Anzeige neu gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
 
 Fortschritt wird laufend in einer lokalen SQLite-Datenbank gespeichert (`%LOCALAPPDATA%\LernTor\lerntor.db`),
 ein Absturz oder Neustart verliert also keinen Fortschritt.
@@ -75,9 +83,16 @@ deshalb bewusst nicht umgesetzt.
 - Fachbereiche einzeln deaktivieren, Klassenstufe (6/9) einstellen, tägliches Zeitlimit (Grundgerüst).
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
+- "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
+  App heraus, mit Ja/Nein-Bestätigung. Vorher ging das nur manuell über das Löschen von `lerntor.db`.
 
 ## Bekannte Grenzen / nächste Schritte
 
+- **Individuelle Themen/Aufgaben von Lehrkräften einpflegen**: aktuell noch nicht möglich – die
+  Generatoren liefern feste, rahmenlehrplan-orientierte Beispielaufgaben. Ein Editor im Eltern-Bereich
+  für eigene Fragen (gespeichert in der lokalen DB, ergänzend zu den generierten Fragen) ist als
+  nächster Schritt sinnvoll; automatisches Einlesen von Lehrer-Unterlagen (PDF/Word) bräuchte zusätzlich
+  ein LLM zur Extraktion und ist ein größeres Folgeprojekt.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`). RSS-URLs von
   Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare Feeds werden übersprungen, sollten aber
   gelegentlich geprüft werden.

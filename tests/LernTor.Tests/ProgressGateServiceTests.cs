@@ -13,7 +13,8 @@ public class ProgressGateServiceTests
     [Fact]
     public void GetNextStage_FollowsSequentialOrder()
     {
-        Assert.Equal(LearningStage.News, _gate.GetNextStage(LearningStage.Willkommen));
+        Assert.Equal(LearningStage.Vorlesen, _gate.GetNextStage(LearningStage.Willkommen));
+        Assert.Equal(LearningStage.News, _gate.GetNextStage(LearningStage.Vorlesen));
         Assert.Equal(LearningStage.Mathematik, _gate.GetNextStage(LearningStage.News));
         Assert.Equal(LearningStage.Freigeschaltet, _gate.GetNextStage(LearningStage.Abschlussquiz));
         Assert.Equal(LearningStage.Freigeschaltet, _gate.GetNextStage(LearningStage.Freigeschaltet));
@@ -65,6 +66,26 @@ public class ProgressGateServiceTests
         var canSkipToDeutsch = _gate.CanEnterStage(progress, LearningStage.Deutsch, new HashSet<Subject>());
 
         Assert.False(canSkipToDeutsch); // Mathematik wurde noch nicht abgeschlossen
+    }
+
+    [Fact]
+    public void CanEnterStage_BlocksSkippingUnfinishedReadingSection()
+    {
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.Willkommen, HasCompletedReading = false };
+
+        var canSkipToNews = _gate.CanEnterStage(progress, LearningStage.News, new HashSet<Subject>());
+
+        Assert.False(canSkipToNews); // Vorlesen (mind. 5 Minuten) wurde noch nicht abgeschlossen
+    }
+
+    [Fact]
+    public void CanEnterStage_AllowsEnteringNewsAfterReadingCompleted()
+    {
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.Willkommen, HasCompletedReading = true };
+
+        var canSkipToNews = _gate.CanEnterStage(progress, LearningStage.News, new HashSet<Subject>());
+
+        Assert.True(canSkipToNews);
     }
 
     [Fact]

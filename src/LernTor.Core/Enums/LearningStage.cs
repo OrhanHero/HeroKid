@@ -9,6 +9,7 @@ namespace LernTor.Core.Enums;
 public enum LearningStage
 {
     Willkommen,
+    Vorlesen,
     News,
     Mathematik,
     Deutsch,

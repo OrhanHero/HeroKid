@@ -28,6 +28,16 @@ public static class Translations
             ["Welcome_StartButton"] = L("Los geht's! 🚀", "Hadi başlayalım! 🚀"),
             ["Language_Switch"] = L("Türkçe", "Deutsch"),
 
+            ["Stage_Vorlesen"] = L("Lesen", "Okuma"),
+            ["Reading_Title"] = L("Zeit zum lauten Vorlesen 📖", "Yüksek sesle okuma zamanı 📖"),
+            ["Reading_Instruction"] = L(
+                "Lies den folgenden Text mindestens 5 Minuten lang LAUT vor. Der Timer läuft weiter, auch wenn du fertig bist - lies ihn dann einfach noch einmal, übe die Aussprache oder sprich über den Inhalt.",
+                "Aşağıdaki metni en az 5 dakika boyunca YÜKSEK SESLE oku. Bitirsen bile sayaç devam eder - o zaman tekrar oku, telaffuzunu çalış ya da içeriği konuş."),
+            ["Reading_TimeRemainingHint"] = L(
+                "Weiter geht's, sobald der Timer abgelaufen ist.",
+                "Sayaç bitince devam edebilirsin."),
+            ["Reading_Continue"] = L("Weiter ➜", "Devam ➜"),
+
             ["Stage_News"] = L("Nachrichten", "Haberler"),
             ["Stage_Mathematik"] = L("Mathematik", "Matematik"),
             ["Stage_Deutsch"] = L("Deutsch", "Almanca"),
@@ -58,6 +68,7 @@ public static class Translations
             ["Exercise_Correct"] = L("Richtig! Super gemacht! 🎉", "Doğru! Harikasın! 🎉"),
             ["Exercise_Incorrect"] = L("Nicht ganz richtig, aber weiter geht's!", "Tam doğru değil ama devam!"),
             ["Exercise_Explanation"] = L("Erklärung:", "Açıklama:"),
+            ["Exercise_ShowHint"] = L("💡 Tipp anzeigen", "💡 İpucu göster"),
             ["Exercise_YourAnswerPlaceholder"] = L("Deine Antwort…", "Cevabın…"),
             ["Exercise_FinishSubject"] = L("Bereich abgeschlossen! Weiter ➜", "Bölüm tamamlandı! Devam ➜"),
 
@@ -94,6 +105,8 @@ public static class Translations
             ["Parent_SkipUnlock"] = L("Sofort freischalten (überspringen)", "Hemen kilidi aç (atla)"),
             ["Parent_Save"] = L("Speichern", "Kaydet"),
             ["Parent_Close"] = L("Schließen", "Kapat"),
+            ["Parent_DangerZone"] = L("Gefahrenzone", "Tehlikeli bölge"),
+            ["Parent_ResetAllData"] = L("Alle Daten zurücksetzen…", "Tüm verileri sıfırla…"),
             ["Common_Back"] = L("Zurück", "Geri"),
         };
 

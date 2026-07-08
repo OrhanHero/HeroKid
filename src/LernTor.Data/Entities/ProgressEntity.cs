@@ -7,6 +7,8 @@ public sealed class ProgressEntity
     public DateOnly SessionDate { get; set; }
     public string CurrentStage { get; set; } = string.Empty;
 
+    public bool HasCompletedReading { get; set; }
+
     /// <summary>JSON-serialisierte Liste abgeschlossener News-Artikel-IDs.</summary>
     public string CompletedNewsArticleIdsJson { get; set; } = "[]";
 

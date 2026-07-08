@@ -20,10 +20,34 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
     public bool IsChoice => !IsOpenText;
 
     /// <summary>
-    /// Zeigt bei offenen Türkisch-Fragen eine Reihe von Sonderzeichen-Buttons (ç ğ ı ş) an,
-    /// da diese auf einer deutschen Tastatur nicht direkt eingebbar sind.
+    /// Antwortoptionen in zufälliger Reihenfolge fürs Anzeigen. Die Generatoren legen die richtige
+    /// Antwort meist als erstes Element in <see cref="QuizQuestion.Options"/> an - ohne Mischen wäre
+    /// "immer die erste Zeile" die richtige Antwort, was Kinder sehr schnell durchschauen.
+    /// Einmal pro Frageninstanz gemischt (nicht bei jedem Rebind neu), damit die Reihenfolge beim
+    /// Neuzeichnen der Karte stabil bleibt.
     /// </summary>
-    public bool ShowTurkishCharacterHelper => IsOpenText && Question.Subject == Subject.Tuerkisch;
+    public IReadOnlyList<string> DisplayOptions { get; }
+
+    /// <summary>
+    /// Zeigt bei offenen Türkisch-Fragen (Übungen, News, Quiz) eine Reihe von Sonderzeichen-Buttons
+    /// (ç ğ ı ş) an, da diese auf einer deutschen Tastatur nicht direkt eingebbar sind. Nicht nur bei
+    /// Subject.Tuerkisch, da auch türkische Nachrichtenartikel-Fragen offene Antworten mit türkischen
+    /// Wörtern verlangen können.
+    /// </summary>
+    public bool ShowTurkishCharacterHelper => IsOpenText &&
+        (Question.Subject == Subject.Tuerkisch || Question.RequiresTurkishCharacters);
+
+    /// <summary>Zeigt einen einfachen Taschenrechner bei offenen Mathematik-Aufgaben.</summary>
+    public bool ShowCalculator => IsOpenText && Question.Subject == Subject.Mathematik;
+
+    /// <summary>Ob diese Frage einen vorab abrufbaren Tipp hat (Formel/Vorgehen, keine Lösung).</summary>
+    public bool HasHelpHint => !string.IsNullOrWhiteSpace(Question.HelpHint);
+
+    [ObservableProperty]
+    private bool isHelpHintVisible;
+
+    [RelayCommand]
+    private void ToggleHelpHint() => IsHelpHintVisible = !IsHelpHintVisible;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SubmitOpenTextCommand))]
@@ -40,10 +64,15 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
 
     public string FinalGivenAnswer { get; private set; } = string.Empty;
 
+    private static readonly Random ShuffleRandom = new();
+
     public QuestionAnswerViewModel(QuizQuestion question, Action<QuestionAnswerViewModel>? onSubmitted = null)
     {
         Question = question;
         _onSubmitted = onSubmitted;
+        DisplayOptions = question.Options.Count == 0
+            ? question.Options
+            : question.Options.OrderBy(_ => ShuffleRandom.Next()).ToList();
     }
 
     [RelayCommand]

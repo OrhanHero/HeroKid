@@ -58,6 +58,9 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
 
     private static QuizQuestion? BuildKeywordQuestion(NewsArticle article)
     {
+        var isTurkishArticle = article.RegionFocus is NewsRegionFocus.Tuerkei or NewsRegionFocus.Istanbul
+            or NewsRegionFocus.Samsun or NewsRegionFocus.Uenye;
+
         var keywords = article.Title
             .Split(new[] { ' ', ',', '.', ':', '-', '"', '„', '“' }, StringSplitOptions.RemoveEmptyEntries)
             .Where(w => w.Length >= 5 && !Stopwords.Contains(w))
@@ -80,7 +83,8 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
             Prompt = $"Nenne ein wichtiges Wort aus der Überschrift: \"{article.Title}\"",
             CorrectAnswers = keywords,
             Explanation = $"Wichtige Wörter aus der Überschrift waren zum Beispiel: {string.Join(", ", keywords)}.",
-            ImageUrl = article.ImageUrl
+            ImageUrl = article.ImageUrl,
+            RequiresTurkishCharacters = isTurkishArticle
         };
     }
 }

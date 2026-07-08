@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:LernTor.App.ViewModels"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              d:DataContext="{d:DesignInstance vm:QuestionAnswerViewModel}"
@@ -17,8 +18,23 @@
 
             <TextBlock Text="{Binding Question.Prompt}" Style="{StaticResource HeadlineText}" FontSize="24" Margin="0,0,0,20" />
 
+            <!-- Tipp/Hilfe: Formel- bzw. Vorgehens-Hinweis, verrät nicht die konkrete Lösung -->
+            <StackPanel Visibility="{Binding HasHelpHint, Converter={StaticResource BoolToVis}}" Margin="0,0,0,16">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_ShowHint]}"
+                        Style="{StaticResource OptionButton}" HorizontalAlignment="Left"
+                        Command="{Binding ToggleHelpHintCommand}" />
+                <Border Visibility="{Binding IsHelpHintVisible, Converter={StaticResource BoolToVis}}"
+                        Background="{StaticResource AccentBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0">
+                    <TextBlock Text="{Binding Question.HelpHint}" TextWrapping="Wrap" Style="{StaticResource BodyText}" />
+                </Border>
+            </StackPanel>
+
+            <!-- Taschenrechner-Rechenhilfe bei offenen Mathematik-Aufgaben -->
+            <controls:CalculatorControl Visibility="{Binding ShowCalculator, Converter={StaticResource BoolToVis}}"
+                                         InsertRequested="Calculator_InsertRequested" Margin="0,0,0,16" />
+
             <!-- Multiple Choice / Wahr-Falsch: Buttons pro Option -->
-            <ItemsControl ItemsSource="{Binding Question.Options}" Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}">
+            <ItemsControl ItemsSource="{Binding DisplayOptions}" Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button Content="{Binding}"

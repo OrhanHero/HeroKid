@@ -1,0 +1,50 @@
+<UserControl x:Class="LernTor.App.Views.ReadingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization">
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="780">
+                <TextBlock Text="📖" FontSize="60" HorizontalAlignment="Center" Margin="0,0,0,12" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_Title]}"
+                           Style="{StaticResource HeadlineText}" FontSize="34" TextAlignment="Center" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_Instruction]}"
+                           Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,28" />
+
+                <Border Style="{StaticResource CardBorder}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
+                            <Border Background="{StaticResource AccentBrush}" CornerRadius="6" Padding="10,4">
+                                <TextBlock Text="{Binding Piece.Language}" FontWeight="Bold" />
+                            </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Piece.Title}" Style="{StaticResource HeadlineText}" FontSize="24"
+                                   TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,4" />
+                        <TextBlock Text="{Binding Piece.Author}" Style="{StaticResource BodyText}" FontStyle="Italic"
+                                   TextAlignment="Center" Margin="0,0,0,20" />
+
+                        <TextBlock Text="{Binding Piece.Text}" Style="{StaticResource BodyText}" FontSize="22"
+                                   TextWrapping="Wrap" LineHeight="34" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel HorizontalAlignment="Center" Margin="0,28,0,0">
+                    <TextBlock Text="{Binding RemainingTimeDisplay}" FontSize="40" FontWeight="Bold"
+                               HorizontalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"
+                               Visibility="{Binding CanContinue, Converter={StaticResource InverseBoolToVis}}" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_TimeRemainingHint]}"
+                               Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,4,0,20"
+                               Visibility="{Binding CanContinue, Converter={StaticResource InverseBoolToVis}}" />
+
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_Continue]}"
+                            Style="{StaticResource RoundedButton}" FontSize="22" Padding="34,14"
+                            HorizontalAlignment="Center"
+                            IsEnabled="{Binding CanContinue}"
+                            Command="{Binding ContinueCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

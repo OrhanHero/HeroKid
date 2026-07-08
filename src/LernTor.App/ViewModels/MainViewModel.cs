@@ -117,6 +117,7 @@ public sealed partial class MainViewModel : ObservableObject
         CurrentViewModel = stage switch
         {
             LearningStage.Willkommen => new WelcomeViewModel(CurrentProfile!.Name, OnWelcomeContinue, SwitchLanguage),
+            LearningStage.Vorlesen => BuildReadingViewModel(),
             LearningStage.News => await BuildNewsViewModelAsync(),
             LearningStage.Abschlussquiz => BuildFinalQuizViewModel(),
             LearningStage.Freigeschaltet => BuildResultViewModel(passed: true, result: null),
@@ -138,6 +139,18 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnWelcomeContinue()
     {
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Willkommen));
+    }
+
+    private ReadingViewModel BuildReadingViewModel()
+    {
+        var piece = ReadingContentProvider.GetForDate(DateOnly.FromDateTime(DateTime.Now));
+        return new ReadingViewModel(piece, OnReadingCompleted);
+    }
+
+    private async void OnReadingCompleted()
+    {
+        Progress.HasCompletedReading = true;
+        await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Vorlesen));
     }
 
     private async Task<NewsViewModel> BuildNewsViewModelAsync()

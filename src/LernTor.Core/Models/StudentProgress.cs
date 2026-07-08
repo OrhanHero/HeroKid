@@ -12,6 +12,9 @@ public sealed class StudentProgress
     public DateOnly SessionDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public LearningStage CurrentStage { get; set; } = LearningStage.Willkommen;
 
+    /// <summary>Ob der Pflicht-Leseabschnitt (mind. 5 Minuten, laut vorlesen) heute schon absolviert wurde.</summary>
+    public bool HasCompletedReading { get; set; }
+
     public HashSet<string> CompletedNewsArticleIds { get; set; } = new();
     public HashSet<Subject> CompletedExerciseSubjects { get; set; } = new();
 
