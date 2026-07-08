@@ -51,12 +51,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_TimeLimit]}"
-                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
-                <TextBox Text="{Binding TimeLimitMinutes}" Width="120" HorizontalAlignment="Left" FontSize="16" Padding="8" />
-
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ActivityLogFor]}"
-                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,24,0,8" />
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
                 <ComboBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}"
                           DisplayMemberPath="Name" Width="240" HorizontalAlignment="Left" FontSize="16" Padding="8" Margin="0,0,0,12" />
                 <ListView ItemsSource="{Binding RecentActivity}" MaxHeight="220" FontSize="13">

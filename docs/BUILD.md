@@ -69,7 +69,8 @@ Das fertige Setup landet in `dist\LernTor-Setup-1.0.0.exe`. Der Installer:
 ## 6. Datenbankschema wurde erweitert (Profile)
 
 Falls du LernTor schon vorher getestet hast, existiert bereits eine `lerntor.db` unter
-`%LOCALAPPDATA%\LernTor\`. Das Profile-Feature hat neue Tabellen/Spalten hinzugefügt; da die App
+`%LOCALAPPDATA%\LernTor\`. Mehrere Features haben seither neue Tabellen/Spalten hinzugefügt oder
+entfernt (Profile, eigene Aufgaben, zuletzt die entfernte `DailyTimeLimitMinutes`-Spalte); da die App
 `EnsureCreated` statt echter EF-Core-Migrationen nutzt, wird eine bereits vorhandene Datenbank
 NICHT automatisch aktualisiert. Bitte vor dem nächsten Start diese Datei löschen (Fortschritt geht
 dabei verloren, das ist in dieser Entwicklungsphase unkritisch) - die App legt beim nächsten Start

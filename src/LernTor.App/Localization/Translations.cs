@@ -99,7 +99,6 @@ public static class Translations
                 "Noch kein Passwort gesetzt. Bitte lege ein Admin-Passwort fest:", "Henüz şifre yok. Lütfen bir yönetici şifresi belirle:"),
             ["Parent_WrongPassword"] = L("Falsches Passwort.", "Yanlış şifre."),
             ["Parent_DisabledSubjects"] = L("Bereiche deaktivieren:", "Bölümleri devre dışı bırak:"),
-            ["Parent_TimeLimit"] = L("Tägliches Zeitlimit (Minuten, 0 = kein Limit):", "Günlük süre sınırı (dakika, 0 = sınırsız):"),
             ["Parent_ActivityLog"] = L("Letzte Aktivitäten:", "Son etkinlikler:"),
             ["Parent_ActivityLogFor"] = L("Aktivitäten anzeigen für:", "Etkinlikleri göster:"),
             ["Parent_SkipUnlock"] = L("Sofort freischalten (überspringen)", "Hemen kilidi aç (atla)"),

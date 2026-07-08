@@ -51,9 +51,6 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private string errorMessage = string.Empty;
 
     [ObservableProperty]
-    private int timeLimitMinutes;
-
-    [ObservableProperty]
     private StudentProfile? selectedProfile;
 
     public ObservableCollection<SubjectToggle> SubjectToggles { get; } = new();
@@ -174,8 +171,6 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
                 _settings.DisabledSubjects.Contains(subject)));
         }
 
-        TimeLimitMinutes = _settings.DailyTimeLimitMinutes ?? 0;
-
         Profiles.Clear();
         foreach (var profile in await _profileRepo.GetAllAsync())
         {
@@ -235,8 +230,6 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
                 _settings.DisabledSubjects.Add(toggle.Subject);
             }
         }
-
-        _settings.DailyTimeLimitMinutes = TimeLimitMinutes > 0 ? TimeLimitMinutes : null;
 
         await _settingsRepo.SaveAsync(_settings);
         RequestClose?.Invoke();

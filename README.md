@@ -95,7 +95,7 @@ deshalb bewusst nicht umgesetzt.
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
 - Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
-- Fachbereiche einzeln deaktivieren, Klassenstufe (6/9) einstellen, tägliches Zeitlimit (Grundgerüst).
+- Fachbereiche einzeln deaktivieren, Klassenstufe (6/9) einstellen.
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
 - "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
@@ -107,6 +107,10 @@ deshalb bewusst nicht umgesetzt.
   Tabelle `CustomQuestions`), unabhängig von den generierten Aufgaben. Diese Aufgaben werden **additiv**
   zu den generierten Übungsaufgaben (passendes Fach + Klassenstufe) und zum Abschlussquiz
   hinzugefügt - sie ersetzen die Generatoren nicht. Löschbar über den "Löschen"-Button je Eintrag.
+
+**Bewusst keine Zeitlimit-Funktion**: Es gibt kein tägliches Zeitlimit für die Lernsession - die
+Kinder sollen so viel Zeit erhalten, wie sie zum Durcharbeiten von Lesen/Fächern/Abschlussquiz
+benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäumnis.
 
 ## Bekannte Grenzen / nächste Schritte
 
@@ -132,8 +136,6 @@ deshalb bewusst nicht umgesetzt.
 - **Vereinfachung der Artikeltexte** ist aktuell regelbasiert (kein LLM). Ein lokales LLM (Phi-3, Gemma 2,
   Llama 3.1 über Ollama) ließe sich über das `ITextSimplifier`-Interface in `LernTor.News` als zweite
   Implementierung ergänzen, ohne den Rest der App anzufassen.
-- **Zeitlimit-Durchsetzung**: Das Datenmodell/UI dafür existiert (`AppSettings.DailyTimeLimitMinutes`),
-  die aktive Erzwingung (App nach Ablauf automatisch schließen) ist noch nicht verdrahtet.
 - Konnte in dieser Umgebung nicht auf einem echten Windows-Rechner gebaut/getestet werden (siehe
   [docs/BUILD.md](docs/BUILD.md)) – der CI-Workflow (`.github/workflows/build.yml`) baut und testet das
   Projekt automatisch auf `windows-latest`.

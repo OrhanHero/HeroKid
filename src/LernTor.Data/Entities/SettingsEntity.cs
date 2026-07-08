@@ -8,6 +8,5 @@ public sealed class SettingsEntity
     public string AdminPasswordSalt { get; set; } = string.Empty;
     public string DefaultLanguage { get; set; } = "Deutsch";
     public string DisabledSubjectsJson { get; set; } = "[]";
-    public int? DailyTimeLimitMinutes { get; set; }
     public bool HardLockShellReplacementEnabled { get; set; }
 }
