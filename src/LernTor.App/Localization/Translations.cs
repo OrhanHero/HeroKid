@@ -107,6 +107,31 @@ public static class Translations
             ["Parent_Close"] = L("Schließen", "Kapat"),
             ["Parent_DangerZone"] = L("Gefahrenzone", "Tehlikeli bölge"),
             ["Parent_ResetAllData"] = L("Alle Daten zurücksetzen…", "Tüm verileri sıfırla…"),
+
+            ["Parent_CustomQuestions_Title"] = L("Eigene Aufgaben (z.B. von der Lehrkraft)", "Kendi sorularım (örn. öğretmenden)"),
+            ["Parent_CustomQuestions_Intro"] = L(
+                "Ergänzt die generierten Aufgaben - z.B. aktuelle Hausaufgaben oder Themen, die die Lehrkraft gerade durchnimmt.",
+                "Üretilen soruları tamamlar - örn. güncel ödevler veya öğretmenin şu an işlediği konular."),
+            ["Parent_CustomQuestions_Subject"] = L("Fach:", "Ders:"),
+            ["Parent_CustomQuestions_Grade"] = L("Klassenstufe:", "Sınıf seviyesi:"),
+            ["Parent_CustomQuestions_Type"] = L("Fragetyp:", "Soru türü:"),
+            ["Parent_CustomQuestions_Topic"] = L("Thema/Quelle (z.B. \"Hausaufgabe KW12\"):", "Konu/Kaynak (örn. \"12. hafta ödevi\"):"),
+            ["Parent_CustomQuestions_Prompt"] = L("Frage/Aufgabenstellung:", "Soru:"),
+            ["Parent_CustomQuestions_Options"] = L(
+                "Antwortoptionen, mit Komma getrennt (nur bei Multiple Choice/Wahr-Falsch):",
+                "Cevap seçenekleri, virgülle ayrılmış (sadece çoktan seçmeli/doğru-yanlış):"),
+            ["Parent_CustomQuestions_CorrectAnswers"] = L(
+                "Richtige Antwort(en), mit Komma getrennt:", "Doğru cevap(lar), virgülle ayrılmış:"),
+            ["Parent_CustomQuestions_Explanation"] = L(
+                "Erklärung (wird nach der Antwort gezeigt):", "Açıklama (cevaptan sonra gösterilir):"),
+            ["Parent_CustomQuestions_HelpHint"] = L(
+                "Tipp (optional, vor der Antwort abrufbar, verrät nicht die Lösung):",
+                "İpucu (isteğe bağlı, cevaptan önce görülebilir, çözümü vermez):"),
+            ["Parent_CustomQuestions_Add"] = L("Aufgabe hinzufügen", "Soru ekle"),
+            ["Parent_CustomQuestions_ExistingTitle"] = L("Bereits angelegte eigene Aufgaben:", "Zaten eklenmiş sorular:"),
+            ["Parent_CustomQuestions_Empty"] = L("Noch keine eigenen Aufgaben angelegt.", "Henüz kendi sorun yok."),
+            ["Parent_CustomQuestions_Delete"] = L("Löschen", "Sil"),
+
             ["Common_Back"] = L("Zurück", "Geri"),
         };
 

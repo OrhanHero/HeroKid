@@ -10,6 +10,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<QuizAttemptEntity> QuizAttempts => Set<QuizAttemptEntity>();
     public DbSet<SettingsEntity> Settings => Set<SettingsEntity>();
     public DbSet<StudentProfileEntity> Profiles => Set<StudentProfileEntity>();
+    public DbSet<CustomQuestionEntity> CustomQuestions => Set<CustomQuestionEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -43,6 +44,11 @@ public sealed class LernTorDbContext : DbContext
         modelBuilder.Entity<SettingsEntity>(e =>
         {
             e.HasKey(s => s.Id);
+        });
+
+        modelBuilder.Entity<CustomQuestionEntity>(e =>
+        {
+            e.HasKey(c => c.Id);
         });
     }
 

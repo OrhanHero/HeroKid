@@ -24,5 +24,6 @@ public sealed class DatabaseMaintenanceRepository
         await _db.QuizAttempts.ExecuteDeleteAsync(cancellationToken);
         await _db.Settings.ExecuteDeleteAsync(cancellationToken);
         await _db.Profiles.ExecuteDeleteAsync(cancellationToken);
+        await _db.CustomQuestions.ExecuteDeleteAsync(cancellationToken);
     }
 }

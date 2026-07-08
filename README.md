@@ -56,7 +56,8 @@ src/
   LernTor.Core         Domänenmodelle, Fortschritts-/Scoring-Logik (plattformunabhängig)
   LernTor.ContentGen   Regelbasierte Aufgabengeneratoren (Mathe/Deutsch/Türkisch/NaWi) + Quiz-Composer
   LernTor.News         RSS-Ingestion, Vereinfachung, Verständnisfragen-Generierung
-  LernTor.Data         SQLite-Persistenz (EF Core): Fortschritt, Aktivitätsprotokoll, Einstellungen
+  LernTor.Data         SQLite-Persistenz (EF Core): Fortschritt, Aktivitätsprotokoll, Einstellungen,
+                       eigene (elternerstellte) Aufgaben
   LernTor.Security     Kiosk-Lock (Keyboard-Hook), Task-Manager-Policy, Autostart, Admin-Auth
   LernTor.App          WPF-UI (Kiosk-Shell, alle Bildschirme, DE/TR-Lokalisierung)
   LernTor.Installer     Inno-Setup-Skript + PowerShell-Autostart-Helfer
@@ -89,14 +90,27 @@ deshalb bewusst nicht umgesetzt.
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
 - "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
   App heraus, mit Ja/Nein-Bestätigung. Vorher ging das nur manuell über das Löschen von `lerntor.db`.
+- **Eigene Aufgaben** ("Eigene Aufgaben (z.B. von der Lehrkraft)"): Formular zum manuellen Anlegen
+  eigener Fragen (Fach, Klassenstufe, Fragetyp, Frage, Antwortoptionen, richtige Antwort(en),
+  Erklärung, optionaler Tipp) - z.B. für aktuelle Hausaufgaben oder Themen, die die Lehrkraft gerade
+  durchnimmt. Gespeichert in der lokalen DB (`CustomQuestionRepository`/`CustomQuestionEntity`,
+  Tabelle `CustomQuestions`), unabhängig von den generierten Aufgaben. Diese Aufgaben werden **additiv**
+  zu den generierten Übungsaufgaben (passendes Fach + Klassenstufe) und zum Abschlussquiz
+  hinzugefügt - sie ersetzen die Generatoren nicht. Löschbar über den "Löschen"-Button je Eintrag.
 
 ## Bekannte Grenzen / nächste Schritte
 
-- **Individuelle Themen/Aufgaben von Lehrkräften einpflegen**: aktuell noch nicht möglich – die
-  Generatoren liefern feste, rahmenlehrplan-orientierte Beispielaufgaben. Ein Editor im Eltern-Bereich
-  für eigene Fragen (gespeichert in der lokalen DB, ergänzend zu den generierten Fragen) ist als
-  nächster Schritt sinnvoll; automatisches Einlesen von Lehrer-Unterlagen (PDF/Word) bräuchte zusätzlich
-  ein LLM zur Extraktion und ist ein größeres Folgeprojekt.
+- **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word)**: aktuell nicht umgesetzt. Der manuelle
+  Editor (siehe "Eltern-Features") deckt den Kernbedarf ("eigene Themen/Aufgaben einpflegen") aber
+  bereits ab. Automatische Extraktion aus hochgeladenen Dateien bräuchte zusätzlich:
+  - Ein LLM (lokal via Ollama oder über eine API) zur Interpretation des Dokumentinhalts und zur
+    Umwandlung in strukturierte `QuizQuestion`-Objekte (Prompt/Optionen/richtige Antwort/Erklärung).
+  - Eine PDF-/Word-Textextraktions-Bibliothek (z.B. `PdfPig`/`DocumentFormat.OpenXml`), da WPF selbst
+    keine Dokumentparser mitbringt.
+  - Einen Review-Schritt im Eltern-Bereich vor dem Speichern (LLM-Vorschläge können falsch sein -
+    ungeprüft übernommene Fragen mit falscher "richtiger Antwort" wären schlimmer als keine Frage).
+  - Eine bewusste Entscheidung, ob/welcher LLM-Anbieter Dateien der Kinder verarbeiten darf
+    (Datenschutz bei extern gehosteten Modellen vs. Ressourcenbedarf bei lokalen Modellen).
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`). RSS-URLs von
   Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare Feeds werden übersprungen, sollten aber
   gelegentlich geprüft werden.

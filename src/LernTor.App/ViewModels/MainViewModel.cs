@@ -25,6 +25,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly SettingsRepository _settingsRepo;
     private readonly ActivityLogRepository _activityLogRepo;
     private readonly StudentProfileRepository _profileRepo;
+    private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly RssNewsService _newsService;
     private readonly QuizComposer _quizComposer;
     private readonly KioskLockService _kioskLock;
@@ -50,6 +51,7 @@ public sealed partial class MainViewModel : ObservableObject
         SettingsRepository settingsRepo,
         ActivityLogRepository activityLogRepo,
         StudentProfileRepository profileRepo,
+        CustomQuestionRepository customQuestionRepo,
         RssNewsService newsService,
         QuizComposer quizComposer,
         KioskLockService kioskLock)
@@ -60,6 +62,7 @@ public sealed partial class MainViewModel : ObservableObject
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
+        _customQuestionRepo = customQuestionRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
@@ -119,9 +122,9 @@ public sealed partial class MainViewModel : ObservableObject
             LearningStage.Willkommen => new WelcomeViewModel(CurrentProfile!.Name, OnWelcomeContinue, SwitchLanguage),
             LearningStage.Vorlesen => BuildReadingViewModel(),
             LearningStage.News => await BuildNewsViewModelAsync(),
-            LearningStage.Abschlussquiz => BuildFinalQuizViewModel(),
+            LearningStage.Abschlussquiz => await BuildFinalQuizViewModelAsync(),
             LearningStage.Freigeschaltet => BuildResultViewModel(passed: true, result: null),
-            _ when LearningStageSubjects.TryGetSubject(stage, out var subjectForStage) => BuildExerciseViewModel(subjectForStage),
+            _ when LearningStageSubjects.TryGetSubject(stage, out var subjectForStage) => await BuildExerciseViewModelAsync(subjectForStage),
             _ => CurrentViewModel
         };
     }
@@ -173,9 +176,12 @@ public sealed partial class MainViewModel : ObservableObject
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.News));
     }
 
-    private ExerciseViewModel BuildExerciseViewModel(Subject subject)
+    private async Task<ExerciseViewModel> BuildExerciseViewModelAsync(Subject subject)
     {
-        var questions = _quizComposer.GenerateExercises(subject, CurrentProfile!.GradeLevel, 6, _random);
+        var grade = CurrentProfile!.GradeLevel;
+        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random);
+        var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
+        var questions = generated.Concat(custom).OrderBy(_ => _random.Next()).ToList();
         return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject));
     }
 
@@ -191,25 +197,31 @@ public sealed partial class MainViewModel : ObservableObject
         await NavigateToStageAsync(_gate.GetNextStage(currentStage));
     }
 
-    private FinalQuizViewModel BuildFinalQuizViewModel()
+    private async Task<FinalQuizViewModel> BuildFinalQuizViewModelAsync()
     {
         var grade = CurrentProfile!.GradeLevel;
         var disabledSubjects = Settings.DisabledSubjects;
         var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
-        IReadOnlyList<QuizQuestion> questions;
+        IEnumerable<QuizQuestion> questions;
 
         if (relevantSubjects is not null)
         {
             questions = _quizComposer.ComposeRetryExercises(relevantSubjects, grade, _random, countPerSubject: 6)
-                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, null, disabledSubjects, targetTotalQuestions: 10))
-                .ToList();
+                .Concat(_quizComposer.ComposeFinalQuiz(grade, _random, null, disabledSubjects, targetTotalQuestions: 10));
         }
         else
         {
             questions = _quizComposer.ComposeFinalQuiz(grade, _random, _collectedNewsQuestions, disabledSubjects, targetTotalQuestions: 22);
         }
 
-        return new FinalQuizViewModel(questions, OnFinalQuizCompleted);
+        // Eigene (von den Eltern eingetragene) Aufgaben ergänzen additiv - unabhängig vom
+        // dynamischen Fragenbudget der generierten Fächer.
+        var customQuestions = (await _customQuestionRepo.GetByGradeAsync(grade))
+            .Where(q => !disabledSubjects.Contains(q.Subject));
+
+        var finalQuestions = questions.Concat(customQuestions).OrderBy(_ => _random.Next()).ToList();
+
+        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted);
     }
 
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)
