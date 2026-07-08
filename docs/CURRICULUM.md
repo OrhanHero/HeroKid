@@ -115,14 +115,24 @@ Kuratierte, kostenlose RSS-Quellen (siehe `NewsFeedSource.cs`):
 
 - **Deutschland/Berlin**: tagesschau.de, rbb24 Berlin, Tagesspiegel Berlin
 - **Türkei/Istanbul/Samsun/Ünye**: Hürriyet, Sabah
+- **Technik/KI**: heise online (deckt digitale/KI-Themen ab, die für Jugendliche zunehmend
+  alltagsrelevant sind)
 
 Artikel werden nach Schlüsselwörtern priorisiert (Berlin, Deutschland, Istanbul, Samsun, Ünye,
-Türkei) und auf die 5-8 relevantesten/aktuellsten reduziert. Berlin-Lokalnachrichten sind explizit
-sehr wichtig: mindestens 2 (bzw. ein Drittel von `targetCount`) aktuelle Berlin-Artikel werden
-garantiert aufgenommen, bevor die restlichen Plätze nach allgemeiner Priorität aufgefüllt werden.
-Artikel, die inhaltlich (Titel) doppelt vorkommen - z.B. weil zwei Feeds dieselbe Meldung führen -
-werden vorher herausgefiltert. Pro Artikel werden automatisch zwei Verständnisfragen erzeugt
-(Herkunfts-/Regionsfrage + Schlüsselwort-Frage aus der Überschrift).
+Türkei, sowie KI/Künstliche Intelligenz/ChatGPT/Digital) und auf die 5-8 relevantesten/aktuellsten
+reduziert. Berlin-Lokalnachrichten sind explizit sehr wichtig: mindestens 2 (bzw. ein Drittel von
+`targetCount`) aktuelle Berlin-Artikel werden garantiert aufgenommen, bevor die restlichen Plätze
+nach allgemeiner Priorität aufgefüllt werden. Artikel mit verstörenden Themen (Krieg, Gewaltverbrechen,
+Suizid, ...) werden nicht hart ausgefiltert, aber deutlich nach unten gestuft (`SensitiveKeywords` in
+`NewsFeedSource.cs`), damit harmlosere, altersgerechtere Artikel bevorzugt ausgewählt werden. Artikel,
+die inhaltlich (Titel) doppelt vorkommen - z.B. weil zwei Feeds dieselbe Meldung führen - werden vorher
+herausgefiltert. Pro Artikel werden automatisch zwei Verständnisfragen erzeugt (Herkunfts-/Regionsfrage
++ Schlüsselwort-Frage aus der Überschrift).
+
+**Wie die App an Nachrichten kommt**: `RssNewsService` lädt bei jedem Aufruf des News-Bereichs live
+die RSS-Feeds aller obigen Quellen per `HttpClient` (kein Cache, keine gespeicherten Artikel) - die
+Inhalte sind also tatsächlich tagesaktuell, nicht vorproduziert. Nicht erreichbare Feeds werden
+einzeln übersprungen, ohne den Ladevorgang der übrigen Feeds abzubrechen.
 
 ## Abschlussquiz-Zusammenstellung bei vielen Fächern
 

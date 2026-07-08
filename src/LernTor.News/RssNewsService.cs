@@ -20,7 +20,10 @@ public sealed class RssNewsService
 
     /// <summary>
     /// Lädt Artikel aus allen kuratierten Feeds, priorisiert Berlin/Deutschland/Istanbul/Samsun/Ünye
-    /// und liefert die besten <paramref name="targetCount"/> kindgerecht aufbereiteten Artikel.
+    /// (sowie KI-/Digitalthemen) und liefert die besten <paramref name="targetCount"/> kindgerecht
+    /// aufbereiteten Artikel. Artikel mit verstörenden Themen (Krieg, Gewaltverbrechen, ...) werden
+    /// nicht hart ausgefiltert, aber in der Rangliste deutlich nach unten gestuft (siehe
+    /// CuratedNewsFeeds.SensitiveKeywords), damit harmlosere Artikel bevorzugt ausgewählt werden.
     /// Fehlerhafte/nicht erreichbare Feeds werden übersprungen statt die ganze Ladung abzubrechen.
     /// </summary>
     public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, CancellationToken cancellationToken = default)
@@ -55,14 +58,17 @@ public sealed class RssNewsService
         var minBerlinSlots = Math.Max(2, targetCount / 3);
         var berlinArticles = deduplicated
             .Where(x => x.Source.RegionFocus == NewsRegionFocus.Berlin)
-            .OrderByDescending(x => x.Item.PublishDate)
+            .OrderBy(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
+            .ThenByDescending(x => x.Item.PublishDate)
             .Take(minBerlinSlots)
             .ToList();
 
         var remainingSlots = Math.Max(0, targetCount - berlinArticles.Count);
         var rankedRemaining = deduplicated
             .Where(x => x.Source.RegionFocus != NewsRegionFocus.Berlin)
-            .OrderByDescending(x => CountPriorityMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
+            .OrderByDescending(x =>
+                CountPriorityMatches(x.Item.Title?.Text, x.Item.Summary?.Text) -
+                CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
             .ThenByDescending(x => x.Item.PublishDate)
             .Take(remainingSlots)
             .ToList();
@@ -85,6 +91,13 @@ public sealed class RssNewsService
     {
         var text = $"{title} {summary}";
         return CuratedNewsFeeds.PriorityKeywords.Count(keyword =>
+            text.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static int CountSensitiveMatches(string? title, string? summary)
+    {
+        var text = $"{title} {summary}";
+        return CuratedNewsFeeds.SensitiveKeywords.Count(keyword =>
             text.Contains(keyword, StringComparison.OrdinalIgnoreCase));
     }
 
