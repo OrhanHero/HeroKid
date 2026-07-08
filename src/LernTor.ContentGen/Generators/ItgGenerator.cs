@@ -33,7 +33,8 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse6,
             Topic = "Datenschutz-Grundlagen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Persönliche Daten (Name, Adresse, Fotos) machen dich identifizierbar - öffentlich geteilt können sie missbraucht werden."
         };
     }
 
@@ -52,7 +53,8 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse6,
             Topic = "Sichere Passwörter", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ein sicheres Passwort ist lang und mischt Groß-/Kleinbuchstaben, Zahlen und Sonderzeichen - und wird niemandem weitergegeben."
         };
     }
 
@@ -71,7 +73,8 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse6,
             Topic = "Urheberrecht im Internet", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Urheberrecht: der/die Ersteller/in eines Werks entscheidet über die Nutzung - Bilder aus dem Internet brauchen Lizenz/Erlaubnis."
         };
     }
 
@@ -90,7 +93,8 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse9,
             Topic = "Cybermobbing", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Cybermobbing ist wiederholtes, absichtliches Belästigen über digitale Medien - Hilfe holen statt wegschauen."
         };
     }
 
@@ -109,7 +113,8 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse9,
             Topic = "Fake News erkennen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Quelle/Absender genau prüfen; reißerische Überschriften ohne Belege und starke Emotionen sind ein Warnsignal."
         };
     }
 
@@ -128,7 +133,8 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse9,
             Topic = "Algorithmen-Grundbegriff", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ein Algorithmus ist eine genaue Schritt-für-Schritt-Anleitung - Empfehlungsalgorithmen wählen Inhalte basierend auf deinem bisherigen Verhalten aus."
         };
     }
 }

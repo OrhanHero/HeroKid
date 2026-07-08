@@ -4,40 +4,91 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-    <Border Background="{StaticResource CardBrush}" CornerRadius="12" Padding="12" MaxWidth="280" HorizontalAlignment="Left"
+    <Border Background="{StaticResource CardBrush}" CornerRadius="12" Padding="12" MaxWidth="320" HorizontalAlignment="Left"
             BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1">
         <StackPanel>
-            <Border Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
-                <TextBlock x:Name="DisplayText" Text="0" FontSize="26" FontWeight="Bold"
-                           HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" />
-            </Border>
-            <UniformGrid Columns="4" Rows="5">
-                <Button Content="C" Click="Clear_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="±" Click="ToggleSign_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="%" Click="Percent_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="÷" Tag="/" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
-
-                <Button Content="7" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="8" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="9" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="×" Tag="*" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
-
-                <Button Content="4" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="5" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="6" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="-" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
-
-                <Button Content="1" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="2" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="3" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="+" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
-
-                <Button Content="0" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="," Click="Decimal_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="=" Click="Equals_Click" Style="{StaticResource OptionButton}" Margin="2" />
-                <Button Content="↵" Click="Insert_Click" Style="{StaticResource OptionButton}" Margin="2"
-                        ToolTip="Ergebnis ins Antwortfeld einfügen" />
+            <!-- Modus-Umschalter: Dezimal-Taschenrechner vs. Bruchrechner -->
+            <UniformGrid Columns="2" Margin="0,0,0,8">
+                <Button x:Name="DecimalModeButton" Content="Dezimal" Click="DecimalMode_Click"
+                        Style="{StaticResource OptionButton}" Margin="0,0,2,0" />
+                <Button x:Name="FractionModeButton" Content="Bruch a/b" Click="FractionMode_Click"
+                        Style="{StaticResource OptionButton}" Margin="2,0,0,0" />
             </UniformGrid>
+
+            <!-- Dezimal-Taschenrechner -->
+            <StackPanel x:Name="DecimalPanel">
+                <Border Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                    <TextBlock x:Name="DisplayText" Text="0" FontSize="26" FontWeight="Bold"
+                               HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" />
+                </Border>
+                <UniformGrid Columns="4" Rows="6">
+                    <Button Content="C" Click="Clear_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="±" Click="ToggleSign_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="√" Click="SquareRoot_Click" Style="{StaticResource OptionButton}" Margin="2"
+                            ToolTip="Quadratwurzel (z.B. für den Satz des Pythagoras)" />
+                    <Button Content="x²" Click="Square_Click" Style="{StaticResource OptionButton}" Margin="2"
+                            ToolTip="Quadrieren (z.B. für binomische Formeln)" />
+
+                    <Button Content="7" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="8" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="9" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="÷" Tag="/" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
+
+                    <Button Content="4" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="5" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="6" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="×" Tag="*" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
+
+                    <Button Content="1" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="2" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="3" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="-" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
+
+                    <Button Content="0" Click="Digit_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="," Click="Decimal_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="%" Click="Percent_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="+" Click="Operator_Click" Style="{StaticResource OptionButton}" Margin="2" />
+
+                    <Rectangle Opacity="0" IsHitTestVisible="False" />
+                    <Rectangle Opacity="0" IsHitTestVisible="False" />
+                    <Button Content="=" Click="Equals_Click" Style="{StaticResource OptionButton}" Margin="2" />
+                    <Button Content="↵" Click="Insert_Click" Style="{StaticResource OptionButton}" Margin="2"
+                            ToolTip="Ergebnis ins Antwortfeld einfügen" />
+                </UniformGrid>
+            </StackPanel>
+
+            <!-- Bruchrechner: a/b [Operator] c/d = Ergebnis (automatisch gekürzt) -->
+            <StackPanel x:Name="FractionPanel" Visibility="Collapsed">
+                <TextBlock Text="Erster Bruch:" FontSize="12" Opacity="0.7" Margin="0,0,0,2" />
+                <UniformGrid Columns="2" Margin="0,0,0,8">
+                    <TextBox x:Name="Numerator1Box" Text="0" FontSize="20" TextAlignment="Center" Margin="0,0,2,0" />
+                    <TextBox x:Name="Denominator1Box" Text="1" FontSize="20" TextAlignment="Center" Margin="2,0,0,0" />
+                </UniformGrid>
+
+                <TextBlock Text="Rechenart:" FontSize="12" Opacity="0.7" Margin="0,0,0,2" />
+                <UniformGrid Columns="4" Margin="0,0,0,8">
+                    <Button x:Name="FracPlusButton" Content="+" Tag="+" Click="FractionOperator_Click" Style="{StaticResource OptionButton}" Margin="1" />
+                    <Button x:Name="FracMinusButton" Content="-" Tag="-" Click="FractionOperator_Click" Style="{StaticResource OptionButton}" Margin="1" />
+                    <Button x:Name="FracTimesButton" Content="×" Tag="*" Click="FractionOperator_Click" Style="{StaticResource OptionButton}" Margin="1" />
+                    <Button x:Name="FracDivideButton" Content="÷" Tag="/" Click="FractionOperator_Click" Style="{StaticResource OptionButton}" Margin="1" />
+                </UniformGrid>
+
+                <TextBlock Text="Zweiter Bruch:" FontSize="12" Opacity="0.7" Margin="0,0,0,2" />
+                <UniformGrid Columns="2" Margin="0,0,0,8">
+                    <TextBox x:Name="Numerator2Box" Text="0" FontSize="20" TextAlignment="Center" Margin="0,0,2,0" />
+                    <TextBox x:Name="Denominator2Box" Text="1" FontSize="20" TextAlignment="Center" Margin="2,0,0,0" />
+                </UniformGrid>
+
+                <Button Content="= Berechnen" Click="FractionEquals_Click" Style="{StaticResource OptionButton}"
+                        HorizontalAlignment="Stretch" Margin="0,0,0,8" />
+
+                <Border Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                    <TextBlock x:Name="FractionResultText" Text="0" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" />
+                </Border>
+
+                <Button Content="↵ Ergebnis einfügen" Click="FractionInsert_Click" Style="{StaticResource OptionButton}"
+                        HorizontalAlignment="Stretch" />
+            </StackPanel>
         </StackPanel>
     </Border>
 </UserControl>

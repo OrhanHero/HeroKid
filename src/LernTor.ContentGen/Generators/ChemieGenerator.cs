@@ -32,7 +32,8 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
             Topic = "Stoffgemische trennen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Trennmethode richtet sich nach der Eigenschaft: unlöslich → Filtration, gelöst → Verdampfen, magnetisch → Magnet."
         };
     }
 
@@ -53,7 +54,8 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
             Topic = "Verbrennung", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Verbrennungsdreieck: Brennstoff + Sauerstoff + Zündtemperatur - fehlt eins davon, erlischt das Feuer."
         };
     }
 
@@ -73,7 +75,8 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
             Topic = "Säuren und Laugen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "pH-Wert: 0 = stark sauer, 7 = neutral, 14 = stark basisch. Rotkohlsaft färbt sich bei Säuren rötlich, bei Laugen blau-grün."
         };
     }
 
@@ -94,7 +97,8 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
             Topic = "Atommodell", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Proton = positiv, Elektron = negativ, Neutron = neutral. Elektronen umkreisen den Kern in Schalen; Ordnungszahl = Protonenzahl."
         };
     }
 
@@ -115,7 +119,8 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
             Topic = "Chemische Reaktionen", Type = QuestionType.MultipleChoice,
-            Prompt = c.Frage, Options = c.Optionen, CorrectAnswers = new[] { c.Antwort }, Explanation = c.Erklaerung
+            Prompt = c.Frage, Options = c.Optionen, CorrectAnswers = new[] { c.Antwort }, Explanation = c.Erklaerung,
+            HelpHint = "Exotherm = Energie wird abgegeben (z.B. Verbrennung). Nach dem Massenerhaltungssatz bleibt die Gesamtmasse bei einer Reaktion gleich."
         };
     }
 
@@ -134,7 +139,8 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
             Topic = "Periodensystem", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Elemente in derselben Spalte (Gruppe) des Periodensystems haben ähnliche Eigenschaften - Edelgase reagieren kaum."
         };
     }
 }

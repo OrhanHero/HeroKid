@@ -30,7 +30,8 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Was ist Demokratie?", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "\"Demokratie\" = \"Volksherrschaft\" (griechisch) - freie Wahlen und Meinungsfreiheit gehören zu ihren Grundpfeilern."
         };
     }
 
@@ -48,7 +49,8 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Berlin und seine Bezirke", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Berlin hat 12 Bezirke, jeder mit eigenem Bezirksamt und Bezirksbürgermeister/in."
         };
     }
 
@@ -66,7 +68,8 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Wahlrecht", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Sowohl aktives (wählen) als auch passives (sich wählen lassen) Wahlrecht zum Bundestag beginnen mit der Volljährigkeit (18 Jahre)."
         };
     }
 
@@ -85,7 +88,8 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Gewaltenteilung", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Die drei Gewalten: Legislative (Gesetzgebung), Exekutive (Regierung/Verwaltung), Judikative (Gerichte)."
         };
     }
 
@@ -104,7 +108,8 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Bundestag und Bundesrat", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Der Bundestag ist das direkt gewählte Parlament (Gesetze, Regierungskontrolle); der Bundesrat vertritt die 16 Bundesländer."
         };
     }
 
@@ -124,7 +129,8 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Wahlsystem", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Bei der Bundestagswahl entscheidet die Zweitstimme über die Sitzverteilung der Parteien; Wahlen in Deutschland sind u.a. geheim."
         };
     }
 }

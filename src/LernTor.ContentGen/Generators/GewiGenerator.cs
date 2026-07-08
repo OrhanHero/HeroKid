@@ -35,7 +35,8 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
             Topic = "Geschichtliche Epochen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Reihenfolge der Epochen: Steinzeit → Antike → Mittelalter → Neuzeit."
         };
     }
 
@@ -56,7 +57,8 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
             Topic = "Kartenkunde und Himmelsrichtungen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Auf genordeten Karten gilt: oben Norden, unten Süden, rechts Osten, links Westen. In Deutschland steht die Mittagssonne im Süden."
         };
     }
 
@@ -75,7 +77,8 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
             Topic = "Kinderrechte", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Die UN-Kinderrechtskonvention (1989) wurde von den Vereinten Nationen beschlossen und schützt u.a. Bildung, Schutz und Mitsprache von Kindern."
         };
     }
 
@@ -94,7 +97,8 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse9,
             Topic = "Grundgesetz", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Das Grundgesetz von 1949 ist die Verfassung Deutschlands und steht über allen anderen Gesetzen; Artikel 1 schützt die Menschenwürde."
         };
     }
 
@@ -114,7 +118,8 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse9,
             Topic = "Wirtschaftskreislauf", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Im einfachen Wirtschaftskreislauf tauschen Haushalte und Unternehmen Arbeitskraft/Güter gegen Geld."
         };
     }
 
@@ -134,7 +139,8 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse9,
             Topic = "Medien und Gesellschaft", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Medien gelten als \"vierte Gewalt\": sie informieren und kontrollieren Politik - deshalb vor dem Teilen immer Quelle und Fakten prüfen."
         };
     }
 }

@@ -33,7 +33,8 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
             Topic = "Der menschliche Körper", Type = QuestionType.MultipleChoice,
             Prompt = $"Was ist die Aufgabe des Organs \"{o.Organ}\"?",
-            Options = optionen, CorrectAnswers = new[] { o.Funktion }, Explanation = $"Das {o.Organ} {o.Funktion}."
+            Options = optionen, CorrectAnswers = new[] { o.Funktion }, Explanation = $"Das {o.Organ} {o.Funktion}.",
+            HelpHint = "Überlege, welches Organsystem betroffen ist: Kreislauf (Herz), Atmung (Lunge), Verdauung (Magen) oder Nervensystem (Gehirn)."
         };
     }
 
@@ -55,7 +56,8 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
             Topic = "Fotosynthese", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Fotosynthese-Formel (vereinfacht): Licht + Wasser + CO₂ → Traubenzucker + Sauerstoff, in den Chloroplasten."
         };
     }
 
@@ -76,7 +78,8 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
             Topic = "Wirbeltierklassen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Fische atmen mit Kiemen, Amphibien leben in Wasser und Land, Säugetiere säugen ihre Jungen mit Milch."
         };
     }
 
@@ -97,7 +100,8 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
             Topic = "Zellbiologie", Type = QuestionType.MultipleChoice,
-            Prompt = z.Frage, Options = z.Optionen, CorrectAnswers = new[] { z.Antwort }, Explanation = z.Erklaerung
+            Prompt = z.Frage, Options = z.Optionen, CorrectAnswers = new[] { z.Antwort }, Explanation = z.Erklaerung,
+            HelpHint = "Zellkern = Erbinformation, Mitochondrium = \"Kraftwerk der Zelle\", Zellwand/Chloroplasten nur bei Pflanzenzellen."
         };
     }
 
@@ -117,7 +121,8 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
             Topic = "Vererbung (Genetik)", Type = QuestionType.MultipleChoice,
-            Prompt = v.Frage, Options = v.Optionen, CorrectAnswers = new[] { v.Antwort }, Explanation = v.Erklaerung
+            Prompt = v.Frage, Options = v.Optionen, CorrectAnswers = new[] { v.Antwort }, Explanation = v.Erklaerung,
+            HelpHint = "Gene auf der DNA tragen Erbinformationen; ein dominantes Allel setzt sich gegenüber einem rezessiven durch."
         };
     }
 
@@ -138,7 +143,8 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
             Topic = "Ökosysteme", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Produzenten (Pflanzen) stellen Energie her, Konsumenten fressen andere Lebewesen, Destruenten (Pilze/Bakterien) zersetzen."
         };
     }
 }

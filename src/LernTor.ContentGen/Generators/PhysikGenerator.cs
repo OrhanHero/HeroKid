@@ -32,7 +32,8 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Aggregatzustände", Type = QuestionType.MultipleChoice,
-            Prompt = a.Frage, Options = a.Optionen, CorrectAnswers = new[] { a.Antwort }, Explanation = a.Erklaerung
+            Prompt = a.Frage, Options = a.Optionen, CorrectAnswers = new[] { a.Antwort }, Explanation = a.Erklaerung,
+            HelpHint = "Wasser: unter 0°C fest (Eis), 0-100°C flüssig, über 100°C gasförmig (Wasserdampf, bei normalem Luftdruck)."
         };
     }
 
@@ -55,7 +56,8 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Einfacher Stromkreis", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ein Stromkreis muss geschlossen sein (Batterie → Kabel → Lampe → zurück zur Batterie); Metalle wie Kupfer leiten gut, Holz/Gummi isolieren."
         };
     }
 
@@ -74,7 +76,8 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Magnetismus", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nur Eisen, Nickel und Kobalt werden von Magneten angezogen; gleiche Pole stoßen sich ab, ungleiche ziehen sich an."
         };
     }
 
@@ -91,7 +94,8 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Prompt = $"Ein Widerstand von {widerstand} Ohm wird von einem Strom von {strom} Ampere durchflossen. " +
                      "Wie groß ist die Spannung in Volt? (U = R · I)",
             CorrectAnswers = new[] { spannung.ToString() },
-            Explanation = $"Ohmsches Gesetz: U = R · I = {widerstand} Ω · {strom} A = {spannung} V."
+            Explanation = $"Ohmsches Gesetz: U = R · I = {widerstand} Ω · {strom} A = {spannung} V.",
+            HelpHint = "Ohmsches Gesetz: Spannung U = Widerstand R · Stromstärke I."
         };
     }
 
@@ -112,7 +116,8 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Energieerhaltung", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Energie wird nie vernichtet, nur umgewandelt - beim Fallen wird Höhenenergie zu Bewegungsenergie."
         };
     }
 
@@ -133,7 +138,8 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Newtonsche Gesetze", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "1. Newtonsches Gesetz (Trägheit): ohne Kraft ändert sich die Bewegung nicht. 2. Gesetz: F = m · a."
         };
     }
 }

@@ -20,11 +20,15 @@ Start werden automatisch zwei Beispielprofile angelegt.
 ## Ablauf für das Kind
 
 1. **Profil wählen**
-2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Gedicht/wichtiges Werk (Mix aus
-   Deutsch/Türkisch/Englisch/Allgemeinwissen, siehe `LernTor.Core/Services/ReadingContentProvider.cs`),
-   soll **laut vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst danach nutzbar - es gibt
-   bewusst keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde, kann technisch nicht geprüft
-   werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion.
+2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Gedicht/wichtiges Werk (gemeinfreier
+   Pool, siehe `LernTor.Core/Services/ReadingContentProvider.cs`), das **gleichzeitig auf Deutsch,
+   Türkisch und Englisch nebeneinander** angezeigt wird, damit dasselbe Stück in allen drei Sprachen
+   gelesen werden kann. Soll **laut vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst
+   danach nutzbar - es gibt bewusst keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde,
+   kann technisch nicht geprüft werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion.
+   (Eine Anbindung an lyrikline.org wurde bewusst nicht umgesetzt: aus dieser Entwicklungsumgebung war
+   der Zugriff auf die Seite nicht möglich, und ihre zeitgenössischen Gedichte/Übersetzungen sind
+   urheberrechtlich geschützt und dürften ohne Erlaubnis nicht in die App übernommen werden.)
 3. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei
    (Berlin-Lokalnachrichten werden garantiert einbezogen), je 1-2 Verständnisfragen pro Artikel.
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,

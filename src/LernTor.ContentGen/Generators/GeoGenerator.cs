@@ -31,7 +31,8 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
             Topic = "Kontinente und Ozeane", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Die gängige Zählweise kennt 6 Kontinente; Deutschland liegt in Europa."
         };
     }
 
@@ -50,7 +51,8 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
             Topic = "Klimazonen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Denk an die Lage: Wüstenregionen wie die Sahara sind heiß/trocken, Deutschland liegt in der gemäßigten Zone."
         };
     }
 
@@ -68,7 +70,8 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
             Topic = "Deutschland: Bundesländer", Type = QuestionType.OpenText,
-            Prompt = f.Frage, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Jedes deutsche Bundesland hat eine eigene Landeshauptstadt - Berlin, Hamburg und Bremen sind gleichzeitig Stadt und Bundesland (Stadtstaaten)."
         };
     }
 
@@ -87,7 +90,8 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse9,
             Topic = "Plattentektonik", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Konvektionsströme im Erdmantel bewegen die Kontinentalplatten - an ihren Grenzen entstehen oft Erdbeben/Vulkane."
         };
     }
 
@@ -106,7 +110,8 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse9,
             Topic = "Klimawandel", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "CO₂ aus fossilen Brennstoffen ist das wichtigste menschengemachte Treibhausgas - es lässt Gletscher/Polkappen schmelzen."
         };
     }
 
@@ -125,7 +130,8 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse9,
             Topic = "Verstädterung", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Verstädterung/Urbanisierung bedeutet: immer mehr Menschen ziehen in Städte - das kann zu Wohnraum- und Verkehrsproblemen führen."
         };
     }
 }

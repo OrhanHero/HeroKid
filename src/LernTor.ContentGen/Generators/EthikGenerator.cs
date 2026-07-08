@@ -31,7 +31,8 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Werte und Regeln", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Regeln schützen ein faires, sicheres Miteinander; Toleranz heißt, andere Meinungen zu respektieren, ohne sie teilen zu müssen."
         };
     }
 
@@ -50,7 +51,8 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Freundschaft und Konflikte", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Vertrauen und Ehrlichkeit tragen Freundschaften; Konflikte löst man am besten durch ruhiges Reden und Zuhören."
         };
     }
 
@@ -71,7 +73,8 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse6,
             Topic = "Weltreligionen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Denk an zentrale Orte und Feste der Weltreligionen: Mekka (Islam), Weihnachten (Christentum), Pessach (Judentum)."
         };
     }
 
@@ -90,7 +93,8 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Verantwortung und Pflicht", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Verantwortung übernehmen heißt: für die Folgen des eigenen Handelns einstehen. Pflichten sind verbindlich, Freiwilligkeit nicht."
         };
     }
 
@@ -110,7 +114,8 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Meinungsfreiheit und Grenzen", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Artikel 5 GG schützt freie Meinungsäußerung - sie endet aber dort, wo sie andere Rechte verletzt (z.B. Beleidigung, Volksverhetzung)."
         };
     }
 
@@ -129,7 +134,8 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse9,
             Topic = "Digitale Ethik", Type = QuestionType.MultipleChoice,
-            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Bei Cybermobbing: Beweise sichern und Vertrauensperson informieren. Fake News täuschen bewusst - Quelle immer prüfen."
         };
     }
 }

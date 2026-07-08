@@ -57,7 +57,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Explanation = $"\"{wort}\" ist ein {wortart}. " +
                           (wortart == "Nomen" ? "Nomen (Hauptwörter) benennen Dinge, Lebewesen oder Begriffe und werden großgeschrieben." :
                            wortart == "Verb" ? "Verben (Tätigkeitswörter) beschreiben Handlungen oder Zustände." :
-                           "Adjektive (Eigenschaftswörter) beschreiben, wie etwas ist.")
+                           "Adjektive (Eigenschaftswörter) beschreiben, wie etwas ist."),
+            HelpHint = "Nomen benennen Dinge/Lebewesen (großgeschrieben), Verben beschreiben Handlungen, Adjektive beschreiben Eigenschaften."
         };
     }
 
@@ -94,7 +95,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Options = zeitformen,
             CorrectAnswers = new[] { antwort },
             Explanation = $"Grundform (Infinitiv) des Verbs ist \"{v.Infinitiv}\". " +
-                          $"Präsens: \"{v.Praesens}\", Präteritum: \"{v.Praeteritum}\", Perfekt: \"{v.Perfekt}\"."
+                          $"Präsens: \"{v.Praesens}\", Präteritum: \"{v.Praeteritum}\", Perfekt: \"{v.Perfekt}\".",
+            HelpHint = "Präsens = Gegenwart (\"ich gehe\"), Präteritum = einfache Vergangenheit (\"ich ging\"), Perfekt = \"habe/bin\" + Partizip II (\"ich bin gegangen\")."
         };
     }
 
@@ -125,7 +127,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { antwort },
             Explanation = $"Subjekt: \"{s.Subjekt}\" (wer/was handelt), " +
                           $"Prädikat: \"{s.Praedikat}\" (die Handlung/das Verb), " +
-                          $"Objekt: \"{s.Objekt}\" (worauf sich die Handlung bezieht)."
+                          $"Objekt: \"{s.Objekt}\" (worauf sich die Handlung bezieht).",
+            HelpHint = "Frag: Wer/was handelt? (Subjekt) Was tut es? (Prädikat/Verb) Worauf bezieht sich die Handlung? (Objekt)"
         };
     }
 
@@ -150,7 +153,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Setze das Wort in Klammern richtig geschrieben ein: \"{g.Satz}\"",
             CorrectAnswers = new[] { g.Loesung },
-            Explanation = $"Richtig: \"{g.Loesung}\". Regel: {g.Regel}"
+            Explanation = $"Richtig: \"{g.Loesung}\". Regel: {g.Regel}",
+            HelpHint = "Nomen (auch zusammengesetzte) und Wochentage werden großgeschrieben, Adjektive/Verben normalerweise klein."
         };
     }
 
@@ -176,7 +180,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Wie lautet der Superlativ von \"{a.Grund}\"? (Form: \"am ___en\")",
             CorrectAnswers = new[] { a.Superlativ },
-            Explanation = $"Positiv: {a.Grund}, Komparativ: {a.Komparativ}, Superlativ: {a.Superlativ}."
+            Explanation = $"Positiv: {a.Grund}, Komparativ: {a.Komparativ}, Superlativ: {a.Superlativ}.",
+            HelpHint = "Steigerungsstufen: Positiv (schön) → Komparativ (schöner) → Superlativ (am schönsten). Manche Wörter steigern unregelmäßig (gut-besser-am besten)."
         };
     }
 
@@ -202,7 +207,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Prompt = $"Wandle den Aktivsatz \"{a.Aktiv}\" in die Passivform (Vorgangspassiv) um.",
             CorrectAnswers = new[] { a.Passiv },
             Explanation = $"Passivform: \"{a.Passiv}\". Beim Passiv rückt das Objekt des Aktivsatzes an die Subjektstelle, " +
-                          "das Verb wird mit \"werden\" + Partizip II gebildet."
+                          "das Verb wird mit \"werden\" + Partizip II gebildet.",
+            HelpHint = "Passiv-Bildung: Objekt des Aktivsatzes wird zum Subjekt, Verb wird zu \"wird/werden\" + Partizip II, der Handelnde steht optional mit \"von\"."
         };
     }
 
@@ -227,7 +233,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Setze die passende Konjunktion ein: \"{k.Satz}\"",
             CorrectAnswers = new[] { k.Konjunktion },
-            Explanation = $"Richtig: \"{k.Konjunktion}\" – dies ist eine {k.Typ}e Konjunktion, die einen Nebensatz einleitet."
+            Explanation = $"Richtig: \"{k.Konjunktion}\" – dies ist eine {k.Typ}e Konjunktion, die einen Nebensatz einleitet.",
+            HelpHint = "Überlege den Sinnzusammenhang: Grund (weil), Zweck (damit), Einräumung (obwohl), Zeit (sobald)."
         };
     }
 
@@ -253,7 +260,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Gehört an die Lücke ein Komma? Antworte mit \"ja\" oder \"nein\": \"{k.SatzMitLuecke}\"",
             CorrectAnswers = new[] { string.IsNullOrEmpty(k.Loesung) ? "nein" : "ja" },
-            Explanation = $"Regel: {k.Regel}"
+            Explanation = $"Regel: {k.Regel}",
+            HelpHint = "Vor Nebensätzen (z.B. mit \"dass\", \"nachdem\") steht immer ein Komma; bei einfachen Aufzählungen mit \"und\"/\"oder\" meist nicht."
         };
     }
 
@@ -280,7 +288,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { d.Loesung },
             Explanation = d.Loesung == "dass"
                 ? "\"dass\" leitet hier einen Nebensatz ein (Konjunktion) und kann nicht durch \"welches\" ersetzt werden."
-                : "\"das\" ist hier ein Relativpronomen/Artikel und kann durch \"welches\" ersetzt werden."
+                : "\"das\" ist hier ein Relativpronomen/Artikel und kann durch \"welches\" ersetzt werden.",
+            HelpHint = "Probe: Lässt sich das Wort durch \"welches\" ersetzen? Dann ist es \"das\" (Artikel/Relativpronomen), sonst \"dass\" (Konjunktion)."
         };
     }
 
@@ -307,7 +316,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Prompt = $"Satz: \"{w.Satz}\" – Welche Wortart ist \"{w.Wort}\"?",
             Options = optionen,
             CorrectAnswers = new[] { w.Wortart },
-            Explanation = $"\"{w.Wort}\" ist hier ein {w.Wortart}."
+            Explanation = $"\"{w.Wort}\" ist hier ein {w.Wortart}.",
+            HelpHint = "Adverbien beschreiben näher (wie/wann/wo), Präpositionen stehen vor Nomen (auf, in, mit), Konjunktionen verbinden Sätze/Wörter (und, aber)."
         };
     }
 }

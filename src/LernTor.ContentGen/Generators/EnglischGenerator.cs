@@ -30,7 +30,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
             Topic = "Simple Present vs. Present Progressive", Type = QuestionType.OpenText,
             Prompt = $"Setze die richtige Form ein: \"{p.Satz}\"",
-            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Simple Present für Gewohnheiten/Routinen (he/she/it + -s); Present Progressive (is/are + -ing) für Handlungen gerade jetzt."
         };
     }
 
@@ -53,7 +54,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Topic = "Unregelmäßige Pluralformen", Type = QuestionType.MultipleChoice,
             Prompt = $"What is the plural of \"{p.Singular}\"?",
             Options = optionen, CorrectAnswers = new[] { p.Plural },
-            Explanation = $"Die Pluralform von \"{p.Singular}\" ist unregelmäßig: \"{p.Plural}\" (kein einfaches -s)."
+            Explanation = $"Die Pluralform von \"{p.Singular}\" ist unregelmäßig: \"{p.Plural}\" (kein einfaches -s).",
+            HelpHint = "Manche englische Nomen bilden den Plural nicht mit -s, sondern ändern die Wortform komplett (child-children, mouse-mice, foot-feet, man-men)."
         };
     }
 
@@ -71,7 +73,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
         {
             Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
             Topic = "Question Words", Type = QuestionType.MultipleChoice,
-            Prompt = f.Satz, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung
+            Prompt = f.Satz, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "When = Zeitpunkt, Who = Person, What = Sache/Begriff, Where = Ort, Why = Grund."
         };
     }
 
@@ -90,7 +93,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
             Topic = "Simple Past vs. Present Perfect", Type = QuestionType.OpenText,
             Prompt = $"Setze die richtige Form ein: \"{p.Satz}\"",
-            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Simple Past bei genauer Zeitangabe in der Vergangenheit (\"last year\"); Present Perfect (has/have + Partizip II) bei Erfahrungen/Ergebnissen ohne genaue Zeit."
         };
     }
 
@@ -109,7 +113,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
             Topic = "Conditional Sentences (Type 1)", Type = QuestionType.OpenText,
             Prompt = $"Setze die richtige Form ein: \"{p.Satz}\"",
-            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "1. Conditional: If + Simple Present, ... will + Grundform. Der \"if\"-Satz bleibt im Simple Present, auch wenn es um die Zukunft geht."
         };
     }
 
@@ -129,7 +134,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Topic = "Passive Voice", Type = QuestionType.OpenText,
             Prompt = $"Wandle in die Passiv-Form (Passive Voice) um: \"{p.Aktiv}\"",
             CorrectAnswers = new[] { p.Passiv },
-            Explanation = $"Passiv-Form: \"{p.Passiv}\". Bildung: Objekt des Aktivsatzes wird zum Subjekt, Verb als \"be\" + Partizip II."
+            Explanation = $"Passiv-Form: \"{p.Passiv}\". Bildung: Objekt des Aktivsatzes wird zum Subjekt, Verb als \"be\" + Partizip II.",
+            HelpHint = "Passive Voice: Objekt des Aktivsatzes wird zum Subjekt, Verb = Form von \"to be\" + Partizip II (3. Form), der Handelnde steht optional mit \"by\"."
         };
     }
 }

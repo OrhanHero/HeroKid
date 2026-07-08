@@ -49,7 +49,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"\"{v.Fiil}\" fiilinin (o/she/it için) şimdiki zaman hâlini yaz. (Beispiel: gelmek -> geliyor)",
             CorrectAnswers = new[] { v.Simdiki },
-            Explanation = $"\"{v.Fiil}\" -> \"{v.Simdiki}\". Şimdiki zaman \"-yor\" eki ile kurulur."
+            Explanation = $"\"{v.Fiil}\" -> \"{v.Simdiki}\". Şimdiki zaman \"-yor\" eki ile kurulur.",
+            HelpHint = "Şimdiki zaman (Präsens) her zaman \"-yor\" ekiyle kurulur, kelime köküne göre ünlü uyumu değişir (gid-iyor, oku-yor)."
         };
     }
 
@@ -72,7 +73,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"\"{v.Fiil}\" fiilinin (o/she/it için) -di'li geçmiş zaman hâlini yaz.",
             CorrectAnswers = new[] { v.Gecmis },
-            Explanation = $"\"{v.Fiil}\" -> \"{v.Gecmis}\". -di'li geçmiş zaman, görülen/kesin geçmişi anlatır."
+            Explanation = $"\"{v.Fiil}\" -> \"{v.Gecmis}\". -di'li geçmiş zaman, görülen/kesin geçmişi anlatır.",
+            HelpHint = "-di'li geçmiş zaman eki (-di/-dı/-du/-dü ya da -ti/-tı/-tu/-tü) ünlü ve ünsüz uyumuna göre değişir."
         };
     }
 
@@ -99,7 +101,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Prompt = $"\"{e.Kelime}\" kelimesinin eş anlamlısı hangisidir?",
             Options = optionen,
             CorrectAnswers = new[] { e.EsAnlam },
-            Explanation = $"\"{e.Kelime}\" ile \"{e.EsAnlam}\" aynı ya da çok benzer anlama gelir (eş anlamlı kelimeler)."
+            Explanation = $"\"{e.Kelime}\" ile \"{e.EsAnlam}\" aynı ya da çok benzer anlama gelir (eş anlamlı kelimeler).",
+            HelpHint = "Eş anlamlı (synonym) kelimeler aynı ya da çok benzer bir anlama gelir - cümle içinde birbirinin yerine kullanılabilirler."
         };
     }
 
@@ -126,7 +129,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Prompt = $"\"{z.Kelime}\" kelimesinin zıt (karşıt) anlamlısı hangisidir?",
             Options = optionen,
             CorrectAnswers = new[] { z.ZitAnlam },
-            Explanation = $"\"{z.Kelime}\" kelimesinin karşıtı \"{z.ZitAnlam}\"dır."
+            Explanation = $"\"{z.Kelime}\" kelimesinin karşıtı \"{z.ZitAnlam}\"dır.",
+            HelpHint = "Zıt anlamlı (Antonym) kelimeler tam tersi bir anlam taşır - dikkat: sadece \"biraz farklı\" olan kelimeler zıt anlamlı sayılmaz."
         };
     }
 
@@ -151,7 +155,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Cümle: \"{c.Cumle}\" – Bu cümlenin {c.Oge}'i nedir?",
             CorrectAnswers = new[] { c.Cevap },
-            Explanation = $"\"{c.Cumle}\" cümlesinde {c.Oge}: \"{c.Cevap}\"."
+            Explanation = $"\"{c.Cumle}\" cümlesinde {c.Oge}: \"{c.Cevap}\".",
+            HelpHint = "Özne (kim/ne yapıyor?), Yüklem (eylem/fiil), Nesne (eylemin etkilediği şey), Yer/Zaman Tamlayıcısı (nerede/ne zaman?)."
         };
     }
 
@@ -174,7 +179,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"\"{v.Fiil}\" fiilinin (o/she/it için) gelecek zaman (-ecek/-acak) hâlini yaz.",
             CorrectAnswers = new[] { v.Gelecek },
-            Explanation = $"\"{v.Fiil}\" -> \"{v.Gelecek}\". Gelecek zaman \"-ecek/-acak\" eki ile kurulur."
+            Explanation = $"\"{v.Fiil}\" -> \"{v.Gelecek}\". Gelecek zaman \"-ecek/-acak\" eki ile kurulur.",
+            HelpHint = "Gelecek zaman (Futur) her zaman \"-ecek/-acak\" ekiyle kurulur - kelime kökünün son ünlüsüne göre \"e\" veya \"a\" seçilir."
         };
     }
 
@@ -199,7 +205,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Type = QuestionType.OpenText,
             Prompt = $"Boşluğa gelmesi gereken eki yaz: \"{y.SatzMitLuecke}\"",
             CorrectAnswers = new[] { y.Loesung },
-            Explanation = y.Regel
+            Explanation = y.Regel,
+            HelpHint = "Türkçede ünsüz yumuşaması (p→b, ç→c, t→d, k→ğ) ve ünlü uyumu, ek eklenirken kelimenin son sesine göre değişir."
         };
     }
 
@@ -225,7 +232,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Prompt = $"Cümle: \"{f.Cumle}\" – \"{f.Fiilimsi}\" hangi fiilimsi türüdür?",
             Options = optionen,
             CorrectAnswers = new[] { f.Tur },
-            Explanation = $"\"{f.Fiilimsi}\" bir {f.Tur} örneğidir."
+            Explanation = $"\"{f.Fiilimsi}\" bir {f.Tur} örneğidir.",
+            HelpHint = "Sıfat-fiil bir ismi niteler (koşan çocuk), zarf-fiil bir eylemi nasıl/ne zaman yapıldığını anlatır (okumadan), isim-fiil eylemi isim gibi kullanır (yüzmek)."
         };
     }
 }

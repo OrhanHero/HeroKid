@@ -1,13 +1,16 @@
 namespace LernTor.Core.Models;
 
-/// <summary>Ein Gedicht/wichtiges Werk für den täglichen Pflicht-Leseabschnitt (siehe ReadingContentProvider).</summary>
+/// <summary>
+/// Ein Gedicht/wichtiges Werk für den täglichen Pflicht-Leseabschnitt (siehe ReadingContentProvider).
+/// Wird immer parallel in drei Sprachen angezeigt (nebeneinander), damit die Kinder denselben Text
+/// einmal auf Deutsch, einmal auf Türkisch und einmal auf Englisch lesen können.
+/// </summary>
 public sealed class ReadingPiece
 {
     public required string Title { get; init; }
     public required string Author { get; init; }
 
-    /// <summary>Anzeigesprache des Texts: "Deutsch", "Türkçe", "English" oder "Allgemeinwissen".</summary>
-    public required string Language { get; init; }
-
-    public required string Text { get; init; }
+    public required string TextDe { get; init; }
+    public required string TextTr { get; init; }
+    public required string TextEn { get; init; }
 }
