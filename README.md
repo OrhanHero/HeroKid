@@ -20,12 +20,22 @@ Start werden automatisch zwei Beispielprofile angelegt.
 ## Ablauf für das Kind
 
 1. **Profil wählen**
-2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Gedicht/wichtiges Werk (gemeinfreier
-   Pool, siehe `LernTor.Core/Services/ReadingContentProvider.cs`), das **gleichzeitig auf Deutsch,
-   Türkisch und Englisch nebeneinander** angezeigt wird, damit dasselbe Stück in allen drei Sprachen
-   gelesen werden kann. Soll **laut vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst
-   danach nutzbar - es gibt bewusst keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde,
-   kann technisch nicht geprüft werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion.
+2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Stück aus einem festen Pool von
+   60 Texten (siehe `LernTor.Core/Services/ReadingContentProvider.cs`), das **gleichzeitig auf
+   Deutsch, Türkisch und Englisch nebeneinander** angezeigt wird, damit dasselbe Stück in allen drei
+   Sprachen gelesen werden kann. Soll **laut vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter"
+   ist erst danach nutzbar - es gibt bewusst keine Überspringen-Funktion. Ob tatsächlich (laut)
+   gelesen wurde, kann technisch nicht geprüft werden – das ist eine bekannte, akzeptierte Grenze
+   dieser Funktion. Der Pool besteht aus zwei Hälften:
+   - **30 literarische/Allgemeinwissen-Stücke**: gemeinfreie Gedichte/Texte (Goethe, Heine, Yunus
+     Emre, Schiller, Rilke, Robert Frost, William Blake, Lewis Carroll, u.a.) sowie kurze
+     "kurz erklärt"-Sachtexte (Berlin, Sonnensystem, Menschenrechte, EU, ...). Fremdsprachige
+     Originale werden mit eigenen, freien Übertragungen (keine fremden Übersetzungen) begleitet.
+   - **30 Pop-Kultur-Kurzgeschichten**: eigens verfasste, kindgerechte Abenteuergeschichten rund um
+     Minecraft, Minecraft Legends, Super Mario, AntonCraft, Geometry Dash, Rock'n'Roll, Pac-Man,
+     Kirby, Batman, One Punch Man, Dragon Ball, One Piece und Backrooms. Diese Texte referenzieren
+     die Marken/Figuren nur namentlich als Thema; Handlung, Dialoge und Wortlaut sind komplett neu
+     und zitieren kein geschütztes Spiel-/Comic-/Anime-Material.
    (Eine Anbindung an lyrikline.org wurde bewusst nicht umgesetzt: aus dieser Entwicklungsumgebung war
    der Zugriff auf die Seite nicht möglich, und ihre zeitgenössischen Gedichte/Übersetzungen sind
    urheberrechtlich geschützt und dürften ohne Erlaubnis nicht in die App übernommen werden.)
