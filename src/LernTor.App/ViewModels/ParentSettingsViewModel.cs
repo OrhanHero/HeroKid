@@ -1,12 +1,15 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
+using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Data.Entities;
 using LernTor.Data.Repositories;
 using LernTor.Security;
+using Microsoft.Win32;
 
 namespace LernTor.App.ViewModels;
 
@@ -18,6 +21,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly DatabaseMaintenanceRepository _maintenanceRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly KioskLockService _kioskLock;
+    private readonly NotebookLmOptions _notebookLmOptions;
+    private readonly TeacherDocumentImportService _teacherImportService;
 
     private AppSettings _settings = new();
 
@@ -102,6 +107,36 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     partial void OnNewQuestionTypeChanged(QuestionType value) => OnPropertyChanged(nameof(NewQuestionNeedsOptions));
 
+    // --- Automatisches Einlesen von Lehrer-Unterlagen (NotebookLM Enterprise, siehe README) ---
+
+    [ObservableProperty]
+    private string notebookLmProjectId = string.Empty;
+
+    [ObservableProperty]
+    private string notebookLmLocation = "global";
+
+    [ObservableProperty]
+    private string notebookLmServiceAccountKeyPath = string.Empty;
+
+    [ObservableProperty]
+    private Subject importSubject = Subject.Mathematik;
+
+    [ObservableProperty]
+    private GradeLevel importGrade = GradeLevel.Klasse6;
+
+    [ObservableProperty]
+    private string importFilePath = string.Empty;
+
+    [ObservableProperty]
+    private bool isImporting;
+
+    [ObservableProperty]
+    private string importErrorMessage = string.Empty;
+
+    public ObservableCollection<ExtractedQuestionDraft> ImportedDrafts { get; } = new();
+
+    public bool HasNoImportedDrafts => ImportedDrafts.Count == 0;
+
     public event Action? RequestClose;
 
     public ParentSettingsViewModel(
@@ -110,7 +145,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         StudentProfileRepository profileRepo,
         DatabaseMaintenanceRepository maintenanceRepo,
         CustomQuestionRepository customQuestionRepo,
-        KioskLockService kioskLock)
+        KioskLockService kioskLock,
+        NotebookLmOptions notebookLmOptions,
+        TeacherDocumentImportService teacherImportService)
     {
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
@@ -118,12 +155,26 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _maintenanceRepo = maintenanceRepo;
         _customQuestionRepo = customQuestionRepo;
         _kioskLock = kioskLock;
+        _notebookLmOptions = notebookLmOptions;
+        _teacherImportService = teacherImportService;
     }
 
     public async Task InitializeAsync()
     {
         _settings = await _settingsRepo.LoadAsync();
         IsFirstTimeSetup = string.IsNullOrEmpty(_settings.AdminPasswordHash);
+
+        NotebookLmProjectId = _settings.NotebookLmProjectId ?? string.Empty;
+        NotebookLmLocation = _settings.NotebookLmLocation ?? "global";
+        NotebookLmServiceAccountKeyPath = _settings.NotebookLmServiceAccountKeyPath ?? string.Empty;
+        ApplyNotebookLmOptions();
+    }
+
+    private void ApplyNotebookLmOptions()
+    {
+        _notebookLmOptions.ProjectId = string.IsNullOrWhiteSpace(NotebookLmProjectId) ? null : NotebookLmProjectId;
+        _notebookLmOptions.Location = string.IsNullOrWhiteSpace(NotebookLmLocation) ? "global" : NotebookLmLocation;
+        _notebookLmOptions.ServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
     }
 
     [RelayCommand]
@@ -231,8 +282,106 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             }
         }
 
+        _settings.NotebookLmProjectId = string.IsNullOrWhiteSpace(NotebookLmProjectId) ? null : NotebookLmProjectId;
+        _settings.NotebookLmLocation = string.IsNullOrWhiteSpace(NotebookLmLocation) ? "global" : NotebookLmLocation;
+        _settings.NotebookLmServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
+        ApplyNotebookLmOptions();
+
         await _settingsRepo.SaveAsync(_settings);
         RequestClose?.Invoke();
+    }
+
+    /// <summary>Öffnet einen Datei-Dialog zur Auswahl einer Lehrer-Unterlage (PDF oder Word .docx).</summary>
+    [RelayCommand]
+    private void PickImportFile()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Unterrichtsmaterial (*.pdf;*.docx)|*.pdf;*.docx",
+            Title = "Lehrer-Unterlage auswählen"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            ImportFilePath = dialog.FileName;
+        }
+    }
+
+    /// <summary>
+    /// Extrahiert Text aus der gewählten Datei und lässt NotebookLM Fragenentwürfe vorschlagen.
+    /// Die Entwürfe werden NICHT automatisch gespeichert - Eltern müssen jeden einzeln über
+    /// <see cref="AcceptImportedDraftAsync"/> bestätigen oder über <see cref="DiscardImportedDraft"/>
+    /// verwerfen (siehe ExtractedQuestionDraft-Dokumentation: keine Automatik ohne menschliche Kontrolle).
+    /// </summary>
+    [RelayCommand]
+    private async Task RunImportAsync()
+    {
+        ImportErrorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(ImportFilePath) || !File.Exists(ImportFilePath))
+        {
+            ImportErrorMessage = "Bitte zuerst eine gültige Datei auswählen.";
+            return;
+        }
+
+        IsImporting = true;
+        try
+        {
+            await using var fileStream = File.OpenRead(ImportFilePath);
+            var drafts = await _teacherImportService.ImportAsync(fileStream, ImportFilePath, ImportSubject, ImportGrade);
+
+            ImportedDrafts.Clear();
+            foreach (var draft in drafts)
+            {
+                ImportedDrafts.Add(draft);
+            }
+
+            OnPropertyChanged(nameof(HasNoImportedDrafts));
+
+            if (drafts.Count == 0)
+            {
+                ImportErrorMessage = "NotebookLM hat keine Fragenvorschläge aus diesem Dokument geliefert.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ImportErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsImporting = false;
+        }
+    }
+
+    /// <summary>Übernimmt einen geprüften Vorschlag als echte eigene Aufgabe.</summary>
+    [RelayCommand]
+    private async Task AcceptImportedDraftAsync(ExtractedQuestionDraft draft)
+    {
+        await _customQuestionRepo.AddAsync(new QuizQuestion
+        {
+            Id = Guid.NewGuid().ToString("N"),
+            Subject = draft.SuggestedSubject ?? ImportSubject,
+            GradeLevel = draft.SuggestedGradeLevel ?? ImportGrade,
+            Topic = string.IsNullOrWhiteSpace(draft.Topic) ? "Import (NotebookLM)" : draft.Topic,
+            Type = draft.Type,
+            Prompt = draft.Prompt,
+            Options = draft.Options,
+            CorrectAnswers = draft.CorrectAnswers,
+            Explanation = string.IsNullOrWhiteSpace(draft.Explanation) ? "-" : draft.Explanation,
+            HelpHint = draft.HelpHint
+        });
+
+        ImportedDrafts.Remove(draft);
+        OnPropertyChanged(nameof(HasNoImportedDrafts));
+        await ReloadCustomQuestionsAsync();
+    }
+
+    /// <summary>Verwirft einen Vorschlag, ohne ihn zu speichern.</summary>
+    [RelayCommand]
+    private void DiscardImportedDraft(ExtractedQuestionDraft draft)
+    {
+        ImportedDrafts.Remove(draft);
+        OnPropertyChanged(nameof(HasNoImportedDrafts));
     }
 
     [RelayCommand]

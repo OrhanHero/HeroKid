@@ -11,4 +11,14 @@
     <ProjectReference Include="..\LernTor.Core\LernTor.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Für TeacherImport: PDF-/Word-Textextraktion (reine .NET-Bibliotheken, keine Windows-Abhängigkeit)
+         sowie Google-OAuth2-Anmeldung für die NotebookLM-Enterprise-API. Versionen als Floating-Version
+         angegeben, da diese Pakete aus einer Sandbox ohne Zugriff auf nuget.org-Versionshistorie gewählt
+         wurden - siehe README, Abschnitt "Automatisches Einlesen von Lehrer-Unterlagen". -->
+    <PackageReference Include="UglyToad.PdfPig" Version="0.1.*" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.*" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.*" />
+  </ItemGroup>
+
 </Project>

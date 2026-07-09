@@ -29,7 +29,10 @@ public sealed class SettingsRepository
             AdminPasswordSalt = entity.AdminPasswordSalt,
             DefaultLanguage = Enum.Parse<AppLanguage>(entity.DefaultLanguage),
             DisabledSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.DisabledSubjectsJson, JsonOptions.Default) ?? new(),
-            HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled
+            HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled,
+            NotebookLmProjectId = entity.NotebookLmProjectId,
+            NotebookLmLocation = entity.NotebookLmLocation,
+            NotebookLmServiceAccountKeyPath = entity.NotebookLmServiceAccountKeyPath
         };
     }
 
@@ -47,6 +50,9 @@ public sealed class SettingsRepository
         entity.DefaultLanguage = settings.DefaultLanguage.ToString();
         entity.DisabledSubjectsJson = JsonSerializer.Serialize(settings.DisabledSubjects, JsonOptions.Default);
         entity.HardLockShellReplacementEnabled = settings.HardLockShellReplacementEnabled;
+        entity.NotebookLmProjectId = settings.NotebookLmProjectId;
+        entity.NotebookLmLocation = settings.NotebookLmLocation;
+        entity.NotebookLmServiceAccountKeyPath = settings.NotebookLmServiceAccountKeyPath;
 
         await _db.SaveChangesAsync(cancellationToken);
     }

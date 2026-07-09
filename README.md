@@ -116,36 +116,41 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
 
 ## Bekannte Grenzen / nächste Schritte
 
-- **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word)**: Architektur vorbereitet (siehe
-  `src/LernTor.ContentGen/TeacherImport/`), aber noch nicht mit einer echten LLM-Anbindung verdrahtet
-  und noch nicht an eine Eltern-Bereich-UI angebunden. Der manuelle Editor (siehe "Eltern-Features")
-  deckt den Kernbedarf ("eigene Themen/Aufgaben einpflegen") in der Zwischenzeit bereits ab.
-  - **Vorbereitete Schnittstellen**: `ITeacherDocumentTextExtractor` (Datei → Fließtext, pro
-    Dateiformat austauschbar), `ITeacherQuestionSuggester` (Fließtext → Liste von
-    `ExtractedQuestionDraft`-Vorschlägen, i.d.R. per LLM), `TeacherDocumentImportService`
-    (orchestriert beides). Bewusst getrennt, damit Textextraktion (reine Bibliotheksarbeit) und
-    LLM-Anbindung unabhängig voneinander implementiert/getestet werden können.
-  - **`ExtractedQuestionDraft`** ist absichtlich kein `QuizQuestion`: alle Felder sind veränderlich
-    und es gibt ein `SourceExcerpt`-Feld (Originaltextstelle), damit Eltern jeden Vorschlag im
-    Eltern-Bereich gegen die Quelle prüfen/korrigieren können, bevor er über
-    `CustomQuestionRepository.AddAsync` dauerhaft gespeichert wird - kein automatisches Übernehmen
-    ohne menschliche Kontrolle, da eine falsch erkannte "richtige Antwort" schlimmer wäre als gar
-    keine automatisch erzeugte Frage.
-  - **`NotConfiguredTeacherQuestionSuggester`** ist der aktuelle Platzhalter für `ITeacherQuestionSuggester`
-    und wirft absichtlich eine `NotSupportedException` mit Erklärung, statt still leere Vorschlagslisten
-    zurückzugeben - eine versehentliche Verdrahtung würde sonst den Eindruck erwecken, das Feature
-    funktioniere bereits, obwohl kein LLM-Anbieter konfiguriert ist.
-  - **Noch zu klären, bevor eine echte Implementierung entsteht**:
-    - Konkreter LLM-Anbieter: lokal via Ollama (Phi-3, Gemma 2, Llama 3.1 - kein Datenabfluss nach
-      außen, braucht aber Ressourcen auf dem Kiosk-PC) vs. externe API (leistungsfähiger, aber
-      Dokumente der Kinder/Lehrer verlassen den PC - Datenschutzabwägung, die die Eltern selbst
-      treffen sollten, z.B. über eine Einstellung im Eltern-Bereich).
-    - `PdfPig` (PDF) und `DocumentFormat.OpenXml` (.docx) als konkrete `ITeacherDocumentTextExtractor`-
-      Implementierungen - beides reine .NET-Bibliotheken ohne Windows-Abhängigkeit, aber noch nicht
-      als NuGet-Referenz eingebunden.
-    - UI im Eltern-Bereich: Datei-Upload-Dialog, Vorschlagsliste mit Inline-Bearbeitung je Entwurf
-      (analog zum bestehenden "Eigene Aufgaben"-Formular), Fach/Klassenstufe-Auswahl vor dem Senden
-      an den Suggester.
+- **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word) über NotebookLM Enterprise**: implementiert
+  (siehe `src/LernTor.ContentGen/TeacherImport/`) und im Eltern-Bereich nutzbar - **aber unverifiziert**.
+  Der manuelle Editor (siehe "Eltern-Features") funktioniert unabhängig davon weiterhin normal.
+  - **⚠️ Wichtiger Hinweis zum Implementierungsstand**: `NotebookLmQuestionSuggester.cs` wurde
+    geschrieben, ohne die offizielle API-Dokumentation
+    (docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks) einsehen zu
+    können - der Netzwerkzugriff auf diesen Host war aus der Entwicklungsumgebung heraus durch die
+    Organisations-Policy blockiert (403, per curl UND WebFetch bestätigt, keine Umgehung versucht).
+    Die Authentifizierung (Google-Dienstkonto/OAuth2 über `Google.Apis.Auth`) folgt etablierten,
+    stabilen Google-Cloud-Konventionen. Die konkreten Endpunkt-Pfade und JSON-Feldnamen
+    (Notebook anlegen/Quelle hochladen/Notebook abfragen) sind dagegen eine begründete
+    Best-Effort-Annahme nach dem Muster anderer Discovery-Engine-APIs und **müssen nach dem ersten
+    echten Testlauf mit echten Zugangsdaten anhand der offiziellen Dokumentation verifiziert/korrigiert
+    werden** - siehe die `// ANNAHME (nicht verifiziert)`-Kommentare direkt im Code. Fehlermeldungen bei
+    HTTP-Fehlern (404 o.ä.) weisen im Eltern-Bereich explizit darauf hin, dass dann der angenommene
+    Endpunkt-Pfad wahrscheinlich nicht stimmt.
+  - **Funktionsweise**: PDF (`PdfPigTextExtractor`) bzw. .docx (`OpenXmlWordTextExtractor`, kein altes
+    binäres .doc) → Fließtext → `NotebookLmQuestionSuggester` legt ein Wegwerf-Notebook an, lädt den
+    Text als Quelle hoch, stellt eine Frage nach strukturiertem JSON mit Quizfragen und löscht das
+    Notebook danach wieder. Ergebnisse sind immer nur Vorschläge (`ExtractedQuestionDraft`, mit
+    `SourceExcerpt` = Textstelle im Original) - Eltern müssen im Eltern-Bereich jeden Vorschlag einzeln
+    über "Übernehmen" bestätigen oder "Verwerfen", bevor er via `CustomQuestionRepository.AddAsync`
+    gespeichert wird. Keine automatische Übernahme ohne menschliche Kontrolle.
+  - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Google-Cloud-Projekt-ID,
+    Region (Standard "global"), Pfad zur JSON-Schlüsseldatei eines GCP-Dienstkontos. Ohne diese drei
+    Angaben bleibt die Funktion inaktiv und wirft beim Versuch, sie zu nutzen, eine klare
+    Fehlermeldung statt stillschweigend nichts zu tun.
+  - **Datenschutz-Hinweis**: Dokumente werden zur Verarbeitung an Google Cloud übertragen - das ist
+    bewusst eine bewusste Entscheidung der Eltern (Konfiguration ist optional/leer per Standard), keine
+    versteckte Standardeinstellung.
+  - **Noch nicht umgesetzt / nice-to-have**: Inline-Bearbeitung einzelner Felder eines Vorschlags vor
+    dem Übernehmen (aktuell nur ganz übernehmen oder ganz verwerfen - Korrekturen sind über den
+    bestehenden manuellen "Eigene Aufgaben"-Editor möglich); lokale LLM-Alternative (Ollama) als
+    zweite `ITeacherQuestionSuggester`-Implementierung für Familien, die keine Cloud-Verarbeitung
+    möchten.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
   KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von

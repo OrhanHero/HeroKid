@@ -4,6 +4,7 @@ using System.Windows;
 using LernTor.App.ViewModels;
 using LernTor.App.Views;
 using LernTor.ContentGen;
+using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Services;
 using LernTor.Data;
 using LernTor.Data.Repositories;
@@ -114,6 +115,15 @@ public partial class App : Application
                 services.AddSingleton<CustomQuestionRepository>();
 
                 services.AddSingleton<KioskLockService>();
+
+                // Automatisches Einlesen von Lehrer-Unterlagen (siehe README): NotebookLmOptions wird
+                // von ParentSettingsViewModel beim Laden der Einstellungen befüllt, da die DI-Container
+                // schon vor dem Laden der AppSettings aus der DB aufgebaut werden.
+                services.AddSingleton<NotebookLmOptions>();
+                services.AddSingleton<ITeacherDocumentTextExtractor, PdfPigTextExtractor>();
+                services.AddSingleton<ITeacherDocumentTextExtractor, OpenXmlWordTextExtractor>();
+                services.AddSingleton<ITeacherQuestionSuggester, NotebookLmQuestionSuggester>();
+                services.AddSingleton<TeacherDocumentImportService>();
 
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();

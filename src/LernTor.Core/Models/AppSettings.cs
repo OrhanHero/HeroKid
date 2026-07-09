@@ -13,4 +13,14 @@ public sealed class AppSettings
     public HashSet<Subject> DisabledSubjects { get; set; } = new();
 
     public bool HardLockShellReplacementEnabled { get; set; } = false;
+
+    /// <summary>GCP-Projekt-ID für die NotebookLM-Enterprise-Anbindung (automatisches Einlesen von
+    /// Lehrer-Unterlagen). Null/leer = Funktion nicht konfiguriert.</summary>
+    public string? NotebookLmProjectId { get; set; }
+
+    /// <summary>GCP-Region/Standort für NotebookLM Enterprise, z.B. "global" oder "us".</summary>
+    public string? NotebookLmLocation { get; set; } = "global";
+
+    /// <summary>Pfad zur JSON-Schlüsseldatei eines GCP-Dienstkontos auf der lokalen Festplatte.</summary>
+    public string? NotebookLmServiceAccountKeyPath { get; set; }
 }

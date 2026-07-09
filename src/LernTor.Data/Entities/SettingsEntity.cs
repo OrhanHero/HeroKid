@@ -9,4 +9,7 @@ public sealed class SettingsEntity
     public string DefaultLanguage { get; set; } = "Deutsch";
     public string DisabledSubjectsJson { get; set; } = "[]";
     public bool HardLockShellReplacementEnabled { get; set; }
+    public string? NotebookLmProjectId { get; set; }
+    public string? NotebookLmLocation { get; set; } = "global";
+    public string? NotebookLmServiceAccountKeyPath { get; set; }
 }

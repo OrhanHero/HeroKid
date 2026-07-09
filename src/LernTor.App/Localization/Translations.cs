@@ -132,6 +132,26 @@ public static class Translations
             ["Parent_CustomQuestions_Empty"] = L("Noch keine eigenen Aufgaben angelegt.", "Henüz kendi sorun yok."),
             ["Parent_CustomQuestions_Delete"] = L("Löschen", "Sil"),
 
+            ["Parent_Import_Title"] = L("Automatisches Einlesen von Lehrer-Unterlagen (NotebookLM)", "Öğretmen belgelerini otomatik içe aktar (NotebookLM)"),
+            ["Parent_Import_Intro"] = L(
+                "Lädt eine PDF- oder Word-Datei hoch und lässt NotebookLM Fragenvorschläge daraus erstellen. " +
+                "Diese Anbindung wurde ohne Zugriff auf die offizielle API-Dokumentation entwickelt und ist " +
+                "unverifiziert - jeder Vorschlag muss geprüft und einzeln bestätigt werden, bevor er gespeichert wird.",
+                "Bir PDF veya Word dosyası yükler ve NotebookLM'nin bundan soru önerileri oluşturmasını sağlar. " +
+                "Bu bağlantı resmi API dokümantasyonuna erişim olmadan geliştirildi ve doğrulanmamıştır - her " +
+                "öneri kaydedilmeden önce kontrol edilip tek tek onaylanmalıdır."),
+            ["Parent_Import_ProjectId"] = L("Google-Cloud-Projekt-ID:", "Google Cloud Proje Kimliği:"),
+            ["Parent_Import_Location"] = L("Region (z.B. \"global\"):", "Bölge (örn. \"global\"):"),
+            ["Parent_Import_KeyPath"] = L("Pfad zur Dienstkonto-Schlüsseldatei (.json):", "Hizmet hesabı anahtar dosyası yolu (.json):"),
+            ["Parent_Import_PickFile"] = L("Datei auswählen…", "Dosya seç…"),
+            ["Parent_Import_NoFile"] = L("Keine Datei ausgewählt.", "Dosya seçilmedi."),
+            ["Parent_Import_Run"] = L("Einlesen starten", "İçe aktarmayı başlat"),
+            ["Parent_Import_Running"] = L("Wird eingelesen…", "İçe aktarılıyor…"),
+            ["Parent_Import_ResultsTitle"] = L("Vorschläge zur Prüfung:", "Kontrol için öneriler:"),
+            ["Parent_Import_Accept"] = L("Übernehmen", "Kabul et"),
+            ["Parent_Import_Discard"] = L("Verwerfen", "Reddet"),
+            ["Parent_Import_SourceExcerpt"] = L("Quelle im Dokument:", "Belgedeki kaynak:"),
+
             ["Common_Back"] = L("Zurück", "Geri"),
         };
 

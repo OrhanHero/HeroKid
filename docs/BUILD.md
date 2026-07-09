@@ -70,11 +70,11 @@ Das fertige Setup landet in `dist\LernTor-Setup-1.0.0.exe`. Der Installer:
 
 Falls du LernTor schon vorher getestet hast, existiert bereits eine `lerntor.db` unter
 `%LOCALAPPDATA%\LernTor\`. Mehrere Features haben seither neue Tabellen/Spalten hinzugefügt oder
-entfernt (Profile, eigene Aufgaben, zuletzt die entfernte `DailyTimeLimitMinutes`-Spalte); da die App
-`EnsureCreated` statt echter EF-Core-Migrationen nutzt, wird eine bereits vorhandene Datenbank
-NICHT automatisch aktualisiert. Bitte vor dem nächsten Start diese Datei löschen (Fortschritt geht
-dabei verloren, das ist in dieser Entwicklungsphase unkritisch) - die App legt beim nächsten Start
-automatisch eine neue Datenbank inkl. der beiden Beispielprofile an.
+entfernt (Profile, eigene Aufgaben, die entfernte `DailyTimeLimitMinutes`-Spalte, zuletzt die
+NotebookLM-Konfigurationsfelder); da die App `EnsureCreated` statt echter EF-Core-Migrationen nutzt,
+wird eine bereits vorhandene Datenbank NICHT automatisch aktualisiert. Bitte vor dem nächsten Start
+diese Datei löschen (Fortschritt geht dabei verloren, das ist in dieser Entwicklungsphase unkritisch)
+- die App legt beim nächsten Start automatisch eine neue Datenbank inkl. der beiden Beispielprofile an.
 
 ## 7. Erststart / Eltern-Passwort
 
