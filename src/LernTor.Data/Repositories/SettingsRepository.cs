@@ -33,10 +33,13 @@ public sealed class SettingsRepository
             NotebookLmProjectId = entity.NotebookLmProjectId,
             NotebookLmLocation = entity.NotebookLmLocation,
             NotebookLmServiceAccountKeyPath = entity.NotebookLmServiceAccountKeyPath,
-            TeacherImportProvider = Enum.TryParse<TeacherImportProvider>(entity.TeacherImportProvider, out var provider)
-                ? provider
-                : TeacherImportProvider.NotebookLm,
-            LocalLlmModelPath = entity.LocalLlmModelPath
+            TeacherImportProvider = Enum.TryParse<LlmProvider>(entity.TeacherImportProvider, out var importProvider)
+                ? importProvider
+                : LlmProvider.NotebookLm,
+            LocalLlmModelPath = entity.LocalLlmModelPath,
+            HomeworkChatProvider = Enum.TryParse<LlmProvider>(entity.HomeworkChatProvider, out var chatProvider)
+                ? chatProvider
+                : LlmProvider.LocalLlm
         };
     }
 
@@ -59,6 +62,7 @@ public sealed class SettingsRepository
         entity.NotebookLmServiceAccountKeyPath = settings.NotebookLmServiceAccountKeyPath;
         entity.TeacherImportProvider = settings.TeacherImportProvider.ToString();
         entity.LocalLlmModelPath = settings.LocalLlmModelPath;
+        entity.HomeworkChatProvider = settings.HomeworkChatProvider.ToString();
 
         await _db.SaveChangesAsync(cancellationToken);
     }

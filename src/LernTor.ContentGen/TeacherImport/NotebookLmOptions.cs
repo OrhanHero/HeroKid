@@ -2,9 +2,12 @@ namespace LernTor.ContentGen.TeacherImport;
 
 /// <summary>
 /// Konfiguration für die Anbindung an die NotebookLM-Enterprise-API (Google Cloud). Wird vom
-/// Eltern-Bereich befüllt (siehe ParentSettingsViewModel) und in <see cref="NotebookLmQuestionSuggester"/>
-/// gelesen. Absichtlich eine eigene, mutable Options-Klasse statt direkt <c>AppSettings</c> (LernTor.Data)
-/// zu referenzieren: LernTor.ContentGen darf laut Architektur nicht von LernTor.Data abhängen.
+/// Eltern-Bereich befüllt (siehe ParentSettingsViewModel) und über <see cref="Llm.NotebookLmClient"/>
+/// sowohl vom Lehrer-Import (<see cref="NotebookLmQuestionSuggester"/>) als auch vom KI-Lernchat
+/// (<c>NotebookLmHomeworkHelpChatService</c>) gelesen - dieselben Zugangsdaten gelten für beide
+/// Features. Absichtlich eine eigene, mutable Options-Klasse statt direkt <c>AppSettings</c>
+/// (LernTor.Data) zu referenzieren: LernTor.ContentGen darf laut Architektur nicht von LernTor.Data
+/// abhängen.
 /// </summary>
 public sealed class NotebookLmOptions
 {

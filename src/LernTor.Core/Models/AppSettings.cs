@@ -25,9 +25,13 @@ public sealed class AppSettings
     public string? NotebookLmServiceAccountKeyPath { get; set; }
 
     /// <summary>Welcher LLM-Anbieter das automatische Einlesen von Lehrer-Unterlagen durchführt.</summary>
-    public TeacherImportProvider TeacherImportProvider { get; set; } = TeacherImportProvider.NotebookLm;
+    public LlmProvider TeacherImportProvider { get; set; } = LlmProvider.NotebookLm;
 
     /// <summary>Pfad zu einer lokalen GGUF-Modelldatei für die lokale LLM-Alternative (LLamaSharp).
     /// Null/leer = Funktion nicht konfiguriert.</summary>
     public string? LocalLlmModelPath { get; set; }
+
+    /// <summary>Welcher LLM-Anbieter den KI-Lernchat für Kinder durchführt (siehe Eltern-Features).
+    /// Standard: lokal, damit Kinder-Fragen/Dokumenttexte im Standardfall nie den PC verlassen.</summary>
+    public LlmProvider HomeworkChatProvider { get; set; } = LlmProvider.LocalLlm;
 }

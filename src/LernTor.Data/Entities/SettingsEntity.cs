@@ -14,4 +14,5 @@ public sealed class SettingsEntity
     public string? NotebookLmServiceAccountKeyPath { get; set; }
     public string TeacherImportProvider { get; set; } = "NotebookLm";
     public string? LocalLlmModelPath { get; set; }
+    public string HomeworkChatProvider { get; set; } = "LocalLlm";
 }

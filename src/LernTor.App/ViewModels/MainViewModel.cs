@@ -3,6 +3,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LernTor.App.Localization;
 using LernTor.ContentGen;
+using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Core.Services;
@@ -29,6 +30,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly RssNewsService _newsService;
     private readonly QuizComposer _quizComposer;
     private readonly KioskLockService _kioskLock;
+    private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly Random _random = new();
 
     private readonly List<QuizQuestion> _collectedNewsQuestions = new();
@@ -59,7 +61,8 @@ public sealed partial class MainViewModel : ObservableObject
         CustomQuestionRepository customQuestionRepo,
         RssNewsService newsService,
         QuizComposer quizComposer,
-        KioskLockService kioskLock)
+        KioskLockService kioskLock,
+        IHomeworkHelpChatService homeworkChat)
     {
         _gate = gate;
         _scoring = scoring;
@@ -71,6 +74,7 @@ public sealed partial class MainViewModel : ObservableObject
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
+        _homeworkChat = homeworkChat;
 
         // Zeigt Datum/Uhrzeit im Kiosk-Fenster an - nutzt die lokale PC-Systemuhr (DateTime.Now),
         // keine Netzwerkzeit.
@@ -165,7 +169,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async Task<NewsViewModel> BuildNewsViewModelAsync()
     {
         var articles = await _newsService.LoadCuratedArticlesAsync();
-        return new NewsViewModel(articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted);
+        return new NewsViewModel(articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted, _homeworkChat);
     }
 
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)
@@ -196,7 +200,7 @@ public sealed partial class MainViewModel : ObservableObject
         var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, recentlySeen);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
         var questions = generated.Concat(custom).OrderBy(_ => _random.Next()).ToList();
-        return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject));
+        return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject), _homeworkChat);
     }
 
     private async void OnExerciseQuestionAnswered(Subject subject, QuestionOutcome outcome, QuizQuestion question)
@@ -236,7 +240,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         var finalQuestions = questions.Concat(customQuestions).OrderBy(_ => _random.Next()).ToList();
 
-        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted);
+        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted, _homeworkChat);
     }
 
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)

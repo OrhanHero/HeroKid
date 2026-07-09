@@ -70,6 +70,9 @@ public static class Translations
             ["Exercise_Incorrect"] = L("Nicht ganz richtig, aber weiter geht's!", "Tam doğru değil ama devam!"),
             ["Exercise_Explanation"] = L("Erklärung:", "Açıklama:"),
             ["Exercise_ShowHint"] = L("💡 Tipp anzeigen", "💡 İpucu göster"),
+            ["Exercise_AskAi"] = L("🤖 KI fragen", "🤖 Yapay zekaya sor"),
+            ["Exercise_AiThinking"] = L("Die KI überlegt…", "Yapay zeka düşünüyor…"),
+            ["Exercise_SendChat"] = L("Senden", "Gönder"),
             ["Exercise_YourAnswerPlaceholder"] = L("Deine Antwort…", "Cevabın…"),
             ["Exercise_FinishSubject"] = L("Bereich abgeschlossen! Weiter ➜", "Bölüm tamamlandı! Devam ➜"),
 
@@ -140,7 +143,7 @@ public static class Translations
                 "Bir PDF veya Word dosyası yükler ve bir LLM'nin (bulutta NotebookLM veya bu bilgisayarda " +
                 "yerel bir model) bundan soru önerileri oluşturmasını sağlar. Her öneri kaydedilmeden önce " +
                 "kontrol edilip tek tek onaylanmalıdır."),
-            ["Parent_Import_ProviderTitle"] = L("LLM-Anbieter:", "LLM sağlayıcısı:"),
+            ["Parent_Import_ProviderTitle"] = L("LLM-Anbieter für den Lehrer-Import:", "Öğretmen içe aktarma için LLM sağlayıcısı:"),
             ["Parent_Import_ProviderNotebookLm"] = L("NotebookLM (Google Cloud)", "NotebookLM (Google Cloud)"),
             ["Parent_Import_ProviderLocalLlm"] = L("Lokales Modell (auf diesem PC)", "Yerel model (bu bilgisayarda)"),
             ["Parent_Import_ProjectId"] = L("Google-Cloud-Projekt-NUMMER (nicht die Projekt-ID):", "Google Cloud Proje NUMARASI (Proje Kimliği değil):"),
@@ -156,6 +159,15 @@ public static class Translations
             ["Parent_Import_Accept"] = L("Übernehmen", "Kabul et"),
             ["Parent_Import_Discard"] = L("Verwerfen", "Reddet"),
             ["Parent_Import_SourceExcerpt"] = L("Quelle im Dokument:", "Belgedeki kaynak:"),
+
+            ["Parent_Chat_Title"] = L("KI-Lernchat für Kinder", "Çocuklar için yapay zeka öğrenme sohbeti"),
+            ["Parent_Chat_Intro"] = L(
+                "Dein Kind kann in jeder Übung/News/Quizfrage über den \"🤖 KI fragen\"-Button Rückfragen " +
+                "zu einer Aufgabe stellen - wie bei einem Taschenrechner, nicht als Lösungsautomat: die KI " +
+                "ist angewiesen, nie direkt die richtige Antwort zu verraten, sondern nur Denkanstöße zu geben.",
+                "Çocuğun her alıştırmada/haberde/sınav sorusunda \"🤖 Yapay zekaya sor\" düğmesiyle bir " +
+                "göreve dair sorular sorabilir - bir hesap makinesi gibi, çözüm otomatı gibi değil: yapay " +
+                "zekaya doğru cevabı asla doğrudan söylememesi, sadece ipuçları vermesi talimatı verilmiştir."),
 
             ["Common_Back"] = L("Zurück", "Geri"),
         };

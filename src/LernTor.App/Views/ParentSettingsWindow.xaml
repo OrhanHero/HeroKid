@@ -172,8 +172,42 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Intro]}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
 
+                <!-- Anbieter-Konfiguration gilt geteilt für Lehrer-Import UND KI-Lernchat (siehe unten) -
+                     deshalb immer sichtbar, unabhängig davon, welcher der beiden Anbieter je Funktion
+                     gerade aktiv ist. -->
+                <UniformGrid Columns="2" Margin="0,0,0,10">
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ProjectId]}" FontSize="13" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding NotebookLmProjectId, UpdateSourceTrigger=PropertyChanged}" Padding="6" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Location]}" FontSize="13" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding NotebookLmLocation, UpdateSourceTrigger=PropertyChanged}" Padding="6" />
+                    </StackPanel>
+                </UniformGrid>
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_KeyPath]}" FontSize="13" Margin="0,0,0,4" />
+                <TextBox Text="{Binding NotebookLmServiceAccountKeyPath, UpdateSourceTrigger=PropertyChanged}" Padding="6" Margin="0,0,0,16" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_LocalModelPath]}" FontSize="13" Margin="0,0,0,4" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_PickModelFile]}"
+                            Style="{StaticResource RoundedButton}" Margin="0,0,12,0" Command="{Binding PickLocalLlmModelFileCommand}" />
+                    <TextBlock Text="{Binding LocalLlmModelPath}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="400">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LocalLlmModelPath}" Value="">
+                                        <Setter Property="Text" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_NoFile]}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ProviderTitle]}" FontSize="13" Margin="0,0,0,4" />
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                     <RadioButton Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ProviderNotebookLm]}"
                                   Margin="0,0,20,0" VerticalAlignment="Center"
                                   IsChecked="{Binding TeacherImportProvider, Converter={StaticResource ProviderToBool}, ConverterParameter=NotebookLm}" />
@@ -182,40 +216,19 @@
                                   IsChecked="{Binding TeacherImportProvider, Converter={StaticResource ProviderToBool}, ConverterParameter=LocalLlm}" />
                 </StackPanel>
 
-                <StackPanel Visibility="{Binding TeacherImportProvider, Converter={StaticResource ProviderToVis}, ConverterParameter=NotebookLm}">
-                    <UniformGrid Columns="2" Margin="0,0,0,10">
-                        <StackPanel Margin="0,0,12,0">
-                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ProjectId]}" FontSize="13" Margin="0,0,0,4" />
-                            <TextBox Text="{Binding NotebookLmProjectId, UpdateSourceTrigger=PropertyChanged}" Padding="6" />
-                        </StackPanel>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Location]}" FontSize="13" Margin="0,0,0,4" />
-                            <TextBox Text="{Binding NotebookLmLocation, UpdateSourceTrigger=PropertyChanged}" Padding="6" />
-                        </StackPanel>
-                    </UniformGrid>
-
-                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_KeyPath]}" FontSize="13" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding NotebookLmServiceAccountKeyPath, UpdateSourceTrigger=PropertyChanged}" Padding="6" Margin="0,0,0,16" />
-                </StackPanel>
-
-                <StackPanel Visibility="{Binding TeacherImportProvider, Converter={StaticResource ProviderToVis}, ConverterParameter=LocalLlm}"
-                            Margin="0,0,0,16">
-                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_LocalModelPath]}" FontSize="13" Margin="0,0,0,4" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_PickModelFile]}"
-                                Style="{StaticResource RoundedButton}" Margin="0,0,12,0" Command="{Binding PickLocalLlmModelFileCommand}" />
-                        <TextBlock Text="{Binding LocalLlmModelPath}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="400">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding LocalLlmModelPath}" Value="">
-                                            <Setter Property="Text" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_NoFile]}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
+                <!-- KI-Lernchat für Kinder (siehe README): eigener, unabhängiger Anbieter-Schalter,
+                     Standard lokal - nutzt dieselben Zugangsdaten/Modelldatei wie oben. -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Chat_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Chat_Intro]}"
+                           Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <RadioButton Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ProviderLocalLlm]}"
+                                  Margin="0,0,20,0" VerticalAlignment="Center"
+                                  IsChecked="{Binding ChatProvider, Converter={StaticResource ProviderToBool}, ConverterParameter=LocalLlm}" />
+                    <RadioButton Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ProviderNotebookLm]}"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding ChatProvider, Converter={StaticResource ProviderToBool}, ConverterParameter=NotebookLm}" />
                 </StackPanel>
 
                 <UniformGrid Columns="2" Margin="0,0,0,10">

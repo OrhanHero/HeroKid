@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Models;
 
 namespace LernTor.App.ViewModels;
@@ -10,6 +11,7 @@ public sealed partial class NewsViewModel : ObservableObject
     private readonly IReadOnlyList<NewsArticle> _articles;
     private readonly Action<NewsArticle, QuestionOutcome, QuizQuestion> _onArticleAnswered;
     private readonly Action<IReadOnlyList<QuizQuestion>> _onSectionCompleted;
+    private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly List<QuizQuestion> _allAskedQuestions = new();
 
     [ObservableProperty]
@@ -32,11 +34,13 @@ public sealed partial class NewsViewModel : ObservableObject
         IReadOnlyList<NewsArticle> articles,
         HashSet<string> alreadyCompletedIds,
         Action<NewsArticle, QuestionOutcome, QuizQuestion> onArticleAnswered,
-        Action<IReadOnlyList<QuizQuestion>> onSectionCompleted)
+        Action<IReadOnlyList<QuizQuestion>> onSectionCompleted,
+        IHomeworkHelpChatService homeworkChat)
     {
         _articles = articles;
         _onArticleAnswered = onArticleAnswered;
         _onSectionCompleted = onSectionCompleted;
+        _homeworkChat = homeworkChat;
 
         // Bereits an einem Vortag abgeschlossene Artikel dieser Session überspringen (Fortschritt aus Absturz/Neustart).
         while (CurrentIndex < _articles.Count && alreadyCompletedIds.Contains(_articles[CurrentIndex].Id))
@@ -62,7 +66,7 @@ public sealed partial class NewsViewModel : ObservableObject
         foreach (var question in CurrentArticle.ComprehensionQuestions)
         {
             _allAskedQuestions.Add(question);
-            CurrentQuestions.Add(new QuestionAnswerViewModel(question, OnQuestionSubmitted));
+            CurrentQuestions.Add(new QuestionAnswerViewModel(question, _homeworkChat, OnQuestionSubmitted));
         }
 
         CanProceed = CurrentQuestions.Count == 0;

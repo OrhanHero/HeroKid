@@ -29,6 +29,57 @@
                 </Border>
             </StackPanel>
 
+            <!-- KI-Lernchat: Kinder können hier wie mit einem Taschenrechner zu jeder Aufgabe nachfragen,
+                 in jeder Ansicht (News/Übungen/Abschlussquiz), da QuestionCard überall verwendet wird -->
+            <StackPanel Margin="0,0,0,16">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AskAi]}"
+                        Style="{StaticResource OptionButton}" HorizontalAlignment="Left"
+                        Command="{Binding ToggleChatCommand}" />
+
+                <Border Visibility="{Binding IsChatOpen, Converter={StaticResource BoolToVis}}"
+                        Style="{StaticResource CardBorder}" Padding="12" Margin="0,8,0,0">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding ChatMessages}" MaxHeight="260">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="8" Padding="10,6" Margin="0,4" MaxWidth="560">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Role}" Value="Kind">
+                                                        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Style="{StaticResource BodyText}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AiThinking]}"
+                                   Visibility="{Binding IsChatLoading, Converter={StaticResource BoolToVis}}"
+                                   Style="{StaticResource BodyText}" FontStyle="Italic" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding ChatErrorMessage}" Foreground="{StaticResource ErrorBrush}"
+                                   TextWrapping="Wrap" Margin="0,4,0,0"
+                                   Visibility="{Binding ChatErrorMessage, Converter={StaticResource EmptyStringToVis}}" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBox Width="360" Padding="8"
+                                     Text="{Binding ChatInputText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding IsChatLoading, Converter={StaticResource InverseBool}}" />
+                            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_SendChat]}"
+                                    Style="{StaticResource RoundedButton}" Margin="8,0,0,0"
+                                    Command="{Binding SendChatMessageCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
             <!-- Taschenrechner-Rechenhilfe bei offenen Mathematik-Aufgaben -->
             <controls:CalculatorControl Visibility="{Binding ShowCalculator, Converter={StaticResource BoolToVis}}"
                                          InsertRequested="Calculator_InsertRequested" Margin="0,0,0,16" />

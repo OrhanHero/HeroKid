@@ -3,6 +3,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
+using LernTor.ContentGen.HomeworkChat;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
@@ -24,6 +25,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly NotebookLmOptions _notebookLmOptions;
     private readonly LocalLlmOptions _localLlmOptions;
     private readonly TeacherImportProviderOptions _providerOptions;
+    private readonly HomeworkChatProviderOptions _chatProviderOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
 
     private AppSettings _settings = new();
@@ -127,10 +129,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     /// <summary>Welcher Anbieter für das automatische Einlesen aktiv ist (Cloud vs. lokal).</summary>
     [ObservableProperty]
-    private TeacherImportProvider teacherImportProvider = TeacherImportProvider.NotebookLm;
+    private LlmProvider teacherImportProvider = LlmProvider.NotebookLm;
 
-    public IReadOnlyList<TeacherImportProvider> AvailableTeacherImportProviders { get; } =
-        Enum.GetValues<TeacherImportProvider>().ToList();
+    /// <summary>Welcher Anbieter für den KI-Lernchat der Kinder aktiv ist. Standard lokal.</summary>
+    [ObservableProperty]
+    private LlmProvider chatProvider = LlmProvider.LocalLlm;
+
+    public IReadOnlyList<LlmProvider> AvailableLlmProviders { get; } =
+        Enum.GetValues<LlmProvider>().ToList();
 
     [ObservableProperty]
     private Subject importSubject = Subject.Mathematik;
@@ -163,6 +169,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         NotebookLmOptions notebookLmOptions,
         LocalLlmOptions localLlmOptions,
         TeacherImportProviderOptions providerOptions,
+        HomeworkChatProviderOptions chatProviderOptions,
         TeacherDocumentImportService teacherImportService)
     {
         _settingsRepo = settingsRepo;
@@ -174,6 +181,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _notebookLmOptions = notebookLmOptions;
         _localLlmOptions = localLlmOptions;
         _providerOptions = providerOptions;
+        _chatProviderOptions = chatProviderOptions;
         _teacherImportService = teacherImportService;
     }
 
@@ -187,6 +195,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         NotebookLmServiceAccountKeyPath = _settings.NotebookLmServiceAccountKeyPath ?? string.Empty;
         LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
         TeacherImportProvider = _settings.TeacherImportProvider;
+        ChatProvider = _settings.HomeworkChatProvider;
         ApplyNotebookLmOptions();
         ApplyLocalLlmOptions();
         ApplyProviderOptions();
@@ -207,6 +216,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void ApplyProviderOptions()
     {
         _providerOptions.Provider = TeacherImportProvider;
+        _chatProviderOptions.Provider = ChatProvider;
     }
 
     [RelayCommand]
@@ -319,6 +329,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _settings.NotebookLmServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
         _settings.LocalLlmModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
         _settings.TeacherImportProvider = TeacherImportProvider;
+        _settings.HomeworkChatProvider = ChatProvider;
         ApplyNotebookLmOptions();
         ApplyLocalLlmOptions();
         ApplyProviderOptions();

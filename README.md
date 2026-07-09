@@ -184,15 +184,47 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
       real von nuget.org heruntergeladen und die kompilierte DLL per CLR-Metadaten-Analyse geprüft
       (nicht nur aus Dokumentation/Training geraten): `ModelParams(string modelPath)`-Konstruktor mit
       settable `ContextSize`/`GpuLayerCount`-Properties, statisches `LLamaWeights.LoadFromFile(ModelParams)`,
-      instanzseitiges `LLamaWeights.CreateContext(ModelParams, ILogger?)`,
-      `StatelessExecutor(LLamaWeights, ModelParams, ILogger?)`-Konstruktor sowie
+      `StatelessExecutor(LLamaWeights, IContextParams, ILogger?)`-Konstruktor (baut sich seinen
+      Inferenz-Kontext laut Metadaten-Analyse intern selbst auf - ein separat per
+      `LLamaWeights.CreateContext(...)` erzeugter Kontext wird gar nicht entgegengenommen und wurde
+      aus dem Code entfernt, nachdem das bei der Umsetzung des Lernchats auffiel) sowie
       `InferAsync(string, InferenceParams?, CancellationToken)`, das laut TypeRef-Analyse
       `IAsyncEnumerable<string>` liefert (per `await foreach` zum vollständigen Antworttext
-      zusammengesetzt). `LLamaWeights` und `LLamaContext` implementieren beide `IDisposable`.
+      zusammengesetzt). `LLamaWeights` implementiert `IDisposable`.
     - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Anbieter-Auswahl
       (Radio-Buttons) sowie Pfad zur lokalen `.gguf`-Modelldatei über einen Datei-Dialog. Ohne gültige
       Modelldatei bleibt die lokale Variante inaktiv und wirft beim Versuch, sie zu nutzen, eine klare
       Fehlermeldung.
+    - `NotebookLmClient` (`src/LernTor.ContentGen/Llm/NotebookLmClient.cs`) und `LocalLlmModelHost`
+      (`src/LernTor.ContentGen/Llm/LocalLlmModelHost.cs`) kapseln die eigentliche Cloud-/Modell-Logik
+      und werden von BEIDEN KI-Features geteilt (Lehrer-Import und KI-Lernchat, siehe unten) -
+      `LocalLlmModelHost` hält das lokale Modell dabei nur einmal im Speicher, egal welches Feature es
+      zuerst anfordert, statt es bei jedem Aufruf neu von der Festplatte zu laden.
+- **KI-Lernchat für Kinder** (`src/LernTor.App/Controls/QuestionCard.xaml`, "🤖 KI fragen"-Button):
+  Kinder können zu jeder Aufgabe - in News, Übungen und im Abschlussquiz gleichermaßen, da alle drei
+  dieselbe `QuestionCard` verwenden - dem KI-Assistenten Rückfragen stellen, so wie sie einen
+  Taschenrechner oder ein Nachschlagewerk benutzen würden. Bewusst kein "gib mir die Lösung"-Automat:
+  der Prompt (`HomeworkChatPromptBuilder`, `src/LernTor.ContentGen/HomeworkChat/`) weist die KI
+  ausdrücklich an, nie direkt die fertige Antwort zu verraten, sondern durch Rückfragen und kleine
+  Denkanstöße zu helfen. Als zusätzliche, strukturelle Absicherung (Anweisungsbefolgung allein ist bei
+  kleinen/lokalen Modellen nicht zuverlässig genug) bekommt das Modell `Question.CorrectAnswers`/
+  `Question.Explanation` erst gar nicht in den Prompt - was es nicht kennt, kann es auch nicht
+  versehentlich verraten.
+  - **Eigener Anbieter-Schalter, Standard lokal**: `AppSettings.HomeworkChatProvider`
+    (`LlmProvider.LocalLlm` per Standard) ist unabhängig von `TeacherImportProvider` wählbar - ein
+    Elternteil kann z.B. NotebookLM für den (seltenen) Lehrer-Import nutzen, aber den (häufigeren)
+    Kinder-Chat bewusst lokal lassen, damit Fragen/Aufgabentexte der Kinder ohne explizite
+    Entscheidung nie in die Cloud gehen. `CompositeHomeworkHelpChatService` leitet analog zu
+    `CompositeTeacherQuestionSuggester` an die gewählte Implementierung weiter.
+  - **NotebookLM-Variante**: da NotebookLMs API dokumentbasiert arbeitet, wird pro Chat-Nachricht ein
+    Wegwerf-Notebook mit dem Aufgabenkontext als Quelle angelegt und danach wieder gelöscht - anders
+    als beim lokalen Modell gibt es keinen zwischen Nachrichten gehaltenen Zustand. Bei aktiver Nutzung
+    kann das die NotebookLM-Tageskontingente (s.o.) schneller ausschöpfen; genau dafür ist lokal der
+    Standard.
+  - **Nicht umgesetzt / bewusste Vereinfachung**: die NotebookLM-Chat-Variante nutzt für jede Nachricht
+    ein frisches Notebook statt eines über die Konversation hinweg offen gehaltenen - das vermeidet
+    Session-Lifecycle-Verwaltung (Notebook öffnen bei erster Nachricht, schließen beim Verlassen der
+    Aufgabe), kostet dafür etwas mehr Kontingent bei mehreren Rückfragen zur selben Aufgabe.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
   KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von

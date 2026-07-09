@@ -18,8 +18,7 @@
             <conv:SubjectToTitleConverter x:Key="SubjectToTitle" />
             <conv:ProfileToSubtitleConverter x:Key="ProfileToSubtitle" />
             <conv:FormatWithArgConverter x:Key="FormatWithArg" />
-            <conv:TeacherImportProviderToBooleanConverter x:Key="ProviderToBool" />
-            <conv:TeacherImportProviderToVisibilityConverter x:Key="ProviderToVis" />
+            <conv:LlmProviderToBooleanConverter x:Key="ProviderToBool" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

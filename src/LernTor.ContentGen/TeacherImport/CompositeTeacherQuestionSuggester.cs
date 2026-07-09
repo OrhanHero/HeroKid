@@ -33,7 +33,7 @@ public sealed class CompositeTeacherQuestionSuggester : ITeacherQuestionSuggeste
     {
         ITeacherQuestionSuggester active = _providerOptions.Provider switch
         {
-            TeacherImportProvider.LocalLlm => _localLlm,
+            LlmProvider.LocalLlm => _localLlm,
             _ => _notebookLm
         };
 

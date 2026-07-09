@@ -1,10 +1,11 @@
 namespace LernTor.Core.Enums;
 
 /// <summary>
-/// Welcher LLM-Anbieter das automatische Einlesen von Lehrer-Unterlagen (siehe
-/// LernTor.ContentGen.TeacherImport) durchführt. Von Eltern im Eltern-Bereich wählbar.
+/// Welcher LLM-Anbieter eine bestimmte KI-Funktion durchführt - verwendet sowohl vom automatischen
+/// Einlesen von Lehrer-Unterlagen (LernTor.ContentGen.TeacherImport) als auch vom KI-Lernchat für
+/// Kinder (LernTor.ContentGen.HomeworkChat). Von Eltern je Funktion unabhängig wählbar.
 /// </summary>
-public enum TeacherImportProvider
+public enum LlmProvider
 {
     /// <summary>Google NotebookLM Enterprise (Cloud, benötigt GCP-Projekt + Dienstkonto).</summary>
     NotebookLm,

@@ -9,5 +9,5 @@ namespace LernTor.ContentGen.TeacherImport;
 /// </summary>
 public sealed class TeacherImportProviderOptions
 {
-    public TeacherImportProvider Provider { get; set; } = TeacherImportProvider.NotebookLm;
+    public LlmProvider Provider { get; set; } = LlmProvider.NotebookLm;
 }

@@ -1,5 +1,7 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 
@@ -13,6 +15,7 @@ namespace LernTor.App.ViewModels;
 public sealed partial class QuestionAnswerViewModel : ObservableObject
 {
     private readonly Action<QuestionAnswerViewModel>? _onSubmitted;
+    private readonly IHomeworkHelpChatService _homeworkChat;
 
     public QuizQuestion Question { get; }
 
@@ -66,14 +69,72 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
 
     private static readonly Random ShuffleRandom = new();
 
-    public QuestionAnswerViewModel(QuizQuestion question, Action<QuestionAnswerViewModel>? onSubmitted = null)
+    // --- KI-Lernchat: Kinder können wie mit einem Taschenrechner zu jeder Aufgabe nachfragen ---
+
+    [ObservableProperty]
+    private bool isChatOpen;
+
+    [ObservableProperty]
+    private string chatInputText = string.Empty;
+
+    [ObservableProperty]
+    private bool isChatLoading;
+
+    [ObservableProperty]
+    private string chatErrorMessage = string.Empty;
+
+    public ObservableCollection<ChatMessage> ChatMessages { get; } = new();
+
+    public QuestionAnswerViewModel(
+        QuizQuestion question,
+        IHomeworkHelpChatService homeworkChat,
+        Action<QuestionAnswerViewModel>? onSubmitted = null)
     {
         Question = question;
+        _homeworkChat = homeworkChat;
         _onSubmitted = onSubmitted;
         DisplayOptions = question.Options.Count == 0
             ? question.Options
             : question.Options.OrderBy(_ => ShuffleRandom.Next()).ToList();
     }
+
+    [RelayCommand]
+    private void ToggleChat() => IsChatOpen = !IsChatOpen;
+
+    [RelayCommand(CanExecute = nameof(CanSendChatMessage))]
+    private async Task SendChatMessageAsync()
+    {
+        var text = ChatInputText.Trim();
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
+        ChatErrorMessage = string.Empty;
+        ChatMessages.Add(new ChatMessage { Role = ChatRole.Kind, Text = text });
+        ChatInputText = string.Empty;
+        IsChatLoading = true;
+
+        try
+        {
+            var reply = await _homeworkChat.AskAsync(Question, ChatMessages.ToList());
+            ChatMessages.Add(new ChatMessage { Role = ChatRole.Assistent, Text = reply });
+        }
+        catch (Exception ex)
+        {
+            ChatErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsChatLoading = false;
+        }
+    }
+
+    private bool CanSendChatMessage() => !IsChatLoading && !string.IsNullOrWhiteSpace(ChatInputText);
+
+    partial void OnChatInputTextChanged(string value) => SendChatMessageCommand.NotifyCanExecuteChanged();
+
+    partial void OnIsChatLoadingChanged(bool value) => SendChatMessageCommand.NotifyCanExecuteChanged();
 
     [RelayCommand]
     private void SelectOption(string option)

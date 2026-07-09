@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 
@@ -15,6 +16,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
     private readonly IReadOnlyList<QuizQuestion> _questions;
     private readonly Action<Subject, QuestionOutcome, QuizQuestion> _onQuestionAnswered;
     private readonly Action _onSubjectCompleted;
+    private readonly IHomeworkHelpChatService _homeworkChat;
 
     [ObservableProperty]
     private int currentIndex;
@@ -31,12 +33,14 @@ public sealed partial class ExerciseViewModel : ObservableObject
         Subject subject,
         IReadOnlyList<QuizQuestion> questions,
         Action<Subject, QuestionOutcome, QuizQuestion> onQuestionAnswered,
-        Action onSubjectCompleted)
+        Action onSubjectCompleted,
+        IHomeworkHelpChatService homeworkChat)
     {
         Subject = subject;
         _questions = questions;
         _onQuestionAnswered = onQuestionAnswered;
         _onSubjectCompleted = onSubjectCompleted;
+        _homeworkChat = homeworkChat;
 
         LoadCurrent();
     }
@@ -49,7 +53,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
             return;
         }
 
-        CurrentQuestion = new QuestionAnswerViewModel(_questions[CurrentIndex], OnAnswered);
+        CurrentQuestion = new QuestionAnswerViewModel(_questions[CurrentIndex], _homeworkChat, OnAnswered);
         OnPropertyChanged(nameof(DisplayIndex));
         OnPropertyChanged(nameof(IsLastQuestion));
     }

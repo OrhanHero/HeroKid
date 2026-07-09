@@ -1,10 +1,12 @@
 namespace LernTor.ContentGen.TeacherImport;
 
 /// <summary>
-/// Konfiguration für die lokale LLM-Alternative zu NotebookLM (siehe <see cref="LocalLlmQuestionSuggester"/>):
-/// ein GGUF-Modell wird direkt im App-Prozess geladen (LLamaSharp/llama.cpp), keine Cloud, kein Konto,
-/// keine laufenden Kosten - dafür muss der Elternteil eine Modelldatei selbst herunterladen (nicht Teil
-/// des Installers, typischerweise mehrere Gigabyte) und die App braucht mehr RAM/CPU-Zeit pro Antwort.
+/// Konfiguration für die lokale LLM-Alternative zu NotebookLM: ein GGUF-Modell wird direkt im
+/// App-Prozess geladen (LLamaSharp/llama.cpp, siehe <see cref="Llm.LocalLlmModelHost"/>), keine Cloud,
+/// kein Konto, keine laufenden Kosten - dafür muss der Elternteil eine Modelldatei selbst
+/// herunterladen (nicht Teil des Installers, typischerweise mehrere Gigabyte) und die App braucht mehr
+/// RAM/CPU-Zeit pro Antwort. Gilt sowohl für den Lehrer-Import (<see cref="LocalLlmQuestionSuggester"/>)
+/// als auch für den KI-Lernchat (<c>LocalLlmHomeworkHelpChatService</c>, dort der Standard-Anbieter).
 /// Eigene, mutable Options-Klasse aus demselben Architekturgrund wie <see cref="NotebookLmOptions"/>:
 /// LernTor.ContentGen darf nicht von LernTor.Data abhängen.
 /// </summary>

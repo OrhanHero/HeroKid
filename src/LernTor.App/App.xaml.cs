@@ -4,6 +4,8 @@ using System.Windows;
 using LernTor.App.ViewModels;
 using LernTor.App.Views;
 using LernTor.ContentGen;
+using LernTor.ContentGen.HomeworkChat;
+using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Services;
 using LernTor.Data;
@@ -116,13 +118,20 @@ public partial class App : Application
 
                 services.AddSingleton<KioskLockService>();
 
-                // Automatisches Einlesen von Lehrer-Unterlagen (siehe README): die Options-Objekte werden
-                // von ParentSettingsViewModel beim Laden der Einstellungen befüllt, da die DI-Container
-                // schon vor dem Laden der AppSettings aus der DB aufgebaut werden. CompositeTeacherQuestionSuggester
-                // leitet je nach TeacherImportProviderOptions.Provider an NotebookLM (Cloud) oder das
-                // lokale LLamaSharp-Modell weiter - Eltern wählen den Anbieter im Eltern-Bereich.
+                // Gemeinsame LLM-Infrastruktur (siehe README): die Options-Objekte werden von
+                // ParentSettingsViewModel beim Laden der Einstellungen befüllt, da die DI-Container schon
+                // vor dem Laden der AppSettings aus der DB aufgebaut werden. NotebookLmClient und
+                // LocalLlmModelHost kapseln die eigentliche Cloud-/Modell-Logik und werden sowohl vom
+                // Lehrer-Import als auch vom KI-Lernchat genutzt (LocalLlmModelHost hält das Modell dabei
+                // nur einmal im Speicher, egal von welchem Feature aus es zuerst gebraucht wird).
                 services.AddSingleton<NotebookLmOptions>();
                 services.AddSingleton<LocalLlmOptions>();
+                services.AddSingleton<NotebookLmClient>();
+                services.AddSingleton<LocalLlmModelHost>();
+
+                // Automatisches Einlesen von Lehrer-Unterlagen: CompositeTeacherQuestionSuggester leitet
+                // je nach TeacherImportProviderOptions.Provider an NotebookLM (Cloud) oder das lokale
+                // LLamaSharp-Modell weiter - Eltern wählen den Anbieter im Eltern-Bereich.
                 services.AddSingleton<TeacherImportProviderOptions>();
                 services.AddSingleton<ITeacherDocumentTextExtractor, PdfPigTextExtractor>();
                 services.AddSingleton<ITeacherDocumentTextExtractor, OpenXmlWordTextExtractor>();
@@ -130,6 +139,14 @@ public partial class App : Application
                 services.AddSingleton<LocalLlmQuestionSuggester>();
                 services.AddSingleton<ITeacherQuestionSuggester, CompositeTeacherQuestionSuggester>();
                 services.AddSingleton<TeacherDocumentImportService>();
+
+                // KI-Lernchat für Kinder (siehe README): Standard-Anbieter ist lokal
+                // (HomeworkChatProviderOptions.Provider = LlmProvider.LocalLlm), damit Aufgaben/Fragen der
+                // Kinder ohne explizite Eltern-Entscheidung nie in die Cloud gehen.
+                services.AddSingleton<HomeworkChatProviderOptions>();
+                services.AddSingleton<NotebookLmHomeworkHelpChatService>();
+                services.AddSingleton<LocalLlmHomeworkHelpChatService>();
+                services.AddSingleton<IHomeworkHelpChatService, CompositeHomeworkHelpChatService>();
 
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
