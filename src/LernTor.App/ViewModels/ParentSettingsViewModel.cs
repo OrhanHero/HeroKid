@@ -22,6 +22,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly KioskLockService _kioskLock;
     private readonly NotebookLmOptions _notebookLmOptions;
+    private readonly LocalLlmOptions _localLlmOptions;
+    private readonly TeacherImportProviderOptions _providerOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
 
     private AppSettings _settings = new();
@@ -118,6 +120,18 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string notebookLmServiceAccountKeyPath = string.Empty;
 
+    // --- Lokale LLM-Alternative (LLamaSharp, siehe README) ---
+
+    [ObservableProperty]
+    private string localLlmModelPath = string.Empty;
+
+    /// <summary>Welcher Anbieter für das automatische Einlesen aktiv ist (Cloud vs. lokal).</summary>
+    [ObservableProperty]
+    private TeacherImportProvider teacherImportProvider = TeacherImportProvider.NotebookLm;
+
+    public IReadOnlyList<TeacherImportProvider> AvailableTeacherImportProviders { get; } =
+        Enum.GetValues<TeacherImportProvider>().ToList();
+
     [ObservableProperty]
     private Subject importSubject = Subject.Mathematik;
 
@@ -147,6 +161,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CustomQuestionRepository customQuestionRepo,
         KioskLockService kioskLock,
         NotebookLmOptions notebookLmOptions,
+        LocalLlmOptions localLlmOptions,
+        TeacherImportProviderOptions providerOptions,
         TeacherDocumentImportService teacherImportService)
     {
         _settingsRepo = settingsRepo;
@@ -156,6 +172,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _customQuestionRepo = customQuestionRepo;
         _kioskLock = kioskLock;
         _notebookLmOptions = notebookLmOptions;
+        _localLlmOptions = localLlmOptions;
+        _providerOptions = providerOptions;
         _teacherImportService = teacherImportService;
     }
 
@@ -167,7 +185,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         NotebookLmProjectId = _settings.NotebookLmProjectId ?? string.Empty;
         NotebookLmLocation = _settings.NotebookLmLocation ?? "global";
         NotebookLmServiceAccountKeyPath = _settings.NotebookLmServiceAccountKeyPath ?? string.Empty;
+        LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
+        TeacherImportProvider = _settings.TeacherImportProvider;
         ApplyNotebookLmOptions();
+        ApplyLocalLlmOptions();
+        ApplyProviderOptions();
     }
 
     private void ApplyNotebookLmOptions()
@@ -175,6 +197,16 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _notebookLmOptions.ProjectId = string.IsNullOrWhiteSpace(NotebookLmProjectId) ? null : NotebookLmProjectId;
         _notebookLmOptions.Location = string.IsNullOrWhiteSpace(NotebookLmLocation) ? "global" : NotebookLmLocation;
         _notebookLmOptions.ServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
+    }
+
+    private void ApplyLocalLlmOptions()
+    {
+        _localLlmOptions.ModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
+    }
+
+    private void ApplyProviderOptions()
+    {
+        _providerOptions.Provider = TeacherImportProvider;
     }
 
     [RelayCommand]
@@ -285,10 +317,30 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _settings.NotebookLmProjectId = string.IsNullOrWhiteSpace(NotebookLmProjectId) ? null : NotebookLmProjectId;
         _settings.NotebookLmLocation = string.IsNullOrWhiteSpace(NotebookLmLocation) ? "global" : NotebookLmLocation;
         _settings.NotebookLmServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
+        _settings.LocalLlmModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
+        _settings.TeacherImportProvider = TeacherImportProvider;
         ApplyNotebookLmOptions();
+        ApplyLocalLlmOptions();
+        ApplyProviderOptions();
 
         await _settingsRepo.SaveAsync(_settings);
         RequestClose?.Invoke();
+    }
+
+    /// <summary>Öffnet einen Datei-Dialog zur Auswahl einer lokalen GGUF-Modelldatei (LLamaSharp).</summary>
+    [RelayCommand]
+    private void PickLocalLlmModelFile()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "GGUF-Modell (*.gguf)|*.gguf",
+            Title = "Lokales LLM-Modell auswählen"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            LocalLlmModelPath = dialog.FileName;
+        }
     }
 
     /// <summary>Öffnet einen Datei-Dialog zur Auswahl einer Lehrer-Unterlage (PDF oder Word .docx).</summary>

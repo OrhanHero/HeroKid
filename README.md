@@ -164,9 +164,35 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
     versteckte Standardeinstellung.
   - **Noch nicht umgesetzt / nice-to-have**: Inline-Bearbeitung einzelner Felder eines Vorschlags vor
     dem Übernehmen (aktuell nur ganz übernehmen oder ganz verwerfen - Korrekturen sind über den
-    bestehenden manuellen "Eigene Aufgaben"-Editor möglich); lokale LLM-Alternative (Ollama) als
-    zweite `ITeacherQuestionSuggester`-Implementierung für Familien, die keine Cloud-Verarbeitung
-    möchten.
+    bestehenden manuellen "Eigene Aufgaben"-Editor möglich).
+  - **Lokale LLM-Alternative (LLamaSharp)**: Für Familien, die keine Cloud-Verarbeitung möchten, gibt
+    es jetzt eine zweite `ITeacherQuestionSuggester`-Implementierung: `LocalLlmQuestionSuggester`
+    (`src/LernTor.ContentGen/TeacherImport/LocalLlmQuestionSuggester.cs`) lädt ein GGUF-Modell direkt
+    im App-Prozess über [LLamaSharp](https://github.com/SciSharp/LLamaSharp) (llama.cpp-Bindings,
+    Pakete `LLamaSharp` + `LLamaSharp.Backend.Cpu`, reines CPU-Backend ohne CUDA-Abhängigkeit). Kein
+    Google-Cloud-Konto, keine laufenden Kosten, das Dokument verlässt nie den PC - dafür läuft die
+    Inferenz auf der CPU des Kiosk-Rechners (je nach Modellgröße mehrere Sekunden bis Minuten pro
+    Import) und Eltern müssen eine GGUF-Modelldatei selbst herunterladen (nicht Teil des Installers,
+    typischerweise mehrere Gigabyte, z.B. ein quantisiertes Llama-3- oder Mistral-Modell).
+    - `CompositeTeacherQuestionSuggester` ist die einzige `ITeacherQuestionSuggester`-Registrierung in
+      der Dependency-Injection und leitet je nach `AppSettings.TeacherImportProvider`
+      (Radio-Buttons "NotebookLM (Cloud)" / "Lokales Modell" im Eltern-Bereich) an die gewählte
+      Implementierung weiter. Beide Implementierungen teilen sich Prompt-Aufbau und JSON-Antwort-
+      Parsing über die gemeinsame `LlmResponseParser`-Klasse, damit sich das Antwortformat nicht
+      zwischen Cloud- und lokalem Modell unterscheidet.
+    - **API-Verifizierung**: wie schon bei den anderen NuGet-Abhängigkeiten wurde `LLamaSharp` 0.27.0
+      real von nuget.org heruntergeladen und die kompilierte DLL per CLR-Metadaten-Analyse geprüft
+      (nicht nur aus Dokumentation/Training geraten): `ModelParams(string modelPath)`-Konstruktor mit
+      settable `ContextSize`/`GpuLayerCount`-Properties, statisches `LLamaWeights.LoadFromFile(ModelParams)`,
+      instanzseitiges `LLamaWeights.CreateContext(ModelParams, ILogger?)`,
+      `StatelessExecutor(LLamaWeights, ModelParams, ILogger?)`-Konstruktor sowie
+      `InferAsync(string, InferenceParams?, CancellationToken)`, das laut TypeRef-Analyse
+      `IAsyncEnumerable<string>` liefert (per `await foreach` zum vollständigen Antworttext
+      zusammengesetzt). `LLamaWeights` und `LLamaContext` implementieren beide `IDisposable`.
+    - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Anbieter-Auswahl
+      (Radio-Buttons) sowie Pfad zur lokalen `.gguf`-Modelldatei über einen Datei-Dialog. Ohne gültige
+      Modelldatei bleibt die lokale Variante inaktiv und wirft beim Versuch, sie zu nutzen, eine klare
+      Fehlermeldung.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
   KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von

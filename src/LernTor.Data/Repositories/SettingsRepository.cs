@@ -32,7 +32,11 @@ public sealed class SettingsRepository
             HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled,
             NotebookLmProjectId = entity.NotebookLmProjectId,
             NotebookLmLocation = entity.NotebookLmLocation,
-            NotebookLmServiceAccountKeyPath = entity.NotebookLmServiceAccountKeyPath
+            NotebookLmServiceAccountKeyPath = entity.NotebookLmServiceAccountKeyPath,
+            TeacherImportProvider = Enum.TryParse<TeacherImportProvider>(entity.TeacherImportProvider, out var provider)
+                ? provider
+                : TeacherImportProvider.NotebookLm,
+            LocalLlmModelPath = entity.LocalLlmModelPath
         };
     }
 
@@ -53,6 +57,8 @@ public sealed class SettingsRepository
         entity.NotebookLmProjectId = settings.NotebookLmProjectId;
         entity.NotebookLmLocation = settings.NotebookLmLocation;
         entity.NotebookLmServiceAccountKeyPath = settings.NotebookLmServiceAccountKeyPath;
+        entity.TeacherImportProvider = settings.TeacherImportProvider.ToString();
+        entity.LocalLlmModelPath = settings.LocalLlmModelPath;
 
         await _db.SaveChangesAsync(cancellationToken);
     }

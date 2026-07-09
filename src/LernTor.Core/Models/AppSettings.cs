@@ -23,4 +23,11 @@ public sealed class AppSettings
 
     /// <summary>Pfad zur JSON-Schlüsseldatei eines GCP-Dienstkontos auf der lokalen Festplatte.</summary>
     public string? NotebookLmServiceAccountKeyPath { get; set; }
+
+    /// <summary>Welcher LLM-Anbieter das automatische Einlesen von Lehrer-Unterlagen durchführt.</summary>
+    public TeacherImportProvider TeacherImportProvider { get; set; } = TeacherImportProvider.NotebookLm;
+
+    /// <summary>Pfad zu einer lokalen GGUF-Modelldatei für die lokale LLM-Alternative (LLamaSharp).
+    /// Null/leer = Funktion nicht konfiguriert.</summary>
+    public string? LocalLlmModelPath { get; set; }
 }

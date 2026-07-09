@@ -132,17 +132,22 @@ public static class Translations
             ["Parent_CustomQuestions_Empty"] = L("Noch keine eigenen Aufgaben angelegt.", "Henüz kendi sorun yok."),
             ["Parent_CustomQuestions_Delete"] = L("Löschen", "Sil"),
 
-            ["Parent_Import_Title"] = L("Automatisches Einlesen von Lehrer-Unterlagen (NotebookLM)", "Öğretmen belgelerini otomatik içe aktar (NotebookLM)"),
+            ["Parent_Import_Title"] = L("Automatisches Einlesen von Lehrer-Unterlagen", "Öğretmen belgelerini otomatik içe aktar"),
             ["Parent_Import_Intro"] = L(
-                "Lädt eine PDF- oder Word-Datei hoch und lässt NotebookLM Fragenvorschläge daraus erstellen. " +
-                "Diese Anbindung wurde ohne Zugriff auf die offizielle API-Dokumentation entwickelt und ist " +
-                "unverifiziert - jeder Vorschlag muss geprüft und einzeln bestätigt werden, bevor er gespeichert wird.",
-                "Bir PDF veya Word dosyası yükler ve NotebookLM'nin bundan soru önerileri oluşturmasını sağlar. " +
-                "Bu bağlantı resmi API dokümantasyonuna erişim olmadan geliştirildi ve doğrulanmamıştır - her " +
-                "öneri kaydedilmeden önce kontrol edilip tek tek onaylanmalıdır."),
+                "Lädt eine PDF- oder Word-Datei hoch und lässt ein LLM (NotebookLM in der Cloud oder ein " +
+                "lokales Modell auf diesem PC) Fragenvorschläge daraus erstellen. Jeder Vorschlag muss " +
+                "geprüft und einzeln bestätigt werden, bevor er gespeichert wird.",
+                "Bir PDF veya Word dosyası yükler ve bir LLM'nin (bulutta NotebookLM veya bu bilgisayarda " +
+                "yerel bir model) bundan soru önerileri oluşturmasını sağlar. Her öneri kaydedilmeden önce " +
+                "kontrol edilip tek tek onaylanmalıdır."),
+            ["Parent_Import_ProviderTitle"] = L("LLM-Anbieter:", "LLM sağlayıcısı:"),
+            ["Parent_Import_ProviderNotebookLm"] = L("NotebookLM (Google Cloud)", "NotebookLM (Google Cloud)"),
+            ["Parent_Import_ProviderLocalLlm"] = L("Lokales Modell (auf diesem PC)", "Yerel model (bu bilgisayarda)"),
             ["Parent_Import_ProjectId"] = L("Google-Cloud-Projekt-NUMMER (nicht die Projekt-ID):", "Google Cloud Proje NUMARASI (Proje Kimliği değil):"),
             ["Parent_Import_Location"] = L("Region (z.B. \"global\"):", "Bölge (örn. \"global\"):"),
             ["Parent_Import_KeyPath"] = L("Pfad zur Dienstkonto-Schlüsseldatei (.json):", "Hizmet hesabı anahtar dosyası yolu (.json):"),
+            ["Parent_Import_LocalModelPath"] = L("Lokale Modelldatei (.gguf):", "Yerel model dosyası (.gguf):"),
+            ["Parent_Import_PickModelFile"] = L("Modelldatei auswählen…", "Model dosyası seç…"),
             ["Parent_Import_PickFile"] = L("Datei auswählen…", "Dosya seç…"),
             ["Parent_Import_NoFile"] = L("Keine Datei ausgewählt.", "Dosya seçilmedi."),
             ["Parent_Import_Run"] = L("Einlesen starten", "İçe aktarmayı başlat"),

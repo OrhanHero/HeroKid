@@ -116,13 +116,19 @@ public partial class App : Application
 
                 services.AddSingleton<KioskLockService>();
 
-                // Automatisches Einlesen von Lehrer-Unterlagen (siehe README): NotebookLmOptions wird
+                // Automatisches Einlesen von Lehrer-Unterlagen (siehe README): die Options-Objekte werden
                 // von ParentSettingsViewModel beim Laden der Einstellungen befüllt, da die DI-Container
-                // schon vor dem Laden der AppSettings aus der DB aufgebaut werden.
+                // schon vor dem Laden der AppSettings aus der DB aufgebaut werden. CompositeTeacherQuestionSuggester
+                // leitet je nach TeacherImportProviderOptions.Provider an NotebookLM (Cloud) oder das
+                // lokale LLamaSharp-Modell weiter - Eltern wählen den Anbieter im Eltern-Bereich.
                 services.AddSingleton<NotebookLmOptions>();
+                services.AddSingleton<LocalLlmOptions>();
+                services.AddSingleton<TeacherImportProviderOptions>();
                 services.AddSingleton<ITeacherDocumentTextExtractor, PdfPigTextExtractor>();
                 services.AddSingleton<ITeacherDocumentTextExtractor, OpenXmlWordTextExtractor>();
-                services.AddSingleton<ITeacherQuestionSuggester, NotebookLmQuestionSuggester>();
+                services.AddSingleton<NotebookLmQuestionSuggester>();
+                services.AddSingleton<LocalLlmQuestionSuggester>();
+                services.AddSingleton<ITeacherQuestionSuggester, CompositeTeacherQuestionSuggester>();
                 services.AddSingleton<TeacherDocumentImportService>();
 
                 services.AddSingleton<MainViewModel>();

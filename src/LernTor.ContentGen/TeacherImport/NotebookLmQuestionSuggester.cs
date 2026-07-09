@@ -1,9 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using Google.Apis.Auth.OAuth2;
 using LernTor.Core.Enums;
 
@@ -23,7 +21,7 @@ namespace LernTor.ContentGen.TeacherImport;
 /// Ressourcen-Pfadschema (<c>projects/{project}/locations/{location}/notebooks/{id}</c>).</item>
 /// <item><see cref="CreateNotebookAsync"/> (<c>notebooks.create</c>), <see cref="UploadSourceAsync"/>
 /// (<c>notebooks.sources.batchCreate</c> mit <c>textContent</c>) und
-/// <see cref="DeleteNotebookAsync"/> (<c>notebooks.batchDelete</c>, ein POST mit <c>names</c>-Array,
+/// <see cref="TryDeleteNotebookAsync"/> (<c>notebooks.batchDelete</c>, ein POST mit <c>names</c>-Array,
 /// KEIN HTTP-DELETE) sind jetzt nach dokumentierten Beispielen implementiert.</item>
 /// <item><b>Weiterhin unverifiziert:</b> <see cref="QueryNotebookAsync"/>. Die Doku (in der
 /// bereitgestellten Fassung) enthält keine eigene REST-Anleitung für die Frage-/Antwort-Funktion -
@@ -76,7 +74,7 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
         {
             var sourceNames = await UploadSourceAsync(accessToken, notebookName, documentText, cancellationToken);
             var answerText = await QueryNotebookAsync(accessToken, notebookName, sourceNames, subject, gradeLevel, cancellationToken);
-            return ParseDrafts(answerText, documentText);
+            return LlmResponseParser.ParseDrafts(answerText, documentText);
         }
         finally
         {
@@ -170,7 +168,7 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
     /// </summary>
     private async Task<string> QueryNotebookAsync(string accessToken, string notebookName, IReadOnlyList<string> sourceNames, Subject subject, GradeLevel gradeLevel, CancellationToken cancellationToken)
     {
-        var prompt = BuildPrompt(subject, gradeLevel);
+        var prompt = LlmResponseParser.BuildPrompt(subject, gradeLevel);
         var url = $"{BaseUrl}/{notebookName}:interactSources";
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
@@ -244,65 +242,6 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
         return response;
     }
 
-    private static string BuildPrompt(Subject subject, GradeLevel gradeLevel)
-    {
-        return
-            $"Erstelle aus dem hochgeladenen Dokument bis zu 10 Quizfragen für ein Kind der {gradeLevel} " +
-            $"im Fach {subject} auf Deutsch. Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in exakt " +
-            "folgendem Format, ohne weiteren Text davor oder danach:\n" +
-            "{\"questions\":[{\"topic\":\"...\",\"prompt\":\"...\",\"type\":\"MultipleChoice|TrueFalse|OpenText\"," +
-            "\"options\":[\"...\"],\"correctAnswers\":[\"...\"],\"explanation\":\"...\",\"helpHint\":\"...|null\"," +
-            "\"sourceExcerpt\":\"...\"}]}\n" +
-            "Bei OpenText-Fragen soll 'options' ein leeres Array sein. 'sourceExcerpt' soll die Textstelle " +
-            "aus dem Dokument enthalten, auf der die Frage beruht.";
-    }
-
-    private static IReadOnlyList<ExtractedQuestionDraft> ParseDrafts(string answerText, string documentText)
-    {
-        var json = ExtractJsonObject(answerText);
-        var parsed = JsonSerializer.Deserialize<NotebookLmAnswerDto>(json, JsonSerializerOptionsProvider.Options);
-
-        if (parsed?.Questions is null || parsed.Questions.Count == 0)
-        {
-            return Array.Empty<ExtractedQuestionDraft>();
-        }
-
-        return parsed.Questions.Select(q => new ExtractedQuestionDraft
-        {
-            Topic = q.Topic ?? string.Empty,
-            Prompt = q.Prompt ?? string.Empty,
-            Type = ParseQuestionType(q.Type),
-            Options = q.Options ?? new List<string>(),
-            CorrectAnswers = q.CorrectAnswers ?? new List<string>(),
-            Explanation = q.Explanation ?? string.Empty,
-            HelpHint = q.HelpHint,
-            SourceExcerpt = string.IsNullOrWhiteSpace(q.SourceExcerpt) ? Truncate(documentText, 200) : q.SourceExcerpt!
-        }).ToList();
-    }
-
-    private static QuestionType ParseQuestionType(string? type) =>
-        Enum.TryParse<QuestionType>(type, ignoreCase: true, out var parsed) ? parsed : QuestionType.OpenText;
-
-    private static string Truncate(string text, int maxLength) =>
-        text.Length <= maxLength ? text : text[..maxLength] + "…";
-
-    /// <summary>
-    /// LLM-Antworten enthalten das erwartete JSON-Objekt manchmal zusätzlich in Markdown-Codeblöcken
-    /// (```json ... ```) oder mit erklärendem Text davor/danach - dieses Verfahren extrahiert robust
-    /// das erste vollständige {...}-Objekt aus der Antwort.
-    /// </summary>
-    private static string ExtractJsonObject(string answerText)
-    {
-        var match = Regex.Match(answerText, @"\{[\s\S]*\}", RegexOptions.None, TimeSpan.FromSeconds(2));
-        if (!match.Success)
-        {
-            throw new InvalidOperationException(
-                "Konnte in der NotebookLM-Antwort kein JSON-Objekt finden. Rohantwort: " + Truncate(answerText, 500));
-        }
-
-        return match.Value;
-    }
-
     private sealed class NotebookResourceDto
     {
         [JsonPropertyName("name")]
@@ -339,46 +278,5 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
 
         [JsonPropertyName("emptyAnswerReason")]
         public string? EmptyAnswerReason { get; set; }
-    }
-
-    private sealed class NotebookLmAnswerDto
-    {
-        [JsonPropertyName("questions")]
-        public List<NotebookLmQuestionDto>? Questions { get; set; }
-    }
-
-    private sealed class NotebookLmQuestionDto
-    {
-        [JsonPropertyName("topic")]
-        public string? Topic { get; set; }
-
-        [JsonPropertyName("prompt")]
-        public string? Prompt { get; set; }
-
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        [JsonPropertyName("options")]
-        public List<string>? Options { get; set; }
-
-        [JsonPropertyName("correctAnswers")]
-        public List<string>? CorrectAnswers { get; set; }
-
-        [JsonPropertyName("explanation")]
-        public string? Explanation { get; set; }
-
-        [JsonPropertyName("helpHint")]
-        public string? HelpHint { get; set; }
-
-        [JsonPropertyName("sourceExcerpt")]
-        public string? SourceExcerpt { get; set; }
-    }
-
-    private static class JsonSerializerOptionsProvider
-    {
-        public static readonly JsonSerializerOptions Options = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
     }
 }
