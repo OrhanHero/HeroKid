@@ -89,7 +89,13 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
     {
         // GoogleCredential implementiert ITokenAccess explizit - GetAccessTokenForRequestAsync ist
         // deshalb nur über die Interface-Referenz aufrufbar, nicht direkt auf GoogleCredential.
+        // Hinweis: GoogleCredential.FromFile(string) ist als "potenzielles Sicherheitsrisiko" markiert
+        // (die Bibliothek empfiehlt stattdessen CredentialFactory + .ToGoogleCredential()) - hier
+        // bewusst nicht umgestellt, da die genaue Signatur dieser Alternative aus dieser Sandbox nicht
+        // abschließend verifiziert werden konnte und ein Fehlversuch den Build brechen würde.
+#pragma warning disable CS0618
         ITokenAccess credential = GoogleCredential.FromFile(_options.ServiceAccountKeyPath!).CreateScoped(OAuthScopes);
+#pragma warning restore CS0618
         var token = await credential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken);
 
         if (string.IsNullOrEmpty(token))

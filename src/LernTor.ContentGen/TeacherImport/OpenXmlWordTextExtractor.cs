@@ -13,7 +13,7 @@ public sealed class OpenXmlWordTextExtractor : ITeacherDocumentTextExtractor
     public Task<string> ExtractTextAsync(Stream fileStream, string fileName, CancellationToken cancellationToken = default)
     {
         using var document = WordprocessingDocument.Open(fileStream, isEditable: false);
-        var body = document.MainDocumentPart?.Document.Body;
+        var body = document.MainDocumentPart?.Document?.Body;
 
         if (body is null)
         {
