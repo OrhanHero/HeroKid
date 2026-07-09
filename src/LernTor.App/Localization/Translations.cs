@@ -140,7 +140,7 @@ public static class Translations
                 "Bir PDF veya Word dosyası yükler ve NotebookLM'nin bundan soru önerileri oluşturmasını sağlar. " +
                 "Bu bağlantı resmi API dokümantasyonuna erişim olmadan geliştirildi ve doğrulanmamıştır - her " +
                 "öneri kaydedilmeden önce kontrol edilip tek tek onaylanmalıdır."),
-            ["Parent_Import_ProjectId"] = L("Google-Cloud-Projekt-ID:", "Google Cloud Proje Kimliği:"),
+            ["Parent_Import_ProjectId"] = L("Google-Cloud-Projekt-NUMMER (nicht die Projekt-ID):", "Google Cloud Proje NUMARASI (Proje Kimliği değil):"),
             ["Parent_Import_Location"] = L("Region (z.B. \"global\"):", "Bölge (örn. \"global\"):"),
             ["Parent_Import_KeyPath"] = L("Pfad zur Dienstkonto-Schlüsseldatei (.json):", "Hizmet hesabı anahtar dosyası yolu (.json):"),
             ["Parent_Import_PickFile"] = L("Datei auswählen…", "Dosya seç…"),

@@ -117,28 +117,33 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
 ## Bekannte Grenzen / nächste Schritte
 
 - **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word) über NotebookLM Enterprise**: implementiert
-  (siehe `src/LernTor.ContentGen/TeacherImport/`) und im Eltern-Bereich nutzbar - **aber unverifiziert**.
-  Der manuelle Editor (siehe "Eltern-Features") funktioniert unabhängig davon weiterhin normal.
-  - **⚠️ Wichtiger Hinweis zum Implementierungsstand**: `NotebookLmQuestionSuggester.cs` wurde
-    geschrieben, ohne die offizielle API-Dokumentation
-    (docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks) einsehen zu
-    können - der Netzwerkzugriff auf diesen Host war aus der Entwicklungsumgebung heraus durch die
-    Organisations-Policy blockiert (403, per curl UND WebFetch bestätigt, keine Umgehung versucht).
-    **api.nuget.org war aus derselben Sandbox aber erreichbar** - deshalb wurden die drei neuen
-    NuGet-Pakete (`UglyToad.PdfPig`, `DocumentFormat.OpenXml`, `Google.Apis.Auth`) real heruntergeladen
-    und ihre tatsächlichen Methodensignaturen per Metadaten-Analyse der DLLs verifiziert (u.a.
-    `PdfDocument.Open(Stream, options?)`, `WordprocessingDocument.Open(Stream, bool)`,
-    `GoogleCredential.FromFile`/`.CreateScoped`/`ITokenAccess.GetAccessTokenForRequestAsync`) - dabei
-    wurde auch ein echter Bug gefunden und behoben (`GetAccessTokenForRequestAsync` ist eine explizite
-    Interface-Implementierung und nur über eine `ITokenAccess`-Referenz aufrufbar, nicht direkt auf
-    `GoogleCredential`). Dieser Teil der Implementierung ist also tatsächlich verifiziert, nicht nur
-    angenommen. Die konkreten NotebookLM-**Endpunkt-Pfade und JSON-Feldnamen** (Notebook anlegen/Quelle
-    hochladen/Notebook abfragen) bleiben dagegen eine begründete Best-Effort-Annahme nach dem Muster
-    anderer Discovery-Engine-APIs und **müssen nach dem ersten echten Testlauf mit echten Zugangsdaten
-    anhand der offiziellen Dokumentation verifiziert/korrigiert werden** - siehe die
-    `// ANNAHME (nicht verifiziert)`-Kommentare direkt im Code. Fehlermeldungen bei HTTP-Fehlern (404
-    o.ä.) weisen im Eltern-Bereich explizit darauf hin, dass dann der angenommene Endpunkt-Pfad
-    wahrscheinlich nicht stimmt.
+  (siehe `src/LernTor.ContentGen/TeacherImport/`) und im Eltern-Bereich nutzbar - **größtenteils gegen
+  die echte Doku verifiziert, ein Teil bleibt Annahme**. Der manuelle Editor (siehe "Eltern-Features")
+  funktioniert unabhängig davon weiterhin normal.
+  - **Verifizierungs-Historie**: `NotebookLmQuestionSuggester.cs` wurde zunächst ohne Zugriff auf die
+    offizielle API-Dokumentation geschrieben (docs.cloud.google.com war durch die Organisations-Policy
+    dieser Entwicklungsumgebung blockiert, 403 per curl UND WebFetch bestätigt). Zwei Nachbesserungen
+    haben seither die Unsicherheit reduziert:
+    1. **api.nuget.org war aus derselben Sandbox erreichbar** - die drei NuGet-Pakete (`UglyToad.PdfPig`,
+       `DocumentFormat.OpenXml`, `Google.Apis.Auth`) wurden real heruntergeladen und ihre Methoden-
+       signaturen per Metadaten-Analyse verifiziert (dabei einen echten Bug gefunden und behoben:
+       `GetAccessTokenForRequestAsync` ist eine explizite Interface-Implementierung, nur über eine
+       `ITokenAccess`-Referenz aufrufbar).
+    2. **Der Nutzer hat die offizielle NotebookLM-Enterprise-Dokumentation als PDF exportiert und
+       bereitgestellt**, wodurch die Basis-URL (mit Regions-Präfix vor dem Hostnamen, z.B.
+       `us-discoveryengine.googleapis.com` statt nur `discoveryengine.googleapis.com`), das
+       Ressourcen-Pfadschema, sowie `notebooks.create`, `notebooks.sources.batchCreate` (Text-Upload)
+       und `notebooks.batchDelete` (ein POST mit `names`-Array, **kein** HTTP-DELETE) jetzt nach
+       dokumentierten Beispielen implementiert sind.
+  - **⚠️ Weiterhin unverifiziert bleibt nur `QueryNotebookAsync`** (die Frage-/Antwort-Funktion): Die
+    bereitgestellte Doku enthielt dafür keine eigene REST-Anleitung, nur Feldnamen aus einer
+    Audit-Log-Tabelle (RPC-Methode `NotebookService.InteractSources`, Anfragefelder `name`/
+    `input_sources`/`free_form_action`, Antwortfeld `response.response`). Der REST-Pfad
+    (`:interactSources`) und die genaue innere Form von `free_form_action` sind eine begründete
+    Annahme und müssen beim ersten echten Testlauf mit echten Zugangsdaten überprüft werden - siehe
+    den `// NICHT verifiziert`-Kommentar direkt am Methodenkommentar im Code. Fehlermeldungen bei
+    HTTP-Fehlern (404 o.ä.) weisen im Eltern-Bereich explizit darauf hin, wenn genau dieser Schritt
+    scheitert.
   - **Funktionsweise**: PDF (`PdfPigTextExtractor`) bzw. .docx (`OpenXmlWordTextExtractor`, kein altes
     binäres .doc) → Fließtext → `NotebookLmQuestionSuggester` legt ein Wegwerf-Notebook an, lädt den
     Text als Quelle hoch, stellt eine Frage nach strukturiertem JSON mit Quizfragen und löscht das
@@ -146,10 +151,14 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
     `SourceExcerpt` = Textstelle im Original) - Eltern müssen im Eltern-Bereich jeden Vorschlag einzeln
     über "Übernehmen" bestätigen oder "Verwerfen", bevor er via `CustomQuestionRepository.AddAsync`
     gespeichert wird. Keine automatische Übernahme ohne menschliche Kontrolle.
-  - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Google-Cloud-Projekt-ID,
-    Region (Standard "global"), Pfad zur JSON-Schlüsseldatei eines GCP-Dienstkontos. Ohne diese drei
-    Angaben bleibt die Funktion inaktiv und wirft beim Versuch, sie zu nutzen, eine klare
-    Fehlermeldung statt stillschweigend nichts zu tun.
+  - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Google-Cloud-Projekt-
+    **Nummer** (laut Doku wird im Ressourcenpfad wörtlich die Projekt-Nummer erwartet, nicht die
+    textuelle Projekt-ID - die UI weist explizit darauf hin), Region (Standard "global"; laut Doku
+    wird sie als Präfix vor den API-Hostnamen gesetzt, z.B. "us"/"eu"), Pfad zur JSON-Schlüsseldatei
+    eines GCP-Dienstkontos. Ohne diese drei Angaben bleibt die Funktion inaktiv und wirft beim Versuch,
+    sie zu nutzen, eine klare Fehlermeldung statt stillschweigend nichts zu tun.
+  - **Nutzungslimits laut Doku** (falls beim Testen 429/Quota-Fehler auftreten): 500 Notebooks pro
+    Nutzer, 300 Quellen pro Notebook, 500 MB/500.000 Wörter pro Quelle, 500 Abfragen pro Nutzer und Tag.
   - **Datenschutz-Hinweis**: Dokumente werden zur Verarbeitung an Google Cloud übertragen - das ist
     bewusst eine bewusste Entscheidung der Eltern (Konfiguration ist optional/leer per Standard), keine
     versteckte Standardeinstellung.

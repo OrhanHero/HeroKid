@@ -13,34 +13,29 @@ namespace LernTor.ContentGen.TeacherImport;
 /// <see cref="ITeacherQuestionSuggester"/>-Implementierung gegen die NotebookLM-Enterprise-API
 /// (Google Cloud, Teil von Gemini Enterprise / Discovery Engine).
 ///
-/// <para><b>Wichtiger Hinweis zum Implementierungsstand:</b> Diese Klasse wurde ohne Zugriff auf die
-/// offizielle API-Dokumentation (docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks)
-/// geschrieben - der Netzwerkzugriff auf diesen Host war aus der Entwicklungsumgebung heraus durch die
-/// Organisations-Policy blockiert (403, sowohl per curl als auch per WebFetch bestätigt). Zwei
-/// unterschiedliche Vertrauensstufen gelten hier:</para>
+/// <para><b>Verifizierungsstand:</b> Ursprünglich ohne Doku-Zugriff geschrieben (docs.cloud.google.com
+/// war aus der Entwicklungsumgebung blockiert). Der Nutzer hat die offizielle Dokumentation
+/// anschließend als PDF bereitgestellt, wodurch folgende Teile jetzt gegen echte, zitierte
+/// Doku-Beispiele verifiziert werden konnten:</para>
 /// <list type="bullet">
-/// <item>Die Verwendung von <c>Google.Apis.Auth</c> (<c>GoogleCredential.FromFile</c>,
-/// <c>CreateScoped</c>, <c>ITokenAccess.GetAccessTokenForRequestAsync</c>) sowie von PdfPig
-/// (<c>PdfDocument.Open(Stream)</c>, <c>GetPages()</c>, <c>Page.Text</c>) und DocumentFormat.OpenXml
-/// (<c>WordprocessingDocument.Open(Stream, bool)</c>, <c>MainDocumentPart.Document</c>) wurde direkt
-/// gegen die tatsächlichen, von nuget.org heruntergeladenen Paket-DLLs verifiziert (Metadaten-Analyse
-/// der exakten Methodensignaturen) - api.nuget.org war aus dieser Sandbox erreichbar, obwohl
-/// docs.cloud.google.com blockiert war. Diese Teile sollten also tatsächlich kompilieren und
-/// funktionieren.</item>
-/// <item>Die konkreten NotebookLM-Enterprise-Endpunkt-Pfade und Feldnamen der Request-/Response-
-/// JSON-Objekte (<see cref="CreateNotebookAsync"/>, <see cref="UploadSourceAsync"/>,
-/// <see cref="QueryNotebookAsync"/>) sind dagegen weiterhin eine unverifizierte Best-Effort-Annahme
-/// nach dem Muster anderer Discovery-Engine-/Vertex-AI-APIs und MÜSSEN nach dem ersten echten
-/// Testlauf mit echten Zugangsdaten anhand der offiziellen Dokumentation verifiziert/korrigiert werden
-/// (siehe README, Abschnitt "Automatisches Einlesen von Lehrer-Unterlagen").</item>
+/// <item>Basis-URL mit Regions-Präfix (<c>https://{location}-discoveryengine.googleapis.com/v1alpha</c>),
+/// Authentifizierung per Bearer-Token (Google-Dienstkonto-OAuth2, keine weiteren Header nötig),
+/// Ressourcen-Pfadschema (<c>projects/{project}/locations/{location}/notebooks/{id}</c>).</item>
+/// <item><see cref="CreateNotebookAsync"/> (<c>notebooks.create</c>), <see cref="UploadSourceAsync"/>
+/// (<c>notebooks.sources.batchCreate</c> mit <c>textContent</c>) und
+/// <see cref="DeleteNotebookAsync"/> (<c>notebooks.batchDelete</c>, ein POST mit <c>names</c>-Array,
+/// KEIN HTTP-DELETE) sind jetzt nach dokumentierten Beispielen implementiert.</item>
+/// <item><b>Weiterhin unverifiziert:</b> <see cref="QueryNotebookAsync"/>. Die Doku (in der
+/// bereitgestellten Fassung) enthält keine eigene REST-Anleitung für die Frage-/Antwort-Funktion -
+/// nur Feldnamen aus einer Audit-Log-Tabelle (RPC <c>NotebookService.InteractSources</c>, Felder
+/// <c>name</c>/<c>input_sources</c>/<c>free_form_action</c> in der Anfrage,
+/// <c>response.response</c> in der Antwort). Der REST-Pfad (<c>:interactSources</c>) und die genaue
+/// innere Form von <c>free_form_action</c> sind daher weiterhin eine begründete Annahme und müssen
+/// beim ersten echten Testlauf verifiziert werden (siehe README).</item>
 /// </list>
 /// </summary>
 public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
 {
-    // ANNAHME (nicht verifiziert): Basis-URL für die Discovery-Engine-API, auf der NotebookLM
-    // Enterprise laut Ankündigungen aufbaut. Bei Bedarf hier anpassen, sobald die echte Doku
-    // vorliegt.
-    private const string ApiBaseUrl = "https://discoveryengine.googleapis.com/v1alpha";
     private static readonly string[] OAuthScopes = { "https://www.googleapis.com/auth/cloud-platform" };
 
     private readonly HttpClient _httpClient;
@@ -52,6 +47,13 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
         _options = options;
     }
 
+    /// <summary>
+    /// Basis-URL mit Regions-Präfix vor dem Hostnamen (z.B. "us-discoveryengine.googleapis.com"),
+    /// exakt wie in den offiziellen curl-Beispielen dokumentiert - eine reine
+    /// "discoveryengine.googleapis.com" ohne Präfix (wie ursprünglich angenommen) ist laut Doku falsch.
+    /// </summary>
+    private string BaseUrl => $"https://{_options.Location}-discoveryengine.googleapis.com/v1alpha";
+
     public async Task<IReadOnlyList<ExtractedQuestionDraft>> SuggestQuestionsAsync(
         string documentText,
         Subject subject,
@@ -62,7 +64,7 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
         {
             throw new NotSupportedException(
                 "Automatisches Einlesen von Lehrer-Unterlagen ist vorbereitet, aber die NotebookLM-Anbindung " +
-                "ist noch nicht konfiguriert (Projekt-ID und/oder Dienstkonto-Schlüsseldatei fehlen im " +
+                "ist noch nicht konfiguriert (Projekt-Nummer und/oder Dienstkonto-Schlüsseldatei fehlen im " +
                 "Eltern-Bereich unter 'Automatisches Einlesen'). Der manuelle Eigene-Aufgaben-Editor deckt " +
                 "den Kernbedarf in der Zwischenzeit ab.");
         }
@@ -72,8 +74,8 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
 
         try
         {
-            await UploadSourceAsync(accessToken, notebookName, documentText, cancellationToken);
-            var answerText = await QueryNotebookAsync(accessToken, notebookName, subject, gradeLevel, cancellationToken);
+            var sourceNames = await UploadSourceAsync(accessToken, notebookName, documentText, cancellationToken);
+            var answerText = await QueryNotebookAsync(accessToken, notebookName, sourceNames, subject, gradeLevel, cancellationToken);
             return ParseDrafts(answerText, documentText);
         }
         finally
@@ -102,17 +104,20 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
         {
             throw new InvalidOperationException(
                 "Konnte kein OAuth2-Zugriffstoken für das konfigurierte Google-Dienstkonto abrufen. " +
-                "Bitte Projekt-ID und Schlüsseldatei im Eltern-Bereich prüfen.");
+                "Bitte Projekt-Nummer und Schlüsseldatei im Eltern-Bereich prüfen.");
         }
 
         return token;
     }
 
-    // ANNAHME (nicht verifiziert): POST .../notebooks legt ein neues Notebook an und liefert dessen
-    // Ressourcennamen ("name": "projects/.../locations/.../notebooks/...") zurück.
+    /// <summary>
+    /// Verifiziert gegen die offizielle Doku (Methode <c>notebooks.create</c>): POST auf die
+    /// Notebook-Collection mit Body <c>{"title": "..."}</c>, Antwort enthält u.a. <c>notebookId</c>
+    /// und <c>name</c> (voller Ressourcenname, z.B. "projects/123/locations/us/notebooks/abc").
+    /// </summary>
     private async Task<string> CreateNotebookAsync(string accessToken, Subject subject, GradeLevel gradeLevel, CancellationToken cancellationToken)
     {
-        var url = $"{ApiBaseUrl}/projects/{_options.ProjectId}/locations/{_options.Location}/notebooks";
+        var url = $"{BaseUrl}/projects/{_options.ProjectId}/locations/{_options.Location}/notebooks";
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = JsonContent.Create(new { title = $"LernTor Import – {subject} {gradeLevel}" })
@@ -126,44 +131,79 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
             ?? throw new InvalidOperationException("NotebookLM-Antwort beim Anlegen des Notebooks enthielt kein 'name'-Feld.");
     }
 
-    // ANNAHME (nicht verifiziert): POST .../{notebook}/sources fügt eine Text-Quelle zum Notebook hinzu.
-    private async Task UploadSourceAsync(string accessToken, string notebookName, string documentText, CancellationToken cancellationToken)
+    /// <summary>
+    /// Verifiziert gegen die offizielle Doku (Methode <c>notebooks.sources.batchCreate</c>): POST auf
+    /// <c>{notebookName}/sources:batchCreate</c> mit <c>{"userContents": [{"textContent": {...}}]}</c>.
+    /// Gibt die vollen Ressourcennamen der angelegten Quellen zurück (für die spätere Abfrage).
+    /// </summary>
+    private async Task<IReadOnlyList<string>> UploadSourceAsync(string accessToken, string notebookName, string documentText, CancellationToken cancellationToken)
     {
-        var url = $"{ApiBaseUrl}/{notebookName}/sources";
+        var url = $"{BaseUrl}/{notebookName}/sources:batchCreate";
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
-            Content = JsonContent.Create(new { textContent = documentText })
+            Content = JsonContent.Create(new
+            {
+                userContents = new[]
+                {
+                    new { textContent = new { sourceName = "LernTor-Import", content = documentText } }
+                }
+            })
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        using var _ = await SendAsync(request, "Dokument als Quelle hochladen", cancellationToken);
+        using var response = await SendAsync(request, "Dokument als Quelle hochladen", cancellationToken);
+        var body = await response.Content.ReadFromJsonAsync<SourcesBatchCreateResponseDto>(cancellationToken: cancellationToken);
+
+        return body?.Sources?.Select(s => s.Name).Where(n => n is not null).Select(n => n!).ToList()
+            ?? new List<string>();
     }
 
-    // ANNAHME (nicht verifiziert): POST .../{notebook}:query stellt eine Frage an das Notebook,
-    // gestützt auf die zuvor hochgeladene(n) Quelle(n), und liefert die Modellantwort als Text zurück.
-    private async Task<string> QueryNotebookAsync(string accessToken, string notebookName, Subject subject, GradeLevel gradeLevel, CancellationToken cancellationToken)
+    /// <summary>
+    /// NICHT verifiziert - die bereitgestellte Doku enthält keine eigene REST-Anleitung für diese
+    /// Funktion. Aus einer Audit-Log-Feldtabelle ist bekannt, dass die zugrundeliegende RPC-Methode
+    /// <c>NotebookService.InteractSources</c> heißt und die Anfrage die Felder <c>name</c>,
+    /// <c>input_sources</c>, <c>free_form_action</c> hat, während die Antwort ein verschachteltes
+    /// <c>response.response</c>-Feld für den eigentlichen Antworttext enthält. Der REST-Pfad
+    /// (<c>:interactSources</c>, nach Google-API-Konvention für "custom methods") und die genaue
+    /// innere Form von <c>free_form_action</c> sind eine Annahme und müssen mit echten Zugangsdaten
+    /// überprüft werden.
+    /// </summary>
+    private async Task<string> QueryNotebookAsync(string accessToken, string notebookName, IReadOnlyList<string> sourceNames, Subject subject, GradeLevel gradeLevel, CancellationToken cancellationToken)
     {
         var prompt = BuildPrompt(subject, gradeLevel);
-        var url = $"{ApiBaseUrl}/{notebookName}:query";
+        var url = $"{BaseUrl}/{notebookName}:interactSources";
         var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
-            Content = JsonContent.Create(new { query = prompt })
+            Content = JsonContent.Create(new
+            {
+                inputSources = sourceNames,
+                freeFormAction = new { userQuery = prompt }
+            })
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        using var response = await SendAsync(request, "Notebook abfragen", cancellationToken);
-        var body = await response.Content.ReadFromJsonAsync<NotebookQueryResponseDto>(cancellationToken: cancellationToken);
+        using var response = await SendAsync(request, "Notebook abfragen (interactSources)", cancellationToken);
+        var body = await response.Content.ReadFromJsonAsync<InteractSourcesResponseDto>(cancellationToken: cancellationToken);
 
-        return body?.AnswerText
+        return body?.Response?.Response
             ?? throw new InvalidOperationException("NotebookLM-Antwort auf die Abfrage enthielt keinen Antworttext.");
     }
 
+    /// <summary>
+    /// Verifiziert gegen die offizielle Doku (Methode <c>notebooks.batchDelete</c>): KEIN HTTP-DELETE
+    /// auf die einzelne Notebook-Ressource, sondern ein POST auf die Notebook-Collection mit
+    /// <c>{"names": [notebookName]}</c>. Laut Doku liefert das Löschen eines nicht (mehr) existenten
+    /// Notebooks denselben leeren Erfolg zurück wie ein echtes Löschen - kein Fehler, keine 404.
+    /// </summary>
     private async Task TryDeleteNotebookAsync(string accessToken, string notebookName, CancellationToken cancellationToken)
     {
         try
         {
-            var url = $"{ApiBaseUrl}/{notebookName}";
-            var request = new HttpRequestMessage(HttpMethod.Delete, url);
+            var url = $"{BaseUrl}/projects/{_options.ProjectId}/locations/{_options.Location}/notebooks:batchDelete";
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = JsonContent.Create(new { names = new[] { notebookName } })
+            };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             // Bewusst kein Fehlerwurf hier - ein nicht gelöschtes Wegwerf-Notebook ist unschön,
@@ -186,7 +226,7 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
         {
             throw new InvalidOperationException(
                 $"NotebookLM-Aufruf '{step}' ist netzwerkseitig fehlgeschlagen: {ex.Message}. " +
-                "Prüfe Internetverbindung und ob die konfigurierte Projekt-ID/Region korrekt sind.", ex);
+                "Prüfe Internetverbindung und ob die konfigurierte Projekt-Nummer/Region korrekt sind.", ex);
         }
 
         if (!response.IsSuccessStatusCode)
@@ -195,9 +235,10 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
             throw new InvalidOperationException(
                 $"NotebookLM-Aufruf '{step}' schlug fehl: HTTP {(int)response.StatusCode} {response.ReasonPhrase}. " +
                 $"Antwort: {errorBody}\n\n" +
-                "Falls dies ein 404 oder eine Feldvalidierungsfehlermeldung ist, stimmt der angenommene " +
-                "Endpunkt-Pfad/das Request-Format vermutlich nicht mit der echten API überein - bitte gegen " +
-                "die offizielle NotebookLM-Enterprise-API-Dokumentation prüfen (siehe Klassenkommentar).");
+                "Falls dies ein 404 oder eine Feldvalidierungsfehlermeldung beim Abfrage-Schritt ist, stimmt " +
+                "der dafür angenommene Endpunkt-Pfad/das Request-Format vermutlich nicht mit der echten API " +
+                "überein (siehe Klassenkommentar zu QueryNotebookAsync) - bitte gegen die offizielle " +
+                "NotebookLM-Enterprise-API-Dokumentation prüfen.");
         }
 
         return response;
@@ -266,13 +307,38 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
     {
         [JsonPropertyName("name")]
         public string? Name { get; set; }
+
+        [JsonPropertyName("notebookId")]
+        public string? NotebookId { get; set; }
     }
 
-    private sealed class NotebookQueryResponseDto
+    private sealed class SourcesBatchCreateResponseDto
     {
-        // ANNAHME (nicht verifiziert): Feldname für den Antworttext des Modells.
-        [JsonPropertyName("answerText")]
-        public string? AnswerText { get; set; }
+        [JsonPropertyName("sources")]
+        public List<SourceResourceDto>? Sources { get; set; }
+    }
+
+    private sealed class SourceResourceDto
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+    }
+
+    /// <summary>Antwort von <c>:interactSources</c> - verschachteltes "response.response"-Feld laut
+    /// Audit-Log-Feldtabelle (nicht direkt aus einem REST-Beispiel bestätigt).</summary>
+    private sealed class InteractSourcesResponseDto
+    {
+        [JsonPropertyName("response")]
+        public InteractSourcesInnerResponseDto? Response { get; set; }
+    }
+
+    private sealed class InteractSourcesInnerResponseDto
+    {
+        [JsonPropertyName("response")]
+        public string? Response { get; set; }
+
+        [JsonPropertyName("emptyAnswerReason")]
+        public string? EmptyAnswerReason { get; set; }
     }
 
     private sealed class NotebookLmAnswerDto
