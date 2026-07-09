@@ -150,16 +150,14 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
   KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von
   Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare Feeds werden übersprungen, sollten aber
-  gelegentlich geprüft werden. **Wichtig:** aus dieser Entwicklungsumgebung war der Netzwerkzugriff auf
-  RSS-Hosts generell blockiert (auch auf bereits produktiv genutzte Feeds wie tagesschau.de), die neu
-  hinzugefügte heise.de-URL konnte deshalb nicht getestet werden - bitte nach dem nächsten Start einmal
-  prüfen, ob der News-Bereich weiterhin lädt.
+  gelegentlich geprüft werden. Inzwischen auf einem echten Windows-Rechner getestet und bestätigt
+  funktionsfähig (inkl. der neuen heise.de-Quelle).
 - **Vereinfachung der Artikeltexte** ist aktuell regelbasiert (kein LLM). Ein lokales LLM (Phi-3, Gemma 2,
   Llama 3.1 über Ollama) ließe sich über das `ITextSimplifier`-Interface in `LernTor.News` als zweite
   Implementierung ergänzen, ohne den Rest der App anzufassen.
-- Konnte in dieser Umgebung nicht auf einem echten Windows-Rechner gebaut/getestet werden (siehe
-  [docs/BUILD.md](docs/BUILD.md)) – der CI-Workflow (`.github/workflows/build.yml`) baut und testet das
-  Projekt automatisch auf `windows-latest`.
+- Wird inzwischen auch auf einem echten Windows-Rechner getestet (nicht nur über den CI-Workflow
+  `.github/workflows/build.yml` auf `windows-latest`), da diese Entwicklungsumgebung selbst kein
+  Windows bereitstellt.
 
 ## Schnellstart (Entwicklung)
 
