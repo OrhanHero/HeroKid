@@ -13,6 +13,7 @@
             <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
             <conv:InverseBooleanConverter x:Key="InverseBool" />
             <conv:NullToVisibilityConverter x:Key="NullToVis" />
+            <conv:EmptyStringToVisibilityConverter x:Key="EmptyStringToVis" />
             <conv:SubjectToBrushConverter x:Key="SubjectToBrush" />
             <conv:SubjectToTitleConverter x:Key="SubjectToTitle" />
             <conv:ProfileToSubtitleConverter x:Key="ProfileToSubtitle" />

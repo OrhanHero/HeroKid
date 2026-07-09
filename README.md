@@ -15,7 +15,9 @@ Mehrere Kinder am selben PC wählen beim Start ihr eigenes Profil (Name, Alter, 
 Kachel-Auswahl, oder legen über "Neues Profil ➕" ein weiteres Profil mit eigener Klassenstufe
 (6 oder 9) an. Jedes Profil hat seinen eigenen Fortschritt, sein eigenes Abschlussquiz-Ergebnis
 und sein eigenes Aktivitätsprotokoll (im Eltern-Bereich per Dropdown auswählbar). Beim ersten
-Start werden automatisch zwei Beispielprofile angelegt.
+Start werden automatisch zwei Beispielprofile angelegt. Nach Auswahl/Erstellung wird der
+Profilname dauerhaft oben rechts im Kiosk-Fenster angezeigt (👤 Name), damit jederzeit erkennbar
+ist, welches Kind gerade angemeldet ist.
 
 ## Ablauf für das Kind
 

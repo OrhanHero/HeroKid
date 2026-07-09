@@ -8,6 +8,7 @@ public static class Translations
         new Dictionary<string, IReadOnlyDictionary<AppLanguage, string>>
         {
             ["App_Title"] = L("LernTor", "LernTor"),
+            ["Main_ActiveProfile"] = L("👤 {0}", "👤 {0}"),
 
             ["Profile_Title"] = L("Wer möchte heute lernen?", "Bugün kim öğrenmek istiyor?"),
             ["Profile_AgeAndClass"] = L("{0} Jahre, Klasse {1}", "{0} yaşında, {1}. sınıf"),

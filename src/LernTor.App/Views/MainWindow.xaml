@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:LernTor.App.ViewModels"
         xmlns:views="clr-namespace:LernTor.App.Views"
+        xmlns:loc="clr-namespace:LernTor.App.Localization"
         Title="LernTor"
         WindowStyle="None"
         WindowState="Maximized"
@@ -42,6 +43,18 @@
         <TextBlock Text="{Binding CurrentDateTimeDisplay}"
                    FontFamily="Segoe UI" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,12" Opacity="0.7" />
+
+        <!-- Aktives Profil, dauerhaft sichtbar sobald eins gewählt/erstellt wurde -->
+        <TextBlock FontFamily="Segoe UI" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" Margin="16,12" Opacity="0.85"
+                   Visibility="{Binding ActiveProfileName, Converter={StaticResource EmptyStringToVis}}">
+            <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource FormatWithArg}">
+                    <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Main_ActiveProfile]" />
+                    <Binding Path="ActiveProfileName" Mode="OneWay" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
 
         <!-- Unauffälliger Eltern-Zugang, immer erreichbar, aber passwortgeschützt -->
         <Button x:Name="ParentAccessButton"

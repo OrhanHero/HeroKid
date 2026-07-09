@@ -40,6 +40,11 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string currentDateTimeDisplay = string.Empty;
 
+    /// <summary>Name des aktuell aktiven Profils, leer solange noch keins gewählt wurde - dient
+    /// der dauerhaft sichtbaren Anzeige im Kiosk-Fenster (siehe MainWindow.xaml).</summary>
+    [ObservableProperty]
+    private string activeProfileName = string.Empty;
+
     public StudentProfile? CurrentProfile { get; private set; }
     public StudentProgress Progress { get; private set; } = new() { ProfileId = string.Empty };
     public AppSettings Settings { get; private set; } = new();
@@ -96,6 +101,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnProfileSelected(StudentProfile profile)
     {
         CurrentProfile = profile;
+        ActiveProfileName = profile.Name;
         Progress = await _progressRepo.LoadOrCreateTodayAsync(profile.Id);
         await NavigateToStageAsync(Progress.CurrentStage);
     }

@@ -9,6 +9,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>LernTor</AssemblyName>
     <Platforms>x64</Platforms>
+    <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
