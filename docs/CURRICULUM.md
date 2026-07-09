@@ -17,6 +17,7 @@ ergänzt werden können.
 | Negative Zahlen | Satz des Pythagoras |
 | Flächen-/Umfangsberechnung (Rechteck) | Zinsrechnung (einfache Zinsen) |
 | Maßstab | Binomische Formeln |
+| Wahrscheinlichkeit bei Zufallsexperimenten | Mittelwert und Median (Statistik) |
 
 ## Deutsch (`GermanGenerator.cs`)
 
@@ -27,6 +28,7 @@ ergänzt werden können.
 | Satzglieder (Subjekt/Prädikat/Objekt) | Kommasetzung |
 | Groß- und Kleinschreibung | "dass" oder "das" |
 | Steigerung von Adjektiven | Wortarten vertieft (Adverb/Präposition/Konjunktion) |
+| | Textsorten unterscheiden (Bericht/Kommentar/Reportage/...) |
 
 ## Türkisch (`TurkishGenerator.cs`)
 
@@ -36,6 +38,7 @@ ergänzt werden können.
 | Geçmiş Zaman (Präteritum) | Gelecek Zaman (Futur) |
 | Eş Anlamlı Kelimeler (Synonyme) | Yazım Kuralları (Rechtschreibung) |
 | Zıt Anlamlı Kelimeler (Antonyme) | Fiilimsi (Partizip/Verbalnomen) |
+| Doğa ve Çevre (Natur und Umwelt) – Wortschatz | |
 
 ## Physik (`PhysikGenerator.cs`)
 
@@ -44,6 +47,7 @@ ergänzt werden können.
 | Aggregatzustände | Ohmsches Gesetz |
 | Einfacher Stromkreis | Energieerhaltung |
 | Magnetismus | Newtonsche Gesetze |
+| | Magnetfelder und elektromagnetische Induktion |
 
 ## Chemie (`ChemieGenerator.cs`)
 
@@ -52,6 +56,7 @@ ergänzt werden können.
 | Stoffgemische trennen | Atommodell |
 | Verbrennung | Chemische Reaktionen |
 | Säuren und Laugen | Periodensystem |
+| Metalle und ihre Eigenschaften | |
 
 ## Biologie (`BiologieGenerator.cs`)
 
@@ -76,6 +81,7 @@ ergänzt werden können.
 | Geschichtliche Epochen | Grundgesetz |
 | Kartenkunde und Himmelsrichtungen | Wirtschaftskreislauf |
 | Kinderrechte | Medien und Gesellschaft |
+| Ernährung – wie werden Menschen satt? | |
 
 ## Politik (`PolitikGenerator.cs`)
 
@@ -84,6 +90,7 @@ ergänzt werden können.
 | Was ist Demokratie? | Gewaltenteilung |
 | Berlin und seine Bezirke | Bundestag und Bundesrat |
 | Wahlrecht | Wahlsystem |
+| | Soziale Marktwirtschaft |
 
 ## Geografie (`GeoGenerator.cs`)
 
@@ -92,6 +99,7 @@ ergänzt werden können.
 | Kontinente und Ozeane | Plattentektonik |
 | Klimazonen | Klimawandel |
 | Deutschland: Bundesländer | Verstädterung |
+| | Armut und Reichtum weltweit |
 
 ## Ethik (`EthikGenerator.cs`)
 
@@ -100,6 +108,7 @@ ergänzt werden können.
 | Werte und Regeln | Verantwortung und Pflicht |
 | Freundschaft und Konflikte | Meinungsfreiheit und Grenzen |
 | Weltreligionen | Digitale Ethik |
+| | Recht und Gerechtigkeit |
 
 ## Medienbildung / ITG (`ItgGenerator.cs`)
 
@@ -155,35 +164,62 @@ Zufallsauswahl und Quiz-Zusammenstellung funktioniert automatisch mit neuen Them
 
 ## Abgleich mit dem offiziellen Rahmenlehrplan 1-10 (kompakt)
 
-Die obige Themenauswahl wurde stichprobenartig mit der offiziellen Broschüre "Rahmenlehrplan 1-10
-kompakt" (Senatsverwaltung für Bildung, Berlin, 1. Auflage 2017) abgeglichen. Die Broschüre selbst
-ist urheberrechtlich geschützt, darf laut Impressum aber "für die Zwecke der Schule" verwendet
-werden – sie diente hier nur als interne Orientierung, es wurden keine Textpassagen übernommen.
-Ergebnis des Abgleichs, mit konkreten Ideen für künftige Themenerweiterungen:
+Die obige Themenauswahl wurde mit der offiziellen Broschüre "Rahmenlehrplan 1-10 kompakt"
+(Senatsverwaltung für Bildung, Berlin, 1. Auflage 2017) abgeglichen, inklusive der zuvor noch nicht
+gelesenen Abschnitte zu Mathematik, Chemie, Physik, Türkisch, Geografie, Ethik, Politische Bildung,
+Gesellschaftswissenschaften 5/6 und Informatik. Die Broschüre selbst ist urheberrechtlich geschützt,
+darf laut Impressum aber "für die Zwecke der Schule" verwendet werden – sie diente hier nur als
+interne Orientierung, es wurden keine Textpassagen übernommen.
 
-- **Mathematik**: Die offizielle Leitidee **"Daten und Zufall"** (Statistik, Wahrscheinlichkeiten,
-  Zählstrategien) fehlt in `MathGenerator.cs` bisher komplett – die anderen vier Leitideen (Zahlen
-  und Operationen, Größen und Messen, Raum und Form, Gleichungen und Funktionen) sind über die
-  bestehenden Themen gut abgedeckt. Naheliegende Ergänzung: ein Themenfeld "Mittelwert/Median" oder
-  "Wahrscheinlichkeit beim Würfeln" für Klasse 6/9.
-- **Chemie**: Der RLP nennt zusätzlich die Themenfelder Salze, Metalle sowie (9/10) organische Chemie
-  (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester) – aktuell in `ChemieGenerator.cs` nicht
-  vertreten. Die vorhandenen Themen (Stoffgemische, Verbrennung, Säuren/Laugen, Atommodell,
-  Reaktionen, Periodensystem) decken den Kern aber ab.
+**Als direkte Folge dieses Abgleichs wurden neun neue Themen ergänzt** (jeweils mit echten
+Beispielaufgaben inkl. Erklärung/HelpHint, kein reiner Dokumentations-Platzhalter):
+
+- **Mathematik**: "Wahrscheinlichkeit bei Zufallsexperimenten" (Klasse 6) und "Mittelwert und Median
+  (Statistik)" (Klasse 9) schließen die zuvor komplett fehlende Leitidee **"Daten und Zufall"**.
+- **Chemie**: "Metalle und ihre Eigenschaften" (Klasse 6) deckt das zuvor fehlende Themenfeld Metalle ab.
+- **Deutsch**: "Textsorten unterscheiden" (Klasse 9) deckt die RLP-Textsorten (Bericht, Kommentar,
+  Reportage, Leserbrief, Erörterung), die zuvor nur in Klasse 5/6-Form (Wortart/Satzart) vorkamen.
+- **Türkisch**: "Doğa ve Çevre (Natur und Umwelt) – Wortschatz" (Klasse 6) bringt erstmals einen
+  themenorientierten (statt rein grammatikorientierten) Wortschatz-Topic ein, passend zum
+  RLP-Themenfeld "Natur und Umwelt".
+- **Gesellschaftswissenschaften/Gewi**: "Ernährung – wie werden Menschen satt?" (Klasse 6) deckt das
+  RLP-Themenfeld "Ernährung" der Gewi-5/6-Doppeljahrgangsstufe ab.
+- **Geografie**: "Armut und Reichtum weltweit" (Klasse 9) deckt das gleichnamige RLP-Themenfeld ab.
+- **Physik**: "Magnetfelder und elektromagnetische Induktion" (Klasse 9) deckt das RLP-Themenfeld
+  "Magnetfelder und elektromagnetische Induktion" (Doppeljahrgangsstufe 9/10) ab.
+- **Politik**: "Soziale Marktwirtschaft" (Klasse 9) deckt das gleichnamige RLP-Themenfeld
+  (Doppeljahrgangsstufe 9/10) ab.
+- **Ethik**: "Recht und Gerechtigkeit" (Klasse 9) deckt das gleichnamige RLP-Themenfeld ab, das zuvor
+  nur indirekt über "Meinungsfreiheit und Grenzen" gestreift wurde.
+
+**Bewusst nicht übernommene/verbleibende Unterschiede** (kein technischer Mangel, sondern
+Simplifizierungen dieser App gegenüber dem vollständigen RLP):
+
+- **Chemie**: organische Chemie (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester,
+  Doppeljahrgangsstufe 9/10) bleibt bewusst ausgeklammert - eher Grundschul-fernes Spezialwissen für
+  den Zielaltersbereich dieser App.
 - **Biologie**: Der RLP führt Biologie als eigenständiges Fach erst ab Doppeljahrgangsstufe 7/8; in
   5/6 ist es Teil des integrierten Fachs Naturwissenschaften. Unsere Klasse-6-Themen (menschlicher
   Körper, Fotosynthese, Wirbeltierklassen) sind trotzdem sinnvoll, da die App Bio/Chemie/Physik aus
   Vereinfachungsgründen als getrennte Fächer ab Klasse 6 führt.
-- **Türkisch**: Der RLP gliedert das Fach in kommunikative Themenfelder (Individuum und Gesellschaft,
-  Gesellschaft und öffentliches Leben, Kultur und historischer Hintergrund, Natur und Umwelt) statt
-  nach Grammatikthemen. `TurkishGenerator.cs` ist bewusst grammatikorientiert (Zeiten, Satzglieder,
-  Rechtschreibung), was für automatisch geprüfbare Übungsfragen praktikabler ist – künftige
-  Themen könnten aber zusätzlich Wortschatz zu Alltag/Kultur/Umwelt abdecken, um näher am RLP zu sein.
-- **Geografie, Ethik, Politische Bildung, Gesellschaftswissenschaften 5/6, Physik, Informatik**: Die
-  vorhandenen Themen bilden jeweils eine plausible Teilmenge der RLP-Themenfelder ab (z.B.
-  Geografie: Klimazonen/Klimawandel und Kontinente/Verstädterung passen zu "Klimawandel und
-  Klimaschutz" bzw. "Vielfalt der Erde"); eine vollständige 1:1-Abdeckung aller RLP-Themenfelder ist
-  weiterhin nicht das Ziel dieser App (siehe Hinweis am Anfang dieser Datei).
+- **Türkisch**: Der RLP gliedert das Fach primär in kommunikative Themenfelder (Individuum und
+  Gesellschaft, Gesellschaft und öffentliches Leben, Kultur und historischer Hintergrund, Natur und
+  Umwelt) statt nach Grammatikthemen. `TurkishGenerator.cs` bleibt überwiegend grammatikorientiert
+  (Zeiten, Satzglieder, Rechtschreibung), da das für automatisch geprüfbare Übungsfragen
+  praktikabler ist - das neue Wortschatz-Thema ist ein erster Schritt in Richtung RLP-Themenfelder,
+  kein vollständiger Umbau.
+- **Informatik/ITG**: Das RLP-Themenfeld "Standardsoftware" (praktischer Umgang mit
+  Textverarbeitung/Tabellenkalkulation) lässt sich kaum als automatisch auswertbare Quizfrage
+  abbilden und bleibt daher unberücksichtigt; die übrigen Themenfelder (Informatiksysteme, Leben in
+  vernetzten Systemen) sind über die bestehenden Themen (Datenschutz, Cybermobbing, Fake News,
+  Algorithmen) plausibel abgedeckt.
+- **Deutsch, Geografie, Politische Bildung**: Die RLP-Themenfelder für literarische Textanalyse
+  (Drama, Novelle, Parabel), tiefergehende Sozialkunde-Themen (z.B. Migration/Bevölkerung,
+  Rechtsstaat) und weitere Geografie-Themenfelder (z.B. Tourismus/Mobilität) sind bewusst nicht
+  1:1 übernommen - eine vollständige Abdeckung aller RLP-Themenfelder ist weiterhin nicht das Ziel
+  dieser App (siehe Hinweis am Anfang dieser Datei), die repräsentative Auswahl wurde aber durch
+  diesen Abgleich gezielt um die auffälligsten Lücken erweitert.
 
-Dieser Abgleich ist eine Momentaufnahme, keine abgeschlossene Analyse – die Broschüre deckt alle
-Fächer und Jahrgangsstufen 1-10 ab, während die App sich auf Klasse 6 und 9 konzentriert.
+Dieser Abgleich verbessert die Abdeckung gezielt, ist aber weiterhin keine vollständige 1:1-Analyse
+aller RLP-Themenfelder für alle zehn Jahrgangsstufen - die App konzentriert sich bewusst auf Klasse 6
+und 9.

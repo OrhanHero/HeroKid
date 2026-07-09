@@ -22,7 +22,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
                 ProzentGrundwert,
                 NegativeZahlenAddition,
                 RechteckFlaeche,
-                Massstab
+                Massstab,
+                WahrscheinlichkeitWuerfel
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -31,7 +32,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
                 QuadratischeGleichung,
                 SatzDesPythagoras,
                 Zinsrechnung,
-                BinomischeFormel
+                BinomischeFormel,
+                MittelwertUndMedian
             }
         };
 
@@ -185,6 +187,38 @@ public sealed class MathGenerator : ExerciseGeneratorBase
         };
     }
 
+    private static QuizQuestion WahrscheinlichkeitWuerfel(Random r)
+    {
+        (string beschreibung, int[] favorable)[] ereignisse =
+        {
+            ("eine gerade Zahl", new[] { 2, 4, 6 }),
+            ("eine ungerade Zahl", new[] { 1, 3, 5 }),
+            ("die Zahl 6", new[] { 6 }),
+            ("eine Zahl größer als 4", new[] { 5, 6 }),
+            ("eine Zahl kleiner als 3", new[] { 1, 2 }),
+            ("eine durch 3 teilbare Zahl", new[] { 3, 6 })
+        };
+        var (beschreibung, favorable) = ereignisse[r.Next(ereignisse.Length)];
+        var (rz, rn) = Reduce(favorable.Length, 6);
+        string ergebnis = $"{rz}/{rn}";
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wahrscheinlichkeit bei Zufallsexperimenten",
+            Type = QuestionType.OpenText,
+            Prompt = $"Du würfelst einmal mit einem normalen Würfel (Zahlen 1 bis 6). Wie groß ist die " +
+                     $"Wahrscheinlichkeit, {beschreibung} zu würfeln? (Gib den gekürzten Bruch als z/n an)",
+            CorrectAnswers = new[] { ergebnis },
+            Explanation = $"Von den 6 möglichen Ergebnissen sind {favorable.Length} günstig " +
+                          $"({string.Join(", ", favorable)}). Wahrscheinlichkeit = günstige Ergebnisse / " +
+                          $"mögliche Ergebnisse = {favorable.Length}/6 = {ergebnis} (gekürzt).",
+            HelpHint = "Wahrscheinlichkeit = Anzahl günstiger Ergebnisse / Anzahl aller möglichen Ergebnisse."
+        };
+    }
+
     private static QuizQuestion LineareGleichung(Random r)
     {
         int x = r.Next(-10, 11);
@@ -332,6 +366,59 @@ public sealed class MathGenerator : ExerciseGeneratorBase
                 ? $"(x+{b})² = x² + 2·x·{b} + {b}² = x² + {twoAb}x + {bb}"
                 : $"(x-{b})² = x² - 2·x·{b} + {b}² = x² - {twoAb}x + {bb}",
             HelpHint = "1./2. binomische Formel: (a±b)² = a² ± 2ab + b². Hier ist a = x."
+        };
+    }
+
+    private static QuizQuestion MittelwertUndMedian(Random r)
+    {
+        int a, b, c, d, e, mean;
+        int attempts = 0;
+        do
+        {
+            a = r.Next(1, 20);
+            b = r.Next(1, 20);
+            c = r.Next(1, 20);
+            d = r.Next(1, 20);
+            mean = r.Next(3, 15);
+            e = mean * 5 - (a + b + c + d);
+            attempts++;
+        } while ((e < 1 || e > 40) && attempts < 30);
+
+        var werte = new[] { a, b, c, d, e };
+        var sortiert = werte.OrderBy(v => v).ToArray();
+        int median = sortiert[2];
+        string wertliste = string.Join(", ", werte);
+        bool frageNachMedian = r.Next(2) == 0;
+
+        if (frageNachMedian)
+        {
+            return new QuizQuestion
+            {
+                Id = NewId(),
+                Subject = Subject.Mathematik,
+                GradeLevel = GradeLevel.Klasse9,
+                Topic = "Mittelwert und Median (Statistik)",
+                Type = QuestionType.OpenText,
+                Prompt = $"Gegeben sind die Werte: {wertliste}. Wie lautet der Median (Zentralwert)?",
+                CorrectAnswers = new[] { median.ToString() },
+                Explanation = $"Sortiert: {string.Join(", ", sortiert)}. Bei 5 Werten (ungerade Anzahl) ist " +
+                              $"der Median der mittlere Wert nach dem Sortieren: {median}.",
+                HelpHint = "Erst die Werte der Größe nach sortieren, dann den mittleren Wert ablesen (bei ungerader Anzahl)."
+            };
+        }
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Mittelwert und Median (Statistik)",
+            Type = QuestionType.OpenText,
+            Prompt = $"Gegeben sind die Werte: {wertliste}. Wie lautet der Mittelwert (arithmetisches Mittel)?",
+            CorrectAnswers = new[] { mean.ToString() },
+            Explanation = $"Mittelwert = Summe aller Werte / Anzahl der Werte = ({a} + {b} + {c} + {d} + {e}) / 5 " +
+                          $"= {a + b + c + d + e} / 5 = {mean}.",
+            HelpHint = "Mittelwert = Summe aller Werte / Anzahl der Werte."
         };
     }
 }

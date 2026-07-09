@@ -19,7 +19,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
                 SimdikiZaman,
                 GecmisZaman,
                 EsAnlamli,
-                ZitAnlamli
+                ZitAnlamli,
+                DogaVeCevre
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -131,6 +132,36 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { z.ZitAnlam },
             Explanation = $"\"{z.Kelime}\" kelimesinin karşıtı \"{z.ZitAnlam}\"dır.",
             HelpHint = "Zıt anlamlı (Antonym) kelimeler tam tersi bir anlam taşır - dikkat: sadece \"biraz farklı\" olan kelimeler zıt anlamlı sayılmaz."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] DogaCevreListe =
+    {
+        ("orman", "Wald", new[] { "Berg", "Feld", "Wüste" }),
+        ("nehir", "Fluss", new[] { "See", "Meer", "Brunnen" }),
+        ("çevre kirliliği", "Umweltverschmutzung", new[] { "Umweltschutz", "Naturschutz", "Klimawandel" }),
+        ("geri dönüşüm", "Recycling", new[] { "Müllabfuhr", "Umweltschutz", "Naturschutz" }),
+        ("hayvan türü", "Tierart", new[] { "Pflanzenart", "Lebensraum", "Ökosystem" }),
+        ("iklim değişikliği", "Klimawandel", new[] { "Umweltverschmutzung", "Naturschutz", "Wetterbericht" })
+    };
+
+    private static QuizQuestion DogaVeCevre(Random r)
+    {
+        var d = DogaCevreListe[r.Next(DogaCevreListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Tuerkisch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Doğa ve Çevre (Natur und Umwelt) – Wortschatz",
+            Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen,
+            CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Doğa ve çevre kelimeleri günlük hayatta sık kullanılır - anlamını Almanca karşılığıyla eşleştirmeye çalış."
         };
     }
 

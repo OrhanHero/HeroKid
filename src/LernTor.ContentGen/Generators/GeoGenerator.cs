@@ -12,7 +12,7 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Kontinente, Klimazonen, Bundeslaender },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { Plattentektonik, Klimawandel, Verstaedterung }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { Plattentektonik, Klimawandel, Verstaedterung, ArmutReichtum }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KontinenteListe =
@@ -132,6 +132,28 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
             Topic = "Verstädterung", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Verstädterung/Urbanisierung bedeutet: immer mehr Menschen ziehen in Städte - das kann zu Wohnraum- und Verkehrsproblemen führen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArmutReichtumListe =
+    {
+        ("Was misst der \"Human Development Index\" (HDI) eines Landes ungefähr?", new[] { "Lebensstandard: u.a. Einkommen, Bildung und Lebenserwartung", "Nur die Fläche eines Landes", "Nur die Anzahl der Einwohner" },
+            "Lebensstandard: u.a. Einkommen, Bildung und Lebenserwartung", "Der HDI kombiniert Einkommen, Bildungsstand und Lebenserwartung, um den Entwicklungsstand eines Landes zu vergleichen."),
+        ("Was ist eine typische Ursache für Armut in vielen Ländern des globalen Südens?", new[] { "Ungleicher Zugang zu Bildung, Wasser und Arbeit", "Zu viel Regen das ganze Jahr über", "Zu wenige Feiertage" },
+            "Ungleicher Zugang zu Bildung, Wasser und Arbeit", "Fehlender Zugang zu Bildung, sauberem Wasser, medizinischer Versorgung und fairer Arbeit zählt zu den wichtigsten Armutsursachen."),
+        ("Was bedeutet \"Nord-Süd-Gefälle\" in der Geografie?", new[] { "Reichere Industrieländer liegen oft im globalen Norden, ärmere Entwicklungsländer oft im globalen Süden", "Im Süden ist es immer kälter als im Norden", "Alle Länder der Erde sind gleich wohlhabend" },
+            "Reichere Industrieländer liegen oft im globalen Norden, ärmere Entwicklungsländer oft im globalen Süden", "Das \"Nord-Süd-Gefälle\" beschreibt vereinfacht, dass wohlhabendere Industrieländer eher im globalen Norden, viele ärmere Entwicklungsländer eher im globalen Süden liegen.")
+    };
+
+    private static QuizQuestion ArmutReichtum(Random r)
+    {
+        var f = ArmutReichtumListe[r.Next(ArmutReichtumListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Armut und Reichtum weltweit", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Der HDI misst Lebensstandard (Einkommen, Bildung, Lebenserwartung) - Zugang zu Bildung/Wasser/Arbeit ist zentral für Armut/Reichtum."
         };
     }
 }

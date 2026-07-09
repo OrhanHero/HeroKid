@@ -12,7 +12,7 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AggregatzustaendeListe =
@@ -140,6 +140,28 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Topic = "Newtonsche Gesetze", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "1. Newtonsches Gesetz (Trägheit): ohne Kraft ändert sich die Bewegung nicht. 2. Gesetz: F = m · a."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MagnetInduktionListe =
+    {
+        ("Was entsteht, wenn Strom durch eine Spule (Draht in Windungen) fließt?", new[] { "Ein Magnetfeld (Elektromagnet)", "Nur Wärme, kein Magnetfeld", "Ein elektrisches Feld, aber kein Magnetfeld" },
+            "Ein Magnetfeld (Elektromagnet)", "Fließt Strom durch eine Spule, entsteht um sie herum ein Magnetfeld - das Prinzip des Elektromagneten."),
+        ("Wie nennt man es, wenn durch ein sich änderndes Magnetfeld in einer Spule eine Spannung erzeugt wird?", new[] { "Elektromagnetische Induktion", "Ohmsches Gesetz", "Trägheitsgesetz" },
+            "Elektromagnetische Induktion", "Bei der elektromagnetischen Induktion erzeugt ein sich änderndes Magnetfeld (z.B. durch Bewegung) eine Spannung in einer Spule - Grundprinzip von Generatoren."),
+        ("In welchem Alltagsgerät wird elektromagnetische Induktion zur Stromerzeugung genutzt?", new[] { "Fahrraddynamo/Generator im Kraftwerk", "Batterie", "Glühlampe" },
+            "Fahrraddynamo/Generator im Kraftwerk", "Fahrraddynamos und Generatoren in Kraftwerken erzeugen Strom durch Bewegung eines Magneten relativ zu einer Spule (Induktion).")
+    };
+
+    private static QuizQuestion MagnetfelderInduktion(Random r)
+    {
+        var f = MagnetInduktionListe[r.Next(MagnetInduktionListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Magnetfelder und elektromagnetische Induktion", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Strom durch eine Spule erzeugt ein Magnetfeld (Elektromagnet); ein sich änderndes Magnetfeld erzeugt umgekehrt Spannung (Induktion, z.B. im Generator)."
         };
     }
 }

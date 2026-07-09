@@ -11,7 +11,7 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Atommodell, ChemischeReaktion, Periodensystem }
         };
 
@@ -77,6 +77,30 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
             Topic = "Säuren und Laugen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "pH-Wert: 0 = stark sauer, 7 = neutral, 14 = stark basisch. Rotkohlsaft färbt sich bei Säuren rötlich, bei Laugen blau-grün."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MetalleListe =
+    {
+        ("Welche Eigenschaft haben (fast) alle Metalle gemeinsam?", new[] { "Sie leiten elektrischen Strom gut", "Sie sind durchsichtig", "Sie lösen sich immer in Wasser" },
+            "Sie leiten elektrischen Strom gut", "Metalle haben frei bewegliche Elektronen, die elektrischen Strom und Wärme gut leiten."),
+        ("Wie nennt man die Eigenschaft von Metallen, sich zu dünnen Blechen verformen zu lassen?", new[] { "Verformbarkeit (Duktilität)", "Löslichkeit", "Brennbarkeit" },
+            "Verformbarkeit (Duktilität)", "Metalle lassen sich hämmern, walzen oder zu Draht ziehen, ohne zu zerbrechen - das nennt man Verformbarkeit."),
+        ("Welches Metall wird häufig für Stromkabel verwendet, weil es Strom besonders gut leitet?", new[] { "Kupfer", "Gold", "Blei" },
+            "Kupfer", "Kupfer leitet elektrischen Strom sehr gut und ist zugleich günstiger als Gold oder Silber, daher wird es für Kabel verwendet."),
+        ("Was passiert, wenn Eisen über längere Zeit Feuchtigkeit und Sauerstoff ausgesetzt ist?", new[] { "Es rostet (Korrosion)", "Es wird magnetisch", "Es schmilzt bei Zimmertemperatur" },
+            "Es rostet (Korrosion)", "Rost entsteht durch eine chemische Reaktion von Eisen mit Sauerstoff und Wasser (Korrosion).")
+    };
+
+    private static QuizQuestion MetalleEigenschaften(Random r)
+    {
+        var f = MetalleListe[r.Next(MetalleListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Metalle und ihre Eigenschaften", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Typische Metalleigenschaften: leiten Strom/Wärme gut, glänzen, sind verformbar (Duktilität) - manche rosten (korrodieren) bei Feuchtigkeit."
         };
     }
 

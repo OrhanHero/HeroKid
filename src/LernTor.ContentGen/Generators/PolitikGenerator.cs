@@ -12,7 +12,7 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Demokratie, BerlinBezirke, Wahlrecht },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { Gewaltenteilung, BundestagBundesrat, Wahlsystem }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { Gewaltenteilung, BundestagBundesrat, Wahlsystem, SozialeMarktwirtschaft }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DemokratieListe =
@@ -131,6 +131,30 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
             Topic = "Wahlsystem", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Bei der Bundestagswahl entscheidet die Zweitstimme über die Sitzverteilung der Parteien; Wahlen in Deutschland sind u.a. geheim."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SozialeMarktwirtschaftListe =
+    {
+        ("Was ist das Grundprinzip der Sozialen Marktwirtschaft in Deutschland?", new[] { "Freier Markt und Wettbewerb, kombiniert mit sozialer Absicherung durch den Staat", "Der Staat bestimmt alle Preise und Löhne", "Es gibt keinerlei staatliche Regeln für die Wirtschaft" },
+            "Freier Markt und Wettbewerb, kombiniert mit sozialer Absicherung durch den Staat",
+            "Die Soziale Marktwirtschaft verbindet freien Wettbewerb (Angebot und Nachfrage) mit sozialem Ausgleich, z.B. durch Sozialversicherungen und Mindestlohn."),
+        ("Welche Aufgabe hat der Staat in der Sozialen Marktwirtschaft?", new[] { "Er setzt Regeln (z.B. gegen Monopole) und sichert soziale Absicherung ab", "Er verbietet jeglichen privaten Handel", "Er hat gar keine Aufgabe in der Wirtschaft" },
+            "Er setzt Regeln (z.B. gegen Monopole) und sichert soziale Absicherung ab",
+            "Der Staat greift regelnd ein (z.B. Kartellrecht gegen Monopole) und sorgt für ein soziales Netz (Kranken-, Renten-, Arbeitslosenversicherung)."),
+        ("Was gehört in Deutschland zum sozialen Sicherungssystem?", new[] { "Kranken-, Renten- und Arbeitslosenversicherung", "Nur die private Altersvorsorge", "Ausschließlich Steuern auf Lebensmittel" },
+            "Kranken-, Renten- und Arbeitslosenversicherung", "Die gesetzlichen Sozialversicherungen (u.a. Kranken-, Renten-, Arbeitslosen- und Pflegeversicherung) bilden das soziale Sicherungsnetz.")
+    };
+
+    private static QuizQuestion SozialeMarktwirtschaft(Random r)
+    {
+        var f = SozialeMarktwirtschaftListe[r.Next(SozialeMarktwirtschaftListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Soziale Marktwirtschaft", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Soziale Marktwirtschaft = freier Wettbewerb + staatliche Regeln/soziale Absicherung (Sozialversicherungen)."
         };
     }
 }

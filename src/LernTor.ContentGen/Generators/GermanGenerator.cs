@@ -28,7 +28,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
                 Konjunktionen,
                 Kommasetzung,
                 DassOderDas,
-                Wortarten9
+                Wortarten9,
+                Textsorten
             }
         };
 
@@ -318,6 +319,40 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { w.Wortart },
             Explanation = $"\"{w.Wort}\" ist hier ein {w.Wortart}.",
             HelpHint = "Adverbien beschreiben näher (wie/wann/wo), Präpositionen stehen vor Nomen (auf, in, mit), Konjunktionen verbinden Sätze/Wörter (und, aber)."
+        };
+    }
+
+    private static readonly (string Beschreibung, string Textsorte, string Erklaerung)[] TextsortenBeispiele =
+    {
+        ("Ein Text, der sachlich und aktuell über ein Ereignis berichtet, das der Reporter selbst live miterlebt hat.",
+            "Reportage", "Eine Reportage schildert ein selbst erlebtes/beobachtetes Ereignis lebendig und mit persönlichen Eindrücken, bleibt aber überwiegend sachbezogen."),
+        ("Ein Text, in dem jemand offen die eigene Meinung zu einem aktuellen Thema äußert und begründet.",
+            "Kommentar", "Ein Kommentar ist ein meinungsbetonter Text: Der Autor bezieht klar Stellung und begründet seine Sichtweise."),
+        ("Ein kurzer, sachlicher Text, der nur die wichtigsten Fakten zu einem Ereignis nennt (wer, was, wann, wo).",
+            "Bericht", "Ein Bericht stellt Fakten neutral und ohne eigene Meinung dar - typisch für Nachrichtentexte."),
+        ("Ein Text, in dem eine Privatperson einer Zeitung ihre Meinung zu einem veröffentlichten Artikel mitteilt.",
+            "Leserbrief", "Ein Leserbrief ist eine persönliche, meinungsbetonte Reaktion einer Leserin/eines Lesers auf einen veröffentlichten Text."),
+        ("Ein Text, der ein Problem von mehreren Seiten beleuchtet und am Ende zu einer begründeten eigenen Position kommt.",
+            "Erörterung", "Eine Erörterung wägt Pro- und Contra-Argumente zu einer Streitfrage ab und mündet in ein begründetes eigenes Urteil.")
+    };
+
+    private static QuizQuestion Textsorten(Random r)
+    {
+        var t = TextsortenBeispiele[r.Next(TextsortenBeispiele.Length)];
+        var optionen = new[] { "Reportage", "Kommentar", "Bericht", "Leserbrief", "Erörterung" };
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Textsorten unterscheiden",
+            Type = QuestionType.MultipleChoice,
+            Prompt = $"Um welche Textsorte handelt es sich? {t.Beschreibung}",
+            Options = optionen,
+            CorrectAnswers = new[] { t.Textsorte },
+            Explanation = t.Erklaerung,
+            HelpHint = "Sachlich + Fakten = Bericht, sachlich + selbst erlebt = Reportage, Meinung = Kommentar/Leserbrief, Pro-und-Contra-Abwägung = Erörterung."
         };
     }
 }

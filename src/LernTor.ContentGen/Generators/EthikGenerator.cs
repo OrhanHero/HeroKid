@@ -12,7 +12,7 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { WerteRegeln, Freundschaft, Weltreligionen },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { Verantwortung, Meinungsfreiheit, DigitaleEthik }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { Verantwortung, Meinungsfreiheit, DigitaleEthik, RechtUndGerechtigkeit }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WerteListe =
@@ -136,6 +136,31 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
             Topic = "Digitale Ethik", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Bei Cybermobbing: Beweise sichern und Vertrauensperson informieren. Fake News täuschen bewusst - Quelle immer prüfen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GerechtigkeitListe =
+    {
+        ("Was bedeutet \"Gerechtigkeit\" ganz allgemein?", new[] { "Jedem das geben, was ihm/ihr zusteht (unter Berücksichtigung fairer Kriterien)", "Allen exakt dasselbe geben, egal um welche Situation es geht", "Nur den Stärkeren geben, was sie wollen" },
+            "Jedem das geben, was ihm/ihr zusteht (unter Berücksichtigung fairer Kriterien)",
+            "Gerechtigkeit bedeutet nicht zwingend \"alle bekommen gleich viel\", sondern dass Verteilung/Behandlung nach fairen, nachvollziehbaren Kriterien erfolgt."),
+        ("Was ist der Unterschied zwischen \"Gleichheit\" und \"Gerechtigkeit\"?", new[] { "Gleichheit heißt \"alle bekommen dasselbe\", Gerechtigkeit berücksichtigt auch unterschiedliche Bedürfnisse/Voraussetzungen", "Es gibt keinen Unterschied", "Gerechtigkeit bedeutet immer strengere Strafen" },
+            "Gleichheit heißt \"alle bekommen dasselbe\", Gerechtigkeit berücksichtigt auch unterschiedliche Bedürfnisse/Voraussetzungen",
+            "Gerechte Verteilung kann bedeuten, unterschiedliche Startbedingungen auszugleichen, statt allen exakt gleich viel zu geben."),
+        ("Welchem Zweck dient eine Strafe für eine Straftat aus ethischer Sicht (u.a.)?", new[] { "Wiedergutmachung, Abschreckung und Schutz der Gemeinschaft", "Nur der Rache", "Sie hat keinen erkennbaren Zweck" },
+            "Wiedergutmachung, Abschreckung und Schutz der Gemeinschaft",
+            "Strafen sollen u.a. Unrecht ausgleichen, künftige Taten verhindern (Abschreckung) und die Gemeinschaft schützen - reine Rache ist ethisch umstritten.")
+    };
+
+    private static QuizQuestion RechtUndGerechtigkeit(Random r)
+    {
+        var f = GerechtigkeitListe[r.Next(GerechtigkeitListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Recht und Gerechtigkeit", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Gerechtigkeit ist nicht dasselbe wie \"alle bekommen gleich viel\" - sie berücksichtigt faire Kriterien und unterschiedliche Voraussetzungen."
         };
     }
 }
