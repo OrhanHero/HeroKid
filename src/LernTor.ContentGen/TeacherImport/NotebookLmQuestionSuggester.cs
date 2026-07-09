@@ -16,15 +16,24 @@ namespace LernTor.ContentGen.TeacherImport;
 /// <para><b>Wichtiger Hinweis zum Implementierungsstand:</b> Diese Klasse wurde ohne Zugriff auf die
 /// offizielle API-Dokumentation (docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks)
 /// geschrieben - der Netzwerkzugriff auf diesen Host war aus der Entwicklungsumgebung heraus durch die
-/// Organisations-Policy blockiert (403, sowohl per curl als auch per WebFetch bestätigt). Die
-/// Authentifizierung (Google-Dienstkonto/OAuth2 über <c>Google.Apis.Auth</c>) folgt etablierten,
-/// stabilen Google-Cloud-Konventionen und sollte korrekt sein. Die konkreten Endpunkt-Pfade,
-/// Feldnamen der Request-/Response-JSON-Objekte (<see cref="CreateNotebookAsync"/>,
-/// <see cref="UploadSourceAsync"/>, <see cref="QueryNotebookAsync"/>) sind dagegen eine begründete
-/// Best-Effort-Annahme nach dem Muster anderer Discovery-Engine-/Vertex-AI-APIs und MÜSSEN nach
-/// dem ersten echten Testlauf mit echten Zugangsdaten anhand der offiziellen Dokumentation
-/// verifiziert/korrigiert werden (siehe README, Abschnitt "Automatisches Einlesen von
-/// Lehrer-Unterlagen").</para>
+/// Organisations-Policy blockiert (403, sowohl per curl als auch per WebFetch bestätigt). Zwei
+/// unterschiedliche Vertrauensstufen gelten hier:</para>
+/// <list type="bullet">
+/// <item>Die Verwendung von <c>Google.Apis.Auth</c> (<c>GoogleCredential.FromFile</c>,
+/// <c>CreateScoped</c>, <c>ITokenAccess.GetAccessTokenForRequestAsync</c>) sowie von PdfPig
+/// (<c>PdfDocument.Open(Stream)</c>, <c>GetPages()</c>, <c>Page.Text</c>) und DocumentFormat.OpenXml
+/// (<c>WordprocessingDocument.Open(Stream, bool)</c>, <c>MainDocumentPart.Document</c>) wurde direkt
+/// gegen die tatsächlichen, von nuget.org heruntergeladenen Paket-DLLs verifiziert (Metadaten-Analyse
+/// der exakten Methodensignaturen) - api.nuget.org war aus dieser Sandbox erreichbar, obwohl
+/// docs.cloud.google.com blockiert war. Diese Teile sollten also tatsächlich kompilieren und
+/// funktionieren.</item>
+/// <item>Die konkreten NotebookLM-Enterprise-Endpunkt-Pfade und Feldnamen der Request-/Response-
+/// JSON-Objekte (<see cref="CreateNotebookAsync"/>, <see cref="UploadSourceAsync"/>,
+/// <see cref="QueryNotebookAsync"/>) sind dagegen weiterhin eine unverifizierte Best-Effort-Annahme
+/// nach dem Muster anderer Discovery-Engine-/Vertex-AI-APIs und MÜSSEN nach dem ersten echten
+/// Testlauf mit echten Zugangsdaten anhand der offiziellen Dokumentation verifiziert/korrigiert werden
+/// (siehe README, Abschnitt "Automatisches Einlesen von Lehrer-Unterlagen").</item>
+/// </list>
 /// </summary>
 public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
 {
@@ -78,7 +87,9 @@ public sealed class NotebookLmQuestionSuggester : ITeacherQuestionSuggester
 
     private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
     {
-        var credential = GoogleCredential.FromFile(_options.ServiceAccountKeyPath!).CreateScoped(OAuthScopes);
+        // GoogleCredential implementiert ITokenAccess explizit - GetAccessTokenForRequestAsync ist
+        // deshalb nur über die Interface-Referenz aufrufbar, nicht direkt auf GoogleCredential.
+        ITokenAccess credential = GoogleCredential.FromFile(_options.ServiceAccountKeyPath!).CreateScoped(OAuthScopes);
         var token = await credential.GetAccessTokenForRequestAsync(cancellationToken: cancellationToken);
 
         if (string.IsNullOrEmpty(token))

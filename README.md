@@ -124,14 +124,21 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
     (docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks) einsehen zu
     können - der Netzwerkzugriff auf diesen Host war aus der Entwicklungsumgebung heraus durch die
     Organisations-Policy blockiert (403, per curl UND WebFetch bestätigt, keine Umgehung versucht).
-    Die Authentifizierung (Google-Dienstkonto/OAuth2 über `Google.Apis.Auth`) folgt etablierten,
-    stabilen Google-Cloud-Konventionen. Die konkreten Endpunkt-Pfade und JSON-Feldnamen
-    (Notebook anlegen/Quelle hochladen/Notebook abfragen) sind dagegen eine begründete
-    Best-Effort-Annahme nach dem Muster anderer Discovery-Engine-APIs und **müssen nach dem ersten
-    echten Testlauf mit echten Zugangsdaten anhand der offiziellen Dokumentation verifiziert/korrigiert
-    werden** - siehe die `// ANNAHME (nicht verifiziert)`-Kommentare direkt im Code. Fehlermeldungen bei
-    HTTP-Fehlern (404 o.ä.) weisen im Eltern-Bereich explizit darauf hin, dass dann der angenommene
-    Endpunkt-Pfad wahrscheinlich nicht stimmt.
+    **api.nuget.org war aus derselben Sandbox aber erreichbar** - deshalb wurden die drei neuen
+    NuGet-Pakete (`UglyToad.PdfPig`, `DocumentFormat.OpenXml`, `Google.Apis.Auth`) real heruntergeladen
+    und ihre tatsächlichen Methodensignaturen per Metadaten-Analyse der DLLs verifiziert (u.a.
+    `PdfDocument.Open(Stream, options?)`, `WordprocessingDocument.Open(Stream, bool)`,
+    `GoogleCredential.FromFile`/`.CreateScoped`/`ITokenAccess.GetAccessTokenForRequestAsync`) - dabei
+    wurde auch ein echter Bug gefunden und behoben (`GetAccessTokenForRequestAsync` ist eine explizite
+    Interface-Implementierung und nur über eine `ITokenAccess`-Referenz aufrufbar, nicht direkt auf
+    `GoogleCredential`). Dieser Teil der Implementierung ist also tatsächlich verifiziert, nicht nur
+    angenommen. Die konkreten NotebookLM-**Endpunkt-Pfade und JSON-Feldnamen** (Notebook anlegen/Quelle
+    hochladen/Notebook abfragen) bleiben dagegen eine begründete Best-Effort-Annahme nach dem Muster
+    anderer Discovery-Engine-APIs und **müssen nach dem ersten echten Testlauf mit echten Zugangsdaten
+    anhand der offiziellen Dokumentation verifiziert/korrigiert werden** - siehe die
+    `// ANNAHME (nicht verifiziert)`-Kommentare direkt im Code. Fehlermeldungen bei HTTP-Fehlern (404
+    o.ä.) weisen im Eltern-Bereich explizit darauf hin, dass dann der angenommene Endpunkt-Pfad
+    wahrscheinlich nicht stimmt.
   - **Funktionsweise**: PDF (`PdfPigTextExtractor`) bzw. .docx (`OpenXmlWordTextExtractor`, kein altes
     binäres .doc) → Fließtext → `NotebookLmQuestionSuggester` legt ein Wegwerf-Notebook an, lädt den
     Text als Quelle hoch, stellt eine Frage nach strukturiertem JSON mit Quizfragen und löscht das
