@@ -71,7 +71,9 @@ public static class Translations
             ["Exercise_Explanation"] = L("Erklärung:", "Açıklama:"),
             ["Exercise_ShowHint"] = L("💡 Tipp anzeigen", "💡 İpucu göster"),
             ["Exercise_AskAi"] = L("🤖 KI fragen", "🤖 Yapay zekaya sor"),
-            ["Exercise_AiThinking"] = L("Die KI überlegt…", "Yapay zeka düşünüyor…"),
+            ["Exercise_AiThinking"] = L(
+                "Die KI überlegt… (beim allerersten Mal wird einmalig ein KI-Modell heruntergeladen, das kann etwas dauern)",
+                "Yapay zeka düşünüyor… (ilk kullanımda bir yapay zeka modeli indirilir, bu biraz zaman alabilir)"),
             ["Exercise_SendChat"] = L("Senden", "Gönder"),
             ["Exercise_YourAnswerPlaceholder"] = L("Deine Antwort…", "Cevabın…"),
             ["Exercise_FinishSubject"] = L("Bereich abgeschlossen! Weiter ➜", "Bölüm tamamlandı! Devam ➜"),
@@ -135,39 +137,29 @@ public static class Translations
             ["Parent_CustomQuestions_Empty"] = L("Noch keine eigenen Aufgaben angelegt.", "Henüz kendi sorun yok."),
             ["Parent_CustomQuestions_Delete"] = L("Löschen", "Sil"),
 
-            ["Parent_Import_Title"] = L("Automatisches Einlesen von Lehrer-Unterlagen", "Öğretmen belgelerini otomatik içe aktar"),
+            ["Parent_Import_Title"] = L("Automatisches Einlesen von Lehrer-Unterlagen & KI-Lernchat", "Öğretmen belgelerini otomatik içe aktarma ve yapay zeka öğrenme sohbeti"),
             ["Parent_Import_Intro"] = L(
-                "Lädt eine PDF- oder Word-Datei hoch und lässt ein LLM (NotebookLM in der Cloud oder ein " +
-                "lokales Modell auf diesem PC) Fragenvorschläge daraus erstellen. Jeder Vorschlag muss " +
-                "geprüft und einzeln bestätigt werden, bevor er gespeichert wird.",
-                "Bir PDF veya Word dosyası yükler ve bir LLM'nin (bulutta NotebookLM veya bu bilgisayarda " +
-                "yerel bir model) bundan soru önerileri oluşturmasını sağlar. Her öneri kaydedilmeden önce " +
-                "kontrol edilip tek tek onaylanmalıdır."),
-            ["Parent_Import_ProviderTitle"] = L("LLM-Anbieter für den Lehrer-Import:", "Öğretmen içe aktarma için LLM sağlayıcısı:"),
-            ["Parent_Import_ProviderNotebookLm"] = L("NotebookLM (Google Cloud)", "NotebookLM (Google Cloud)"),
-            ["Parent_Import_ProviderLocalLlm"] = L("Lokales Modell (auf diesem PC)", "Yerel model (bu bilgisayarda)"),
-            ["Parent_Import_ProjectId"] = L("Google-Cloud-Projekt-NUMMER (nicht die Projekt-ID):", "Google Cloud Proje NUMARASI (Proje Kimliği değil):"),
-            ["Parent_Import_Location"] = L("Region (z.B. \"global\"):", "Bölge (örn. \"global\"):"),
-            ["Parent_Import_KeyPath"] = L("Pfad zur Dienstkonto-Schlüsseldatei (.json):", "Hizmet hesabı anahtar dosyası yolu (.json):"),
-            ["Parent_Import_LocalModelPath"] = L("Lokale Modelldatei (.gguf):", "Yerel model dosyası (.gguf):"),
+                "Komplett lokal, ohne Cloud-Anbindung: ein KI-Modell läuft direkt auf diesem PC und wird " +
+                "beim ersten Gebrauch automatisch heruntergeladen (kein manueller Download nötig). Es lädt " +
+                "eine PDF-/Word-Datei hoch und schlägt daraus Fragen vor (jeder Vorschlag muss geprüft und " +
+                "einzeln bestätigt werden) - und beantwortet im \"🤖 KI fragen\"-Button bei jeder Aufgabe " +
+                "Rückfragen der Kinder, wie bei einem Taschenrechner: sie kennt die richtige Antwort, soll " +
+                "sie aber nicht sofort verraten, sondern zuerst durch Denkanstöße helfen.",
+                "Tamamen yerel, bulut bağlantısı olmadan: bir yapay zeka modeli doğrudan bu bilgisayarda " +
+                "çalışır ve ilk kullanımda otomatik olarak indirilir (manuel indirme gerekmez). Bir PDF/Word " +
+                "dosyası yükler ve bundan sorular önerir (her öneri kontrol edilip tek tek onaylanmalıdır) - " +
+                "ve her görevde \"🤖 Yapay zekaya sor\" düğmesiyle çocukların sorularını yanıtlar, bir hesap " +
+                "makinesi gibi: doğru cevabı bilir, ama hemen söylemek yerine önce ipuçlarıyla yardım eder."),
+            ["Parent_Import_LocalModelPath"] = L("Eigene Modelldatei verwenden (optional, .gguf):", "Kendi model dosyanı kullan (isteğe bağlı, .gguf):"),
             ["Parent_Import_PickModelFile"] = L("Modelldatei auswählen…", "Model dosyası seç…"),
             ["Parent_Import_PickFile"] = L("Datei auswählen…", "Dosya seç…"),
-            ["Parent_Import_NoFile"] = L("Keine Datei ausgewählt.", "Dosya seçilmedi."),
+            ["Parent_Import_NoFile"] = L("Kein eigenes Modell ausgewählt - Standardmodell wird automatisch heruntergeladen.", "Kendi model seçilmedi - varsayılan model otomatik indirilecek."),
             ["Parent_Import_Run"] = L("Einlesen starten", "İçe aktarmayı başlat"),
             ["Parent_Import_Running"] = L("Wird eingelesen…", "İçe aktarılıyor…"),
             ["Parent_Import_ResultsTitle"] = L("Vorschläge zur Prüfung:", "Kontrol için öneriler:"),
             ["Parent_Import_Accept"] = L("Übernehmen", "Kabul et"),
             ["Parent_Import_Discard"] = L("Verwerfen", "Reddet"),
             ["Parent_Import_SourceExcerpt"] = L("Quelle im Dokument:", "Belgedeki kaynak:"),
-
-            ["Parent_Chat_Title"] = L("KI-Lernchat für Kinder", "Çocuklar için yapay zeka öğrenme sohbeti"),
-            ["Parent_Chat_Intro"] = L(
-                "Dein Kind kann in jeder Übung/News/Quizfrage über den \"🤖 KI fragen\"-Button Rückfragen " +
-                "zu einer Aufgabe stellen - wie bei einem Taschenrechner, nicht als Lösungsautomat: die KI " +
-                "ist angewiesen, nie direkt die richtige Antwort zu verraten, sondern nur Denkanstöße zu geben.",
-                "Çocuğun her alıştırmada/haberde/sınav sorusunda \"🤖 Yapay zekaya sor\" düğmesiyle bir " +
-                "göreve dair sorular sorabilir - bir hesap makinesi gibi, çözüm otomatı gibi değil: yapay " +
-                "zekaya doğru cevabı asla doğrudan söylememesi, sadece ipuçları vermesi talimatı verilmiştir."),
 
             ["Common_Back"] = L("Zurück", "Geri"),
         };

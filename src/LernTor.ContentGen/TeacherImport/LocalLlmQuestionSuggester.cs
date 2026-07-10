@@ -7,10 +7,10 @@ namespace LernTor.ContentGen.TeacherImport;
 
 /// <summary>
 /// <see cref="ITeacherQuestionSuggester"/>-Implementierung über ein lokal geladenes GGUF-Modell
-/// (LLamaSharp/llama.cpp) - Alternative zu <see cref="NotebookLmQuestionSuggester"/> ohne Cloud-Konto,
-/// ohne laufende Kosten, Dokumenttext verlässt nie den PC. Modell-Laden/Caching übernimmt die geteilte
-/// <see cref="LocalLlmModelHost"/> (auch vom KI-Lernchat genutzt), damit das Modell nicht bei jedem
-/// Aufruf neu von der Festplatte geladen werden muss.
+/// (LLamaSharp/llama.cpp) - komplett lokal, kein Cloud-Konto, keine laufenden Kosten, Dokumenttext
+/// verlässt nie den PC. Modell-Laden/Caching übernimmt die geteilte <see cref="LocalLlmModelHost"/>
+/// (auch vom KI-Lernchat genutzt), damit das Modell nicht bei jedem Aufruf neu von der Festplatte
+/// geladen werden muss.
 /// </summary>
 public sealed class LocalLlmQuestionSuggester : ITeacherQuestionSuggester
 {

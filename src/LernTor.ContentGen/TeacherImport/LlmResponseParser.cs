@@ -6,10 +6,9 @@ using LernTor.Core.Enums;
 namespace LernTor.ContentGen.TeacherImport;
 
 /// <summary>
-/// Gemeinsamer Prompt-Text und JSON-Antwort-Parser für alle <see cref="ITeacherQuestionSuggester"/>-
-/// Implementierungen (Cloud- wie lokale LLMs) - jedes LLM bekommt denselben Auftrag, aus einem
-/// Dokument Quizfragen als JSON zu erzeugen, und die Antwort wird identisch geparst, egal ob sie von
-/// NotebookLM oder einem lokalen Modell kommt.
+/// Gemeinsamer Prompt-Text und JSON-Antwort-Parser für <see cref="ITeacherQuestionSuggester"/> -
+/// jedes LLM bekommt denselben Auftrag, aus einem Dokument Quizfragen als JSON zu erzeugen, und die
+/// Antwort wird identisch geparst.
 /// </summary>
 internal static class LlmResponseParser
 {

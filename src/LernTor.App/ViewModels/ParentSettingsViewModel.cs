@@ -3,7 +3,6 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
-using LernTor.ContentGen.HomeworkChat;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
@@ -22,10 +21,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly DatabaseMaintenanceRepository _maintenanceRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly KioskLockService _kioskLock;
-    private readonly NotebookLmOptions _notebookLmOptions;
     private readonly LocalLlmOptions _localLlmOptions;
-    private readonly TeacherImportProviderOptions _providerOptions;
-    private readonly HomeworkChatProviderOptions _chatProviderOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
 
     private AppSettings _settings = new();
@@ -111,32 +107,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     partial void OnNewQuestionTypeChanged(QuestionType value) => OnPropertyChanged(nameof(NewQuestionNeedsOptions));
 
-    // --- Automatisches Einlesen von Lehrer-Unterlagen (NotebookLM Enterprise, siehe README) ---
-
-    [ObservableProperty]
-    private string notebookLmProjectId = string.Empty;
-
-    [ObservableProperty]
-    private string notebookLmLocation = "global";
-
-    [ObservableProperty]
-    private string notebookLmServiceAccountKeyPath = string.Empty;
-
-    // --- Lokale LLM-Alternative (LLamaSharp, siehe README) ---
+    // --- Automatisches Einlesen von Lehrer-Unterlagen + KI-Lernchat (lokales LLM, siehe README) ---
 
     [ObservableProperty]
     private string localLlmModelPath = string.Empty;
-
-    /// <summary>Welcher Anbieter für das automatische Einlesen aktiv ist (Cloud vs. lokal).</summary>
-    [ObservableProperty]
-    private LlmProvider teacherImportProvider = LlmProvider.NotebookLm;
-
-    /// <summary>Welcher Anbieter für den KI-Lernchat der Kinder aktiv ist. Standard lokal.</summary>
-    [ObservableProperty]
-    private LlmProvider chatProvider = LlmProvider.LocalLlm;
-
-    public IReadOnlyList<LlmProvider> AvailableLlmProviders { get; } =
-        Enum.GetValues<LlmProvider>().ToList();
 
     [ObservableProperty]
     private Subject importSubject = Subject.Mathematik;
@@ -166,10 +140,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         DatabaseMaintenanceRepository maintenanceRepo,
         CustomQuestionRepository customQuestionRepo,
         KioskLockService kioskLock,
-        NotebookLmOptions notebookLmOptions,
         LocalLlmOptions localLlmOptions,
-        TeacherImportProviderOptions providerOptions,
-        HomeworkChatProviderOptions chatProviderOptions,
         TeacherDocumentImportService teacherImportService)
     {
         _settingsRepo = settingsRepo;
@@ -178,10 +149,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _maintenanceRepo = maintenanceRepo;
         _customQuestionRepo = customQuestionRepo;
         _kioskLock = kioskLock;
-        _notebookLmOptions = notebookLmOptions;
         _localLlmOptions = localLlmOptions;
-        _providerOptions = providerOptions;
-        _chatProviderOptions = chatProviderOptions;
         _teacherImportService = teacherImportService;
     }
 
@@ -190,33 +158,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _settings = await _settingsRepo.LoadAsync();
         IsFirstTimeSetup = string.IsNullOrEmpty(_settings.AdminPasswordHash);
 
-        NotebookLmProjectId = _settings.NotebookLmProjectId ?? string.Empty;
-        NotebookLmLocation = _settings.NotebookLmLocation ?? "global";
-        NotebookLmServiceAccountKeyPath = _settings.NotebookLmServiceAccountKeyPath ?? string.Empty;
         LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
-        TeacherImportProvider = _settings.TeacherImportProvider;
-        ChatProvider = _settings.HomeworkChatProvider;
-        ApplyNotebookLmOptions();
         ApplyLocalLlmOptions();
-        ApplyProviderOptions();
-    }
-
-    private void ApplyNotebookLmOptions()
-    {
-        _notebookLmOptions.ProjectId = string.IsNullOrWhiteSpace(NotebookLmProjectId) ? null : NotebookLmProjectId;
-        _notebookLmOptions.Location = string.IsNullOrWhiteSpace(NotebookLmLocation) ? "global" : NotebookLmLocation;
-        _notebookLmOptions.ServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
     }
 
     private void ApplyLocalLlmOptions()
     {
         _localLlmOptions.ModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
-    }
-
-    private void ApplyProviderOptions()
-    {
-        _providerOptions.Provider = TeacherImportProvider;
-        _chatProviderOptions.Provider = ChatProvider;
     }
 
     [RelayCommand]
@@ -324,15 +272,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             }
         }
 
-        _settings.NotebookLmProjectId = string.IsNullOrWhiteSpace(NotebookLmProjectId) ? null : NotebookLmProjectId;
-        _settings.NotebookLmLocation = string.IsNullOrWhiteSpace(NotebookLmLocation) ? "global" : NotebookLmLocation;
-        _settings.NotebookLmServiceAccountKeyPath = string.IsNullOrWhiteSpace(NotebookLmServiceAccountKeyPath) ? null : NotebookLmServiceAccountKeyPath;
         _settings.LocalLlmModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
-        _settings.TeacherImportProvider = TeacherImportProvider;
-        _settings.HomeworkChatProvider = ChatProvider;
-        ApplyNotebookLmOptions();
         ApplyLocalLlmOptions();
-        ApplyProviderOptions();
 
         await _settingsRepo.SaveAsync(_settings);
         RequestClose?.Invoke();
@@ -371,9 +312,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Extrahiert Text aus der gewählten Datei und lässt NotebookLM Fragenentwürfe vorschlagen.
-    /// Die Entwürfe werden NICHT automatisch gespeichert - Eltern müssen jeden einzeln über
-    /// <see cref="AcceptImportedDraftAsync"/> bestätigen oder über <see cref="DiscardImportedDraft"/>
+    /// Extrahiert Text aus der gewählten Datei und lässt das lokale KI-Modell Fragenentwürfe
+    /// vorschlagen. Die Entwürfe werden NICHT automatisch gespeichert - Eltern müssen jeden einzeln
+    /// über <see cref="AcceptImportedDraftAsync"/> bestätigen oder über <see cref="DiscardImportedDraft"/>
     /// verwerfen (siehe ExtractedQuestionDraft-Dokumentation: keine Automatik ohne menschliche Kontrolle).
     /// </summary>
     [RelayCommand]
@@ -403,7 +344,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
             if (drafts.Count == 0)
             {
-                ImportErrorMessage = "NotebookLM hat keine Fragenvorschläge aus diesem Dokument geliefert.";
+                ImportErrorMessage = "Die KI hat keine Fragenvorschläge aus diesem Dokument geliefert.";
             }
         }
         catch (Exception ex)
@@ -425,7 +366,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             Id = Guid.NewGuid().ToString("N"),
             Subject = draft.SuggestedSubject ?? ImportSubject,
             GradeLevel = draft.SuggestedGradeLevel ?? ImportGrade,
-            Topic = string.IsNullOrWhiteSpace(draft.Topic) ? "Import (NotebookLM)" : draft.Topic,
+            Topic = string.IsNullOrWhiteSpace(draft.Topic) ? "Import (KI)" : draft.Topic,
             Type = draft.Type,
             Prompt = draft.Prompt,
             Options = draft.Options,

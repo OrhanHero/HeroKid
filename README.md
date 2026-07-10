@@ -116,115 +116,57 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
 
 ## Bekannte Grenzen / nächste Schritte
 
-- **Automatisches Einlesen von Lehrer-Unterlagen (PDF/Word) über NotebookLM Enterprise**: implementiert
-  (siehe `src/LernTor.ContentGen/TeacherImport/`) und im Eltern-Bereich nutzbar - **größtenteils gegen
-  die echte Doku verifiziert, ein Teil bleibt Annahme**. Der manuelle Editor (siehe "Eltern-Features")
-  funktioniert unabhängig davon weiterhin normal.
-  - **Verifizierungs-Historie**: `NotebookLmQuestionSuggester.cs` wurde zunächst ohne Zugriff auf die
-    offizielle API-Dokumentation geschrieben (docs.cloud.google.com war durch die Organisations-Policy
-    dieser Entwicklungsumgebung blockiert, 403 per curl UND WebFetch bestätigt). Zwei Nachbesserungen
-    haben seither die Unsicherheit reduziert:
-    1. **api.nuget.org war aus derselben Sandbox erreichbar** - die drei NuGet-Pakete (`UglyToad.PdfPig`,
-       `DocumentFormat.OpenXml`, `Google.Apis.Auth`) wurden real heruntergeladen und ihre Methoden-
-       signaturen per Metadaten-Analyse verifiziert (dabei einen echten Bug gefunden und behoben:
-       `GetAccessTokenForRequestAsync` ist eine explizite Interface-Implementierung, nur über eine
-       `ITokenAccess`-Referenz aufrufbar).
-    2. **Der Nutzer hat die offizielle NotebookLM-Enterprise-Dokumentation als PDF exportiert und
-       bereitgestellt**, wodurch die Basis-URL (mit Regions-Präfix vor dem Hostnamen, z.B.
-       `us-discoveryengine.googleapis.com` statt nur `discoveryengine.googleapis.com`), das
-       Ressourcen-Pfadschema, sowie `notebooks.create`, `notebooks.sources.batchCreate` (Text-Upload)
-       und `notebooks.batchDelete` (ein POST mit `names`-Array, **kein** HTTP-DELETE) jetzt nach
-       dokumentierten Beispielen implementiert sind.
-  - **⚠️ Weiterhin unverifiziert bleibt nur `QueryNotebookAsync`** (die Frage-/Antwort-Funktion): Die
-    bereitgestellte Doku enthielt dafür keine eigene REST-Anleitung, nur Feldnamen aus einer
-    Audit-Log-Tabelle (RPC-Methode `NotebookService.InteractSources`, Anfragefelder `name`/
-    `input_sources`/`free_form_action`, Antwortfeld `response.response`). Der REST-Pfad
-    (`:interactSources`) und die genaue innere Form von `free_form_action` sind eine begründete
-    Annahme und müssen beim ersten echten Testlauf mit echten Zugangsdaten überprüft werden - siehe
-    den `// NICHT verifiziert`-Kommentar direkt am Methodenkommentar im Code. Fehlermeldungen bei
-    HTTP-Fehlern (404 o.ä.) weisen im Eltern-Bereich explizit darauf hin, wenn genau dieser Schritt
-    scheitert.
-  - **Funktionsweise**: PDF (`PdfPigTextExtractor`) bzw. .docx (`OpenXmlWordTextExtractor`, kein altes
-    binäres .doc) → Fließtext → `NotebookLmQuestionSuggester` legt ein Wegwerf-Notebook an, lädt den
-    Text als Quelle hoch, stellt eine Frage nach strukturiertem JSON mit Quizfragen und löscht das
-    Notebook danach wieder. Ergebnisse sind immer nur Vorschläge (`ExtractedQuestionDraft`, mit
-    `SourceExcerpt` = Textstelle im Original) - Eltern müssen im Eltern-Bereich jeden Vorschlag einzeln
-    über "Übernehmen" bestätigen oder "Verwerfen", bevor er via `CustomQuestionRepository.AddAsync`
-    gespeichert wird. Keine automatische Übernahme ohne menschliche Kontrolle.
-  - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Google-Cloud-Projekt-
-    **Nummer** (laut Doku wird im Ressourcenpfad wörtlich die Projekt-Nummer erwartet, nicht die
-    textuelle Projekt-ID - die UI weist explizit darauf hin), Region (Standard "global"; laut Doku
-    wird sie als Präfix vor den API-Hostnamen gesetzt, z.B. "us"/"eu"), Pfad zur JSON-Schlüsseldatei
-    eines GCP-Dienstkontos. Ohne diese drei Angaben bleibt die Funktion inaktiv und wirft beim Versuch,
-    sie zu nutzen, eine klare Fehlermeldung statt stillschweigend nichts zu tun.
-  - **Nutzungslimits laut Doku** (falls beim Testen 429/Quota-Fehler auftreten): 500 Notebooks pro
-    Nutzer, 300 Quellen pro Notebook, 500 MB/500.000 Wörter pro Quelle, 500 Abfragen pro Nutzer und Tag.
-  - **Datenschutz-Hinweis**: Dokumente werden zur Verarbeitung an Google Cloud übertragen - das ist
-    bewusst eine bewusste Entscheidung der Eltern (Konfiguration ist optional/leer per Standard), keine
-    versteckte Standardeinstellung.
+- **KI-Funktionen: komplett lokal, keine Cloud-Anbindung.** LernTor nutzt an keiner Stelle einen
+  Cloud-KI-Dienst - das lokal geladene Sprachmodell ist die einzige KI-Anbindung, für zwei Features:
+  automatisches Einlesen von Lehrer-Unterlagen (PDF/Word → Fragenvorschläge) und den KI-Lernchat für
+  Kinder (siehe "Eltern-Features" bzw. weiter unten). Beide teilen sich dieselbe Infrastruktur:
+  - **`LocalLlmModelHost`** (`src/LernTor.ContentGen/Llm/LocalLlmModelHost.cs`) lädt das GGUF-Modell
+    über [LLamaSharp](https://github.com/SciSharp/LLamaSharp) (llama.cpp-Bindings, Pakete `LLamaSharp` +
+    `LLamaSharp.Backend.Cpu`, reines CPU-Backend ohne CUDA-Abhängigkeit) genau einmal und hält es im
+    Speicher, statt es bei jedem Aufruf neu zu laden.
+  - **Automatischer Modell-Download**: ist im Eltern-Bereich keine eigene `.gguf`-Datei hinterlegt, lädt
+    `LocalLlmModelHost` beim ersten Gebrauch automatisch ein Standardmodell
+    ([Qwen2.5-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF), Q4_K_M-Quantisierung,
+    ~2 GB, Apache-2.0-Lizenz - gutes Verhältnis aus Größe, Mehrsprachigkeit inkl. Deutsch und
+    Anleitungs-/Reasoning-Qualität für CPU-Inferenz auf gewöhnlicher Familien-Hardware) nach
+    `%LOCALAPPDATA%\LernTor\models\` herunter. Eltern müssen also keine Modelldatei selbst suchen -
+    einmalig wird beim ersten echten Gebrauch Internet gebraucht, danach läuft alles komplett offline.
+    **Die genaue Hugging-Face-Download-URL ist aus der Entwicklungsumgebung heraus nicht verifizierbar**
+    (huggingface.co ist von dort blockiert, 403 per curl bestätigt - dieselbe Einschränkung wie zuvor bei
+    docs.cloud.google.com) und muss beim ersten echten Test auf einem Windows-Rechner mit Internetzugang
+    überprüft werden; schlägt der Download fehl, zeigt die App eine klare Fehlermeldung und Eltern können
+    weiterhin manuell eine `.gguf`-Datei über den Datei-Dialog im Eltern-Bereich hinterlegen.
+  - **API-Verifizierung**: `LLamaSharp` 0.27.0 wurde real von nuget.org heruntergeladen und die
+    kompilierte DLL per CLR-Metadaten-Analyse geprüft (nicht nur aus Dokumentation/Training geraten):
+    `ModelParams(string modelPath)`-Konstruktor mit settable `ContextSize`/`GpuLayerCount`-Properties,
+    statisches `LLamaWeights.LoadFromFile(ModelParams)`,
+    `StatelessExecutor(LLamaWeights, IContextParams, ILogger?)`-Konstruktor (baut sich seinen
+    Inferenz-Kontext laut Metadaten-Analyse intern selbst auf - ein separat per
+    `LLamaWeights.CreateContext(...)` erzeugter Kontext wird gar nicht entgegengenommen) sowie
+    `InferAsync(string, InferenceParams?, CancellationToken)`, das laut TypeRef-Analyse
+    `IAsyncEnumerable<string>` liefert (per `await foreach` zum vollständigen Antworttext
+    zusammengesetzt). `LLamaWeights` implementiert `IDisposable`.
+- **Automatisches Einlesen von Lehrer-Unterlagen** (`src/LernTor.ContentGen/TeacherImport/`): PDF
+  (`PdfPigTextExtractor`) bzw. .docx (`OpenXmlWordTextExtractor`, kein altes binäres .doc) → Fließtext →
+  `LocalLlmQuestionSuggester` stellt eine Frage nach strukturiertem JSON mit Quizfragen. Ergebnisse sind
+  immer nur Vorschläge (`ExtractedQuestionDraft`, mit `SourceExcerpt` = Textstelle im Original) - Eltern
+  müssen im Eltern-Bereich jeden Vorschlag einzeln über "Übernehmen" bestätigen oder "Verwerfen", bevor
+  er via `CustomQuestionRepository.AddAsync` gespeichert wird. Keine automatische Übernahme ohne
+  menschliche Kontrolle. Der manuelle Editor (siehe "Eltern-Features") funktioniert unabhängig davon
+  weiterhin normal.
   - **Noch nicht umgesetzt / nice-to-have**: Inline-Bearbeitung einzelner Felder eines Vorschlags vor
     dem Übernehmen (aktuell nur ganz übernehmen oder ganz verwerfen - Korrekturen sind über den
     bestehenden manuellen "Eigene Aufgaben"-Editor möglich).
-  - **Lokale LLM-Alternative (LLamaSharp)**: Für Familien, die keine Cloud-Verarbeitung möchten, gibt
-    es jetzt eine zweite `ITeacherQuestionSuggester`-Implementierung: `LocalLlmQuestionSuggester`
-    (`src/LernTor.ContentGen/TeacherImport/LocalLlmQuestionSuggester.cs`) lädt ein GGUF-Modell direkt
-    im App-Prozess über [LLamaSharp](https://github.com/SciSharp/LLamaSharp) (llama.cpp-Bindings,
-    Pakete `LLamaSharp` + `LLamaSharp.Backend.Cpu`, reines CPU-Backend ohne CUDA-Abhängigkeit). Kein
-    Google-Cloud-Konto, keine laufenden Kosten, das Dokument verlässt nie den PC - dafür läuft die
-    Inferenz auf der CPU des Kiosk-Rechners (je nach Modellgröße mehrere Sekunden bis Minuten pro
-    Import) und Eltern müssen eine GGUF-Modelldatei selbst herunterladen (nicht Teil des Installers,
-    typischerweise mehrere Gigabyte, z.B. ein quantisiertes Llama-3- oder Mistral-Modell).
-    - `CompositeTeacherQuestionSuggester` ist die einzige `ITeacherQuestionSuggester`-Registrierung in
-      der Dependency-Injection und leitet je nach `AppSettings.TeacherImportProvider`
-      (Radio-Buttons "NotebookLM (Cloud)" / "Lokales Modell" im Eltern-Bereich) an die gewählte
-      Implementierung weiter. Beide Implementierungen teilen sich Prompt-Aufbau und JSON-Antwort-
-      Parsing über die gemeinsame `LlmResponseParser`-Klasse, damit sich das Antwortformat nicht
-      zwischen Cloud- und lokalem Modell unterscheidet.
-    - **API-Verifizierung**: wie schon bei den anderen NuGet-Abhängigkeiten wurde `LLamaSharp` 0.27.0
-      real von nuget.org heruntergeladen und die kompilierte DLL per CLR-Metadaten-Analyse geprüft
-      (nicht nur aus Dokumentation/Training geraten): `ModelParams(string modelPath)`-Konstruktor mit
-      settable `ContextSize`/`GpuLayerCount`-Properties, statisches `LLamaWeights.LoadFromFile(ModelParams)`,
-      `StatelessExecutor(LLamaWeights, IContextParams, ILogger?)`-Konstruktor (baut sich seinen
-      Inferenz-Kontext laut Metadaten-Analyse intern selbst auf - ein separat per
-      `LLamaWeights.CreateContext(...)` erzeugter Kontext wird gar nicht entgegengenommen und wurde
-      aus dem Code entfernt, nachdem das bei der Umsetzung des Lernchats auffiel) sowie
-      `InferAsync(string, InferenceParams?, CancellationToken)`, das laut TypeRef-Analyse
-      `IAsyncEnumerable<string>` liefert (per `await foreach` zum vollständigen Antworttext
-      zusammengesetzt). `LLamaWeights` implementiert `IDisposable`.
-    - **Konfiguration** (Eltern-Bereich, Abschnitt "Automatisches Einlesen…"): Anbieter-Auswahl
-      (Radio-Buttons) sowie Pfad zur lokalen `.gguf`-Modelldatei über einen Datei-Dialog. Ohne gültige
-      Modelldatei bleibt die lokale Variante inaktiv und wirft beim Versuch, sie zu nutzen, eine klare
-      Fehlermeldung.
-    - `NotebookLmClient` (`src/LernTor.ContentGen/Llm/NotebookLmClient.cs`) und `LocalLlmModelHost`
-      (`src/LernTor.ContentGen/Llm/LocalLlmModelHost.cs`) kapseln die eigentliche Cloud-/Modell-Logik
-      und werden von BEIDEN KI-Features geteilt (Lehrer-Import und KI-Lernchat, siehe unten) -
-      `LocalLlmModelHost` hält das lokale Modell dabei nur einmal im Speicher, egal welches Feature es
-      zuerst anfordert, statt es bei jedem Aufruf neu von der Festplatte zu laden.
 - **KI-Lernchat für Kinder** (`src/LernTor.App/Controls/QuestionCard.xaml`, "🤖 KI fragen"-Button):
   Kinder können zu jeder Aufgabe - in News, Übungen und im Abschlussquiz gleichermaßen, da alle drei
   dieselbe `QuestionCard` verwenden - dem KI-Assistenten Rückfragen stellen, so wie sie einen
-  Taschenrechner oder ein Nachschlagewerk benutzen würden. Bewusst kein "gib mir die Lösung"-Automat:
-  der Prompt (`HomeworkChatPromptBuilder`, `src/LernTor.ContentGen/HomeworkChat/`) weist die KI
-  ausdrücklich an, nie direkt die fertige Antwort zu verraten, sondern durch Rückfragen und kleine
-  Denkanstöße zu helfen. Als zusätzliche, strukturelle Absicherung (Anweisungsbefolgung allein ist bei
-  kleinen/lokalen Modellen nicht zuverlässig genug) bekommt das Modell `Question.CorrectAnswers`/
-  `Question.Explanation` erst gar nicht in den Prompt - was es nicht kennt, kann es auch nicht
-  versehentlich verraten.
-  - **Eigener Anbieter-Schalter, Standard lokal**: `AppSettings.HomeworkChatProvider`
-    (`LlmProvider.LocalLlm` per Standard) ist unabhängig von `TeacherImportProvider` wählbar - ein
-    Elternteil kann z.B. NotebookLM für den (seltenen) Lehrer-Import nutzen, aber den (häufigeren)
-    Kinder-Chat bewusst lokal lassen, damit Fragen/Aufgabentexte der Kinder ohne explizite
-    Entscheidung nie in die Cloud gehen. `CompositeHomeworkHelpChatService` leitet analog zu
-    `CompositeTeacherQuestionSuggester` an die gewählte Implementierung weiter.
-  - **NotebookLM-Variante**: da NotebookLMs API dokumentbasiert arbeitet, wird pro Chat-Nachricht ein
-    Wegwerf-Notebook mit dem Aufgabenkontext als Quelle angelegt und danach wieder gelöscht - anders
-    als beim lokalen Modell gibt es keinen zwischen Nachrichten gehaltenen Zustand. Bei aktiver Nutzung
-    kann das die NotebookLM-Tageskontingente (s.o.) schneller ausschöpfen; genau dafür ist lokal der
-    Standard.
-  - **Nicht umgesetzt / bewusste Vereinfachung**: die NotebookLM-Chat-Variante nutzt für jede Nachricht
-    ein frisches Notebook statt eines über die Konversation hinweg offen gehaltenen - das vermeidet
-    Session-Lifecycle-Verwaltung (Notebook öffnen bei erster Nachricht, schließen beim Verlassen der
-    Aufgabe), kostet dafür etwas mehr Kontingent bei mehreren Rückfragen zur selben Aufgabe.
+  Taschenrechner benutzen würden: als Werkzeug, mit dem man sich auseinandersetzt, nicht als reinen
+  Lösungsautomaten. Der Prompt (`HomeworkChatPromptBuilder`, `src/LernTor.ContentGen/HomeworkChat/`)
+  bekommt bewusst die richtige Antwort und die Erklärung der Aufgabe MIT in den Kontext - ohne sie zu
+  kennen, könnte die KI nur raten statt wirklich zu helfen. Die Leitplanke ist eine reine
+  Prompt-Anweisung: die fertige Antwort nicht schon in der ersten Nachricht preiszugeben, sondern zuerst
+  durch Rückfragen und Denkanstöße zu helfen - erst wenn das Kind es mehrfach probiert hat oder
+  ausdrücklich danach fragt, soll die KI die Lösung erklären.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
   KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von

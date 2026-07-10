@@ -70,9 +70,9 @@ Das fertige Setup landet in `dist\LernTor-Setup-1.0.0.exe`. Der Installer:
 
 Falls du LernTor schon vorher getestet hast, existiert bereits eine `lerntor.db` unter
 `%LOCALAPPDATA%\LernTor\`. Mehrere Features haben seither neue Tabellen/Spalten hinzugefügt oder
-entfernt (Profile, eigene Aufgaben, die entfernte `DailyTimeLimitMinutes`-Spalte, die NotebookLM-
-Konfigurationsfelder, `TeacherImportProvider`/`LocalLlmModelPath` für die lokale LLM-Alternative,
-zuletzt `HomeworkChatProvider` für den KI-Lernchat); da die App `EnsureCreated` statt echter
+entfernt (Profile, eigene Aufgaben, die entfernte `DailyTimeLimitMinutes`-Spalte, die zwischenzeitlichen
+NotebookLM-/Anbieter-Auswahl-Felder - inzwischen wieder entfernt, LernTor ist komplett lokal ohne
+Cloud-Anbindung -, zuletzt bleibt nur noch `LocalLlmModelPath`); da die App `EnsureCreated` statt echter
 EF-Core-Migrationen nutzt,
 wird eine bereits vorhandene Datenbank NICHT automatisch aktualisiert. Bitte vor dem nächsten Start
 diese Datei löschen (Fortschritt geht dabei verloren, das ist in dieser Entwicklungsphase unkritisch)

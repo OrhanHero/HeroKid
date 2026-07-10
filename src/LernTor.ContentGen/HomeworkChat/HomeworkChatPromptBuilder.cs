@@ -4,27 +4,28 @@ using LernTor.Core.Models;
 namespace LernTor.ContentGen.HomeworkChat;
 
 /// <summary>
-/// Gemeinsamer Prompt-Aufbau für beide <see cref="IHomeworkHelpChatService"/>-Implementierungen.
-/// Bewusst wird der Aufgabenkontext, den das Modell bekommt, NIE um <c>Question.CorrectAnswers</c>
-/// oder <c>Question.Explanation</c> ergänzt: kleine/quantisierte lokale Modelle folgen komplexen
-/// Anweisungen ("verrate die Lösung nicht") nicht zuverlässig genug, um sich allein auf die
-/// Prompt-Regeln zu verlassen. Wenn das Modell die richtige Antwort strukturell gar nicht kennt, kann
-/// es sie auch nicht versehentlich verraten - das ist robuster als reine Anweisungsbefolgung.
+/// Prompt-Aufbau für <see cref="IHomeworkHelpChatService"/>. Das Modell bekommt die richtige(n)
+/// Antwort(en) und die Erklärung der Aufgabe bewusst MIT in den Kontext: ohne sie zu kennen, kann die
+/// KI kein echtes Lern-Werkzeug sein, sondern würde nur ins Blaue raten - das Kind soll sich mit der
+/// Aufgabe auseinandersetzen und Verständnis aufbauen, nicht die KI raten sehen. Die Leitplanke, die
+/// fertige Antwort nicht sofort preiszugeben, ist deshalb eine reine Prompt-Anweisung (siehe
+/// <see cref="Guardrails"/>), kein struktureller Schutz.
 /// </summary>
 public static class HomeworkChatPromptBuilder
 {
     private const string Guardrails =
         "Du bist ein freundlicher Lern-Assistent für ein Kind (Klasse 6 oder 9, Berlin). Das Kind arbeitet " +
-        "gerade an der oben genannten Aufgabe und stellt dir dazu Fragen. Regeln, die du IMMER befolgst:\n" +
-        "1. Verrate NIEMALS direkt die fertige/richtige Antwort oder das Lösungswort.\n" +
-        "2. Hilf stattdessen durch Rückfragen, kleine Denkanstöße und einzelne Zwischenschritte, damit das " +
-        "Kind selbst darauf kommt - wie eine Nachhilfelehrkraft, nicht wie ein Lösungsblatt.\n" +
-        "3. Antworte kurz (2-4 Sätze), einfach und altersgerecht auf Deutsch.\n" +
+        "gerade an der oben genannten Aufgabe und stellt dir dazu Fragen. Du kennst die richtige Antwort und " +
+        "die Erklärung (oben angegeben) - nutze dieses Wissen, um wirklich zu helfen, aber halte dich an " +
+        "diese Regeln:\n" +
+        "1. Verrate die fertige Antwort nicht schon in deiner ERSTEN Nachricht - hilf zuerst durch " +
+        "Rückfragen und kleine Denkanstöße, damit das Kind selbst darauf kommt, wie eine Nachhilfelehrkraft.\n" +
+        "2. Wenn das Kind es mehrfach probiert hat oder ausdrücklich nach der Lösung fragt, erkläre sie " +
+        "verständlich - besser eine erklärte Antwort als ein frustriertes Kind.\n" +
+        "3. Antworte kurz (2-5 Sätze), einfach und altersgerecht auf Deutsch.\n" +
         "4. Bleib beim Thema der Aufgabe, auch wenn das Kind vom Thema abweicht.";
 
-    /// <summary>Aufgabenkontext ohne Lösung - bei NotebookLM die hochgeladene "Quelle", beim lokalen
-    /// Modell der vorangestellte Teil des Gesamt-Prompts.</summary>
-    public static string BuildQuestionContext(QuizQuestion question)
+    public static string BuildPrompt(QuizQuestion question, IReadOnlyList<ChatMessage> conversation)
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Fach: {question.Subject}, Klassenstufe: {question.GradeLevel}");
@@ -34,13 +35,9 @@ public static class HomeworkChatPromptBuilder
             sb.AppendLine("Antwortmöglichkeiten: " + string.Join(", ", question.Options));
         }
 
-        return sb.ToString();
-    }
-
-    /// <summary>Leitplanken + bisheriger Chatverlauf, endet offen mit "Assistent:" zur Fortsetzung.</summary>
-    public static string BuildConversationPrompt(IReadOnlyList<ChatMessage> conversation)
-    {
-        var sb = new StringBuilder();
+        sb.AppendLine("Richtige Antwort: " + string.Join(" / ", question.CorrectAnswers));
+        sb.AppendLine("Erklärung: " + question.Explanation);
+        sb.AppendLine();
         sb.AppendLine(Guardrails);
         sb.AppendLine();
         sb.AppendLine("Bisheriger Chatverlauf:");
@@ -53,9 +50,4 @@ public static class HomeworkChatPromptBuilder
         sb.Append("Assistent:");
         return sb.ToString();
     }
-
-    /// <summary>Für das lokale LLM: ein einziger Prompt-String ohne den NotebookLM-typischen Split
-    /// zwischen hochgeladener "Quelle" und Frage - Kontext und Leitplanken direkt vorangestellt.</summary>
-    public static string BuildLocalPrompt(QuizQuestion question, IReadOnlyList<ChatMessage> conversation) =>
-        BuildQuestionContext(question) + "\n" + BuildConversationPrompt(conversation);
 }

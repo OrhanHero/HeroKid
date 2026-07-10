@@ -118,35 +118,23 @@ public partial class App : Application
 
                 services.AddSingleton<KioskLockService>();
 
-                // Gemeinsame LLM-Infrastruktur (siehe README): die Options-Objekte werden von
-                // ParentSettingsViewModel beim Laden der Einstellungen befüllt, da die DI-Container schon
-                // vor dem Laden der AppSettings aus der DB aufgebaut werden. NotebookLmClient und
-                // LocalLlmModelHost kapseln die eigentliche Cloud-/Modell-Logik und werden sowohl vom
-                // Lehrer-Import als auch vom KI-Lernchat genutzt (LocalLlmModelHost hält das Modell dabei
-                // nur einmal im Speicher, egal von welchem Feature aus es zuerst gebraucht wird).
-                services.AddSingleton<NotebookLmOptions>();
+                // Gemeinsame LLM-Infrastruktur (siehe README): komplett lokal, keine Cloud-Anbindung.
+                // LocalLlmOptions wird von ParentSettingsViewModel beim Laden der Einstellungen befüllt, da
+                // die DI-Container schon vor dem Laden der AppSettings aus der DB aufgebaut werden.
+                // LocalLlmModelHost lädt das Modell nur einmal (lädt bei Bedarf sogar automatisch ein
+                // Standardmodell herunter) und wird sowohl vom Lehrer-Import als auch vom KI-Lernchat
+                // genutzt, damit beide Features es nicht unabhängig voneinander doppelt im RAM halten.
                 services.AddSingleton<LocalLlmOptions>();
-                services.AddSingleton<NotebookLmClient>();
                 services.AddSingleton<LocalLlmModelHost>();
 
-                // Automatisches Einlesen von Lehrer-Unterlagen: CompositeTeacherQuestionSuggester leitet
-                // je nach TeacherImportProviderOptions.Provider an NotebookLM (Cloud) oder das lokale
-                // LLamaSharp-Modell weiter - Eltern wählen den Anbieter im Eltern-Bereich.
-                services.AddSingleton<TeacherImportProviderOptions>();
+                // Automatisches Einlesen von Lehrer-Unterlagen.
                 services.AddSingleton<ITeacherDocumentTextExtractor, PdfPigTextExtractor>();
                 services.AddSingleton<ITeacherDocumentTextExtractor, OpenXmlWordTextExtractor>();
-                services.AddSingleton<NotebookLmQuestionSuggester>();
-                services.AddSingleton<LocalLlmQuestionSuggester>();
-                services.AddSingleton<ITeacherQuestionSuggester, CompositeTeacherQuestionSuggester>();
+                services.AddSingleton<ITeacherQuestionSuggester, LocalLlmQuestionSuggester>();
                 services.AddSingleton<TeacherDocumentImportService>();
 
-                // KI-Lernchat für Kinder (siehe README): Standard-Anbieter ist lokal
-                // (HomeworkChatProviderOptions.Provider = LlmProvider.LocalLlm), damit Aufgaben/Fragen der
-                // Kinder ohne explizite Eltern-Entscheidung nie in die Cloud gehen.
-                services.AddSingleton<HomeworkChatProviderOptions>();
-                services.AddSingleton<NotebookLmHomeworkHelpChatService>();
-                services.AddSingleton<LocalLlmHomeworkHelpChatService>();
-                services.AddSingleton<IHomeworkHelpChatService, CompositeHomeworkHelpChatService>();
+                // KI-Lernchat für Kinder (siehe README).
+                services.AddSingleton<IHomeworkHelpChatService, LocalLlmHomeworkHelpChatService>();
 
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
