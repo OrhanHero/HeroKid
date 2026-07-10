@@ -1,5 +1,7 @@
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using LernTor.App.ViewModels;
 
 namespace LernTor.App.Controls;
 
@@ -8,6 +10,32 @@ public partial class QuestionCard : UserControl
     public QuestionCard()
     {
         InitializeComponent();
+        DataContextChanged += OnDataContextChanged;
+    }
+
+    /// <summary>
+    /// QuestionCard wird über eine DataTemplate-Bindung wiederverwendet (z.B. "Nächste Aufgabe") -
+    /// derselbe Visual-Tree bekommt dabei eine neue QuestionAnswerViewModel-Instanz mit eigener
+    /// ChatMessages-Collection. Ohne Um-Hängen des Handlers würde nach der ersten Frage nur noch die
+    /// (dann verwaiste) alte Collection beobachtet.
+    /// </summary>
+    private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.OldValue is QuestionAnswerViewModel oldViewModel)
+        {
+            oldViewModel.ChatMessages.CollectionChanged -= ChatMessages_CollectionChanged;
+        }
+
+        if (e.NewValue is QuestionAnswerViewModel newViewModel)
+        {
+            newViewModel.ChatMessages.CollectionChanged += ChatMessages_CollectionChanged;
+        }
+    }
+
+    /// <summary>Scrollt den Chatverlauf automatisch zur neuesten Nachricht (Kind-Frage oder KI-Antwort).</summary>
+    private void ChatMessages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        Dispatcher.BeginInvoke(() => ChatScrollViewer.ScrollToEnd());
     }
 
     /// <summary>

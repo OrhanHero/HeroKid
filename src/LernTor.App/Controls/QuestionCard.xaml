@@ -39,27 +39,29 @@
                 <Border Visibility="{Binding IsChatOpen, Converter={StaticResource BoolToVis}}"
                         Style="{StaticResource CardBorder}" Padding="12" Margin="0,8,0,0">
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding ChatMessages}" MaxHeight="260">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border CornerRadius="8" Padding="10,6" Margin="0,4" MaxWidth="560">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
-                                                <Setter Property="HorizontalAlignment" Value="Left" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Role}" Value="Kind">
-                                                        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-                                                        <Setter Property="HorizontalAlignment" Value="Right" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Style="{StaticResource BodyText}" />
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <ScrollViewer x:Name="ChatScrollViewer" MaxHeight="260" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding ChatMessages}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="8" Padding="10,6" Margin="0,4" MaxWidth="560">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                                    <Setter Property="HorizontalAlignment" Value="Left" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Role}" Value="Kind">
+                                                            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                            <Setter Property="HorizontalAlignment" Value="Right" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Style="{StaticResource BodyText}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
 
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AiThinking]}"
                                    Visibility="{Binding IsChatLoading, Converter={StaticResource BoolToVis}}"
@@ -71,7 +73,11 @@
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                             <TextBox Width="360" Padding="8"
                                      Text="{Binding ChatInputText, UpdateSourceTrigger=PropertyChanged}"
-                                     IsEnabled="{Binding IsChatLoading, Converter={StaticResource InverseBool}}" />
+                                     IsEnabled="{Binding IsChatLoading, Converter={StaticResource InverseBool}}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding SendChatMessageCommand}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
                             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_SendChat]}"
                                     Style="{StaticResource RoundedButton}" Margin="8,0,0,0"
                                     Command="{Binding SendChatMessageCommand}" />
@@ -103,7 +109,11 @@
                 <TextBox x:Name="AnswerTextBox"
                          Text="{Binding GivenAnswerText, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="20" Padding="14" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="2"
-                         IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                         IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding SubmitOpenTextCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
 
                 <!-- Türkische Sonderzeichen, die es auf einer deutschen Tastatur nicht gibt -->
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0"

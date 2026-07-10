@@ -142,3 +142,9 @@ string indexer over `Translations.Map` (DE/TR), bound in XAML via
 - A global `DispatcherUnhandledException`/`AppDomain.UnhandledException` handler in `App.xaml.cs`
   shows a `MessageBox` and guards against re-entrancy (a fatal error during shutdown must not spawn
   a stack of duplicate dialogs) — this is how prior startup crashes were actually diagnosed.
+- LLamaSharp's `StatelessExecutor.InferAsync` does not stop on its own when a prompt ends with an
+  open turn like `"Assistent:"` — without `InferenceParams.AntiPrompts` stop sequences, it keeps
+  completing the text and hallucinates the rest of the conversation (both the child's next messages
+  and further AI replies) instead of returning after one answer. `LocalLlmHomeworkHelpChatService`
+  sets `AntiPrompts = ["\nKind:", "Kind:", "\nAssistent:"]` and additionally trims the raw output at
+  the first such marker as a defensive backstop.

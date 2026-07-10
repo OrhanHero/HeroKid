@@ -49,13 +49,25 @@
                            Style="{StaticResource HeadlineText}" FontSize="26" Margin="0,0,0,20" />
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_NameLabel]}" Style="{StaticResource BodyText}" />
-                <TextBox Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Margin="0,4,0,16" />
+                <TextBox Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Margin="0,4,0,16">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding CreateProfileCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_AgeLabel]}" Style="{StaticResource BodyText}" />
-                <TextBox Text="{Binding NewProfileAge, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Margin="0,4,0,16" Width="100" HorizontalAlignment="Left" />
+                <TextBox Text="{Binding NewProfileAge, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Margin="0,4,0,16" Width="100" HorizontalAlignment="Left">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding CreateProfileCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_ClassLabel]}" Style="{StaticResource BodyText}" />
-                <TextBox Text="{Binding NewProfileClassLabel, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Margin="0,4,0,16" Width="140" HorizontalAlignment="Left" />
+                <TextBox Text="{Binding NewProfileClassLabel, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Margin="0,4,0,16" Width="140" HorizontalAlignment="Left">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding CreateProfileCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_GradeLevelLabel]}" Style="{StaticResource BodyText}" Margin="0,0,0,4" />
                 <RadioButton Content="Klasse 6" IsChecked="{Binding NewProfileIsGrade9, Converter={StaticResource InverseBool}}" FontSize="16" Margin="0,4" />

@@ -20,6 +20,15 @@ public sealed class LocalLlmHomeworkHelpChatService : IHomeworkHelpChatService
         _modelHost = modelHost;
     }
 
+    /// <summary>
+    /// Stoppwörter für die Texterzeugung: der Prompt endet mit "Assistent:", damit das Modell direkt
+    /// mit seiner Antwort fortfährt - ohne Stoppwörter setzt es diese Vervollständigung aber einfach
+    /// fort und erfindet gleich die nächste(n) Kind-/Assistent-Runde(n) mit dazu (beobachtetes
+    /// Verhalten: das Modell gibt ein komplettes Fantasie-Gespräch statt nur einer einzigen Antwort
+    /// zurück). Sobald eines dieser Wörter erscheint, bricht LLamaSharp die Erzeugung ab.
+    /// </summary>
+    private static readonly IReadOnlyList<string> StopSequences = new[] { "\nKind:", "Kind:", "\nAssistent:" };
+
     public async Task<string> AskAsync(
         QuizQuestion question,
         IReadOnlyList<ChatMessage> conversation,
@@ -29,7 +38,8 @@ public sealed class LocalLlmHomeworkHelpChatService : IHomeworkHelpChatService
         var prompt = HomeworkChatPromptBuilder.BuildPrompt(question, conversation);
         var inferenceParams = new InferenceParams
         {
-            MaxTokens = 300
+            MaxTokens = 300,
+            AntiPrompts = StopSequences
         };
 
         var answer = new StringBuilder();
@@ -38,6 +48,28 @@ public sealed class LocalLlmHomeworkHelpChatService : IHomeworkHelpChatService
             answer.Append(token);
         }
 
-        return answer.ToString().Trim();
+        return TrimAtFirstStopSequence(answer.ToString());
+    }
+
+    /// <summary>
+    /// Zusätzliche Absicherung neben <see cref="InferenceParams.AntiPrompts"/>: falls ein Stoppwort
+    /// erst nach ein paar weiteren Token erkannt wird (oder LLamaSharp es trotzdem mit ausgibt),
+    /// schneidet dies den Text spätestens hier ab, bevor er dem Kind angezeigt wird.
+    /// </summary>
+    private static string TrimAtFirstStopSequence(string text)
+    {
+        var trimmed = text.Trim();
+        var cutIndex = trimmed.Length;
+
+        foreach (var stopSequence in StopSequences)
+        {
+            var index = trimmed.IndexOf(stopSequence, StringComparison.Ordinal);
+            if (index >= 0 && index < cutIndex)
+            {
+                cutIndex = index;
+            }
+        }
+
+        return trimmed[..cutIndex].Trim();
     }
 }

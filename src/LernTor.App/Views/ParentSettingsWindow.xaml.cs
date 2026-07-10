@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using LernTor.App.ViewModels;
 
 namespace LernTor.App.Views;
@@ -28,5 +29,17 @@ public partial class ParentSettingsWindow : Window
     {
         _viewModel.UnlockAndExitCommand.Execute(PasswordInput.Password);
         PasswordInput.Clear();
+    }
+
+    /// <summary>PasswordBox.Password kann aus Sicherheitsgründen nicht gebunden werden, daher lässt
+    /// sich Enter hier nicht per KeyBinding/Command lösen wie bei normalen TextBoxen - stattdessen
+    /// wird direkt der bestehende Login-Klick-Handler wiederverwendet.</summary>
+    private async void PasswordInput_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Return)
+        {
+            await _viewModel.LoginCommand.ExecuteAsync(PasswordInput.Password);
+            PasswordInput.Clear();
+        }
     }
 }
