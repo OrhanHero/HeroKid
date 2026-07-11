@@ -12,15 +12,28 @@ namespace LernTor.ContentGen.TeacherImport;
 /// </summary>
 internal static class LlmResponseParser
 {
+    /// <summary>Auf Qwen2.5-Instruct zugeschnitten (klare Abschnitte, nummerierte Regeln): das Modell
+    /// hält strukturierte Formatvorgaben deutlich zuverlässiger ein als Fließtext-Anweisungen.</summary>
     public static string BuildPrompt(Subject subject, GradeLevel gradeLevel) =>
-        $"Erstelle aus dem hochgeladenen Dokument bis zu 10 Quizfragen für ein Kind der {gradeLevel} " +
-        $"im Fach {subject} auf Deutsch. Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in exakt " +
-        "folgendem Format, ohne weiteren Text davor oder danach:\n" +
+        "### AUFGABE\n" +
+        $"Erstelle aus dem unten angehängten Dokument 6 bis 10 Quizfragen für ein Kind der {gradeLevel} " +
+        $"(Berliner Rahmenlehrplan) im Fach {subject}, auf Deutsch.\n\n" +
+        "### REGELN\n" +
+        "1. Mische die Fragetypen: überwiegend MultipleChoice, dazu einzelne TrueFalse- und OpenText-Fragen.\n" +
+        "2. Die Schwierigkeit muss zur Klassenstufe passen - keine Fragen, die nur Erwachsene beantworten können.\n" +
+        "3. Bei MultipleChoice: genau 3-4 Optionen, die falschen müssen plausibel klingen (keine Scherzantworten), " +
+        "und die richtige Antwort muss wörtlich eine der Optionen sein.\n" +
+        "4. 'explanation' erklärt kindgerecht in 1-2 Sätzen, WARUM die Antwort stimmt.\n" +
+        "5. 'helpHint' ist ein kleiner Denkanstoß OHNE die Lösung zu verraten (oder null).\n" +
+        "6. 'sourceExcerpt' ist ein wörtliches Zitat der Dokumentstelle, auf der die Frage beruht.\n" +
+        "7. Frage nur ab, was wirklich im Dokument steht - erfinde keine Fakten dazu.\n\n" +
+        "### AUSGABEFORMAT\n" +
+        "Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in exakt diesem Format, ohne weiteren Text davor " +
+        "oder danach, ohne Markdown-Codeblock:\n" +
         "{\"questions\":[{\"topic\":\"...\",\"prompt\":\"...\",\"type\":\"MultipleChoice|TrueFalse|OpenText\"," +
         "\"options\":[\"...\"],\"correctAnswers\":[\"...\"],\"explanation\":\"...\",\"helpHint\":\"...|null\"," +
         "\"sourceExcerpt\":\"...\"}]}\n" +
-        "Bei OpenText-Fragen soll 'options' ein leeres Array sein. 'sourceExcerpt' soll die Textstelle " +
-        "aus dem Dokument enthalten, auf der die Frage beruht.";
+        "Bei OpenText-Fragen ist 'options' ein leeres Array.";
 
     public static IReadOnlyList<ExtractedQuestionDraft> ParseDrafts(string answerText, string documentText)
     {

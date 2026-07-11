@@ -158,10 +158,11 @@ public static class Translations
                 "dosyası yükler ve bundan sorular önerir (her öneri kontrol edilip tek tek onaylanmalıdır) - " +
                 "ve her görevde \"🤖 Yapay zekaya sor\" düğmesiyle çocukların sorularını yanıtlar, bir hesap " +
                 "makinesi gibi: doğru cevabı bilir, ama hemen söylemek yerine önce ipuçlarıyla yardım eder."),
-            ["Parent_Import_LocalModelPath"] = L("Eigene Modelldatei verwenden (optional, .gguf):", "Kendi model dosyanı kullan (isteğe bağlı, .gguf):"),
+            ["Parent_Import_ModelChoice"] = L("KI-Modell (wird beim ersten Gebrauch automatisch heruntergeladen):", "Yapay zeka modeli (ilk kullanımda otomatik indirilir):"),
+            ["Parent_Import_LocalModelPath"] = L("Eigene Modelldatei verwenden (optional, .gguf - hat Vorrang vor der Auswahl oben):", "Kendi model dosyanı kullan (isteğe bağlı, .gguf - yukarıdaki seçimden önceliklidir):"),
             ["Parent_Import_PickModelFile"] = L("Modelldatei auswählen…", "Model dosyası seç…"),
             ["Parent_Import_PickFile"] = L("Datei auswählen…", "Dosya seç…"),
-            ["Parent_Import_NoFile"] = L("Kein eigenes Modell ausgewählt - Standardmodell wird automatisch heruntergeladen.", "Kendi model seçilmedi - varsayılan model otomatik indirilecek."),
+            ["Parent_Import_NoFile"] = L("Keine eigene Datei - das oben gewählte Modell wird verwendet.", "Kendi dosya yok - yukarıda seçilen model kullanılacak."),
             ["Parent_Import_Run"] = L("Einlesen starten", "İçe aktarmayı başlat"),
             ["Parent_Import_Running"] = L("Wird eingelesen…", "İçe aktarılıyor…"),
             ["Parent_Import_ResultsTitle"] = L("Vorschläge zur Prüfung:", "Kontrol için öneriler:"),

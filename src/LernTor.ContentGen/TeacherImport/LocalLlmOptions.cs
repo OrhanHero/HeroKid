@@ -13,8 +13,12 @@ namespace LernTor.ContentGen.TeacherImport;
 /// </summary>
 public sealed class LocalLlmOptions
 {
-    /// <summary>Pfad zu einer lokalen GGUF-Modelldatei, falls die Eltern statt des automatisch
-    /// heruntergeladenen Standardmodells ein eigenes verwenden möchten. Leer = Standardmodell.</summary>
+    /// <summary>Schlüssel des gewählten Katalog-Modells (siehe <see cref="Llm.LocalLlmModelCatalog"/>),
+    /// von den Eltern per Dropdown wählbar. Unbekannt/leer fällt auf das Standardmodell zurück.</summary>
+    public string? ModelKey { get; set; } = Llm.LocalLlmModelCatalog.DefaultKey;
+
+    /// <summary>Pfad zu einer lokalen GGUF-Modelldatei, falls die Eltern statt eines Katalog-Modells
+    /// ein eigenes verwenden möchten. Gesetzt hat er Vorrang vor <see cref="ModelKey"/>.</summary>
     public string? ModelPath { get; set; }
 
     /// <summary>Kontextfenstergröße in Token - je größer, desto mehr Text passt in Aufgabenkontext/Chatverlauf, aber desto mehr RAM wird gebraucht.</summary>

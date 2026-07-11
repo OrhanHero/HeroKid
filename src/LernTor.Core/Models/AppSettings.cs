@@ -15,7 +15,11 @@ public sealed class AppSettings
     public bool HardLockShellReplacementEnabled { get; set; } = false;
 
     /// <summary>Pfad zu einer lokalen GGUF-Modelldatei für das lokale LLM (Lehrer-Import + KI-Lernchat,
-    /// siehe LernTor.ContentGen.Llm.LocalLlmModelHost). Null/leer = Standardmodell wird beim ersten
-    /// Gebrauch automatisch heruntergeladen.</summary>
+    /// siehe LernTor.ContentGen.Llm.LocalLlmModelHost). Null/leer = das gewählte Katalog-Modell wird
+    /// beim ersten Gebrauch automatisch heruntergeladen; gesetzt hat der Pfad Vorrang.</summary>
     public string? LocalLlmModelPath { get; set; }
+
+    /// <summary>Schlüssel des im Eltern-Bereich gewählten Katalog-Modells (siehe
+    /// LernTor.ContentGen.Llm.LocalLlmModelCatalog). Null/unbekannt = Standardmodell.</summary>
+    public string? LocalLlmModelKey { get; set; }
 }

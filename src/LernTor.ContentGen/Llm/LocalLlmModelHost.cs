@@ -14,14 +14,12 @@ namespace LernTor.ContentGen.Llm;
 /// geteilt, damit beide Features nicht unabhängig voneinander dasselbe Modell doppelt im RAM halten.
 ///
 /// <para><b>Automatischer Modell-Download:</b> Ist <see cref="LocalLlmOptions.ModelPath"/> nicht
-/// gesetzt, wird beim ersten Gebrauch automatisch ein Standardmodell (siehe <see cref="DefaultModelDownloadUrl"/>)
-/// nach <c>%LOCALAPPDATA%\LernTor\models\</c> heruntergeladen - Eltern müssen dafür keine Modelldatei
-/// selbst suchen. <b>Die genaue Hugging-Face-URL/Dateiname ist aus dieser Sandbox NICHT verifizierbar</b>
-/// (huggingface.co ist von der Entwicklungsumgebung aus blockiert, 403 per curl bestätigt - dieselbe
-/// Einschränkung wie zuvor bei docs.cloud.google.com) und muss beim ersten echten Test auf einem
-/// Windows-Rechner mit Internetzugang überprüft werden. Schlägt der Download fehl, können Eltern
-/// weiterhin manuell eine `.gguf`-Datei herunterladen und über <see cref="LocalLlmOptions.ModelPath"/>
-/// (Eltern-Bereich, Datei-Dialog) hinterlegen.</para>
+/// gesetzt, wird beim ersten Gebrauch das im Eltern-Bereich gewählte Katalog-Modell (siehe
+/// <see cref="LocalLlmModelCatalog"/>, Standard Qwen2.5-7B-Instruct Q4_K_M) nach
+/// <c>%LOCALAPPDATA%\LernTor\models\</c> heruntergeladen - Eltern müssen keine Modelldatei selbst
+/// suchen. Jedes Katalog-Modell hat seinen eigenen Dateinamen; ein Modellwechsel lädt also nur beim
+/// ersten Mal herunter und wechselt danach zwischen bereits vorhandenen Dateien. Zu URLs und
+/// Fallback bei Download-Fehlern siehe <see cref="LocalLlmModelCatalog"/>.</para>
 ///
 /// <para><c>StatelessExecutor</c> erzeugt sich seinen Inferenz-Kontext laut CLR-Metadaten-Analyse der
 /// echten LLamaSharp-0.27.0-DLL intern selbst aus den übergebenen <c>IContextParams</c> - ein separat
@@ -30,16 +28,6 @@ namespace LernTor.ContentGen.Llm;
 /// </summary>
 public sealed class LocalLlmModelHost : IDisposable
 {
-    /// <summary>
-    /// Qwen2.5-3B-Instruct (Apache-2.0), Q4_K_M-Quantisierung: gutes Verhältnis aus Größe (~2 GB),
-    /// Mehrsprachigkeit (u.a. Deutsch) und Anleitungs-/Reasoning-Qualität für CPU-Inferenz auf
-    /// gewöhnlicher Familien-Hardware - siehe README für die Modellauswahl-Begründung.
-    /// </summary>
-    private const string DefaultModelFileName = "qwen2.5-3b-instruct-q4_k_m.gguf";
-
-    private const string DefaultModelDownloadUrl =
-        "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf";
-
     private readonly LocalLlmOptions _options;
     private readonly HttpClient _httpClient;
     private readonly SemaphoreSlim _lock = new(1, 1);
@@ -90,26 +78,28 @@ public sealed class LocalLlmModelHost : IDisposable
 
     private async Task<string> EnsureModelFileAsync(CancellationToken cancellationToken)
     {
+        // Eigene Modelldatei der Eltern hat Vorrang vor dem Katalog.
         var configuredPath = _options.ModelPath;
         if (!string.IsNullOrWhiteSpace(configuredPath) && File.Exists(configuredPath))
         {
             return configuredPath;
         }
 
-        var defaultPath = GetDefaultModelPath();
-        if (!File.Exists(defaultPath))
+        var model = LocalLlmModelCatalog.Resolve(_options.ModelKey);
+        var localPath = GetLocalPath(model);
+        if (!File.Exists(localPath))
         {
-            await DownloadDefaultModelAsync(defaultPath, cancellationToken);
+            await DownloadModelAsync(model, localPath, cancellationToken);
         }
 
-        return defaultPath;
+        return localPath;
     }
 
-    private static string GetDefaultModelPath() => Path.Combine(
+    private static string GetLocalPath(LocalLlmModelInfo model) => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "LernTor", "models", DefaultModelFileName);
+        "LernTor", "models", model.FileName);
 
-    private async Task DownloadDefaultModelAsync(string destinationPath, CancellationToken cancellationToken)
+    private async Task DownloadModelAsync(LocalLlmModelInfo model, string destinationPath, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
         var tempPath = destinationPath + ".download";
@@ -117,7 +107,7 @@ public sealed class LocalLlmModelHost : IDisposable
         try
         {
             using var response = await _httpClient.GetAsync(
-                DefaultModelDownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                model.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             await using (var httpStream = await response.Content.ReadAsStreamAsync(cancellationToken))
@@ -136,9 +126,11 @@ public sealed class LocalLlmModelHost : IDisposable
             }
 
             throw new InvalidOperationException(
-                "Das KI-Standardmodell konnte nicht automatisch heruntergeladen werden (kein Internet " +
-                "beim ersten Gebrauch, oder die Download-Adresse hat sich geändert). Bitte im Eltern-" +
-                "Bereich unter 'Automatisches Einlesen' manuell eine .gguf-Modelldatei auswählen.", ex);
+                $"Das KI-Modell \"{model.DisplayName}\" (~{model.ApproxSizeGb:0.#} GB) konnte nicht " +
+                "automatisch heruntergeladen werden (kein Internet beim ersten Gebrauch, zu wenig " +
+                "Speicherplatz, oder die Download-Adresse hat sich geändert). Im Eltern-Bereich unter " +
+                "'Automatisches Einlesen' kann ein anderes Modell gewählt oder manuell eine " +
+                ".gguf-Modelldatei ausgewählt werden.", ex);
         }
     }
 

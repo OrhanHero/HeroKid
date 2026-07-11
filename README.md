@@ -133,18 +133,25 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
     über [LLamaSharp](https://github.com/SciSharp/LLamaSharp) (llama.cpp-Bindings, Pakete `LLamaSharp` +
     `LLamaSharp.Backend.Cpu`, reines CPU-Backend ohne CUDA-Abhängigkeit) genau einmal und hält es im
     Speicher, statt es bei jedem Aufruf neu zu laden.
-  - **Automatischer Modell-Download**: ist im Eltern-Bereich keine eigene `.gguf`-Datei hinterlegt, lädt
-    `LocalLlmModelHost` beim ersten Gebrauch automatisch ein Standardmodell
-    ([Qwen2.5-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF), Q4_K_M-Quantisierung,
-    ~2 GB, Apache-2.0-Lizenz - gutes Verhältnis aus Größe, Mehrsprachigkeit inkl. Deutsch und
-    Anleitungs-/Reasoning-Qualität für CPU-Inferenz auf gewöhnlicher Familien-Hardware) nach
-    `%LOCALAPPDATA%\LernTor\models\` herunter. Eltern müssen also keine Modelldatei selbst suchen -
-    einmalig wird beim ersten echten Gebrauch Internet gebraucht, danach läuft alles komplett offline.
-    **Die genaue Hugging-Face-Download-URL ist aus der Entwicklungsumgebung heraus nicht verifizierbar**
+  - **Modell-Katalog + automatischer Download** (`LocalLlmModelCatalog.cs`): Eltern wählen im
+    Eltern-Bereich per Dropdown eines der kuratierten Modelle; die Datei wird beim ersten Gebrauch
+    automatisch nach `%LOCALAPPDATA%\LernTor\models\` heruntergeladen (einmalig Internet nötig, danach
+    komplett offline; jedes Modell hat seine eigene Datei, ein Wechsel lädt also nur einmal herunter).
+    - **Standard: [Qwen2.5-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF)**
+      (Q4_K_M, ~4,7 GB, Apache-2.0): als einzige Familie im permissiv lizenzierten, CPU-tauglichen
+      7B-Bereich offiziell stark in Deutsch UND Türkisch (29+ Sprachen), deutlich besseres Reasoning
+      und Erklärqualität als das 3B - und dieselbe Modellfamilie, gegen die Prompt-Format und
+      AntiPrompts-Stoppwörter in dieser Codebasis bereits erprobt sind. Verworfen: Mistral-7B
+      (Türkisch schwach), Llama-3.1-8B (Lizenz + Türkisch mittelmäßig), Gemma-2-9B (Lizenz),
+      Qwen2.5-14B (~9 GB Q4 → auf Familien-CPUs nur 2-4 Token/s, zu langsam für den Kinder-Chat).
+    - **Alternative: Qwen2.5-3B-Instruct** (Q4_K_M, ~2 GB) als "Leicht & schnell"-Option für ältere
+      PCs, auf denen das 7B zu langsam antwortet.
+    **Die Hugging-Face-Download-URLs sind aus der Entwicklungsumgebung heraus nicht verifizierbar**
     (huggingface.co ist von dort blockiert, 403 per curl bestätigt - dieselbe Einschränkung wie zuvor bei
-    docs.cloud.google.com) und muss beim ersten echten Test auf einem Windows-Rechner mit Internetzugang
-    überprüft werden; schlägt der Download fehl, zeigt die App eine klare Fehlermeldung und Eltern können
-    weiterhin manuell eine `.gguf`-Datei über den Datei-Dialog im Eltern-Bereich hinterlegen.
+    docs.cloud.google.com) und müssen beim ersten echten Test auf einem Windows-Rechner mit Internetzugang
+    überprüft werden; schlägt der Download fehl, zeigt die App eine klare Fehlermeldung (inkl. Modellname
+    und Größe) und Eltern können ein anderes Modell wählen oder manuell eine `.gguf`-Datei über den
+    Datei-Dialog hinterlegen (eigene Datei hat Vorrang vor dem Katalog).
   - **API-Verifizierung**: `LLamaSharp` 0.27.0 wurde real von nuget.org heruntergeladen und die
     kompilierte DLL per CLR-Metadaten-Analyse geprüft (nicht nur aus Dokumentation/Training geraten):
     `ModelParams(string modelPath)`-Konstruktor mit settable `ContextSize`/`GpuLayerCount`-Properties,

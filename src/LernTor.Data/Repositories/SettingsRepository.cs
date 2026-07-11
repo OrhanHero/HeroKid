@@ -30,7 +30,8 @@ public sealed class SettingsRepository
             DefaultLanguage = Enum.Parse<AppLanguage>(entity.DefaultLanguage),
             DisabledSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.DisabledSubjectsJson, JsonOptions.Default) ?? new(),
             HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled,
-            LocalLlmModelPath = entity.LocalLlmModelPath
+            LocalLlmModelPath = entity.LocalLlmModelPath,
+            LocalLlmModelKey = entity.LocalLlmModelKey
         };
     }
 
@@ -49,6 +50,7 @@ public sealed class SettingsRepository
         entity.DisabledSubjectsJson = JsonSerializer.Serialize(settings.DisabledSubjects, JsonOptions.Default);
         entity.HardLockShellReplacementEnabled = settings.HardLockShellReplacementEnabled;
         entity.LocalLlmModelPath = settings.LocalLlmModelPath;
+        entity.LocalLlmModelKey = settings.LocalLlmModelKey;
 
         await _db.SaveChangesAsync(cancellationToken);
     }

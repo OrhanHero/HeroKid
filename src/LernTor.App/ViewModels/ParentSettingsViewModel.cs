@@ -3,6 +3,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
+using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
@@ -109,6 +110,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     // --- Automatisches Einlesen von Lehrer-Unterlagen + KI-Lernchat (lokales LLM, siehe README) ---
 
+    /// <summary>Kuratierte, automatisch herunterladbare Modelle (Dropdown im Eltern-Bereich).</summary>
+    public IReadOnlyList<LocalLlmModelInfo> AvailableLlmModels { get; } = LocalLlmModelCatalog.Models;
+
+    [ObservableProperty]
+    private LocalLlmModelInfo selectedLlmModel = LocalLlmModelCatalog.Resolve(null);
+
     [ObservableProperty]
     private string localLlmModelPath = string.Empty;
 
@@ -159,12 +166,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         IsFirstTimeSetup = string.IsNullOrEmpty(_settings.AdminPasswordHash);
 
         LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
+        SelectedLlmModel = LocalLlmModelCatalog.Resolve(_settings.LocalLlmModelKey);
         ApplyLocalLlmOptions();
     }
 
     private void ApplyLocalLlmOptions()
     {
         _localLlmOptions.ModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
+        _localLlmOptions.ModelKey = SelectedLlmModel.Key;
     }
 
     [RelayCommand]
@@ -273,6 +282,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         _settings.LocalLlmModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
+        _settings.LocalLlmModelKey = SelectedLlmModel.Key;
         ApplyLocalLlmOptions();
 
         await _settingsRepo.SaveAsync(_settings);

@@ -10,4 +10,5 @@ public sealed class SettingsEntity
     public string DisabledSubjectsJson { get; set; } = "[]";
     public bool HardLockShellReplacementEnabled { get; set; }
     public string? LocalLlmModelPath { get; set; }
+    public string? LocalLlmModelKey { get; set; }
 }
