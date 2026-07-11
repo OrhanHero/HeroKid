@@ -14,6 +14,10 @@ public sealed partial class NewsViewModel : ObservableObject
     private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly List<QuizQuestion> _allAskedQuestions = new();
 
+    /// <summary>Artikel-IDs, deren Fragen bereits vollständig beantwortet wurden - vorbefüllt mit den
+    /// Abschlüssen aus einer früheren (z.B. abgestürzten) Session desselben Tages.</summary>
+    private readonly HashSet<string> _completedArticleIds;
+
     [ObservableProperty]
     private int currentIndex;
 
@@ -24,6 +28,10 @@ public sealed partial class NewsViewModel : ObservableObject
     private bool canProceed;
 
     public ObservableCollection<QuestionAnswerViewModel> CurrentQuestions { get; } = new();
+
+    /// <summary>Ein Marker je Artikel (erledigt/aktuell/offen) für die Übersichtsleiste im Kopf -
+    /// so sieht das Kind auch nach einem Neustart, welche Artikel heute schon geschafft sind.</summary>
+    public ObservableCollection<SessionStepViewModel> ArticleMarkers { get; } = new();
 
     public int TotalArticles => _articles.Count;
     public int DisplayIndex => CurrentIndex + 1;
@@ -41,6 +49,7 @@ public sealed partial class NewsViewModel : ObservableObject
         _onArticleAnswered = onArticleAnswered;
         _onSectionCompleted = onSectionCompleted;
         _homeworkChat = homeworkChat;
+        _completedArticleIds = new HashSet<string>(alreadyCompletedIds);
 
         // Bereits an einem Vortag abgeschlossene Artikel dieser Session überspringen (Fortschritt aus Absturz/Neustart).
         while (CurrentIndex < _articles.Count && alreadyCompletedIds.Contains(_articles[CurrentIndex].Id))
@@ -49,6 +58,22 @@ public sealed partial class NewsViewModel : ObservableObject
         }
 
         LoadCurrentArticle();
+    }
+
+    /// <summary>Baut die Marker-Leiste neu auf. Erledigt = Fragen vollständig beantwortet (auch aus
+    /// einer früheren Session heute), aktuell = gerade angezeigter Artikel.</summary>
+    private void RebuildArticleMarkers()
+    {
+        ArticleMarkers.Clear();
+        for (var i = 0; i < _articles.Count; i++)
+        {
+            ArticleMarkers.Add(new SessionStepViewModel
+            {
+                Label = (i + 1).ToString(),
+                IsDone = _completedArticleIds.Contains(_articles[i].Id) || i < CurrentIndex,
+                IsCurrent = i == CurrentIndex
+            });
+        }
     }
 
     private void LoadCurrentArticle()
@@ -72,6 +97,7 @@ public sealed partial class NewsViewModel : ObservableObject
         CanProceed = CurrentQuestions.Count == 0;
         OnPropertyChanged(nameof(DisplayIndex));
         OnPropertyChanged(nameof(IsLastArticle));
+        RebuildArticleMarkers();
     }
 
     private void OnQuestionSubmitted(QuestionAnswerViewModel answered)
@@ -83,6 +109,14 @@ public sealed partial class NewsViewModel : ObservableObject
 
         _onArticleAnswered(CurrentArticle, answered.ToOutcome(), answered.Question);
         CanProceed = CurrentQuestions.All(q => q.IsSubmitted);
+
+        // Marker sofort auf "erledigt" stellen, sobald die letzte Frage des Artikels beantwortet
+        // ist - nicht erst beim Klick auf "Nächster Artikel".
+        if (CanProceed)
+        {
+            _completedArticleIds.Add(CurrentArticle.Id);
+            RebuildArticleMarkers();
+        }
     }
 
     [RelayCommand]

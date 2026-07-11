@@ -51,7 +51,9 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    der Zugriff auf die Seite nicht möglich, und ihre zeitgenössischen Gedichte/Übersetzungen sind
    urheberrechtlich geschützt und dürften ohne Erlaubnis nicht in die App übernommen werden.)
 3. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei
-   (Berlin-Lokalnachrichten werden garantiert einbezogen), je 1-2 Verständnisfragen pro Artikel.
+   (Berlin-Lokalnachrichten werden garantiert einbezogen), je 1-2 Verständnisfragen pro Artikel. Eine
+   Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ = Fragen beantwortet, auch aus einer
+   früheren Session desselben Tages nach Absturz/Neustart; lila = aktueller Artikel; grau = offen).
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.

@@ -20,8 +20,54 @@
                 <Run Text=" / " />
                 <Run Text="{Binding TotalArticles, Mode=OneWay}" />
             </TextBlock>
-            <ProgressBar Style="{StaticResource ChildProgressBar}" Margin="0,12,0,0"
-                         Minimum="0" Maximum="{Binding TotalArticles}" Value="{Binding DisplayIndex, Mode=OneWay}" />
+            <!-- Ein Kreis-Marker je Artikel: grün mit ✓ = Fragen beantwortet (auch aus einer früheren
+                 Session heute), lila = aktueller Artikel, grau = noch offen. Ersetzt die frühere
+                 anonyme ProgressBar - das Kind sieht genau, WELCHE Artikel geschafft sind. -->
+            <ItemsControl ItemsSource="{Binding ArticleMarkers}" Margin="0,12,0,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="30" Height="30" CornerRadius="15" Margin="0,0,6,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{StaticResource ProgressTrackBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding IsDone, Converter={StaticResource InverseBoolToVis}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                    <Setter Property="Foreground" Value="White" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="✓" FontSize="14" FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding IsDone, Converter={StaticResource BoolToVis}}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
