@@ -58,7 +58,9 @@ public static class FinanceKnowledgeArticles
         Explanation = explanation
     };
 
-    internal static readonly IReadOnlyList<NewsArticle> Pool = new[]
+    /// <summary>Der komplette Erklärstück-Pool - public, damit die Tests jedes Stück auf
+    /// Vollständigkeit und beantwortbare Fragen prüfen können (Tests sind eine eigene Assembly).</summary>
+    public static readonly IReadOnlyList<NewsArticle> Pool = new[]
     {
         Explainer("geld", "Was ist Geld eigentlich?",
             "Geld ist ein Tauschmittel. Früher haben Menschen Waren direkt getauscht: Getreide gegen " +
