@@ -25,9 +25,16 @@ public sealed class LocalLlmHomeworkHelpChatService : IHomeworkHelpChatService
     /// mit seiner Antwort fortfährt - ohne Stoppwörter setzt es diese Vervollständigung aber einfach
     /// fort und erfindet gleich die nächste(n) Kind-/Assistent-Runde(n) mit dazu (beobachtetes
     /// Verhalten: das Modell gibt ein komplettes Fantasie-Gespräch statt nur einer einzigen Antwort
-    /// zurück). Sobald eines dieser Wörter erscheint, bricht LLamaSharp die Erzeugung ab.
+    /// zurück). "###" stoppt zusätzlich, wenn das Modell die Abschnitts-Marker des Prompts
+    /// (### REGELN usw.) nachahmt und eigene "###"-Anweisungszeilen an die Antwort anhängt
+    /// (ebenfalls beim Nutzer beobachtet - die Marker erschienen wörtlich im Chat). AntiPrompts
+    /// prüfen nur den ERZEUGTEN Text, nicht den Prompt selbst - die ###-Abschnitte im Prompt lösen
+    /// den Stopp also nicht aus. Sobald eines dieser Wörter erscheint, bricht LLamaSharp ab.
     /// </summary>
-    private static readonly IReadOnlyList<string> StopSequences = new[] { "\nKind:", "Kind:", "\nAssistent:" };
+    private static readonly IReadOnlyList<string> StopSequences = new[]
+    {
+        "\nKind:", "Kind:", "\nAssistent:", "\n###", "###"
+    };
 
     public async Task<string> AskAsync(
         QuizQuestion question,

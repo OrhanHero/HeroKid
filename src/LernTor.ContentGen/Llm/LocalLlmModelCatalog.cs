@@ -11,10 +11,18 @@ public sealed record LocalLlmModelInfo(
 
 /// <summary>
 /// Kuratierte Auswahl lokaler GGUF-Modelle für den automatischen Download. Bewusst nur
-/// Qwen2.5-Instruct-Varianten (Apache-2.0): die Familie deckt als einzige im permissiv lizenzierten
+/// Qwen-Instruct-Varianten (Apache-2.0): die Familie deckt als einzige im permissiv lizenzierten
 /// CPU-tauglichen Bereich Deutsch UND Türkisch offiziell gut ab (29+ Sprachen), und Prompt-Format
 /// samt AntiPrompts-Stoppwörtern ist in dieser Codebasis bereits gegen genau diese Familie erprobt -
 /// ein Modellfamilien-Wechsel im Katalog hieße, beides neu testen zu müssen.
+///
+/// <para><b>Zur "Sehr stark"-Option Qwen3-30B-A3B:</b> ein Mixture-of-Experts-Modell - von den
+/// 30 Mrd. Parametern sind pro Wort nur ~3 Mrd. aktiv, es antwortet auf CPU also ungefähr so
+/// schnell wie ein 3B-Modell, mit deutlich besserer Qualität als das 7B-Standardmodell. Preis:
+/// ~18,6 GB Download und ~24 GB freier RAM. Bewusst die allgemeine Instruct-Variante statt der
+/// Coder-Variante (Qwen3-Coder-30B-A3B): Coder ist auf Programmieren spezialisiert und für
+/// Deutsch/Türkisch-Lernhilfe die schwächere Wahl. Wer die Coder-Datei trotzdem nutzen will,
+/// kann sie manuell herunterladen und im Eltern-Bereich als eigene Modelldatei auswählen.</para>
 ///
 /// <para>Verworfene Alternativen (Stand der Trainingsdaten, huggingface.co ist aus der
 /// Entwicklungsumgebung nicht erreichbar): Mistral-7B (Türkisch schwach), Llama-3.1-8B
@@ -48,6 +56,16 @@ public static class LocalLlmModelCatalog
                 "https://huggingface.co/bartowski/Qwen2.5-7B-Instruct-GGUF/resolve/main/Qwen2.5-7B-Instruct-Q4_K_M.gguf"
             },
             ApproxSizeGb: 4.7),
+        new LocalLlmModelInfo(
+            Key: "qwen3-30b-a3b-q4",
+            DisplayName: "Sehr stark – Qwen3 30B-A3B (MoE, ~18,6 GB; braucht ~24 GB RAM, antwortet trotzdem schnell)",
+            FileName: "qwen3-30b-a3b-instruct-2507-q4_k_m.gguf",
+            DownloadUrls: new[]
+            {
+                "https://huggingface.co/bartowski/Qwen_Qwen3-30B-A3B-Instruct-2507-GGUF/resolve/main/Qwen_Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf",
+                "https://huggingface.co/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF/resolve/main/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf"
+            },
+            ApproxSizeGb: 18.6),
         new LocalLlmModelInfo(
             Key: "qwen2.5-3b-q4",
             DisplayName: "Leicht & schnell – Qwen2.5 3B (~2 GB, für ältere PCs)",

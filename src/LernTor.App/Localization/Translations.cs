@@ -95,8 +95,10 @@ public static class Translations
             ["Exercise_ShowHint"] = L("💡 Tipp anzeigen", "💡 İpucu göster"),
             ["Exercise_AskAi"] = L("🤖 KI fragen", "🤖 Yapay zekaya sor"),
             ["Exercise_AiThinking"] = L(
-                "Die KI überlegt… (beim allerersten Mal wird einmalig ein KI-Modell heruntergeladen, das kann etwas dauern)",
-                "Yapay zeka düşünüyor… (ilk kullanımda bir yapay zeka modeli indirilir, bu biraz zaman alabilir)"),
+                "Die KI überlegt… (die allererste Frage dauert am längsten: das Modell wird einmalig " +
+                "heruntergeladen bzw. nach jedem App-Start neu in den Arbeitsspeicher geladen)",
+                "Yapay zeka düşünüyor… (ilk soru en uzun sürer: model bir kez indirilir ve her " +
+                "uygulama başlangıcında belleğe yeniden yüklenir)"),
             ["Exercise_SendChat"] = L("Senden", "Gönder"),
             ["Exercise_YourAnswerPlaceholder"] = L("Deine Antwort…", "Cevabın…"),
             ["Exercise_FinishSubject"] = L("Bereich abgeschlossen! Weiter ➜", "Bölüm tamamlandı! Devam ➜"),
