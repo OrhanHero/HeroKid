@@ -29,6 +29,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly RssNewsService _newsService;
+    private readonly WeatherService _weatherService;
     private readonly QuizComposer _quizComposer;
     private readonly KioskLockService _kioskLock;
     private readonly IHomeworkHelpChatService _homeworkChat;
@@ -67,11 +68,13 @@ public sealed partial class MainViewModel : ObservableObject
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
         RssNewsService newsService,
+        WeatherService weatherService,
         QuizComposer quizComposer,
         KioskLockService kioskLock,
         IHomeworkHelpChatService homeworkChat,
         TextToSpeechService tts)
     {
+        _weatherService = weatherService;
         _gate = gate;
         _scoring = scoring;
         _progressRepo = progressRepo;
@@ -232,8 +235,14 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task<NewsViewModel> BuildNewsViewModelAsync()
     {
-        var articles = await _newsService.LoadCuratedArticlesAsync();
-        return new NewsViewModel(articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted, _homeworkChat);
+        // Artikel und Wetter parallel laden - das Wetter-Widget ist Beiwerk und darf den
+        // News-Start nicht verzögern; bei Fehlschlag liefert der Dienst null (Widget bleibt weg).
+        var articlesTask = _newsService.LoadCuratedArticlesAsync();
+        var weatherTask = _weatherService.LoadBerlinWeatherAsync();
+        var articles = await articlesTask;
+        var weather = await weatherTask;
+
+        return new NewsViewModel(articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted, _homeworkChat, weather);
     }
 
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)

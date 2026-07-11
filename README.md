@@ -72,7 +72,13 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    erfindet bewusst keine artikel-spezifischen Behauptungen), sofort erklärte schwierige Wörter
    (kuratiertes `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und 1-2 Verständnisfragen.
    Verstörende Themen (Krieg, Gewalt – auch türkischsprachige Schlüsselwörter) werden im Ranking
-   stark heruntergestuft. Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
+   stark heruntergestuft. **Finanzwissen**: weil es zu Finanzthemen kaum kindtaugliche Tagesmeldungen
+   gibt, wird täglich ein rotierendes, kuratiertes Erklärstück angehängt (Was ist Geld? Inflation,
+   Sparen, Börse, Taschengeld, Berufswelt – mit handgeschriebenen Verständnisfragen, siehe
+   `FinanceKnowledgeArticles`). **Wetter-Widget**: oben rechts zeigt eine kleine Karte das heutige
+   Berlin-Wetter (Open-Meteo-API, kostenlos/ohne Schlüssel/ohne Konto) mit Emoji, Temperaturen und
+   einem kindgerechten Tages-Tipp („Pack einen Schirm ein!"); schlägt der Abruf fehl, bleibt das
+   Widget einfach ausgeblendet. Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
    Fragen beantwortet, auch aus einer früheren Session desselben Tages nach Absturz/Neustart;
    lila = aktueller Artikel; grau = offen).
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,

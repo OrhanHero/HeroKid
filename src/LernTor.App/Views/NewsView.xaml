@@ -10,7 +10,31 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="32,24">
+        <Grid Grid.Row="0" Margin="32,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Wetter-Widget (Berlin, Open-Meteo): nur sichtbar, wenn der Abruf geklappt hat. -->
+            <Border Grid.Column="1" Style="{StaticResource CardBorder}" Padding="16" VerticalAlignment="Top"
+                    MaxWidth="300"
+                    Visibility="{Binding HasWeather, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_WeatherTitle]}"
+                               FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,2">
+                        <TextBlock Text="{Binding WeatherTempDisplay}" FontSize="26" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding WeatherRangeDisplay}" FontSize="14"
+                                   Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding WeatherDescription}" FontSize="14" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding WeatherTip}" FontSize="13" TextWrapping="Wrap" Margin="0,4,0,0"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Grid.Column="0" Margin="0,0,16,0">
             <TextBlock Style="{StaticResource HeadlineText}" Foreground="{StaticResource NewsBrush}">
                 <Run Text="📰 " />
                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_News], Mode=OneWay}" />
@@ -69,7 +93,8 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </StackPanel>
+            </StackPanel>
+        </Grid>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center" MaxWidth="820" Margin="32,0">

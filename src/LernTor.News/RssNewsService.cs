@@ -81,6 +81,11 @@ public sealed class RssNewsService
             articles.Add(BuildArticle(item, source));
         }
 
+        // Finanzen-Rubrik: täglich EIN rotierendes "Finanzwissen"-Erklärstück anhängen (kuratiert,
+        // handgeschriebene Fragen - siehe FinanceKnowledgeArticles). Bewusst zusätzlich zum
+        // targetCount: das Stück kommt aus keinem Feed und soll keinen Tagesartikel verdrängen.
+        articles.Add(FinanceKnowledgeArticles.GetForDate(DateOnly.FromDateTime(DateTime.Today)));
+
         return articles;
     }
 

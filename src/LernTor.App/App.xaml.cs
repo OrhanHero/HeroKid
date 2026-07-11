@@ -102,6 +102,10 @@ public partial class App : Application
                     ServiceLifetime.Singleton);
 
                 services.AddSingleton<HttpClient>();
+
+                // Wetter-Widget im News-Bereich (Open-Meteo, kostenlos/ohne Schlüssel; bei
+                // Fehlschlag bleibt das Widget einfach ausgeblendet).
+                services.AddSingleton<WeatherService>();
                 services.AddSingleton<ITextSimplifier, RuleBasedTextSimplifier>();
                 services.AddSingleton<IComprehensionQuestionGenerator, HeuristicComprehensionQuestionGenerator>();
                 services.AddSingleton<RssNewsService>();

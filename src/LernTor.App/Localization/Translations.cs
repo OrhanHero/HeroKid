@@ -83,6 +83,7 @@ public static class Translations
             ["News_WhyImportant"] = L("❓ Warum ist das wichtig?", "❓ Bu neden önemli?"),
             ["News_MeaningForKids"] = L("🧒 Was bedeutet das für dich?", "🧒 Bu senin için ne anlama geliyor?"),
             ["News_ExplainedTerms"] = L("💡 Schwierige Wörter, einfach erklärt", "💡 Zor kelimeler, basitçe açıklandı"),
+            ["News_WeatherTitle"] = L("Wetter heute in Berlin", "Bugün Berlin'de hava"),
             ["News_NextArticle"] = L("Nächster Artikel ➜", "Sonraki Haber ➜"),
             ["News_FinishSection"] = L("Weiter zu Mathematik ➜", "Matematiğe geç ➜"),
 

@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.App.Localization;
 using LernTor.ContentGen.HomeworkChat;
+using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.News;
 
 namespace LernTor.App.ViewModels;
 
@@ -44,13 +47,44 @@ public sealed partial class NewsViewModel : ObservableObject
 
     partial void OnCurrentArticleChanged(NewsArticle? value) => OnPropertyChanged(nameof(HasExplainedTerms));
 
+    // --- Wetter-Widget (Berlin, Open-Meteo; null = Abruf fehlgeschlagen → Widget ausgeblendet) ---
+
+    /// <summary>Der kindgerechte Wetterbericht; DE/TR-Texte wählt die Oberfläche über die
+    /// Properties darunter anhand der aktuellen App-Sprache (Momentaufnahme beim Anzeigen -
+    /// ein Sprachwechsel mitten im News-Teil ist im Kiosk-Ablauf nicht vorgesehen).</summary>
+    public KidWeatherReport? Weather { get; }
+
+    public bool HasWeather => Weather is not null;
+
+    public string WeatherTempDisplay => Weather is null
+        ? string.Empty
+        : $"{Weather.Emoji} {Weather.CurrentTemp}°C";
+
+    public string WeatherRangeDisplay => Weather is null
+        ? string.Empty
+        : $"↑ {Weather.TodayMax}° / ↓ {Weather.TodayMin}°";
+
+    public string WeatherDescription => Weather is null
+        ? string.Empty
+        : (LocalizationService.Instance.CurrentLanguage == AppLanguage.Tuerkisch
+            ? Weather.DescriptionTr
+            : Weather.DescriptionDe);
+
+    public string WeatherTip => Weather is null
+        ? string.Empty
+        : (LocalizationService.Instance.CurrentLanguage == AppLanguage.Tuerkisch
+            ? Weather.TipTr
+            : Weather.TipDe);
+
     public NewsViewModel(
         IReadOnlyList<NewsArticle> articles,
         HashSet<string> alreadyCompletedIds,
         Action<NewsArticle, QuestionOutcome, QuizQuestion> onArticleAnswered,
         Action<IReadOnlyList<QuizQuestion>> onSectionCompleted,
-        IHomeworkHelpChatService homeworkChat)
+        IHomeworkHelpChatService homeworkChat,
+        KidWeatherReport? weather = null)
     {
+        Weather = weather;
         _articles = articles;
         _onArticleAnswered = onArticleAnswered;
         _onSectionCompleted = onSectionCompleted;
