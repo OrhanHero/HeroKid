@@ -74,6 +74,20 @@ public sealed class StudentProfileRepository
         return ToModel(entity);
     }
 
+    /// <summary>Schreibt verdiente Belohnungs-Sterne auf das Profil gut und liefert den neuen Gesamtstand.</summary>
+    public async Task<int> AddStarsAsync(string profileId, int amount, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return 0;
+        }
+
+        entity.TotalStars += amount;
+        await _db.SaveChangesAsync(cancellationToken);
+        return entity.TotalStars;
+    }
+
     private static StudentProfile ToModel(StudentProfileEntity entity) => new()
     {
         Id = entity.Id,
@@ -81,6 +95,7 @@ public sealed class StudentProfileRepository
         Age = entity.Age,
         ClassLabel = entity.ClassLabel,
         GradeLevel = (GradeLevel)entity.GradeLevel,
-        AvatarEmoji = string.IsNullOrWhiteSpace(entity.AvatarEmoji) ? StudentProfile.DefaultAvatar : entity.AvatarEmoji
+        AvatarEmoji = string.IsNullOrWhiteSpace(entity.AvatarEmoji) ? StudentProfile.DefaultAvatar : entity.AvatarEmoji,
+        TotalStars = entity.TotalStars
     };
 }

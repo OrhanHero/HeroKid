@@ -25,5 +25,9 @@ public sealed class StudentProgress
     /// <summary>Fachbereiche, die nach nicht bestandenem Quiz gezielt wiederholt werden müssen.</summary>
     public List<Subject> SubjectsToRetry { get; set; } = new();
 
+    /// <summary>Heute verdiente Belohnungs-Sterne (Gamification): +2 Lesen, +2 News, +1 je Fach,
+    /// +5 bestandenes Abschlussquiz. Zählt nur echte Abschlüsse, keine übersprungenen Fächer.</summary>
+    public int EarnedStarsToday { get; set; }
+
     public DateTimeOffset LastUpdatedAt { get; set; } = DateTimeOffset.Now;
 }

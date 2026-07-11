@@ -22,6 +22,10 @@ public sealed class ProfileTileViewModel
     public string Name => Profile.Name;
     public string AvatarEmoji => Profile.AvatarEmoji;
 
+    /// <summary>Gesamtstand der Belohnungs-Sterne, als fertiger Anzeige-Text ("⭐ 42").</summary>
+    public string StarsDisplay => $"⭐ {Profile.TotalStars}";
+    public bool HasStars => Profile.TotalStars > 0;
+
     public ProfileTileViewModel(StudentProfile profile, StudentProgress todaysProgress)
     {
         Profile = profile;

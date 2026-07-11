@@ -22,5 +22,8 @@ public sealed class ProgressEntity
     /// <summary>JSON-serialisierte Liste der zu wiederholenden Fachbereiche.</summary>
     public string SubjectsToRetryJson { get; set; } = "[]";
 
+    /// <summary>Heute verdiente Belohnungs-Sterne (siehe MainViewModel.AwardStarsAsync).</summary>
+    public int EarnedStarsToday { get; set; }
+
     public DateTimeOffset LastUpdatedAt { get; set; }
 }

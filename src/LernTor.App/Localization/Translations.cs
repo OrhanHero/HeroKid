@@ -170,6 +170,15 @@ public static class Translations
             ["Parent_Import_Discard"] = L("Verwerfen", "Reddet"),
             ["Parent_Import_SourceExcerpt"] = L("Quelle im Dokument:", "Belgedeki kaynak:"),
 
+            ["Steps_Reading"] = L("Lesen", "Okuma"),
+            ["Steps_News"] = L("News", "Haberler"),
+            ["Steps_Subjects"] = L("Fächer", "Dersler"),
+            ["Steps_Quiz"] = L("Quiz", "Sınav"),
+
+            ["Result_StarsSummary"] = L(
+                "⭐ Heute verdient: +{0} Sterne · Insgesamt: {1}",
+                "⭐ Bugün kazanılan: +{0} yıldız · Toplam: {1}"),
+
             ["Common_Back"] = L("Zurück", "Geri"),
         };
 

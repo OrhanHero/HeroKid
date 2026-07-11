@@ -1,7 +1,8 @@
 <UserControl x:Class="LernTor.App.Views.ResultView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:loc="clr-namespace:LernTor.App.Localization">
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             Loaded="ResultView_Loaded">
     <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
 
@@ -50,12 +51,19 @@
                        Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_FailedText]}"
                        Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}" />
 
-            <TextBlock Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,8,0,32" FontWeight="Bold"
+            <TextBlock Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,8,0,8" FontWeight="Bold"
                        Visibility="{Binding Result, Converter={StaticResource NullToVis}}">
                 <Run Text="{Binding CorrectCount, Mode=OneWay}" />
                 <Run Text=" / " />
                 <Run Text="{Binding TotalQuestions, Mode=OneWay}" />
             </TextBlock>
+
+            <!-- Belohnungs-Sterne: heute verdient + Gesamtstand (Gamification) -->
+            <Border Background="{StaticResource TileSandBrush}" CornerRadius="14" Padding="18,10"
+                    HorizontalAlignment="Center" Margin="0,8,0,32"
+                    Visibility="{Binding HasStarsToShow, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding StarsSummary}" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
+            </Border>
 
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_UnlockButton]}"
                     Style="{StaticResource RoundedButton}" FontSize="24" Padding="36,16" HorizontalAlignment="Center"
@@ -67,5 +75,9 @@
                     Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}"
                     Command="{Binding RetryWeakSubjectsCommand}" />
         </StackPanel>
+
+        <!-- Konfetti-Ebene (nur bei bestandenem Quiz, einmalig - siehe Code-behind). Liegt über dem
+             Inhalt, fängt aber keine Klicks ab. -->
+        <Canvas x:Name="ConfettiCanvas" IsHitTestVisible="False" ClipToBounds="True" />
     </Grid>
 </UserControl>

@@ -49,6 +49,11 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string activeProfileName = string.Empty;
 
+    /// <summary>Etappen-Anzeige der heutigen Session oben im Kiosk-Fenster (Lesen → News → Fächer →
+    /// Quiz). Wird bei jedem Stufenwechsel komplett neu aufgebaut - vier kurzlebige Objekte pro
+    /// Wechsel, dafür keine Notify-Logik in den Einträgen nötig.</summary>
+    public System.Collections.ObjectModel.ObservableCollection<SessionStepViewModel> SessionSteps { get; } = new();
+
     public StudentProfile? CurrentProfile { get; private set; }
     public StudentProgress Progress { get; private set; } = new() { ProfileId = string.Empty };
     public AppSettings Settings { get; private set; } = new();
@@ -141,6 +146,45 @@ public sealed partial class MainViewModel : ObservableObject
             _ when LearningStageSubjects.TryGetSubject(stage, out var subjectForStage) => await BuildExerciseViewModelAsync(subjectForStage),
             _ => CurrentViewModel
         };
+
+        UpdateSessionSteps();
+    }
+
+    /// <summary>Baut die vier Makro-Etappen (Lesen/News/Fächer/Quiz) für die Fortschrittsleiste neu auf.</summary>
+    private void UpdateSessionSteps()
+    {
+        var stage = Progress.CurrentStage;
+        var loc = LocalizationService.Instance;
+        var activeSubjects = LearningStageSubjects.Map.Values
+            .Where(s => !Settings.DisabledSubjects.Contains(s)).ToList();
+        var doneSubjects = Progress.CompletedExerciseSubjects.Count(activeSubjects.Contains);
+        var isSubjectStage = LearningStageSubjects.Map.ContainsKey(stage);
+
+        SessionSteps.Clear();
+        SessionSteps.Add(new SessionStepViewModel
+        {
+            Label = loc["Steps_Reading"],
+            IsDone = stage > LearningStage.Vorlesen,
+            IsCurrent = stage == LearningStage.Vorlesen
+        });
+        SessionSteps.Add(new SessionStepViewModel
+        {
+            Label = loc["Steps_News"],
+            IsDone = stage > LearningStage.News,
+            IsCurrent = stage == LearningStage.News
+        });
+        SessionSteps.Add(new SessionStepViewModel
+        {
+            Label = $"{loc["Steps_Subjects"]} {doneSubjects}/{activeSubjects.Count}",
+            IsDone = stage >= LearningStage.Abschlussquiz,
+            IsCurrent = isSubjectStage
+        });
+        SessionSteps.Add(new SessionStepViewModel
+        {
+            Label = loc["Steps_Quiz"],
+            IsDone = stage == LearningStage.Freigeschaltet,
+            IsCurrent = stage == LearningStage.Abschlussquiz
+        });
     }
 
     private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
@@ -164,9 +208,23 @@ public sealed partial class MainViewModel : ObservableObject
         return new ReadingViewModel(piece, OnReadingCompleted, _tts);
     }
 
+    /// <summary>
+    /// Schreibt Belohnungs-Sterne gut (Gamification): auf den Tages-Fortschritt (für die
+    /// Ergebnis-Anzeige) und dauerhaft aufs Profil. Wird nur aus echten Abschluss-Callbacks
+    /// aufgerufen - übersprungene (deaktivierte) Fächer laufen an diesen Callbacks vorbei und
+    /// bekommen daher korrekt keine Sterne. Der Tages-Fortschritt wird vom jeweils folgenden
+    /// NavigateToStageAsync/PersistProgressAsync mitgespeichert.
+    /// </summary>
+    private async Task AwardStarsAsync(int amount)
+    {
+        Progress.EarnedStarsToday += amount;
+        CurrentProfile!.TotalStars = await _profileRepo.AddStarsAsync(CurrentProfile.Id, amount);
+    }
+
     private async void OnReadingCompleted()
     {
         Progress.HasCompletedReading = true;
+        await AwardStarsAsync(2);
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Vorlesen));
     }
 
@@ -187,6 +245,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         _collectedNewsQuestions.Clear();
         _collectedNewsQuestions.AddRange(askedQuestions);
+        await AwardStarsAsync(2);
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.News));
     }
 
@@ -215,6 +274,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnExerciseSubjectCompleted(Subject subject)
     {
         Progress.CompletedExerciseSubjects.Add(subject);
+        await AwardStarsAsync(1);
         var currentStage = Progress.CurrentStage;
         await NavigateToStageAsync(_gate.GetNextStage(currentStage));
     }
@@ -252,7 +312,17 @@ public sealed partial class MainViewModel : ObservableObject
         var result = _scoring.BuildResult(outcomes);
         await _activityLogRepo.LogQuizAttemptAsync(CurrentProfile!.Id, result);
         _gate.ApplyQuizResult(Progress, result);
+
+        if (result.Passed)
+        {
+            // Quiz-Sterne vor dem Persistieren gutschreiben, damit EarnedStarsToday mitgespeichert
+            // wird. Kann pro Tag nur einmal passieren: nach dem Bestehen steht der Fortschritt auf
+            // Freigeschaltet, ein weiterer Quiz-Durchlauf findet heute nicht mehr statt.
+            await AwardStarsAsync(5);
+        }
+
         await PersistProgressAsync();
+        UpdateSessionSteps();
 
         if (result.Passed)
         {
@@ -264,7 +334,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     private ResultViewModel BuildResultViewModel(bool passed, QuizResult? result)
     {
-        return new ResultViewModel(passed, result, OnRetryWeakSubjectsRequested, OnUnlockConfirmed);
+        return new ResultViewModel(
+            passed, result, Progress.EarnedStarsToday, CurrentProfile?.TotalStars ?? 0,
+            OnRetryWeakSubjectsRequested, OnUnlockConfirmed);
     }
 
     private async void OnRetryWeakSubjectsRequested()

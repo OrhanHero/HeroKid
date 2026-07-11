@@ -43,6 +43,7 @@ public sealed class ProgressRepository
             LastQuizScore = entity.LastQuizScore,
             IsUnlocked = entity.IsUnlocked,
             SubjectsToRetry = JsonSerializer.Deserialize<List<Subject>>(entity.SubjectsToRetryJson, JsonOptions.Default) ?? new(),
+            EarnedStarsToday = entity.EarnedStarsToday,
             LastUpdatedAt = entity.LastUpdatedAt
         };
     }
@@ -66,6 +67,7 @@ public sealed class ProgressRepository
         entity.LastQuizScore = progress.LastQuizScore;
         entity.IsUnlocked = progress.IsUnlocked;
         entity.SubjectsToRetryJson = JsonSerializer.Serialize(progress.SubjectsToRetry, JsonOptions.Default);
+        entity.EarnedStarsToday = progress.EarnedStarsToday;
         entity.LastUpdatedAt = DateTimeOffset.Now;
 
         await _db.SaveChangesAsync(cancellationToken);

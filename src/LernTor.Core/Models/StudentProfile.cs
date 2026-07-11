@@ -21,6 +21,9 @@ public sealed class StudentProfile
     /// keine Assets zu pflegen, rendert auf jedem Windows nativ, kulturneutral wählbar).</summary>
     public string AvatarEmoji { get; set; } = DefaultAvatar;
 
+    /// <summary>Über alle Lerntage gesammelte Belohnungs-Sterne (Gamification, siehe StudentProgress.EarnedStarsToday).</summary>
+    public int TotalStars { get; set; }
+
     public const string DefaultAvatar = "🧒";
 
     public static string NewId() => Guid.NewGuid().ToString("N");

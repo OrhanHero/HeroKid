@@ -102,6 +102,20 @@ angemessene, dokumentierte Grenze. Ein härterer Shell-Ersatz-Modus wäre als sp
 birgt aber das Risiko, den Desktop bei einem App-Absturz komplett unbenutzbar zu machen, und wurde
 deshalb bewusst nicht umgesetzt.
 
+## Motivation & Gamification
+
+- **Belohnungs-Sterne**: +2 fürs Lesen, +2 für News, +1 je abgeschlossenem Fach, +5 fürs bestandene
+  Abschlussquiz - nur echte Abschlüsse zählen, von Eltern deaktivierte (übersprungene) Fächer geben
+  keine Sterne. Heute verdiente Sterne und der Gesamtstand erscheinen auf dem Abschluss-Bildschirm;
+  der über alle Tage gesammelte Gesamtstand (⭐) steht auf der Profil-Kachel.
+- **Etappen-Leiste**: oben im Kiosk-Fenster zeigen vier Chips (Lesen → News → Fächer x/y → Quiz)
+  jederzeit, wo das Kind in der heutigen Session steht - erledigt = grün mit Häkchen, aktuell = lila.
+- **Konfettiregen**: beim bestandenen Abschlussquiz fällt einmalig Konfetti in den App-Farben über
+  den Ergebnis-Bildschirm (einmalige Animation, keine Dauerschleife - keine bleibende CPU-Last im
+  Kiosk-Betrieb).
+- Bewusst KEINE Tages-Streaks: ein verpasster Tag soll kein schlechtes Gewissen erzeugen - Sterne
+  können nur wachsen, nie verfallen.
+
 ## Eltern-Features
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.

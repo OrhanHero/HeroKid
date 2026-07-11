@@ -44,6 +44,59 @@
                    FontFamily="Segoe UI" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,12" Opacity="0.7" />
 
+        <!-- Etappen der heutigen Session (Lesen → News → Fächer → Quiz), sichtbar sobald ein Profil
+             gewählt ist - das Kind sieht jederzeit, wo es steht und was noch fehlt. -->
+        <ItemsControl ItemsSource="{Binding SessionSteps}" HorizontalAlignment="Center" VerticalAlignment="Top"
+                      Margin="0,10,0,0" IsHitTestVisible="False"
+                      Visibility="{Binding ActiveProfileName, Converter={StaticResource EmptyStringToVis}}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border CornerRadius="14" Padding="12,5" Margin="3,0">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="{StaticResource CardBrush}" />
+                                <Setter Property="Opacity" Value="0.75" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                        <Setter Property="Opacity" Value="1" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                        <Setter Property="Opacity" Value="0.9" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✓ " FontSize="13" FontWeight="Bold" Foreground="White"
+                                       Visibility="{Binding IsDone, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="SemiBold">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                <Setter Property="Foreground" Value="White" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                                <Setter Property="Foreground" Value="White" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <!-- Aktives Profil, dauerhaft sichtbar sobald eins gewählt/erstellt wurde -->
         <TextBlock FontFamily="Segoe UI" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"
                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="16,12" Opacity="0.85"

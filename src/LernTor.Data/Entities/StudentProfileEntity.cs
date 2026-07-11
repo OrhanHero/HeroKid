@@ -8,5 +8,6 @@ public sealed class StudentProfileEntity
     public string? ClassLabel { get; set; }
     public int GradeLevel { get; set; }
     public string AvatarEmoji { get; set; } = "🧒";
+    public int TotalStars { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }
