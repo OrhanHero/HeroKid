@@ -67,6 +67,23 @@ public sealed class ActivityLogRepository
     }
 
     /// <summary>
+    /// Alle protokollierten Antworten dieses Profils innerhalb von <paramref name="window"/>,
+    /// chronologisch aufsteigend - Rohdaten für den Wochen-/Monatsbericht im Eltern-Bereich
+    /// (Fach-Statistik und Lerntage rechnet das ViewModel daraus, damit 7- und 30-Tage-Sicht ohne
+    /// weitere DB-Zugriffe umschaltbar sind).
+    /// </summary>
+    public async Task<IReadOnlyList<ActivityLogEntity>> GetActivitySinceAsync(string profileId, TimeSpan window, CancellationToken cancellationToken = default)
+    {
+        var cutoff = DateTimeOffset.Now - window;
+
+        // Erst laden, dann filtern/sortieren (in-memory): SQLite/EF Core kann Vergleiche/ORDER BY
+        // auf DateTimeOffset-Spalten nicht zuverlässig serverseitig übersetzen.
+        var entities = await _db.ActivityLog.Where(a => a.ProfileId == profileId).ToListAsync(cancellationToken);
+
+        return entities.Where(a => a.Timestamp >= cutoff).OrderBy(a => a.Timestamp).ToList();
+    }
+
+    /// <summary>
     /// Fragetexte, die diesem Profil innerhalb von <paramref name="window"/> bereits gestellt wurden.
     /// Wird genutzt, um bei der Aufgabenauswahl frische (in letzter Zeit nicht gesehene) Fragen zu
     /// bevorzugen, statt bei den kleinen, fest hinterlegten Themen-Pools ständig dieselben Beispiele

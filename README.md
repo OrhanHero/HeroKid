@@ -124,6 +124,10 @@ deshalb bewusst nicht umgesetzt.
 - Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
 - Fachbereiche einzeln deaktivieren, Klassenstufe (6/9) einstellen.
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
+- **Bericht "Stärken & Schwächen"** (pro Profil, umschaltbar 7/30 Tage): Richtig-Quote je Fach als
+  Ampel-Balken (grün ≥75 %, gelb, rot <50 %), schwächste Fächer zuerst; dazu Lerntage im Zeitraum
+  und der Abschlussquiz-Verlauf. Rechnet komplett aus dem vorhandenen Aktivitätsprotokoll - keine
+  neuen Tabellen.
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
 - "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
   App heraus, mit Ja/Nein-Bestätigung. Vorher ging das nur manuell über das Löschen von `lerntor.db`.

@@ -182,6 +182,16 @@ public static class Translations
                 "Die richtige Antwort muss wörtlich eine der Antwortoptionen sein.",
                 "Doğru cevap, cevap seçeneklerinden biriyle birebir aynı olmalı."),
 
+            ["Parent_Report_Title"] = L("Bericht: Stärken & Schwächen", "Rapor: Güçlü ve zayıf yönler"),
+            ["Parent_Report_Days7"] = L("Letzte 7 Tage", "Son 7 gün"),
+            ["Parent_Report_Days30"] = L("Letzte 30 Tage", "Son 30 gün"),
+            ["Parent_Report_NoData"] = L(
+                "Noch keine Daten im gewählten Zeitraum - der Bericht füllt sich, sobald gelernt wurde.",
+                "Seçilen dönemde henüz veri yok - öğrenmeye başlanınca rapor dolacak."),
+            ["Parent_Report_LearnedDays"] = L("📅 An {0} von {1} Tagen gelernt", "📅 {1} günün {0} gününde öğrenildi"),
+            ["Parent_Report_QuizTrend"] = L("📈 Abschlussquiz-Verlauf: {0}", "📈 Final sınavı gelişimi: {0}"),
+            ["Parent_Report_NoQuiz"] = L("📈 Noch kein Abschlussquiz im Zeitraum.", "📈 Bu dönemde henüz final sınavı yok."),
+
             ["Steps_Reading"] = L("Lesen", "Okuma"),
             ["Steps_News"] = L("News", "Haberler"),
             ["Steps_Subjects"] = L("Fächer", "Dersler"),

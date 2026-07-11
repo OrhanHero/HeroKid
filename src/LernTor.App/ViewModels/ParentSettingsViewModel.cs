@@ -252,9 +252,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         RecentActivity.Clear();
         QuizHistory.Clear();
+        _reportActivity = Array.Empty<ActivityLogEntity>();
 
         if (SelectedProfile is null)
         {
+            RebuildReport();
             return;
         }
 
@@ -267,6 +269,82 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         {
             QuizHistory.Add(attempt);
         }
+
+        // 30 Tage einmal laden - die 7/30-Tage-Umschaltung filtert danach nur noch in-memory.
+        _reportActivity = await _activityLogRepo.GetActivitySinceAsync(SelectedProfile.Id, TimeSpan.FromDays(30));
+        RebuildReport();
+    }
+
+    // --- Wochen-/Monatsbericht (Stärken/Schwächen je Fach, Lerntage, Quiz-Verlauf) ---
+
+    private IReadOnlyList<ActivityLogEntity> _reportActivity = Array.Empty<ActivityLogEntity>();
+
+    public ObservableCollection<SubjectReportRowViewModel> ReportRows { get; } = new();
+
+    [ObservableProperty]
+    private int reportDays = 7;
+
+    [ObservableProperty]
+    private string reportLearnedDaysDisplay = string.Empty;
+
+    [ObservableProperty]
+    private string reportQuizTrendDisplay = string.Empty;
+
+    [ObservableProperty]
+    private bool hasReportData;
+
+    [RelayCommand]
+    private void SetReportPeriod(string days)
+    {
+        ReportDays = int.TryParse(days, out var parsed) ? parsed : 7;
+        RebuildReport();
+    }
+
+    private void RebuildReport()
+    {
+        ReportRows.Clear();
+
+        var loc = LocalizationService.Instance;
+        var cutoff = DateTimeOffset.Now - TimeSpan.FromDays(ReportDays);
+        var answers = _reportActivity.Where(a => a.Timestamp >= cutoff).ToList();
+
+        HasReportData = answers.Count > 0;
+        if (!HasReportData)
+        {
+            ReportLearnedDaysDisplay = string.Empty;
+            ReportQuizTrendDisplay = string.Empty;
+            return;
+        }
+
+        // Schwächste Fächer zuerst - Eltern wollen sehen, wo Unterstützung nötig ist.
+        var bySubject = answers
+            .GroupBy(a => a.Subject)
+            .Select(g => new SubjectReportRowViewModel
+            {
+                Label = loc[$"Stage_{g.Key}"],
+                Correct = g.Count(a => a.WasCorrect),
+                Total = g.Count()
+            })
+            .OrderBy(r => r.Rate)
+            .ThenByDescending(r => r.Total);
+
+        foreach (var row in bySubject)
+        {
+            ReportRows.Add(row);
+        }
+
+        var learnedDays = answers.Select(a => DateOnly.FromDateTime(a.Timestamp.LocalDateTime)).Distinct().Count();
+        ReportLearnedDaysDisplay = string.Format(loc["Parent_Report_LearnedDays"], learnedDays, ReportDays);
+
+        // QuizHistory ist neueste-zuerst sortiert; für den Trend chronologisch (älteste → neueste).
+        var quizScores = QuizHistory
+            .Where(q => q.Timestamp >= cutoff)
+            .Reverse()
+            .Select(q => $"{q.ScorePercentage:P0}{(q.Passed ? " ✓" : string.Empty)}")
+            .ToList();
+        ReportQuizTrendDisplay = quizScores.Count == 0
+            ? loc["Parent_Report_NoQuiz"]
+            : string.Format(loc["Parent_Report_QuizTrend"], string.Join("  →  ", quizScores));
     }
 
     [RelayCommand]
