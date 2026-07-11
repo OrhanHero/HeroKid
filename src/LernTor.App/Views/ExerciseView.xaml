@@ -33,15 +33,26 @@
         </ScrollViewer>
 
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,32">
+            <!-- Mindest-Lernzeit-Countdown (siehe ExerciseViewModel): sichtbar, solange die
+                 Mindestzeit läuft - das Kind sieht, dass Warten gewollt ist, kein Fehler. -->
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,8" FontSize="15"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Visibility="{Binding ShowLockCountdown, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Exercise_MinTimeCountdown]" />
+                        <Binding Path="LockSecondsRemaining" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <!-- Freigabe (beantwortet + Mindestzeit) steuert der NextCommand über CanExecute. -->
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_NextQuestion]}"
                     Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
                     Visibility="{Binding IsLastQuestion, Converter={StaticResource InverseBoolToVis}}"
-                    IsEnabled="{Binding CurrentQuestion.IsSubmitted}"
                     Command="{Binding NextCommand}" />
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_FinishSubject]}"
                     Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
                     Visibility="{Binding IsLastQuestion, Converter={StaticResource BoolToVis}}"
-                    IsEnabled="{Binding CurrentQuestion.IsSubmitted}"
                     Command="{Binding NextCommand}" />
         </StackPanel>
     </Grid>

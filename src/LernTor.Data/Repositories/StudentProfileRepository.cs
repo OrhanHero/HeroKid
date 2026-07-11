@@ -74,6 +74,27 @@ public sealed class StudentProfileRepository
         return ToModel(entity);
     }
 
+    /// <summary>
+    /// Löscht ein Profil mitsamt allen zugehörigen Daten (Tagesfortschritt, Aktivitätsprotokoll,
+    /// Quiz-Historie) - es gibt keine DB-seitigen Kaskaden-Regeln, daher explizit. Unumkehrbar;
+    /// die Bestätigung holt der Eltern-Bereich vor dem Aufruf ein.
+    /// </summary>
+    public async Task DeleteAsync(string profileId, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        _db.Progress.RemoveRange(_db.Progress.Where(p => p.ProfileId == profileId));
+        _db.ActivityLog.RemoveRange(_db.ActivityLog.Where(a => a.ProfileId == profileId));
+        _db.QuizAttempts.RemoveRange(_db.QuizAttempts.Where(q => q.ProfileId == profileId));
+        _db.Profiles.Remove(entity);
+
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
     /// <summary>Schreibt verdiente Belohnungs-Sterne auf das Profil gut und liefert den neuen Gesamtstand.</summary>
     public async Task<int> AddStarsAsync(string profileId, int amount, CancellationToken cancellationToken = default)
     {

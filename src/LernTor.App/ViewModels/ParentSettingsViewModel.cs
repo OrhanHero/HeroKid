@@ -598,6 +598,48 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void Close() => RequestClose?.Invoke();
 
     /// <summary>
+    /// Löscht das oben ausgewählte Profil samt Fortschritt/Protokoll/Quiz-Historie - nach
+    /// Rückfrage. Das letzte verbleibende Profil ist nicht löschbar (der Kiosk-Ablauf braucht
+    /// mindestens ein Profil; wer wirklich alles entfernen will, nutzt "Alle Daten zurücksetzen").
+    /// </summary>
+    [RelayCommand]
+    private async Task DeleteSelectedProfileAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        if (Profiles.Count <= 1)
+        {
+            System.Windows.MessageBox.Show(
+                "Das letzte Profil kann nicht gelöscht werden - die App braucht mindestens ein Profil.",
+                "Profil löschen",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+            return;
+        }
+
+        var confirmed = System.Windows.MessageBox.Show(
+            $"Profil \"{SelectedProfile.Name}\" mit allen Fortschritten, Protokollen und der " +
+            "Quiz-Historie unwiderruflich löschen?",
+            "Profil löschen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning,
+            System.Windows.MessageBoxResult.No);
+
+        if (confirmed != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        var toDelete = SelectedProfile;
+        await _profileRepo.DeleteAsync(toDelete.Id);
+        Profiles.Remove(toDelete);
+        SelectedProfile = Profiles.FirstOrDefault();
+    }
+
+    /// <summary>
     /// Löscht unwiderruflich alle Profile, Fortschritte, Aktivitätsprotokolle und Einstellungen.
     /// Vorher ging das nur manuell über das Löschen der lerntor.db-Datei. Erfordert eine explizite
     /// Ja/Nein-Bestätigung, damit ein Klick während der normalen Nutzung nicht versehentlich alles

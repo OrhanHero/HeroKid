@@ -53,8 +53,15 @@
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ActivityLogFor]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
-                <ComboBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}"
-                          DisplayMemberPath="Name" Width="240" HorizontalAlignment="Left" FontSize="16" Padding="8" Margin="0,0,0,12" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <ComboBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}"
+                              DisplayMemberPath="Name" Width="240" FontSize="16" Padding="8" Margin="0,0,12,0" />
+                    <!-- Löscht das gewählte Profil (mit Rückfrage; das letzte Profil bleibt geschützt). -->
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DeleteProfile]}"
+                            Style="{StaticResource RoundedButton}" Background="{StaticResource ErrorBrush}"
+                            FontSize="14" Padding="14,8"
+                            Command="{Binding DeleteSelectedProfileCommand}" />
+                </StackPanel>
                 <ListView ItemsSource="{Binding RecentActivity}" MaxHeight="220" FontSize="13">
                     <ListView.View>
                         <GridView>

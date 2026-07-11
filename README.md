@@ -19,7 +19,9 @@ auf sanft rotierenden Pastell-Hintergründen. Darüber steht eine tageszeitabhä
 (morgens/nachmittags/abends, DE/TR). Über "Neues Profil ➕" wird ein weiteres Profil mit eigener
 Klassenstufe (6 oder 9) und Avatar angelegt. Jedes Profil hat seinen eigenen Fortschritt, sein
 eigenes Abschlussquiz-Ergebnis und sein eigenes Aktivitätsprotokoll (im Eltern-Bereich per Dropdown
-auswählbar). Beim ersten Start werden automatisch zwei Beispielprofile angelegt. Nach
+auswählbar; dort lassen sich Profile samt aller zugehörigen Daten auch löschen - mit Rückfrage, das
+letzte verbleibende Profil ist geschützt). Beim ersten Start werden automatisch zwei
+Beispielprofile angelegt. Nach
 Auswahl/Erstellung wird der Profilname dauerhaft oben rechts im Kiosk-Fenster angezeigt (👤 Name),
 damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
 
@@ -78,6 +80,10 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.
    Bei offenen Mathematik-Aufgaben steht ein Taschenrechner zur Verfügung; Aufgaben mit hinterlegtem
    Tipp zeigen einen abrufbaren Formel-/Vorgehens-Hinweis (verrät nicht die Lösung).
+   **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
+   20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
+   Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:
+   dort bestraft sich Raten von selbst (unter 50 % bleibt der PC gesperrt).
 5. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl passt sich automatisch an, wie
    viele Fächer aktiv sind), ≥50% richtig → PC wird freigeschaltet. Bei Nichtbestehen werden gezielt mehr
    Fragen aus den schwachen Fächern gestellt. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder

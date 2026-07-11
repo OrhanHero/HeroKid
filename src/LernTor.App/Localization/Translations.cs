@@ -100,6 +100,9 @@ public static class Translations
                 "Yapay zeka düşünüyor… (ilk soru en uzun sürer: model bir kez indirilir ve her " +
                 "uygulama başlangıcında belleğe yeniden yüklenir)"),
             ["Exercise_SendChat"] = L("Senden", "Gönder"),
+            ["Exercise_MinTimeCountdown"] = L(
+                "⏳ Nimm dir Zeit zum Lesen – weiter in {0} s",
+                "⏳ Okumak için zaman ayır – {0} sn sonra devam"),
             ["Exercise_YourAnswerPlaceholder"] = L("Deine Antwort…", "Cevabın…"),
             ["Exercise_FinishSubject"] = L("Bereich abgeschlossen! Weiter ➜", "Bölüm tamamlandı! Devam ➜"),
 
@@ -198,6 +201,8 @@ public static class Translations
             ["Parent_Import_ErrorAnswerNotInOptions"] = L(
                 "Die richtige Antwort muss wörtlich eine der Antwortoptionen sein.",
                 "Doğru cevap, cevap seçeneklerinden biriyle birebir aynı olmalı."),
+
+            ["Parent_DeleteProfile"] = L("🗑 Profil löschen", "🗑 Profili sil"),
 
             ["Parent_Tts_Title"] = L("Natürliche Vorlesestimmen", "Doğal sesli okuma sesleri"),
             ["Parent_Tts_Intro"] = L(
