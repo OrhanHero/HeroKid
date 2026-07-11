@@ -85,7 +85,12 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Cloud-Kartendienst wäre unverhältnismäßig, der Kiez-Bezug ist die eigentliche Information.
    Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
    Fragen beantwortet, auch aus einer früheren Session desselben Tages nach Absturz/Neustart;
-   lila = aktueller Artikel; grau = offen).
+   lila = aktueller Artikel; grau = offen). **Die Marker sind klickbar** (direkt zum Artikel
+   springen), und ein **Suchfeld** durchsucht Titel+Zusammenfassung der heutigen Artikel (Treffer
+   anklicken springt hin). „Weiter" führt zum nächsten noch offenen Artikel; der Abschluss-Button
+   erscheint erst, wenn wirklich ALLE Artikel beantwortet sind. **Automatischer Altersfilter**:
+   bis einschließlich 9 Jahren (Profil-Alter) werden Artikel mit verstörenden Schlüsselwörtern
+   komplett ausgefiltert statt nur herabgestuft.
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.

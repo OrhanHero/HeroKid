@@ -56,6 +56,15 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
+                        <!-- Klickbarer Marker: springt direkt zum jeweiligen Artikel (Sprung-Navigation). -->
+                        <Button Cursor="Hand" Background="Transparent" BorderThickness="0" Padding="0"
+                                Command="{Binding DataContext.JumpToArticleCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Button.Template>
                         <Border Width="30" Height="30" CornerRadius="15" Margin="0,0,6,0">
                             <Border.Style>
                                 <Style TargetType="Border">
@@ -90,6 +99,26 @@
                                            Visibility="{Binding IsDone, Converter={StaticResource BoolToVis}}" />
                             </Grid>
                         </Border>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Suche über die heutigen Artikel: Treffer anklicken springt zum Artikel. -->
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <TextBlock Text="🔍" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Width="300" FontSize="14"
+                         ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_SearchHint]}" />
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding SearchResults}" Margin="0,6,0,0"
+                          Visibility="{Binding HasSearchResults, Converter={StaticResource BoolToVis}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Label}" Style="{StaticResource TabPillButton}"
+                                FontSize="13" Margin="0,2" HorizontalAlignment="Left"
+                                Command="{Binding DataContext.JumpToSearchResultCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -191,16 +220,17 @@
         </ScrollViewer>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,32">
+            <!-- "Weiter" führt zum nächsten OFFENEN Artikel (Sprung-Navigation); der Abschluss-
+                 Button erscheint erst, wenn wirklich alle Artikel beantwortet sind. -->
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_NextArticle]}"
                     Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
                     IsEnabled="{Binding CanProceed}"
-                    Visibility="{Binding IsLastArticle, Converter={StaticResource InverseBoolToVis}}"
+                    Visibility="{Binding AllArticlesCompleted, Converter={StaticResource InverseBoolToVis}}"
                     Command="{Binding NextArticleCommand}" />
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_FinishSection]}"
                     Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
-                    IsEnabled="{Binding CanProceed}"
-                    Visibility="{Binding IsLastArticle, Converter={StaticResource BoolToVis}}"
-                    Command="{Binding NextArticleCommand}" />
+                    Visibility="{Binding AllArticlesCompleted, Converter={StaticResource BoolToVis}}"
+                    Command="{Binding FinishSectionCommand}" />
         </StackPanel>
     </Grid>
 </UserControl>

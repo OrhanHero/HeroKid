@@ -237,7 +237,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         // Artikel und Wetter parallel laden - das Wetter-Widget ist Beiwerk und darf den
         // News-Start nicht verzögern; bei Fehlschlag liefert der Dienst null (Widget bleibt weg).
-        var articlesTask = _newsService.LoadCuratedArticlesAsync();
+        var articlesTask = _newsService.LoadCuratedArticlesAsync(childAge: CurrentProfile?.Age);
         var weatherTask = _weatherService.LoadBerlinWeatherAsync();
         var articles = await articlesTask;
         var weather = await weatherTask;

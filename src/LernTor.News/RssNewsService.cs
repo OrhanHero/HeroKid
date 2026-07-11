@@ -26,7 +26,12 @@ public sealed class RssNewsService
     /// CuratedNewsFeeds.SensitiveKeywords), damit harmlosere Artikel bevorzugt ausgewählt werden.
     /// Fehlerhafte/nicht erreichbare Feeds werden übersprungen statt die ganze Ladung abzubrechen.
     /// </summary>
-    public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, CancellationToken cancellationToken = default)
+    /// <param name="childAge">Alter des aktiven Kind-Profils für den automatischen Altersfilter:
+    /// bis einschließlich 9 Jahren werden Artikel mit verstörenden Schlüsselwörtern KOMPLETT
+    /// ausgefiltert statt nur herabgestuft ("keine Angstmache" gilt für die Jüngsten strikt);
+    /// ab 10 bleibt das mildere Herabstufen, weil sonst an nachrichtenschweren Tagen zu wenige
+    /// Artikel übrig blieben. null = kein Alter bekannt, Standardverhalten.</param>
+    public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, int? childAge = null, CancellationToken cancellationToken = default)
     {
         var allRawItems = new List<(SyndicationItem Item, NewsFeedSource Source)>();
 
@@ -50,6 +55,14 @@ public sealed class RssNewsService
             .GroupBy(x => NormalizeTitleForDeduplication(x.Item.Title?.Text))
             .Select(group => group.First())
             .ToList();
+
+        // Altersfilter (siehe Parameter-Doku): für die Jüngsten harte Filterung statt Herabstufung.
+        if (childAge is <= 9)
+        {
+            deduplicated = deduplicated
+                .Where(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text) == 0)
+                .ToList();
+        }
 
         // Berlin-Lokalnachrichten sind die wichtigste regionale Rubrik und sollen nicht zufällig
         // untergehen, nur weil sie im allgemeinen Ranking knapp nicht vorne landen - deshalb wird
