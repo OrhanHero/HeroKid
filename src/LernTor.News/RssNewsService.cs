@@ -156,7 +156,10 @@ public sealed class RssNewsService
             Difficulty = KidNewsMetadata.ComputeDifficulty(simplified),
             WhyImportant = KidNewsMetadata.WhyImportantFor(category),
             MeaningForKids = KidNewsMetadata.MeaningForKidsFor(category),
-            ExplainedTerms = KidTermGlossary.FindTerms($"{title} {simplified}")
+            ExplainedTerms = KidTermGlossary.FindTerms($"{title} {simplified}"),
+            // 📍-Bezirks-Chip statt Kartenansicht (siehe BerlinDistrictDetector) - auch für
+            // Nicht-Berlin-Quellen geprüft, falls z.B. eine tagesschau-Meldung Spandau betrifft.
+            BerlinDistrict = BerlinDistrictDetector.Detect($"{title} {simplified}")
         };
 
         var questions = _questionGenerator.GenerateQuestions(article);

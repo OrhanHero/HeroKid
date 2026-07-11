@@ -129,6 +129,13 @@
                                 <TextBlock FontSize="13" FontWeight="SemiBold"
                                            Text="{Binding CurrentArticle.Difficulty, Converter={StaticResource NewsDifficultyToTitle}, Mode=OneWay}" />
                             </Border>
+                            <!-- 📍-Bezirks-Chip (nur wenn ein Berliner Bezirk erkannt wurde) -->
+                            <Border Background="{StaticResource TileRoseBrush}" CornerRadius="12" Padding="10,4" Margin="8,0,0,0"
+                                    Visibility="{Binding CurrentArticle.BerlinDistrict, Converter={StaticResource NullToVis}}">
+                                <TextBlock FontSize="13" FontWeight="SemiBold">
+                                    <Run Text="📍 " /><Run Text="{Binding CurrentArticle.BerlinDistrict, Mode=OneWay}" />
+                                </TextBlock>
+                            </Border>
                         </StackPanel>
 
                         <TextBlock Text="{Binding CurrentArticle.SimplifiedSummary}" Style="{StaticResource BodyText}" />

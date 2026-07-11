@@ -81,4 +81,8 @@ public sealed record NewsArticle
 
     /// <summary>Im Titel/Text erkannte schwierige Wörter mit kindgerechter Erklärung.</summary>
     public IReadOnlyList<ExplainedTerm> ExplainedTerms { get; init; } = Array.Empty<ExplainedTerm>();
+
+    /// <summary>Erkannter Berliner Bezirk (📍-Chip), null wenn kein Ortsbezug erkannt wurde -
+    /// siehe LernTor.News.BerlinDistrictDetector.</summary>
+    public string? BerlinDistrict { get; init; }
 }

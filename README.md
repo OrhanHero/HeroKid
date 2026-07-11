@@ -78,7 +78,12 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    `FinanceKnowledgeArticles`). **Wetter-Widget**: oben rechts zeigt eine kleine Karte das heutige
    Berlin-Wetter (Open-Meteo-API, kostenlos/ohne Schlüssel/ohne Konto) mit Emoji, Temperaturen und
    einem kindgerechten Tages-Tipp („Pack einen Schirm ein!"); schlägt der Abruf fehl, bleibt das
-   Widget einfach ausgeblendet. Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
+   Widget einfach ausgeblendet. **Bezirks-Chip statt Karte**: Artikel mit Berliner Ortsbezug
+   bekommen einen 📍-Chip mit dem Bezirk (`BerlinDistrictDetector`: alle 12 Bezirke plus ~45
+   bekannte Ortsteile/Kieze wie Wedding → Mitte; mehrdeutige Alltagswörter wie „Mitte" allein
+   werden bewusst nur in eindeutigen Formen wie „Berlin-Mitte" erkannt) - eine Offline-Karte ohne
+   Cloud-Kartendienst wäre unverhältnismäßig, der Kiez-Bezug ist die eigentliche Information.
+   Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
    Fragen beantwortet, auch aus einer früheren Session desselben Tages nach Absturz/Neustart;
    lila = aktueller Artikel; grau = offen).
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
