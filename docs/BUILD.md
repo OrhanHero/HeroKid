@@ -72,8 +72,8 @@ Falls du LernTor schon vorher getestet hast, existiert bereits eine `lerntor.db`
 `%LOCALAPPDATA%\LernTor\`. Mehrere Features haben seither neue Tabellen/Spalten hinzugefügt oder
 entfernt (Profile, eigene Aufgaben, die entfernte `DailyTimeLimitMinutes`-Spalte, die zwischenzeitlichen
 NotebookLM-/Anbieter-Auswahl-Felder - inzwischen wieder entfernt, LernTor ist komplett lokal ohne
-Cloud-Anbindung -, zuletzt bleibt nur noch `LocalLlmModelPath`); da die App `EnsureCreated` statt echter
-EF-Core-Migrationen nutzt,
+Cloud-Anbindung -, `LocalLlmModelPath`, zuletzt `AvatarEmoji` an den Profilen für die neue
+Profil-Dashboard-Optik); da die App `EnsureCreated` statt echter EF-Core-Migrationen nutzt,
 wird eine bereits vorhandene Datenbank NICHT automatisch aktualisiert. Bitte vor dem nächsten Start
 diese Datei löschen (Fortschritt geht dabei verloren, das ist in dieser Entwicklungsphase unkritisch)
 - die App legt beim nächsten Start automatisch eine neue Datenbank inkl. der beiden Beispielprofile an.

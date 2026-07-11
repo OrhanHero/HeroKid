@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

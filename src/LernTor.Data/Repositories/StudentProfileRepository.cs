@@ -30,6 +30,7 @@ public sealed class StudentProfileRepository
                 Age = 15,
                 ClassLabel = "9a",
                 GradeLevel = (int)GradeLevel.Klasse9,
+                AvatarEmoji = "🚀",
                 CreatedAt = DateTimeOffset.Now
             },
             new StudentProfileEntity
@@ -39,6 +40,7 @@ public sealed class StudentProfileRepository
                 Age = 12,
                 ClassLabel = "6c",
                 GradeLevel = (int)GradeLevel.Klasse6,
+                AvatarEmoji = "⚽",
                 CreatedAt = DateTimeOffset.Now
             });
 
@@ -53,7 +55,7 @@ public sealed class StudentProfileRepository
         return entities.OrderBy(p => p.CreatedAt).Select(ToModel).ToList();
     }
 
-    public async Task<StudentProfile> CreateAsync(string name, int? age, string? classLabel, GradeLevel gradeLevel, CancellationToken cancellationToken = default)
+    public async Task<StudentProfile> CreateAsync(string name, int? age, string? classLabel, GradeLevel gradeLevel, string avatarEmoji, CancellationToken cancellationToken = default)
     {
         var entity = new StudentProfileEntity
         {
@@ -62,6 +64,7 @@ public sealed class StudentProfileRepository
             Age = age,
             ClassLabel = classLabel,
             GradeLevel = (int)gradeLevel,
+            AvatarEmoji = string.IsNullOrWhiteSpace(avatarEmoji) ? StudentProfile.DefaultAvatar : avatarEmoji,
             CreatedAt = DateTimeOffset.Now
         };
 
@@ -77,6 +80,7 @@ public sealed class StudentProfileRepository
         Name = entity.Name,
         Age = entity.Age,
         ClassLabel = entity.ClassLabel,
-        GradeLevel = (GradeLevel)entity.GradeLevel
+        GradeLevel = (GradeLevel)entity.GradeLevel,
+        AvatarEmoji = string.IsNullOrWhiteSpace(entity.AvatarEmoji) ? StudentProfile.DefaultAvatar : entity.AvatarEmoji
     };
 }

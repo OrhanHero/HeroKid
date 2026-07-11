@@ -17,5 +17,11 @@ public sealed class StudentProfile
 
     public required GradeLevel GradeLevel { get; set; }
 
+    /// <summary>Vom Kind gewähltes Avatar-Emoji für die Profil-Kachel (bewusst Emoji statt Bilddateien:
+    /// keine Assets zu pflegen, rendert auf jedem Windows nativ, kulturneutral wählbar).</summary>
+    public string AvatarEmoji { get; set; } = DefaultAvatar;
+
+    public const string DefaultAvatar = "🧒";
+
     public static string NewId() => Guid.NewGuid().ToString("N");
 }

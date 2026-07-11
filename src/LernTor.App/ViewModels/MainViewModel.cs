@@ -97,7 +97,7 @@ public sealed partial class MainViewModel : ObservableObject
         Settings = await _settingsRepo.LoadAsync();
         LocalizationService.Instance.CurrentLanguage = Settings.DefaultLanguage;
 
-        var profileSelection = new ProfileSelectionViewModel(_profileRepo, OnProfileSelected);
+        var profileSelection = new ProfileSelectionViewModel(_profileRepo, _progressRepo, OnProfileSelected);
         CurrentViewModel = profileSelection;
         await profileSelection.InitializeAsync();
     }

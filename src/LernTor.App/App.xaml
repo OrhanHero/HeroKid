@@ -18,6 +18,7 @@
             <conv:SubjectToTitleConverter x:Key="SubjectToTitle" />
             <conv:ProfileToSubtitleConverter x:Key="ProfileToSubtitle" />
             <conv:FormatWithArgConverter x:Key="FormatWithArg" />
+            <conv:EqualsToSelectedTagConverter x:Key="EqualsToSelectedTag" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

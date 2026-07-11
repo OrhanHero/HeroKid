@@ -11,13 +11,17 @@ am Berliner Rahmenlehrplan, Klasse 6 und 9 (siehe [docs/CURRICULUM.md](docs/CURR
 
 ## Profile
 
-Mehrere Kinder am selben PC wählen beim Start ihr eigenes Profil (Name, Alter, Klasse) aus einer
-Kachel-Auswahl, oder legen über "Neues Profil ➕" ein weiteres Profil mit eigener Klassenstufe
-(6 oder 9) an. Jedes Profil hat seinen eigenen Fortschritt, sein eigenes Abschlussquiz-Ergebnis
-und sein eigenes Aktivitätsprotokoll (im Eltern-Bereich per Dropdown auswählbar). Beim ersten
-Start werden automatisch zwei Beispielprofile angelegt. Nach Auswahl/Erstellung wird der
-Profilname dauerhaft oben rechts im Kiosk-Fenster angezeigt (👤 Name), damit jederzeit erkennbar
-ist, welches Kind gerade angemeldet ist.
+Mehrere Kinder am selben PC wählen beim Start ihr eigenes Profil aus einem Kachel-Dashboard: jede
+Kachel zeigt den selbst gewählten Avatar (Emoji, beim Anlegen aus einer Auswahl wählbar - bewusst
+Emoji statt Bilddateien: keine Assets zu pflegen, rendert nativ), einen Fortschrittsring für die
+heutige Lernsession (grün + Häkchen, wenn heute schon freigeschaltet wurde) und Name/Alter/Klasse
+auf sanft rotierenden Pastell-Hintergründen. Darüber steht eine tageszeitabhängige Begrüßung
+(morgens/nachmittags/abends, DE/TR). Über "Neues Profil ➕" wird ein weiteres Profil mit eigener
+Klassenstufe (6 oder 9) und Avatar angelegt. Jedes Profil hat seinen eigenen Fortschritt, sein
+eigenes Abschlussquiz-Ergebnis und sein eigenes Aktivitätsprotokoll (im Eltern-Bereich per Dropdown
+auswählbar). Beim ersten Start werden automatisch zwei Beispielprofile angelegt. Nach
+Auswahl/Erstellung wird der Profilname dauerhaft oben rechts im Kiosk-Fenster angezeigt (👤 Name),
+damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
 
 ## Ablauf für das Kind
 

@@ -33,4 +33,19 @@
     <SolidColorBrush x:Key="ScienceBrush" Color="{StaticResource ScienceColor}" />
     <SolidColorBrush x:Key="NewsBrush" Color="{StaticResource NewsColor}" />
 
+    <!-- Kachel-Palette für die Profil-Auswahl: sanfte Pastell-Hintergründe, die zur Hauptpalette
+         passen und die farbige Duolingo-artige Dashboard-Optik geben, ohne unruhig zu wirken. -->
+    <Color x:Key="TileLavenderColor">#EDEAFB</Color>
+    <Color x:Key="TileSandColor">#FEF3DC</Color>
+    <Color x:Key="TileMintColor">#DFF7F0</Color>
+    <Color x:Key="TileRoseColor">#FDEAF2</Color>
+
+    <SolidColorBrush x:Key="TileLavenderBrush" Color="{StaticResource TileLavenderColor}" />
+    <SolidColorBrush x:Key="TileSandBrush" Color="{StaticResource TileSandColor}" />
+    <SolidColorBrush x:Key="TileMintBrush" Color="{StaticResource TileMintColor}" />
+    <SolidColorBrush x:Key="TileRoseBrush" Color="{StaticResource TileRoseColor}" />
+
+    <!-- Dezenter Hintergrundring des Fortschrittsrings auf den Profil-Kacheln. -->
+    <SolidColorBrush x:Key="ProgressTrackBrush" Color="#E4E6F0" />
+
 </ResourceDictionary>

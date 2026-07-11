@@ -20,6 +20,11 @@ public static class Translations
             ["Profile_CreateButton"] = L("Profil erstellen", "Profil oluştur"),
             ["Profile_CancelButton"] = L("Abbrechen", "İptal"),
             ["Profile_NameRequired"] = L("Bitte einen Namen eingeben.", "Lütfen bir isim gir."),
+            ["Profile_GreetingMorning"] = L("☀️ Guten Morgen!", "☀️ Günaydın!"),
+            ["Profile_GreetingAfternoon"] = L("👋 Schön, dass du da bist!", "👋 Gelmene sevindik!"),
+            ["Profile_GreetingEvening"] = L("🌙 Guten Abend!", "🌙 İyi akşamlar!"),
+            ["Profile_AvatarLabel"] = L("Such dir deinen Avatar aus:", "Avatarını seç:"),
+            ["Profile_DoneToday"] = L("Heute schon geschafft! 🎉", "Bugün tamamlandı! 🎉"),
 
             ["Welcome_Greeting"] = L("Hallo, {0}!", "Merhaba, {0}!"),
             ["Welcome_Title"] = L("Willkommen bei LernTor!", "LernTor'a Hoş Geldin!"),
