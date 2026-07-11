@@ -15,6 +15,7 @@
                 <Run Text="📰 " />
                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_News], Mode=OneWay}" />
             </TextBlock>
+            <Rectangle Style="{StaticResource HeaderAccentBar}" Fill="{StaticResource NewsBrush}" />
             <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
                 <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
                 <Run Text=" / " />

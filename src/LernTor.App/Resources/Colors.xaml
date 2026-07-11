@@ -48,4 +48,8 @@
     <!-- Dezenter Hintergrundring des Fortschrittsrings auf den Profil-Kacheln. -->
     <SolidColorBrush x:Key="ProgressTrackBrush" Color="#E4E6F0" />
 
+    <!-- Ruhiger Standard-Rahmen für Eingabefelder (TextBox/PasswordBox); im Fokus wechselt der
+         Rahmen auf PrimaryBrush - siehe die impliziten Eingabefeld-Styles in Styles.xaml. -->
+    <SolidColorBrush x:Key="InputBorderBrush" Color="#DDE1EA" />
+
 </ResourceDictionary>

@@ -29,6 +29,7 @@
             <StackPanel Grid.Row="0" Margin="32,24">
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Quiz_Title]}"
                            Style="{StaticResource HeadlineText}" />
+                <Rectangle Style="{StaticResource HeaderAccentBar}" />
                 <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
                     <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
                     <Run Text=" / " />

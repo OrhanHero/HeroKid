@@ -14,6 +14,8 @@
             <TextBlock Text="{Binding Subject, Converter={StaticResource SubjectToTitle}}"
                        Style="{StaticResource HeadlineText}"
                        Foreground="{Binding Subject, Converter={StaticResource SubjectToBrush}}" />
+            <Rectangle Style="{StaticResource HeaderAccentBar}"
+                       Fill="{Binding Subject, Converter={StaticResource SubjectToBrush}}" />
             <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
                 <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
                 <Run Text=" / " />
