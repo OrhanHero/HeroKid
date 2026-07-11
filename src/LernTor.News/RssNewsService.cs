@@ -51,21 +51,21 @@ public sealed class RssNewsService
             .Select(group => group.First())
             .ToList();
 
-        // Berlin-Lokalnachrichten sind ausdrücklich sehr wichtig und sollen nicht zufällig
+        // Berlin-Lokalnachrichten sind die wichtigste regionale Rubrik und sollen nicht zufällig
         // untergehen, nur weil sie im allgemeinen Ranking knapp nicht vorne landen - deshalb wird
-        // zuerst ein garantiertes Kontingent an aktuellen Berlin-Artikeln reserviert, bevor der
-        // Rest der Plätze nach der üblichen Prioritäts-Rangliste aufgefüllt wird.
+        // zuerst ein garantiertes Kontingent an aktuellen Berlin-Artikeln reserviert. Danach ein
+        // kleineres Türkei-Kontingent ("täglich jugendgerechte Nachrichten aus der Türkei"),
+        // erst dann füllt die übliche Prioritäts-Rangliste die restlichen Plätze auf.
         var minBerlinSlots = Math.Max(2, targetCount / 3);
-        var berlinArticles = deduplicated
-            .Where(x => x.Source.RegionFocus == NewsRegionFocus.Berlin)
-            .OrderBy(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
-            .ThenByDescending(x => x.Item.PublishDate)
-            .Take(minBerlinSlots)
-            .ToList();
+        var berlinArticles = TakeQuota(deduplicated, NewsRegionFocus.Berlin, minBerlinSlots);
 
-        var remainingSlots = Math.Max(0, targetCount - berlinArticles.Count);
+        var minTurkeySlots = Math.Min(2, Math.Max(0, targetCount - berlinArticles.Count));
+        var turkeyArticles = TakeQuota(deduplicated, NewsRegionFocus.Tuerkei, minTurkeySlots);
+
+        var reserved = berlinArticles.Concat(turkeyArticles).ToList();
+        var remainingSlots = Math.Max(0, targetCount - reserved.Count);
         var rankedRemaining = deduplicated
-            .Where(x => x.Source.RegionFocus != NewsRegionFocus.Berlin)
+            .Except(reserved)
             .OrderByDescending(x =>
                 CountPriorityMatches(x.Item.Title?.Text, x.Item.Summary?.Text) -
                 CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
@@ -73,7 +73,7 @@ public sealed class RssNewsService
             .Take(remainingSlots)
             .ToList();
 
-        var ranked = berlinArticles.Concat(rankedRemaining).ToList();
+        var ranked = reserved.Concat(rankedRemaining).ToList();
 
         var articles = new List<NewsArticle>();
         foreach (var (item, source) in ranked)
@@ -83,6 +83,19 @@ public sealed class RssNewsService
 
         return articles;
     }
+
+    /// <summary>Reserviert bis zu <paramref name="slots"/> möglichst unverstörende, aktuelle
+    /// Artikel einer Region (für die garantierten Berlin-/Türkei-Kontingente).</summary>
+    private static List<(SyndicationItem Item, NewsFeedSource Source)> TakeQuota(
+        IEnumerable<(SyndicationItem Item, NewsFeedSource Source)> items,
+        NewsRegionFocus region,
+        int slots) =>
+        items
+            .Where(x => x.Source.RegionFocus == region)
+            .OrderBy(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
+            .ThenByDescending(x => x.Item.PublishDate)
+            .Take(slots)
+            .ToList();
 
     private static string NormalizeTitleForDeduplication(string? title) =>
         (title ?? string.Empty).Trim().ToLowerInvariant();
@@ -116,6 +129,11 @@ public sealed class RssNewsService
         var simplified = _simplifier.Simplify(rawSummary);
         var imageUrl = item.Links.FirstOrDefault(l => l.MediaType?.StartsWith("image") == true)?.Uri.ToString();
 
+        // Kindgerechte Anreicherung (siehe README "News für Kinder"): Rubrik + Emoji,
+        // Lesedauer, Schwierigkeitsgrad, "Warum ist das wichtig?"/"Was bedeutet das für dich?"
+        // und sofort erklärte schwierige Wörter - alles regelbasiert und offline.
+        var category = NewsCategoryClassifier.Classify(title, simplified, source.DefaultCategory);
+
         var article = new NewsArticle
         {
             Id = item.Id ?? Guid.NewGuid().ToString("N"),
@@ -126,7 +144,14 @@ public sealed class RssNewsService
             SourceUrl = item.Links.FirstOrDefault()?.Uri.ToString() ?? source.RssUrl,
             PublishedAt = item.PublishDate,
             RegionFocus = source.RegionFocus,
-            ComprehensionQuestions = Array.Empty<QuizQuestion>()
+            ComprehensionQuestions = Array.Empty<QuizQuestion>(),
+            Category = category,
+            CategoryEmoji = NewsCategoryClassifier.EmojiFor(category),
+            ReadingMinutes = KidNewsMetadata.ComputeReadingMinutes(title, simplified),
+            Difficulty = KidNewsMetadata.ComputeDifficulty(simplified),
+            WhyImportant = KidNewsMetadata.WhyImportantFor(category),
+            MeaningForKids = KidNewsMetadata.MeaningForKidsFor(category),
+            ExplainedTerms = KidTermGlossary.FindTerms($"{title} {simplified}")
         };
 
         var questions = _questionGenerator.GenerateQuestions(article);

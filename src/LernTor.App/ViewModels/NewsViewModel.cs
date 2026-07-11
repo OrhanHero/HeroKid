@@ -38,6 +38,12 @@ public sealed partial class NewsViewModel : ObservableObject
     public bool IsLastArticle => CurrentIndex >= _articles.Count - 1;
     public bool HasArticles => _articles.Count > 0;
 
+    /// <summary>Steuert die Sichtbarkeit der "Schwierige Wörter"-Box (eine leere Box ohne
+    /// Einträge soll gar nicht erst erscheinen).</summary>
+    public bool HasExplainedTerms => CurrentArticle?.ExplainedTerms.Count > 0;
+
+    partial void OnCurrentArticleChanged(NewsArticle? value) => OnPropertyChanged(nameof(HasExplainedTerms));
+
     public NewsViewModel(
         IReadOnlyList<NewsArticle> articles,
         HashSet<string> alreadyCompletedIds,

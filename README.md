@@ -58,10 +58,21 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    (Eine Anbindung an lyrikline.org wurde bewusst nicht umgesetzt: aus dieser Entwicklungsumgebung war
    der Zugriff auf die Seite nicht möglich, und ihre zeitgenössischen Gedichte/Übersetzungen sind
    urheberrechtlich geschützt und dürften ohne Erlaubnis nicht in die App übernommen werden.)
-3. **News** (Pflicht) – kuratierte RSS-Artikel mit Fokus Berlin/Deutschland und Istanbul/Samsun/Ünye/Türkei
-   (Berlin-Lokalnachrichten werden garantiert einbezogen), je 1-2 Verständnisfragen pro Artikel. Eine
-   Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ = Fragen beantwortet, auch aus einer
-   früheren Session desselben Tages nach Absturz/Neustart; lila = aktueller Artikel; grau = offen).
+3. **News für Kinder** (Pflicht) – kuratierte RSS-Artikel, verständlich, neutral und ohne Angstmache
+   aufbereitet (sprachliches Vorbild: logo!/Checker-Sendungen). **Rubriken**: 🐻 Berlin (wichtigste
+   regionale Rubrik, garantierte Plätze), 🇩🇪 Deutschland, 🌍 Welt, 🇹🇷 Türkei (täglich garantierte
+   Plätze; seriöse Quellen: Anadolu Ajansı, TRT Haber, DW Türkçe – bewusst keine Boulevardquellen),
+   🤖 KI & Technik, 🎮 Spiele, 💰 Finanzen, ⛅ Wetter. Themen-Rubriken werden per
+   Schlüsselwort-Klassifikation quer über alle Quellen erkannt (`NewsCategoryClassifier`).
+   **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
+   (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), die Boxen „Warum ist das wichtig?"/„Was bedeutet das für
+   dich?" (ehrliche rubrikbezogene Einordnungen aus `KidNewsMetadata` – eine regelbasierte Pipeline
+   erfindet bewusst keine artikel-spezifischen Behauptungen), sofort erklärte schwierige Wörter
+   (kuratiertes `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und 1-2 Verständnisfragen.
+   Verstörende Themen (Krieg, Gewalt – auch türkischsprachige Schlüsselwörter) werden im Ranking
+   stark heruntergestuft. Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
+   Fragen beantwortet, auch aus einer früheren Session desselben Tages nach Absturz/Neustart;
+   lila = aktueller Artikel; grau = offen).
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.

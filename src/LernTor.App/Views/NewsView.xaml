@@ -80,8 +80,67 @@
                                Visibility="{Binding CurrentArticle.ImageUrl, Converter={StaticResource NullToVis}}"
                                Margin="0,0,0,16" />
                         <TextBlock Text="{Binding CurrentArticle.Title}" Style="{StaticResource HeadlineText}" FontSize="26" />
-                        <TextBlock Text="{Binding CurrentArticle.SourceName}" Style="{StaticResource SubtitleText}" Margin="0,4,0,16" />
+                        <TextBlock Text="{Binding CurrentArticle.SourceName}" Style="{StaticResource SubtitleText}" Margin="0,4,0,10" />
+
+                        <!-- Info-Chips: Rubrik (Emoji + Name), Lesedauer, Schwierigkeitsgrad -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
+                                <TextBlock FontSize="13" FontWeight="SemiBold">
+                                    <Run Text="{Binding CurrentArticle.CategoryEmoji, Mode=OneWay}" />
+                                    <Run Text="{Binding CurrentArticle.Category, Converter={StaticResource NewsCategoryToTitle}, Mode=OneWay}" />
+                                </TextBlock>
+                            </Border>
+                            <Border Background="{StaticResource TileMintBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
+                                <TextBlock FontSize="13" FontWeight="SemiBold">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                            <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[News_ReadingMinutes]" />
+                                            <Binding Path="CurrentArticle.ReadingMinutes" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Border>
+                            <Border Background="{StaticResource TileSandBrush}" CornerRadius="12" Padding="10,4">
+                                <TextBlock FontSize="13" FontWeight="SemiBold"
+                                           Text="{Binding CurrentArticle.Difficulty, Converter={StaticResource NewsDifficultyToTitle}, Mode=OneWay}" />
+                            </Border>
+                        </StackPanel>
+
                         <TextBlock Text="{Binding CurrentArticle.SimplifiedSummary}" Style="{StaticResource BodyText}" />
+
+                        <!-- "Warum ist das wichtig?" + "Was bedeutet das für dich?": ehrliche,
+                             rubrikbezogene Einordnung (siehe KidNewsMetadata) statt erfundener Details. -->
+                        <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="14" Padding="16" Margin="0,16,0,0"
+                                Visibility="{Binding CurrentArticle.WhyImportant, Converter={StaticResource EmptyStringToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_WhyImportant]}"
+                                           FontWeight="Bold" FontSize="15" Margin="0,0,0,4" />
+                                <TextBlock Text="{Binding CurrentArticle.WhyImportant}" Style="{StaticResource BodyText}" FontSize="15" />
+                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_MeaningForKids]}"
+                                           FontWeight="Bold" FontSize="15" Margin="0,12,0,4" />
+                                <TextBlock Text="{Binding CurrentArticle.MeaningForKids}" Style="{StaticResource BodyText}" FontSize="15" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Schwierige Wörter, sofort erklärt (KidTermGlossary) -->
+                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="14" Padding="16" Margin="0,12,0,0"
+                                Visibility="{Binding HasExplainedTerms, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_ExplainedTerms]}"
+                                           FontWeight="Bold" FontSize="15" Margin="0,0,0,6" />
+                                <ItemsControl ItemsSource="{Binding CurrentArticle.ExplainedTerms}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="15" Margin="0,2,0,2">
+                                                <Run Text="{Binding Term, Mode=OneWay}" FontWeight="Bold" />
+                                                <Run Text=" – " />
+                                                <Run Text="{Binding Explanation, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Border>
 

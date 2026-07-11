@@ -19,6 +19,8 @@
             <conv:ProfileToSubtitleConverter x:Key="ProfileToSubtitle" />
             <conv:FormatWithArgConverter x:Key="FormatWithArg" />
             <conv:EqualsToSelectedTagConverter x:Key="EqualsToSelectedTag" />
+            <conv:NewsCategoryToTitleConverter x:Key="NewsCategoryToTitle" />
+            <conv:NewsDifficultyToTitleConverter x:Key="NewsDifficultyToTitle" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
