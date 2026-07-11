@@ -176,6 +176,16 @@ deshalb bewusst nicht umgesetzt.
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
 - "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
   App heraus, mit Ja/Nein-Bestätigung. Vorher ging das nur manuell über das Löschen von `lerntor.db`.
+- **Fehlerprotokoll** (`LernTor.Core.Logging.AppLog`): eine Log-Datei pro Tag unter
+  `%LOCALAPPDATA%\LernTor\logs\lerntor-JJJJ-MM-TT.log` (älter als 14 Tage wird automatisch
+  gelöscht; komplett lokal, keine Telemetrie). Protokolliert wird genau das, was die App dem Kind
+  gegenüber bewusst verschluckt: übersprungene News-Feeds **mit Quelle und Grund**, fehlgeschlagene
+  Modell-/Piper-Downloads je Spiegel-URL, Wetter-Ausfälle, TTS-Rückfälle (fehlende SAPI-Stimme,
+  Piper-Fehler) sowie unbehandelte Abstürze mit vollem Stacktrace (zusätzlich zur MessageBox, die
+  nach dem Wegklicken verloren wäre). Der Eltern-Bereich zeigt die letzten Zeilen des heutigen
+  Protokolls direkt an ("Heute wurden keine Probleme protokolliert 👍", wenn leer) und öffnet den
+  Log-Ordner per Button im Explorer. Das Protokollieren selbst wirft nie Exceptions - ein Logger,
+  der die App crasht, wäre schlimmer als keiner.
 - **Eigene Aufgaben** ("Eigene Aufgaben (z.B. von der Lehrkraft)"): Formular zum manuellen Anlegen
   eigener Fragen (Fach, Klassenstufe, Fragetyp, Frage, Antwortoptionen, richtige Antwort(en),
   Erklärung, optionaler Tipp) - z.B. für aktuelle Hausaufgaben oder Themen, die die Lehrkraft gerade

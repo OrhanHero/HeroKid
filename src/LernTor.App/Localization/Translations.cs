@@ -211,6 +211,22 @@ public static class Translations
 
             ["Parent_DeleteProfile"] = L("🗑 Profil löschen", "🗑 Profili sil"),
 
+            ["Parent_Log_Title"] = L("Fehlerprotokoll", "Hata günlüğü"),
+            ["Parent_Log_Intro"] = L(
+                "Technisches Protokoll für die Fehlersuche: hier steht z.B., welche News-Quelle " +
+                "nicht erreichbar war oder warum ein Download fehlgeschlagen ist. Eine Datei pro Tag " +
+                "unter %LOCALAPPDATA%\\LernTor\\logs, älter als 14 Tage wird automatisch gelöscht. " +
+                "Komplett lokal - nichts davon verlässt diesen PC.",
+                "Hata ayıklama için teknik günlük: örneğin hangi haber kaynağına ulaşılamadığı veya " +
+                "bir indirmenin neden başarısız olduğu burada görünür. Günde bir dosya " +
+                "(%LOCALAPPDATA%\\LernTor\\logs), 14 günden eskiler otomatik silinir. Tamamen yerel - " +
+                "hiçbir şey bu bilgisayardan çıkmaz."),
+            ["Parent_Log_OpenFolder"] = L("📂 Log-Ordner öffnen", "📂 Günlük klasörünü aç"),
+            ["Parent_Log_Refresh"] = L("Aktualisieren", "Yenile"),
+            ["Parent_Log_Empty"] = L(
+                "Heute wurden keine Probleme protokolliert. 👍",
+                "Bugün hiçbir sorun kaydedilmedi. 👍"),
+
             ["Parent_Tts_Title"] = L("Natürliche Vorlesestimmen", "Doğal sesli okuma sesleri"),
             ["Parent_Tts_Intro"] = L(
                 "Der Lesen-Abschnitt kann mit natürlichen, komplett lokalen Stimmen vorlesen (Piper, " +

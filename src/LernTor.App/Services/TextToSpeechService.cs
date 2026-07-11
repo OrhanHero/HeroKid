@@ -119,6 +119,8 @@ public sealed class TextToSpeechService : IDisposable
         catch (Exception)
         {
             // Keine Stimme für diese Sprache installiert - Standardstimme weiterverwenden (s.o.).
+            LernTor.Core.Logging.AppLog.Warn(
+                "TTS", $"Keine SAPI-Stimme für {cultureName} installiert - Standardstimme wird verwendet");
         }
 
         _currentSapiPrompt = _synthesizer.SpeakAsync(text);
@@ -134,10 +136,11 @@ public sealed class TextToSpeechService : IDisposable
         {
             return; // Stop() hat den Sprechzustand bereits zurückgesetzt.
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Piper mittendrin gescheitert (Datei beschädigt, Audio-Gerät weg, …): für DIESE
             // Vorlesung auf SAPI zurückfallen, sofern nicht inzwischen etwas Neues gestartet wurde.
+            LernTor.Core.Logging.AppLog.Warn("TTS", $"Piper fehlgeschlagen, SAPI-Rückfall - {ex.Message}");
             if (version == _speakVersion)
             {
                 SpeakWithSapi(text, cultureName);

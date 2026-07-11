@@ -144,9 +144,12 @@ public sealed class LocalLlmModelHost : IDisposable
                     File.Delete(tempPath);
                 }
                 // Nächste Spiegel-Quelle probieren.
+                LernTor.Core.Logging.AppLog.Warn("KI-Modell", $"Download fehlgeschlagen von {url} - {ex.Message}");
             }
         }
 
+        LernTor.Core.Logging.AppLog.Error(
+            "KI-Modell", $"Alle Download-Quellen für \"{model.DisplayName}\" fehlgeschlagen", lastError);
         throw new InvalidOperationException(
             $"Das KI-Modell \"{model.DisplayName}\" (~{model.ApproxSizeGb:0.#} GB) konnte von keiner " +
             "der hinterlegten Quellen heruntergeladen werden (kein Internet, zu wenig Speicherplatz, " +

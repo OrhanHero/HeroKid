@@ -8,6 +8,7 @@ using LernTor.ContentGen;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
+using LernTor.Core.Logging;
 using LernTor.Core.Services;
 using LernTor.Data;
 using LernTor.Data.Repositories;
@@ -43,6 +44,9 @@ public partial class App : Application
             }
 
             _isFatallyShuttingDown = true;
+            // Zusätzlich zur MessageBox in die Log-Datei: der Dialog ist nach dem Wegklicken
+            // verloren, die Datei nicht (siehe AppLog / Fehlerprotokoll im Eltern-Bereich).
+            AppLog.Error("App", "Unbehandelter UI-Fehler, App wird beendet", args.Exception);
             MessageBox.Show(
                 $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.Exception}",
                 "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -56,6 +60,7 @@ public partial class App : Application
             }
 
             _isFatallyShuttingDown = true;
+            AppLog.Error("App", "Unbehandelter Hintergrund-Fehler, App wird beendet", args.ExceptionObject as Exception);
             MessageBox.Show(
                 $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.ExceptionObject}",
                 "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -63,10 +68,12 @@ public partial class App : Application
 
         try
         {
+            AppLog.Info("App", $"LernTor startet (Version {typeof(App).Assembly.GetName().Version})");
             await StartUpInternalAsync(e);
         }
         catch (Exception ex)
         {
+            AppLog.Error("App", "Start fehlgeschlagen", ex);
             MessageBox.Show(
                 $"LernTor konnte nicht gestartet werden:\n\n{ex}",
                 "LernTor - Startfehler", MessageBoxButton.OK, MessageBoxImage.Error);

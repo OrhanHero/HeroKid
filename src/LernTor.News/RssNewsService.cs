@@ -42,9 +42,13 @@ public sealed class RssNewsService
                 var items = await FetchFeedAsync(source, cancellationToken);
                 allRawItems.AddRange(items.Select(i => (i, source)));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Feed nicht erreichbar oder URL veraltet -> überspringen, restliche Feeds trotzdem laden.
+                // Feed nicht erreichbar oder URL veraltet -> überspringen, restliche Feeds trotzdem
+                // laden. Fürs Kind unsichtbar, aber im Fehlerprotokoll nachvollziehbar, WELCHE
+                // Quelle tot ist (wichtig zum Pflegen der Feed-URLs).
+                LernTor.Core.Logging.AppLog.Warn(
+                    "News", $"Feed übersprungen: {source.Name} ({source.RssUrl}) - {ex.Message}");
             }
         }
 

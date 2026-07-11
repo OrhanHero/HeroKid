@@ -396,6 +396,29 @@
                 <TextBlock Text="{Binding PiperErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,20"
                            Visibility="{Binding PiperErrorMessage, Converter={StaticResource EmptyStringToVis}}" />
 
+                <!-- Fehlerprotokoll: lokale Log-Dateien (AppLog), z.B. übersprungene News-Feeds,
+                     Download-Fehler, Abstürze - komplett lokal, keine Telemetrie. -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Intro]}"
+                           Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_OpenFolder]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8" Margin="0,0,12,0"
+                            Command="{Binding OpenLogFolderCommand}" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Refresh]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8"
+                            Background="{StaticResource TextSecondaryBrush}"
+                            Command="{Binding RefreshErrorLogCommand}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Empty]}"
+                           Style="{StaticResource BodyText}" Margin="0,0,0,20"
+                           Visibility="{Binding HasErrorLogEntries, Converter={StaticResource InverseBoolToVis}}" />
+                <TextBox Text="{Binding ErrorLogTail, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                         TextWrapping="NoWrap" AcceptsReturn="True" MaxHeight="220" Margin="0,0,0,20"
+                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                         Visibility="{Binding HasErrorLogEntries, Converter={StaticResource BoolToVis}}" />
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DangerZone]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,12,0,8"
                            Foreground="{StaticResource ErrorBrush}" />

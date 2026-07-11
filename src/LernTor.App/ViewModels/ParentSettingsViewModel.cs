@@ -154,6 +154,37 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string piperErrorMessage = string.Empty;
 
+    // --- Fehlerprotokoll (lokale Log-Dateien, siehe LernTor.Core.Logging.AppLog) ---
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasErrorLogEntries))]
+    private string errorLogTail = string.Empty;
+
+    public bool HasErrorLogEntries => !string.IsNullOrWhiteSpace(ErrorLogTail);
+
+    /// <summary>Lädt die letzten Zeilen des heutigen Protokolls neu (beim Öffnen und per Button).</summary>
+    [RelayCommand]
+    private void RefreshErrorLog() => ErrorLogTail = Core.Logging.AppLog.ReadTodayTail();
+
+    /// <summary>Öffnet den Log-Ordner im Windows-Explorer (für ältere Tage / zum Weitergeben).</summary>
+    [RelayCommand]
+    private void OpenLogFolder()
+    {
+        try
+        {
+            System.IO.Directory.CreateDirectory(Core.Logging.AppLog.LogDirectory);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = Core.Logging.AppLog.LogDirectory,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Warn("Eltern-Bereich", $"Log-Ordner konnte nicht geöffnet werden - {ex.Message}");
+        }
+    }
+
     public event Action? RequestClose;
 
     public ParentSettingsViewModel(
@@ -200,6 +231,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         ApplyLocalLlmOptions();
+        RefreshErrorLog();
     }
 
     private void ApplyLocalLlmOptions()

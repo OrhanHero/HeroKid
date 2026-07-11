@@ -68,9 +68,10 @@ public sealed class WeatherService
             return new KidWeatherReport(
                 emoji, temp, max, min, rainProbability, descriptionDe, descriptionTr, tipDe, tipTr);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Kein Internet/API geändert: Widget still ausblenden statt den News-Teil zu stören.
+            LernTor.Core.Logging.AppLog.Warn("Wetter", $"Berlin-Wetter nicht ladbar - {ex.Message}");
             return null;
         }
     }

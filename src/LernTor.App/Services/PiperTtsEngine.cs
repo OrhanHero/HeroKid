@@ -173,6 +173,7 @@ public sealed class PiperTtsEngine
                     File.Delete(tempPath);
                 }
                 // Nächste Spiegel-Quelle probieren.
+                LernTor.Core.Logging.AppLog.Warn("Piper", $"Download fehlgeschlagen von {url} - {ex.Message}");
             }
         }
 
