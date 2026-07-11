@@ -3,6 +3,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
+using LernTor.App.Services;
 using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
@@ -24,6 +25,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly KioskLockService _kioskLock;
     private readonly LocalLlmOptions _localLlmOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
+    private readonly PiperTtsEngine _piperTts;
 
     private AppSettings _settings = new();
 
@@ -138,6 +140,20 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     public bool HasNoImportedDrafts => ImportedDrafts.Count == 0;
 
+    // --- Natürliche Vorlesestimmen (Piper, siehe PiperTtsEngine) ---
+
+    [ObservableProperty]
+    private bool isPiperInstalled;
+
+    [ObservableProperty]
+    private bool isPiperInstalling;
+
+    [ObservableProperty]
+    private string piperStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string piperErrorMessage = string.Empty;
+
     public event Action? RequestClose;
 
     public ParentSettingsViewModel(
@@ -148,7 +164,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CustomQuestionRepository customQuestionRepo,
         KioskLockService kioskLock,
         LocalLlmOptions localLlmOptions,
-        TeacherDocumentImportService teacherImportService)
+        TeacherDocumentImportService teacherImportService,
+        PiperTtsEngine piperTts)
     {
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
@@ -158,6 +175,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _kioskLock = kioskLock;
         _localLlmOptions = localLlmOptions;
         _teacherImportService = teacherImportService;
+        _piperTts = piperTts;
+        IsPiperInstalled = piperTts.IsInstalled;
     }
 
     /// <summary>Unterdrückt das Sofort-Speichern, während InitializeAsync die Werte aus der DB in
@@ -209,6 +228,37 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _settings.LocalLlmModelKey = SelectedLlmModel.Key;
         ApplyLocalLlmOptions();
         _ = _settingsRepo.SaveAsync(_settings);
+    }
+
+    /// <summary>Einmaliger Download der natürlichen Piper-Vorlesestimmen (~230 MB, siehe
+    /// <see cref="PiperTtsEngine"/>). Läuft im Hintergrund weiter, auch wenn das Eltern-Fenster
+    /// währenddessen geschlossen wird - beim nächsten Öffnen zeigt IsPiperInstalled den Stand.</summary>
+    [RelayCommand]
+    private async Task InstallPiperVoicesAsync()
+    {
+        if (IsPiperInstalling || IsPiperInstalled)
+        {
+            return;
+        }
+
+        IsPiperInstalling = true;
+        PiperErrorMessage = string.Empty;
+        var progress = new Progress<string>(message => PiperStatusMessage = message);
+
+        try
+        {
+            await _piperTts.InstallAsync(progress, CancellationToken.None);
+            IsPiperInstalled = _piperTts.IsInstalled;
+        }
+        catch (Exception ex)
+        {
+            PiperStatusMessage = string.Empty;
+            PiperErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsPiperInstalling = false;
+        }
     }
 
     [RelayCommand]

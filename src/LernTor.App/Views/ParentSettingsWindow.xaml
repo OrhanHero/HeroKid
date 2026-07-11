@@ -366,6 +366,29 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
+                <!-- Natürliche Vorlesestimmen (Piper, siehe PiperTtsEngine): einmaliger Download,
+                     danach liest der Lesen-Abschnitt mit neuronalen Offline-Stimmen für DE/TR/EN
+                     vor statt mit der roboterhaften Windows-SAPI-Stimme. -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Intro]}"
+                           Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Install]}"
+                            Style="{StaticResource RoundedButton}" Margin="0,0,12,0"
+                            Command="{Binding InstallPiperVoicesCommand}"
+                            IsEnabled="{Binding IsPiperInstalling, Converter={StaticResource InverseBool}}"
+                            Visibility="{Binding IsPiperInstalled, Converter={StaticResource InverseBoolToVis}}" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Installed]}"
+                               Style="{StaticResource BodyText}" FontWeight="Bold" VerticalAlignment="Center"
+                               Foreground="{StaticResource SuccessBrush}"
+                               Visibility="{Binding IsPiperInstalled, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+                <TextBlock Text="{Binding PiperStatusMessage}" Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,8"
+                           Visibility="{Binding PiperStatusMessage, Converter={StaticResource EmptyStringToVis}}" />
+                <TextBlock Text="{Binding PiperErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,20"
+                           Visibility="{Binding PiperErrorMessage, Converter={StaticResource EmptyStringToVis}}" />
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DangerZone]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,12,0,8"
                            Foreground="{StaticResource ErrorBrush}" />

@@ -33,9 +33,15 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    anzudichten würde die Werke verfälschen). Beide werden **gleichzeitig auf Deutsch, Türkisch und
    Englisch nebeneinander** angezeigt, damit dasselbe Stück in allen drei Sprachen gelesen werden kann. Über Sprach-Tabs lässt sich alternativ eine einzelne Sprache größer
    und mit mehr Zeilenabstand anzeigen; ein **Vorlesen-Button** liest den Text der gewählten Sprache
-   über die Windows-eigene Sprachausgabe vor (`System.Speech`, komplett offline - eine türkische
-   Stimme ist auf Windows oft nicht vorinstalliert und muss ggf. über Einstellungen → Zeit und
-   Sprache nachinstalliert werden; ohne passende Stimme liest die Standardstimme). Soll **laut
+   vor - komplett offline, zweistufig: Haben die Eltern im Eltern-Bereich einmalig die **natürlichen
+   Piper-Stimmen** heruntergeladen (~230 MB: piper.exe + je eine neuronale "medium"-Stimme für
+   Deutsch/Türkisch/Englisch, auch die türkische Aussprache stimmt), wird satzweise per `piper.exe`
+   zu WAV synthetisiert und abgespielt - satzweise, damit die Wiedergabe sofort startet, während der
+   nächste Satz schon im Hintergrund erzeugt wird (`PiperTtsEngine`/`TextToSpeechService`). Ohne
+   Piper-Stimmen liest als Rückfall die Windows-eigene Sprachausgabe (`System.Speech` - eine
+   türkische SAPI-Stimme ist auf Windows oft nicht vorinstalliert; ohne passende Stimme liest die
+   Standardstimme). Ein LLM wäre hierfür das falsche Werkzeug: Sprachmodelle erzeugen Text, keine
+   Audiodaten - Piper ist das passende (und viel kleinere) dedizierte TTS-Modell. Soll **laut
    vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst danach nutzbar - es gibt bewusst
    keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde, kann technisch nicht geprüft
    werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion. Der Pool besteht aus zwei

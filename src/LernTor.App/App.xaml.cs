@@ -137,8 +137,11 @@ public partial class App : Application
                 // KI-Lernchat für Kinder (siehe README).
                 services.AddSingleton<IHomeworkHelpChatService, LocalLlmHomeworkHelpChatService>();
 
-                // Vorlesefunktion im Lesen-Abschnitt (Windows-TTS, offline). Singleton, damit die
-                // SAPI-Sprachausgabe nur einmal initialisiert wird; Host-Dispose räumt sie beim Beenden ab.
+                // Vorlesefunktion im Lesen-Abschnitt (komplett offline): natürliche Piper-Stimmen,
+                // sofern im Eltern-Bereich heruntergeladen, sonst Windows-SAPI als Rückfall.
+                // Singleton, damit die Sprachausgabe nur einmal initialisiert wird; Host-Dispose
+                // räumt sie beim Beenden ab.
+                services.AddSingleton<PiperTtsEngine>();
                 services.AddSingleton<TextToSpeechService>();
 
                 services.AddSingleton<MainViewModel>();
