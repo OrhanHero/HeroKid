@@ -238,6 +238,9 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ResultsTitle]}"
                            FontWeight="Bold" FontSize="14" Margin="0,0,0,8"
                            Visibility="{Binding HasNoImportedDrafts, Converter={StaticResource InverseBoolToVis}}" />
+                <!-- Vorschlagskarten mit Inline-Editing: alle Felder direkt korrigierbar, erst
+                     "Übernehmen" validiert und speichert. Die Belegstelle aus dem Dokument bleibt
+                     bewusst nicht editierbar (sie ist die Prüf-Referenz, kein Inhalt). -->
                 <ItemsControl ItemsSource="{Binding ImportedDrafts}" Margin="0,0,0,20">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -247,19 +250,33 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock FontWeight="Bold" Text="{Binding Topic}" FontSize="13" />
-                                        <TextBlock Text="{Binding Prompt}" TextWrapping="Wrap" Margin="0,4,0,0" />
-                                        <ItemsControl ItemsSource="{Binding Options}" Margin="0,4,0,0">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding StringFormat='- {0}'}" FontSize="12" />
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                        <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" Margin="0,4,0,0" />
+                                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_FieldTopic]}" FontSize="11" Opacity="0.7" />
+                                        <TextBox Text="{Binding Topic, UpdateSourceTrigger=PropertyChanged}" FontSize="13" FontWeight="Bold" Padding="4" Margin="0,2,0,6" />
+
+                                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_FieldPrompt]}" FontSize="11" Opacity="0.7" />
+                                        <TextBox Text="{Binding Prompt, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" Padding="4" Margin="0,2,0,6" />
+
+                                        <StackPanel Visibility="{Binding NeedsOptions, Converter={StaticResource BoolToVis}}">
+                                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_FieldOptions]}" FontSize="11" Opacity="0.7" />
+                                            <TextBox Text="{Binding OptionsText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" FontSize="12" Padding="4" Margin="0,2,0,6" />
+                                        </StackPanel>
+
+                                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_FieldCorrectAnswers]}" FontSize="11" Opacity="0.7" />
+                                        <TextBox Text="{Binding CorrectAnswersText, UpdateSourceTrigger=PropertyChanged}" FontSize="12" Padding="4" Margin="0,2,0,6" />
+
+                                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_FieldExplanation]}" FontSize="11" Opacity="0.7" />
+                                        <TextBox Text="{Binding Explanation, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" FontSize="12" Padding="4" Margin="0,2,0,6" />
+
+                                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_FieldHelpHint]}" FontSize="11" Opacity="0.7" />
+                                        <TextBox Text="{Binding HelpHint, UpdateSourceTrigger=PropertyChanged}" FontSize="12" Padding="4" Margin="0,2,0,6" />
+
+                                        <TextBlock Text="{Binding ValidationError}" Foreground="{StaticResource ErrorBrush}"
+                                                   FontSize="12" TextWrapping="Wrap" Margin="0,2,0,4"
+                                                   Visibility="{Binding ValidationError, Converter={StaticResource EmptyStringToVis}}" />
+
                                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_SourceExcerpt]}"
-                                                   FontSize="11" FontWeight="Bold" Opacity="0.7" Margin="0,8,0,0" />
+                                                   FontSize="11" FontWeight="Bold" Opacity="0.7" Margin="0,6,0,0" />
                                         <TextBlock Text="{Binding SourceExcerpt}" TextWrapping="Wrap" FontSize="11" Opacity="0.7" FontStyle="Italic" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Top">

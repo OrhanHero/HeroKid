@@ -134,7 +134,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string importErrorMessage = string.Empty;
 
-    public ObservableCollection<ExtractedQuestionDraft> ImportedDrafts { get; } = new();
+    public ObservableCollection<EditableDraftViewModel> ImportedDrafts { get; } = new();
 
     public bool HasNoImportedDrafts => ImportedDrafts.Count == 0;
 
@@ -347,7 +347,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             ImportedDrafts.Clear();
             foreach (var draft in drafts)
             {
-                ImportedDrafts.Add(draft);
+                ImportedDrafts.Add(new EditableDraftViewModel(draft));
             }
 
             OnPropertyChanged(nameof(HasNoImportedDrafts));
@@ -367,23 +367,18 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
     }
 
-    /// <summary>Übernimmt einen geprüften Vorschlag als echte eigene Aufgabe.</summary>
+    /// <summary>Übernimmt einen geprüften (und ggf. inline korrigierten) Vorschlag als echte eigene
+    /// Aufgabe. Bei Validierungsfehlern bleibt die Karte mit Fehlermeldung stehen.</summary>
     [RelayCommand]
-    private async Task AcceptImportedDraftAsync(ExtractedQuestionDraft draft)
+    private async Task AcceptImportedDraftAsync(EditableDraftViewModel draft)
     {
-        await _customQuestionRepo.AddAsync(new QuizQuestion
+        var question = draft.TryBuildQuestion(ImportSubject, ImportGrade);
+        if (question is null)
         {
-            Id = Guid.NewGuid().ToString("N"),
-            Subject = draft.SuggestedSubject ?? ImportSubject,
-            GradeLevel = draft.SuggestedGradeLevel ?? ImportGrade,
-            Topic = string.IsNullOrWhiteSpace(draft.Topic) ? "Import (KI)" : draft.Topic,
-            Type = draft.Type,
-            Prompt = draft.Prompt,
-            Options = draft.Options,
-            CorrectAnswers = draft.CorrectAnswers,
-            Explanation = string.IsNullOrWhiteSpace(draft.Explanation) ? "-" : draft.Explanation,
-            HelpHint = draft.HelpHint
-        });
+            return;
+        }
+
+        await _customQuestionRepo.AddAsync(question);
 
         ImportedDrafts.Remove(draft);
         OnPropertyChanged(nameof(HasNoImportedDrafts));
@@ -392,7 +387,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     /// <summary>Verwirft einen Vorschlag, ohne ihn zu speichern.</summary>
     [RelayCommand]
-    private void DiscardImportedDraft(ExtractedQuestionDraft draft)
+    private void DiscardImportedDraft(EditableDraftViewModel draft)
     {
         ImportedDrafts.Remove(draft);
         OnPropertyChanged(nameof(HasNoImportedDrafts));

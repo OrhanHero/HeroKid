@@ -169,6 +169,18 @@ public static class Translations
             ["Parent_Import_Accept"] = L("Übernehmen", "Kabul et"),
             ["Parent_Import_Discard"] = L("Verwerfen", "Reddet"),
             ["Parent_Import_SourceExcerpt"] = L("Quelle im Dokument:", "Belgedeki kaynak:"),
+            ["Parent_Import_FieldTopic"] = L("Thema:", "Konu:"),
+            ["Parent_Import_FieldPrompt"] = L("Frage/Aufgabenstellung:", "Soru/görev:"),
+            ["Parent_Import_FieldOptions"] = L("Antwortoptionen (mit Komma getrennt):", "Cevap seçenekleri (virgülle ayrılmış):"),
+            ["Parent_Import_FieldCorrectAnswers"] = L("Richtige Antwort(en) (mit Komma getrennt):", "Doğru cevap(lar) (virgülle ayrılmış):"),
+            ["Parent_Import_FieldExplanation"] = L("Erklärung:", "Açıklama:"),
+            ["Parent_Import_FieldHelpHint"] = L("Tipp (optional):", "İpucu (isteğe bağlı):"),
+            ["Parent_Import_ErrorPromptMissing"] = L("Bitte eine Frage/Aufgabenstellung eingeben.", "Lütfen bir soru/görev gir."),
+            ["Parent_Import_ErrorAnswerMissing"] = L("Bitte mindestens eine richtige Antwort eingeben.", "Lütfen en az bir doğru cevap gir."),
+            ["Parent_Import_ErrorOptionsMissing"] = L("Bitte mindestens zwei Antwortoptionen eingeben (mit Komma getrennt).", "Lütfen en az iki cevap seçeneği gir (virgülle ayrılmış)."),
+            ["Parent_Import_ErrorAnswerNotInOptions"] = L(
+                "Die richtige Antwort muss wörtlich eine der Antwortoptionen sein.",
+                "Doğru cevap, cevap seçeneklerinden biriyle birebir aynı olmalı."),
 
             ["Steps_Reading"] = L("Lesen", "Okuma"),
             ["Steps_News"] = L("News", "Haberler"),

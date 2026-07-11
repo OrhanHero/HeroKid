@@ -184,9 +184,11 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
   er via `CustomQuestionRepository.AddAsync` gespeichert wird. Keine automatische Übernahme ohne
   menschliche Kontrolle. Der manuelle Editor (siehe "Eltern-Features") funktioniert unabhängig davon
   weiterhin normal.
-  - **Noch nicht umgesetzt / nice-to-have**: Inline-Bearbeitung einzelner Felder eines Vorschlags vor
-    dem Übernehmen (aktuell nur ganz übernehmen oder ganz verwerfen - Korrekturen sind über den
-    bestehenden manuellen "Eigene Aufgaben"-Editor möglich).
+  - **Inline-Editing**: alle Felder eines Vorschlags (Thema, Frage, Optionen, richtige Antworten,
+    Erklärung, Tipp) sind direkt in der Vorschlagskarte korrigierbar, bevor übernommen wird -
+    "Übernehmen" validiert (Frage/Antwort vorhanden, bei Auswahlfragen mindestens 2 Optionen und die
+    richtige Antwort wörtlich darunter) und zeigt Fehler direkt an der Karte. Die Belegstelle aus dem
+    Dokument bleibt bewusst nicht editierbar - sie ist die Prüf-Referenz, kein Inhalt.
 - **KI-Lernchat für Kinder** (`src/LernTor.App/Controls/QuestionCard.xaml`, "🤖 KI fragen"-Button):
   Kinder können zu jeder Aufgabe - in News, Übungen und im Abschlussquiz gleichermaßen, da alle drei
   dieselbe `QuestionCard` verwenden - dem KI-Assistenten Rückfragen stellen, so wie sie einen
