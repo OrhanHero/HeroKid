@@ -43,6 +43,9 @@ public static class Translations
                 "Weiter geht's, sobald der Timer abgelaufen ist.",
                 "Sayaç bitince devam edebilirsin."),
             ["Reading_Continue"] = L("Weiter ➜", "Devam ➜"),
+            ["Reading_TabAll"] = L("Alle Sprachen", "Tüm diller"),
+            ["Reading_ReadAloud"] = L("🔊 Vorlesen lassen", "🔊 Sesli oku"),
+            ["Reading_StopReading"] = L("⏹ Stopp", "⏹ Durdur"),
 
             ["Stage_News"] = L("Nachrichten", "Haberler"),
             ["Stage_Mathematik"] = L("Mathematik", "Matematik"),

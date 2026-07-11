@@ -29,10 +29,15 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
 2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Stück aus einem festen Pool von
    60 Texten (siehe `LernTor.Core/Services/ReadingContentProvider.cs`), das **gleichzeitig auf
    Deutsch, Türkisch und Englisch nebeneinander** angezeigt wird, damit dasselbe Stück in allen drei
-   Sprachen gelesen werden kann. Soll **laut vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter"
-   ist erst danach nutzbar - es gibt bewusst keine Überspringen-Funktion. Ob tatsächlich (laut)
-   gelesen wurde, kann technisch nicht geprüft werden – das ist eine bekannte, akzeptierte Grenze
-   dieser Funktion. Der Pool besteht aus zwei Hälften:
+   Sprachen gelesen werden kann. Über Sprach-Tabs lässt sich alternativ eine einzelne Sprache größer
+   und mit mehr Zeilenabstand anzeigen; ein **Vorlesen-Button** liest den Text der gewählten Sprache
+   über die Windows-eigene Sprachausgabe vor (`System.Speech`, komplett offline - eine türkische
+   Stimme ist auf Windows oft nicht vorinstalliert und muss ggf. über Einstellungen → Zeit und
+   Sprache nachinstalliert werden; ohne passende Stimme liest die Standardstimme). Soll **laut
+   vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst danach nutzbar - es gibt bewusst
+   keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde, kann technisch nicht geprüft
+   werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion. Der Pool besteht aus zwei
+   Hälften:
    - **30 literarische/Allgemeinwissen-Stücke**: gemeinfreie Gedichte/Texte (Goethe, Heine, Yunus
      Emre, Schiller, Rilke, Robert Frost, William Blake, Lewis Carroll, u.a.) sowie kurze
      "kurz erklärt"-Sachtexte (Berlin, Sonnensystem, Menschenrechte, EU, ...). Fremdsprachige

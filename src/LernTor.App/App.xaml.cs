@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
+using LernTor.App.Services;
 using LernTor.App.ViewModels;
 using LernTor.App.Views;
 using LernTor.ContentGen;
@@ -135,6 +136,10 @@ public partial class App : Application
 
                 // KI-Lernchat für Kinder (siehe README).
                 services.AddSingleton<IHomeworkHelpChatService, LocalLlmHomeworkHelpChatService>();
+
+                // Vorlesefunktion im Lesen-Abschnitt (Windows-TTS, offline). Singleton, damit die
+                // SAPI-Sprachausgabe nur einmal initialisiert wird; Host-Dispose räumt sie beim Beenden ab.
+                services.AddSingleton<TextToSpeechService>();
 
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();

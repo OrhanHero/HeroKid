@@ -10,7 +10,67 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_Title]}"
                            Style="{StaticResource HeadlineText}" FontSize="34" TextAlignment="Center" Margin="0,0,0,8" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_Instruction]}"
-                           Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,28" />
+                           Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,20" />
+
+                <!-- Sprach-Tabs + Vorlesen: "Alle" = die bewusst beibehaltene Drei-Spalten-Ansicht,
+                     einzelne Sprachen größer/luftiger für besseres (Vor-)Lesen. -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_TabAll]}"
+                            Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="All">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="All" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="Deutsch" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="De">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="De" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="Türkçe" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="Tr">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="Tr" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="English" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="En">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="En" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+
+                    <Rectangle Width="1" Fill="{StaticResource TextSecondaryBrush}" Opacity="0.25" Margin="12,4" />
+
+                    <!-- Vorlesen (Windows-TTS, offline): liest die gewählte Sprache, im "Alle"-Modus Deutsch -->
+                    <Button Style="{StaticResource TabPillButton}" Command="{Binding ToggleReadAloudCommand}">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_ReadAloud], Mode=OneWay}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSpeaking}" Value="True">
+                                            <Setter Property="Text" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Reading_StopReading], Mode=OneWay}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Button>
+                </StackPanel>
 
                 <Border Style="{StaticResource CardBorder}">
                     <StackPanel>
@@ -20,7 +80,7 @@
                                    TextAlignment="Center" Margin="0,0,0,20" />
 
                         <!-- Drei Sprachfenster nebeneinander: dieselbe Übertragung auf Deutsch/Türkisch/Englisch -->
-                        <Grid>
+                        <Grid Visibility="{Binding IsAllTab, Converter={StaticResource BoolToVis}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -60,6 +120,12 @@
                                            TextWrapping="Wrap" LineHeight="28" />
                             </StackPanel>
                         </Grid>
+
+                        <!-- Einzelsprache: größere Schrift + mehr Zeilenabstand für angenehmes (Vor-)Lesen -->
+                        <TextBlock Text="{Binding SingleTabText}" Style="{StaticResource BodyText}"
+                                   FontSize="22" LineHeight="38" TextWrapping="Wrap"
+                                   MaxWidth="820" HorizontalAlignment="Center"
+                                   Visibility="{Binding IsSingleTab, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </Border>
 

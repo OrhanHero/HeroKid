@@ -24,6 +24,10 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <!-- Vorlesefunktion (TTS) im Lesen-Abschnitt: Windows-eigene Sprachausgabe, komplett offline -
+         passt zum Kein-Cloud-Prinzip der App. Version gegen die echte nuget.org-Versionshistorie
+         geprüft (8.0.0 ist die stabile net8.0-Ausgabe). -->
+    <PackageReference Include="System.Speech" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

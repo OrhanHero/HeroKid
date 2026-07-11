@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LernTor.App.Localization;
+using LernTor.App.Services;
 using LernTor.ContentGen;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
@@ -31,6 +32,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly QuizComposer _quizComposer;
     private readonly KioskLockService _kioskLock;
     private readonly IHomeworkHelpChatService _homeworkChat;
+    private readonly TextToSpeechService _tts;
     private readonly Random _random = new();
 
     private readonly List<QuizQuestion> _collectedNewsQuestions = new();
@@ -62,7 +64,8 @@ public sealed partial class MainViewModel : ObservableObject
         RssNewsService newsService,
         QuizComposer quizComposer,
         KioskLockService kioskLock,
-        IHomeworkHelpChatService homeworkChat)
+        IHomeworkHelpChatService homeworkChat,
+        TextToSpeechService tts)
     {
         _gate = gate;
         _scoring = scoring;
@@ -75,6 +78,7 @@ public sealed partial class MainViewModel : ObservableObject
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
         _homeworkChat = homeworkChat;
+        _tts = tts;
 
         // Zeigt Datum/Uhrzeit im Kiosk-Fenster an - nutzt die lokale PC-Systemuhr (DateTime.Now),
         // keine Netzwerkzeit.
@@ -157,7 +161,7 @@ public sealed partial class MainViewModel : ObservableObject
     private ReadingViewModel BuildReadingViewModel()
     {
         var piece = ReadingContentProvider.GetForDate(DateOnly.FromDateTime(DateTime.Now));
-        return new ReadingViewModel(piece, OnReadingCompleted);
+        return new ReadingViewModel(piece, OnReadingCompleted, _tts);
     }
 
     private async void OnReadingCompleted()

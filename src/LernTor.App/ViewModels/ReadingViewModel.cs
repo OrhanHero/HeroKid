@@ -1,6 +1,7 @@
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.App.Services;
 using LernTor.Core.Models;
 
 namespace LernTor.App.ViewModels;
@@ -10,12 +11,22 @@ namespace LernTor.App.ViewModels;
 /// vorgelesen werden soll. Es gibt bewusst KEINE Überspringen-Funktion - stattdessen läuft ein
 /// 5-Minuten-Timer herunter, erst danach wird "Weiter" nutzbar. Eine Prüfung, ob tatsächlich laut
 /// vorgelesen wurde, ist technisch nicht möglich und wird hier auch nicht versucht.
+/// Neben der Drei-Spalten-Ansicht ("Alle") gibt es Sprach-Tabs, die eine einzelne Sprache größer
+/// und mit mehr Zeilenabstand zeigen, plus eine Vorlesen-Funktion (Windows-TTS, offline).
 /// </summary>
 public sealed partial class ReadingViewModel : ObservableObject
 {
     private static readonly TimeSpan MinimumDuration = TimeSpan.FromMinutes(5);
 
+    /// <summary>Tab-Kennungen - als Konstanten statt Enum, da sie direkt aus XAML als
+    /// CommandParameter-Strings kommen und der EqualsToSelectedTag-Converter Strings vergleicht.</summary>
+    public const string TabAll = "All";
+    public const string TabDe = "De";
+    public const string TabTr = "Tr";
+    public const string TabEn = "En";
+
     private readonly Action _onCompleted;
+    private readonly TextToSpeechService _tts;
     private readonly DispatcherTimer _timer;
 
     public ReadingPiece Piece { get; }
@@ -27,17 +38,42 @@ public sealed partial class ReadingViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ContinueCommand))]
     private bool canContinue;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsAllTab))]
+    [NotifyPropertyChangedFor(nameof(IsSingleTab))]
+    [NotifyPropertyChangedFor(nameof(SingleTabText))]
+    private string selectedTab = TabAll;
+
+    [ObservableProperty]
+    private bool isSpeaking;
+
+    public bool IsAllTab => SelectedTab == TabAll;
+    public bool IsSingleTab => !IsAllTab;
+
+    /// <summary>Der Text der aktuell gewählten Einzelsprache (leer im "Alle"-Modus).</summary>
+    public string SingleTabText => SelectedTab switch
+    {
+        TabDe => Piece.TextDe,
+        TabTr => Piece.TextTr,
+        TabEn => Piece.TextEn,
+        _ => string.Empty
+    };
+
     public string RemainingTimeDisplay => $"{(int)RemainingTime.TotalMinutes}:{RemainingTime.Seconds:00}";
 
-    public ReadingViewModel(ReadingPiece piece, Action onCompleted)
+    public ReadingViewModel(ReadingPiece piece, Action onCompleted, TextToSpeechService tts)
     {
         Piece = piece;
         _onCompleted = onCompleted;
+        _tts = tts;
+        _tts.SpeakingChanged += OnSpeakingChanged;
 
         _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += (_, _) => Tick();
         _timer.Start();
     }
+
+    private void OnSpeakingChanged(bool speaking) => IsSpeaking = speaking;
 
     partial void OnRemainingTimeChanged(TimeSpan value) => OnPropertyChanged(nameof(RemainingTimeDisplay));
 
@@ -53,10 +89,43 @@ public sealed partial class ReadingViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void SelectTab(string tab)
+    {
+        // Beim Sprachwechsel eine laufende Vorlesung stoppen - sonst liest die alte Sprache weiter,
+        // während schon der neue Text angezeigt wird.
+        _tts.Stop();
+        SelectedTab = tab;
+    }
+
+    /// <summary>Liest den Text der gewählten Sprache vor (im "Alle"-Modus: Deutsch); zweiter Klick stoppt.</summary>
+    [RelayCommand]
+    private void ToggleReadAloud()
+    {
+        if (IsSpeaking)
+        {
+            _tts.Stop();
+            return;
+        }
+
+        var (text, culture) = SelectedTab switch
+        {
+            TabTr => (Piece.TextTr, "tr-TR"),
+            TabEn => (Piece.TextEn, "en-US"),
+            _ => (Piece.TextDe, "de-DE")
+        };
+
+        _tts.Speak($"{Piece.Title}. {text}", culture);
+    }
+
     [RelayCommand(CanExecute = nameof(CanContinue))]
     private void Continue()
     {
         _timer.Stop();
+        // Handler abhängen: der TTS-Dienst ist ein App-Singleton, dieses ViewModel aber pro Lerntag
+        // kurzlebig - ohne Abmelden würde jede Session einen weiteren toten Handler ansammeln.
+        _tts.Stop();
+        _tts.SpeakingChanged -= OnSpeakingChanged;
         _onCompleted();
     }
 }
