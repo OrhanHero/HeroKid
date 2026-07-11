@@ -28,6 +28,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ActivityLogRepository _activityLogRepo;
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
+    private readonly SavedArticleRepository _savedArticleRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
     private readonly QuizComposer _quizComposer;
@@ -67,6 +68,7 @@ public sealed partial class MainViewModel : ObservableObject
         ActivityLogRepository activityLogRepo,
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
+        SavedArticleRepository savedArticleRepo,
         RssNewsService newsService,
         WeatherService weatherService,
         QuizComposer quizComposer,
@@ -82,6 +84,7 @@ public sealed partial class MainViewModel : ObservableObject
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
         _customQuestionRepo = customQuestionRepo;
+        _savedArticleRepo = savedArticleRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
@@ -242,7 +245,9 @@ public sealed partial class MainViewModel : ObservableObject
         var articles = await articlesTask;
         var weather = await weatherTask;
 
-        return new NewsViewModel(articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted, _homeworkChat, weather);
+        return new NewsViewModel(
+            articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted,
+            _homeworkChat, weather, _savedArticleRepo, CurrentProfile?.Id);
     }
 
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)

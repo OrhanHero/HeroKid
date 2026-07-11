@@ -120,6 +120,7 @@ public partial class App : Application
                 services.AddSingleton<StudentProfileRepository>();
                 services.AddSingleton<DatabaseMaintenanceRepository>();
                 services.AddSingleton<CustomQuestionRepository>();
+                services.AddSingleton<SavedArticleRepository>();
 
                 services.AddSingleton<KioskLockService>();
 

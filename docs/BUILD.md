@@ -75,7 +75,8 @@ NotebookLM-/Anbieter-Auswahl-Felder - inzwischen wieder entfernt, LernTor ist ko
 Cloud-Anbindung -, `LocalLlmModelPath`, `AvatarEmoji` an den Profilen für die neue
 Profil-Dashboard-Optik, `LocalLlmModelKey` für die KI-Modell-Auswahl im Eltern-Bereich, zuletzt
 `TotalStars` an den Profilen und `EarnedStarsToday` am Tages-Fortschritt für das
-Belohnungs-Sterne-System); da die App `EnsureCreated` statt echter EF-Core-Migrationen nutzt,
+Belohnungs-Sterne-System, zuletzt die neue Tabelle `SavedArticles` für gemerkte News-Artikel
+(🔖 Lesezeichen/Offline-Lesen)); da die App `EnsureCreated` statt echter EF-Core-Migrationen nutzt,
 wird eine bereits vorhandene Datenbank NICHT automatisch aktualisiert. Bitte vor dem nächsten Start
 diese Datei löschen (Fortschritt geht dabei verloren, das ist in dieser Entwicklungsphase unkritisch)
 - die App legt beim nächsten Start automatisch eine neue Datenbank inkl. der beiden Beispielprofile an.

@@ -5,6 +5,8 @@ using LernTor.App.Localization;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Data.Entities;
+using LernTor.Data.Repositories;
 using LernTor.News;
 
 namespace LernTor.App.ViewModels;
@@ -55,7 +57,11 @@ public sealed partial class NewsViewModel : ObservableObject
     /// Einträge soll gar nicht erst erscheinen).</summary>
     public bool HasExplainedTerms => CurrentArticle?.ExplainedTerms.Count > 0;
 
-    partial void OnCurrentArticleChanged(NewsArticle? value) => OnPropertyChanged(nameof(HasExplainedTerms));
+    partial void OnCurrentArticleChanged(NewsArticle? value)
+    {
+        OnPropertyChanged(nameof(HasExplainedTerms));
+        OnPropertyChanged(nameof(IsCurrentArticleSaved));
+    }
 
     // --- Wetter-Widget (Berlin, Open-Meteo; null = Abruf fehlgeschlagen → Widget ausgeblendet) ---
 
@@ -92,9 +98,13 @@ public sealed partial class NewsViewModel : ObservableObject
         Action<NewsArticle, QuestionOutcome, QuizQuestion> onArticleAnswered,
         Action<IReadOnlyList<QuizQuestion>> onSectionCompleted,
         IHomeworkHelpChatService homeworkChat,
-        KidWeatherReport? weather = null)
+        KidWeatherReport? weather = null,
+        SavedArticleRepository? savedArticleRepo = null,
+        string? profileId = null)
     {
         Weather = weather;
+        _savedArticleRepo = savedArticleRepo;
+        _profileId = profileId;
         _articles = articles;
         _onArticleAnswered = onArticleAnswered;
         _onSectionCompleted = onSectionCompleted;
@@ -108,7 +118,90 @@ public sealed partial class NewsViewModel : ObservableObject
         }
 
         LoadCurrentArticle();
+        _ = LoadSavedArticlesAsync();
     }
+
+    // --- 🔖 Gemerkte Artikel (pro Profil, offline lesbar - siehe SavedArticleEntity) ---
+
+    private readonly SavedArticleRepository? _savedArticleRepo;
+    private readonly string? _profileId;
+    private readonly HashSet<string> _savedArticleIds = new();
+
+    public ObservableCollection<SavedArticleEntity> SavedArticles { get; } = new();
+
+    [ObservableProperty]
+    private bool showSavedArticles;
+
+    public bool HasSavedArticles => SavedArticles.Count > 0;
+
+    public bool IsCurrentArticleSaved =>
+        CurrentArticle is not null && _savedArticleIds.Contains(CurrentArticle.Id);
+
+    /// <summary>Anzeige-Zähler für den Panel-Umschalter ("🔖 Gemerkte Artikel (n)").</summary>
+    public string SavedArticlesToggleLabel =>
+        $"{LocalizationService.Instance["News_SavedArticles"]} ({SavedArticles.Count})";
+
+    private async Task LoadSavedArticlesAsync()
+    {
+        if (_savedArticleRepo is null || _profileId is null)
+        {
+            return;
+        }
+
+        var saved = await _savedArticleRepo.GetForProfileAsync(_profileId);
+        SavedArticles.Clear();
+        _savedArticleIds.Clear();
+        foreach (var entity in saved)
+        {
+            SavedArticles.Add(entity);
+            _savedArticleIds.Add(entity.ArticleId);
+        }
+
+        NotifySavedStateChanged();
+    }
+
+    private void NotifySavedStateChanged()
+    {
+        OnPropertyChanged(nameof(HasSavedArticles));
+        OnPropertyChanged(nameof(IsCurrentArticleSaved));
+        OnPropertyChanged(nameof(SavedArticlesToggleLabel));
+    }
+
+    [RelayCommand]
+    private async Task ToggleSaveCurrentArticleAsync()
+    {
+        if (_savedArticleRepo is null || _profileId is null || CurrentArticle is null)
+        {
+            return;
+        }
+
+        var nowSaved = await _savedArticleRepo.ToggleAsync(_profileId, CurrentArticle);
+        if (nowSaved)
+        {
+            _savedArticleIds.Add(CurrentArticle.Id);
+        }
+        else
+        {
+            _savedArticleIds.Remove(CurrentArticle.Id);
+        }
+
+        await LoadSavedArticlesAsync();
+    }
+
+    [RelayCommand]
+    private async Task RemoveSavedArticleAsync(SavedArticleEntity entity)
+    {
+        if (_savedArticleRepo is null)
+        {
+            return;
+        }
+
+        await _savedArticleRepo.RemoveAsync(entity.Id);
+        await LoadSavedArticlesAsync();
+    }
+
+    [RelayCommand]
+    private void ToggleSavedArticlesPanel() => ShowSavedArticles = !ShowSavedArticles;
 
     /// <summary>Baut die Marker-Leiste neu auf. Erledigt = Fragen vollständig beantwortet (auch aus
     /// einer früheren Session heute), aktuell = gerade angezeigter Artikel.</summary>
