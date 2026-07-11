@@ -160,13 +160,26 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _teacherImportService = teacherImportService;
     }
 
+    /// <summary>Unterdrückt das Sofort-Speichern, während InitializeAsync die Werte aus der DB in
+    /// die Properties lädt - sonst würde das Laden selbst sofort wieder (halb befüllt) speichern.</summary>
+    private bool _isLoadingSettings;
+
     public async Task InitializeAsync()
     {
         _settings = await _settingsRepo.LoadAsync();
         IsFirstTimeSetup = string.IsNullOrEmpty(_settings.AdminPasswordHash);
 
-        LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
-        SelectedLlmModel = LocalLlmModelCatalog.Resolve(_settings.LocalLlmModelKey);
+        _isLoadingSettings = true;
+        try
+        {
+            LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
+            SelectedLlmModel = LocalLlmModelCatalog.Resolve(_settings.LocalLlmModelKey);
+        }
+        finally
+        {
+            _isLoadingSettings = false;
+        }
+
         ApplyLocalLlmOptions();
     }
 
@@ -174,6 +187,28 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         _localLlmOptions.ModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
         _localLlmOptions.ModelKey = SelectedLlmModel.Key;
+    }
+
+    /// <summary>
+    /// Modell-Auswahl (Dropdown wie eigene Datei) wird SOFORT gespeichert und angewendet, nicht erst
+    /// beim "Speichern"-Button: wer das Fenster über "Schließen" verließ, verlor die Auswahl vorher
+    /// kommentarlos - genau so als Bug gemeldet.
+    /// </summary>
+    partial void OnSelectedLlmModelChanged(LocalLlmModelInfo value) => PersistLlmSelection();
+
+    partial void OnLocalLlmModelPathChanged(string value) => PersistLlmSelection();
+
+    private void PersistLlmSelection()
+    {
+        if (_isLoadingSettings)
+        {
+            return;
+        }
+
+        _settings.LocalLlmModelPath = string.IsNullOrWhiteSpace(LocalLlmModelPath) ? null : LocalLlmModelPath;
+        _settings.LocalLlmModelKey = SelectedLlmModel.Key;
+        ApplyLocalLlmOptions();
+        _ = _settingsRepo.SaveAsync(_settings);
     }
 
     [RelayCommand]
@@ -366,6 +401,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         await _settingsRepo.SaveAsync(_settings);
         RequestClose?.Invoke();
     }
+
+    /// <summary>Entfernt die eigene Modelldatei wieder - danach gilt erneut das Katalog-Modell.</summary>
+    [RelayCommand]
+    private void ClearLocalLlmModelFile() => LocalLlmModelPath = string.Empty;
 
     /// <summary>Öffnet einen Datei-Dialog zur Auswahl einer lokalen GGUF-Modelldatei (LLamaSharp).</summary>
     [RelayCommand]

@@ -26,10 +26,12 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
 ## Ablauf für das Kind
 
 1. **Profil wählen**
-2. **Lesen** (Pflicht, nicht überspringbar) – täglich wechselndes Stück aus einem festen Pool von
-   60 Texten (siehe `LernTor.Core/Services/ReadingContentProvider.cs`), das **gleichzeitig auf
-   Deutsch, Türkisch und Englisch nebeneinander** angezeigt wird, damit dasselbe Stück in allen drei
-   Sprachen gelesen werden kann. Über Sprach-Tabs lässt sich alternativ eine einzelne Sprache größer
+2. **Lesen** (Pflicht, nicht überspringbar) – täglich **zwei** wechselnde Stücke aus einem festen Pool
+   von 60 Texten (siehe `LernTor.Core/Services/ReadingContentProvider.cs`; die Tagespaarung kombiniert
+   je einen literarischen/Allgemeinwissen-Text mit einer Pop-Kultur-Geschichte - zwei ganze Texte statt
+   künstlich verlängerter Einzeltexte, denn den echten, gemeinfreien Gedichten eine zweite Strophe
+   anzudichten würde die Werke verfälschen). Beide werden **gleichzeitig auf Deutsch, Türkisch und
+   Englisch nebeneinander** angezeigt, damit dasselbe Stück in allen drei Sprachen gelesen werden kann. Über Sprach-Tabs lässt sich alternativ eine einzelne Sprache größer
    und mit mehr Zeilenabstand anzeigen; ein **Vorlesen-Button** liest den Text der gewählten Sprache
    über die Windows-eigene Sprachausgabe vor (`System.Speech`, komplett offline - eine türkische
    Stimme ist auf Windows oft nicht vorinstalliert und muss ggf. über Einstellungen → Zeit und
@@ -166,12 +168,20 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
       Qwen2.5-14B (~9 GB Q4 → auf Familien-CPUs nur 2-4 Token/s, zu langsam für den Kinder-Chat).
     - **Alternative: Qwen2.5-3B-Instruct** (Q4_K_M, ~2 GB) als "Leicht & schnell"-Option für ältere
       PCs, auf denen das 7B zu langsam antwortet.
-    **Die Hugging-Face-Download-URLs sind aus der Entwicklungsumgebung heraus nicht verifizierbar**
-    (huggingface.co ist von dort blockiert, 403 per curl bestätigt - dieselbe Einschränkung wie zuvor bei
-    docs.cloud.google.com) und müssen beim ersten echten Test auf einem Windows-Rechner mit Internetzugang
-    überprüft werden; schlägt der Download fehl, zeigt die App eine klare Fehlermeldung (inkl. Modellname
-    und Größe) und Eltern können ein anderes Modell wählen oder manuell eine `.gguf`-Datei über den
-    Datei-Dialog hinterlegen (eigene Datei hat Vorrang vor dem Katalog).
+    - **Download-Robustheit** (nach real fehlgeschlagenem Erst-Download beim Nutzer korrigiert):
+      der Download nutzt einen eigenen HttpClient ohne Timeout - der geteilte App-Client hätte mit
+      seinem 100-Sekunden-Standard-Timeout jeden GB-Download über Heim-Internet mitten im Stream
+      abgebrochen (das war die eigentliche Fehlerursache). Als Quellen dienen die
+      bartowski/*-GGUF-Repos (verlässlich Einzeldateien; die offiziellen Qwen/*-GGUF-Repos teilen
+      größere Modelle in `-00001-of-00002`-Teildateien, dort existiert die 7B-Einzeldatei-URL nicht),
+      mit Spiegel-Liste pro Modell - schlägt eine Quelle fehl, wird die nächste probiert. Modell- und
+      Dateiauswahl im Eltern-Bereich werden sofort gespeichert (nicht erst über den
+      "Speichern"-Button - das war ein gemeldeter Bug).
+    **Die Hugging-Face-URLs bleiben aus der Entwicklungsumgebung heraus nicht verifizierbar**
+    (huggingface.co dort blockiert); schlägt der Download trotz Spiegel-Liste fehl, zeigt die App eine
+    klare Fehlermeldung (inkl. Modellname, Größe und technischem Grund) und Eltern können ein anderes
+    Modell wählen oder manuell eine `.gguf`-Datei über den Datei-Dialog hinterlegen (eigene Datei hat
+    Vorrang vor dem Katalog, "✕" entfernt sie wieder).
   - **API-Verifizierung**: `LLamaSharp` 0.27.0 wurde real von nuget.org heruntergeladen und die
     kompilierte DLL per CLR-Metadaten-Analyse geprüft (nicht nur aus Dokumentation/Training geraten):
     `ModelParams(string modelPath)`-Konstruktor mit settable `ContextSize`/`GpuLayerCount`-Properties,

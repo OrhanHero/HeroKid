@@ -247,6 +247,10 @@
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_PickModelFile]}"
                             Style="{StaticResource RoundedButton}" Margin="0,0,12,0" Command="{Binding PickLocalLlmModelFileCommand}" />
+                    <Button Content="✕" Style="{StaticResource RoundedButton}" Background="{StaticResource TextSecondaryBrush}"
+                            Padding="12,8" Margin="0,0,12,0" Command="{Binding ClearLocalLlmModelFileCommand}"
+                            Visibility="{Binding LocalLlmModelPath, Converter={StaticResource EmptyStringToVis}}"
+                            ToolTip="Eigene Modelldatei entfernen" />
                     <TextBlock Text="{Binding LocalLlmModelPath}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="400">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">

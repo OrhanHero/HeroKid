@@ -1215,4 +1215,17 @@ public static class ReadingContentProvider
         var index = date.DayOfYear % Pool.Count;
         return Pool[index];
     }
+
+    /// <summary>
+    /// Zweiter Lesetext des Tages: um die halbe Pool-Länge versetzt, sodass bei der Pool-Anordnung
+    /// (erste Hälfte literarisch/Allgemeinwissen, zweite Hälfte Pop-Kultur) täglich ein Text aus
+    /// jeder Hälfte zusammenkommt und nie zweimal derselbe. Zwei ganze Texte statt künstlich
+    /// verlängerter Einzeltexte: die literarischen Stücke sind echte, gemeinfreie Gedichte - denen
+    /// eine zweite Strophe anzudichten würde die Werke verfälschen.
+    /// </summary>
+    public static ReadingPiece GetSecondForDate(DateOnly date)
+    {
+        var index = (date.DayOfYear + Pool.Count / 2) % Pool.Count;
+        return Pool[index];
+    }
 }

@@ -204,8 +204,10 @@ public sealed partial class MainViewModel : ObservableObject
 
     private ReadingViewModel BuildReadingViewModel()
     {
-        var piece = ReadingContentProvider.GetForDate(DateOnly.FromDateTime(DateTime.Now));
-        return new ReadingViewModel(piece, OnReadingCompleted, _tts);
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var piece = ReadingContentProvider.GetForDate(today);
+        var secondPiece = ReadingContentProvider.GetSecondForDate(today);
+        return new ReadingViewModel(piece, secondPiece, OnReadingCompleted, _tts);
     }
 
     /// <summary>

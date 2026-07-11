@@ -1,11 +1,12 @@
 namespace LernTor.ContentGen.Llm;
 
-/// <summary>Ein im Eltern-Bereich wählbares, automatisch herunterladbares lokales Modell.</summary>
+/// <summary>Ein im Eltern-Bereich wählbares, automatisch herunterladbares lokales Modell.
+/// <paramref name="DownloadUrls"/> wird der Reihe nach probiert (Spiegel-Quellen), bis eine klappt.</summary>
 public sealed record LocalLlmModelInfo(
     string Key,
     string DisplayName,
     string FileName,
-    string DownloadUrl,
+    IReadOnlyList<string> DownloadUrls,
     double ApproxSizeGb);
 
 /// <summary>
@@ -31,19 +32,31 @@ public static class LocalLlmModelCatalog
     /// <summary>Standard: bestes Verhältnis aus Sprach-/Erklärqualität und CPU-Tauglichkeit.</summary>
     public const string DefaultKey = "qwen2.5-7b-q4";
 
+    // Quellen-Reihenfolge: bartowski/*-GGUF zuerst - diese Community-Repos stellen verlässlich
+    // EINZELDATEIEN bereit. Die offiziellen Qwen/*-GGUF-Repos teilen größere Dateien dagegen in
+    // Teil-Dateien auf (qwen2.5-7b-...-00001-of-00002.gguf), dort existiert die Einzeldatei-URL
+    // für 7B vermutlich gar nicht (beim Nutzer real fehlgeschlagen) - sie bleibt nur als
+    // Zweitversuch für den 3B-Fall gelistet.
     public static readonly IReadOnlyList<LocalLlmModelInfo> Models = new[]
     {
         new LocalLlmModelInfo(
             Key: DefaultKey,
             DisplayName: "Standard – Qwen2.5 7B (beste Qualität, ~4,7 GB)",
             FileName: "qwen2.5-7b-instruct-q4_k_m.gguf",
-            DownloadUrl: "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF/resolve/main/qwen2.5-7b-instruct-q4_k_m.gguf",
+            DownloadUrls: new[]
+            {
+                "https://huggingface.co/bartowski/Qwen2.5-7B-Instruct-GGUF/resolve/main/Qwen2.5-7B-Instruct-Q4_K_M.gguf"
+            },
             ApproxSizeGb: 4.7),
         new LocalLlmModelInfo(
             Key: "qwen2.5-3b-q4",
             DisplayName: "Leicht & schnell – Qwen2.5 3B (~2 GB, für ältere PCs)",
             FileName: "qwen2.5-3b-instruct-q4_k_m.gguf",
-            DownloadUrl: "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf",
+            DownloadUrls: new[]
+            {
+                "https://huggingface.co/bartowski/Qwen2.5-3B-Instruct-GGUF/resolve/main/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+                "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf"
+            },
             ApproxSizeGb: 2.0)
     };
 

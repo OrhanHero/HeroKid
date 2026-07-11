@@ -31,6 +31,10 @@ public sealed partial class ReadingViewModel : ObservableObject
 
     public ReadingPiece Piece { get; }
 
+    /// <summary>Zweiter Lesetext des Tages (literarisch + Pop-Kultur kombiniert, siehe
+    /// ReadingContentProvider.GetSecondForDate) - ein Text allein war für 5 Minuten zu wenig Stoff.</summary>
+    public ReadingPiece SecondPiece { get; }
+
     [ObservableProperty]
     private TimeSpan remainingTime = MinimumDuration;
 
@@ -42,6 +46,7 @@ public sealed partial class ReadingViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsAllTab))]
     [NotifyPropertyChangedFor(nameof(IsSingleTab))]
     [NotifyPropertyChangedFor(nameof(SingleTabText))]
+    [NotifyPropertyChangedFor(nameof(SecondSingleTabText))]
     private string selectedTab = TabAll;
 
     [ObservableProperty]
@@ -50,20 +55,26 @@ public sealed partial class ReadingViewModel : ObservableObject
     public bool IsAllTab => SelectedTab == TabAll;
     public bool IsSingleTab => !IsAllTab;
 
-    /// <summary>Der Text der aktuell gewählten Einzelsprache (leer im "Alle"-Modus).</summary>
-    public string SingleTabText => SelectedTab switch
+    /// <summary>Text 1 in der aktuell gewählten Einzelsprache (leer im "Alle"-Modus).</summary>
+    public string SingleTabText => TextForTab(Piece);
+
+    /// <summary>Text 2 in der aktuell gewählten Einzelsprache (leer im "Alle"-Modus).</summary>
+    public string SecondSingleTabText => TextForTab(SecondPiece);
+
+    private string TextForTab(ReadingPiece piece) => SelectedTab switch
     {
-        TabDe => Piece.TextDe,
-        TabTr => Piece.TextTr,
-        TabEn => Piece.TextEn,
+        TabDe => piece.TextDe,
+        TabTr => piece.TextTr,
+        TabEn => piece.TextEn,
         _ => string.Empty
     };
 
     public string RemainingTimeDisplay => $"{(int)RemainingTime.TotalMinutes}:{RemainingTime.Seconds:00}";
 
-    public ReadingViewModel(ReadingPiece piece, Action onCompleted, TextToSpeechService tts)
+    public ReadingViewModel(ReadingPiece piece, ReadingPiece secondPiece, Action onCompleted, TextToSpeechService tts)
     {
         Piece = piece;
+        SecondPiece = secondPiece;
         _onCompleted = onCompleted;
         _tts = tts;
         _tts.SpeakingChanged += OnSpeakingChanged;
@@ -108,14 +119,14 @@ public sealed partial class ReadingViewModel : ObservableObject
             return;
         }
 
-        var (text, culture) = SelectedTab switch
+        var (text, secondText, culture) = SelectedTab switch
         {
-            TabTr => (Piece.TextTr, "tr-TR"),
-            TabEn => (Piece.TextEn, "en-US"),
-            _ => (Piece.TextDe, "de-DE")
+            TabTr => (Piece.TextTr, SecondPiece.TextTr, "tr-TR"),
+            TabEn => (Piece.TextEn, SecondPiece.TextEn, "en-US"),
+            _ => (Piece.TextDe, SecondPiece.TextDe, "de-DE")
         };
 
-        _tts.Speak($"{Piece.Title}. {text}", culture);
+        _tts.Speak($"{Piece.Title}. {text} … {SecondPiece.Title}. {secondText}", culture);
     }
 
     [RelayCommand(CanExecute = nameof(CanContinue))]

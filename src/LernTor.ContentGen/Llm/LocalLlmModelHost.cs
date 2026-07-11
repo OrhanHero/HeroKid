@@ -29,16 +29,30 @@ namespace LernTor.ContentGen.Llm;
 public sealed class LocalLlmModelHost : IDisposable
 {
     private readonly LocalLlmOptions _options;
-    private readonly HttpClient _httpClient;
     private readonly SemaphoreSlim _lock = new(1, 1);
     private LLamaWeights? _weights;
     private ILLamaExecutor? _executor;
     private string? _loadedModelPath;
 
-    public LocalLlmModelHost(LocalLlmOptions options, HttpClient httpClient)
+    /// <summary>
+    /// Eigener HttpClient statt des geteilten App-Clients: dessen Standard-Timeout von 100 Sekunden
+    /// gilt bei HttpClient auch für das Auslesen des Antwort-Streams - ein mehrere GB großer
+    /// Modell-Download bricht damit über normales Heim-Internet garantiert mittendrin ab (genau so
+    /// beim Nutzer passiert). Hier daher unbegrenzt; abbrechbar bleibt der Download über das
+    /// CancellationToken. Ein User-Agent ist gesetzt, weil manche CDNs anonyme Clients ablehnen.
+    /// </summary>
+    private static readonly HttpClient DownloadClient = CreateDownloadClient();
+
+    private static HttpClient CreateDownloadClient()
+    {
+        var client = new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("LernTor/1.0");
+        return client;
+    }
+
+    public LocalLlmModelHost(LocalLlmOptions options)
     {
         _options = options;
-        _httpClient = httpClient;
     }
 
     public async Task<ILLamaExecutor> GetExecutorAsync(CancellationToken cancellationToken)
@@ -99,39 +113,46 @@ public sealed class LocalLlmModelHost : IDisposable
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "LernTor", "models", model.FileName);
 
-    private async Task DownloadModelAsync(LocalLlmModelInfo model, string destinationPath, CancellationToken cancellationToken)
+    private static async Task DownloadModelAsync(LocalLlmModelInfo model, string destinationPath, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
         var tempPath = destinationPath + ".download";
+        Exception? lastError = null;
 
-        try
+        foreach (var url in model.DownloadUrls)
         {
-            using var response = await _httpClient.GetAsync(
-                model.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            await using (var httpStream = await response.Content.ReadAsStreamAsync(cancellationToken))
-            await using (var fileStream = File.Create(tempPath))
+            try
             {
-                await httpStream.CopyToAsync(fileStream, cancellationToken);
-            }
+                using var response = await DownloadClient.GetAsync(
+                    url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                response.EnsureSuccessStatusCode();
 
-            File.Move(tempPath, destinationPath, overwrite: true);
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            if (File.Exists(tempPath))
+                await using (var httpStream = await response.Content.ReadAsStreamAsync(cancellationToken))
+                await using (var fileStream = File.Create(tempPath))
+                {
+                    await httpStream.CopyToAsync(fileStream, cancellationToken);
+                }
+
+                File.Move(tempPath, destinationPath, overwrite: true);
+                return;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                File.Delete(tempPath);
+                lastError = ex;
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+                // Nächste Spiegel-Quelle probieren.
             }
-
-            throw new InvalidOperationException(
-                $"Das KI-Modell \"{model.DisplayName}\" (~{model.ApproxSizeGb:0.#} GB) konnte nicht " +
-                "automatisch heruntergeladen werden (kein Internet beim ersten Gebrauch, zu wenig " +
-                "Speicherplatz, oder die Download-Adresse hat sich geändert). Im Eltern-Bereich unter " +
-                "'Automatisches Einlesen' kann ein anderes Modell gewählt oder manuell eine " +
-                ".gguf-Modelldatei ausgewählt werden.", ex);
         }
+
+        throw new InvalidOperationException(
+            $"Das KI-Modell \"{model.DisplayName}\" (~{model.ApproxSizeGb:0.#} GB) konnte von keiner " +
+            "der hinterlegten Quellen heruntergeladen werden (kein Internet, zu wenig Speicherplatz, " +
+            "oder die Download-Adressen haben sich geändert). Im Eltern-Bereich unter 'Automatisches " +
+            "Einlesen' kann ein anderes Modell gewählt oder manuell eine .gguf-Modelldatei ausgewählt " +
+            $"werden. Technischer Grund des letzten Versuchs: {lastError?.Message}", lastError);
     }
 
     public void Dispose()
