@@ -30,6 +30,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly SavedArticleRepository _savedArticleRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
+    private readonly ArchivedArticleRepository _archiveRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
     private readonly QuizComposer _quizComposer;
@@ -71,6 +72,7 @@ public sealed partial class MainViewModel : ObservableObject
         CustomQuestionRepository customQuestionRepo,
         SavedArticleRepository savedArticleRepo,
         ReviewQuestionRepository reviewRepo,
+        ArchivedArticleRepository archiveRepo,
         RssNewsService newsService,
         WeatherService weatherService,
         QuizComposer quizComposer,
@@ -88,6 +90,7 @@ public sealed partial class MainViewModel : ObservableObject
         _customQuestionRepo = customQuestionRepo;
         _savedArticleRepo = savedArticleRepo;
         _reviewRepo = reviewRepo;
+        _archiveRepo = archiveRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
@@ -247,6 +250,33 @@ public sealed partial class MainViewModel : ObservableObject
         var weatherTask = _weatherService.LoadBerlinWeatherAsync();
         var articles = await articlesTask;
         var weather = await weatherTask;
+
+        // Offline-Rückfall: sind alle Feeds tot, kommt nur das eingebaute Finanzwissen-Stück
+        // zurück (Count <= 1). Dann die Artikel des letzten erfolgreichen Tages aus dem Archiv
+        // laden - alte News sind besser als ein fast leerer Pflicht-News-Teil. Bei Erfolg wird
+        // der heutige Stand umgekehrt archiviert (idempotent, behält ~7 Tage).
+        if (articles.Count <= 1)
+        {
+            var archived = await _archiveRepo.GetLatestArchiveAsync();
+            if (archived.Count > 0)
+            {
+                Core.Logging.AppLog.Warn("News",
+                    $"Keine Feeds erreichbar - Rückfall auf {archived.Count} archivierte Artikel des letzten Tages.");
+                articles = archived;
+            }
+        }
+        else
+        {
+            try
+            {
+                await _archiveRepo.ArchiveTodayAsync(articles);
+            }
+            catch (Exception ex)
+            {
+                // Archivieren ist Komfort - ein Fehler darf den News-Start nicht verhindern.
+                Core.Logging.AppLog.Warn("News", $"Tages-Archivierung fehlgeschlagen - {ex.Message}");
+            }
+        }
 
         return new NewsViewModel(
             articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted,

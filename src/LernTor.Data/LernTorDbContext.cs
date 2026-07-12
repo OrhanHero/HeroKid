@@ -13,6 +13,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<CustomQuestionEntity> CustomQuestions => Set<CustomQuestionEntity>();
     public DbSet<SavedArticleEntity> SavedArticles => Set<SavedArticleEntity>();
     public DbSet<ReviewQuestionEntity> ReviewQuestions => Set<ReviewQuestionEntity>();
+    public DbSet<ArchivedArticleEntity> ArchivedArticles => Set<ArchivedArticleEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -63,6 +64,12 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(r => r.Id);
             e.HasIndex(r => new { r.ProfileId, r.QuestionId });
+        });
+
+        modelBuilder.Entity<ArchivedArticleEntity>(e =>
+        {
+            e.HasKey(a => a.Id);
+            e.HasIndex(a => a.ArchivedDate);
         });
     }
 

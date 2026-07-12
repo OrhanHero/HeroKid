@@ -129,6 +129,7 @@ public partial class App : Application
                 services.AddSingleton<CustomQuestionRepository>();
                 services.AddSingleton<SavedArticleRepository>();
                 services.AddSingleton<ReviewQuestionRepository>();
+                services.AddSingleton<ArchivedArticleRepository>();
 
                 services.AddSingleton<KioskLockService>();
 

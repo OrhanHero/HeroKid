@@ -90,7 +90,11 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    anklicken springt hin). „Weiter" führt zum nächsten noch offenen Artikel; der Abschluss-Button
    erscheint erst, wenn wirklich ALLE Artikel beantwortet sind. **Automatischer Altersfilter**:
    bis einschließlich 9 Jahren (Profil-Alter) werden Artikel mit verstörenden Schlüsselwörtern
-   komplett ausgefiltert statt nur herabgestuft. **Lesezeichen & Offline-Lesen**: der 🔖-Button
+   komplett ausgefiltert statt nur herabgestuft. **Tages-Archiv & Offline-Rückfall**: die
+   aufbereiteten Tagesartikel werden automatisch ~7 Tage archiviert (`ArchivedArticleRepository`,
+   inkl. Verständnisfragen); sind morgens alle Feeds unerreichbar, liest das Kind die Artikel des
+   letzten erfolgreichen Tages statt vor einem fast leeren News-Teil zu stehen (im
+   Fehlerprotokoll vermerkt). **Lesezeichen & Offline-Lesen**: der 🔖-Button
    merkt einen Artikel (pro Profil); der komplette aufbereitete Text landet dabei in der lokalen
    SQLite-Datenbank und ist über „🔖 Gemerkte Artikel" auch ohne Internet wieder lesbar
    (neue Tabelle `SavedArticles` - bestehende `lerntor.db` einmal löschen, siehe
