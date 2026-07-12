@@ -20,14 +20,20 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
                 GecmisZaman,
                 EsAnlamli,
                 ZitAnlamli,
-                DogaVeCevre
+                DogaVeCevre,
+                AileVeGunlukYasam,
+                OkulVeToplum,
+                TurkiyeKulturu
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
                 CumleOgeleri,
                 GelecekZaman,
                 YazimKurallari,
-                FiilimsiTuru
+                FiilimsiTuru,
+                KimlikVeGelecek,
+                TarihVeGelenekler,
+                TurkiyeCografyasi
             }
         };
 
@@ -221,6 +227,122 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         };
     }
 
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] AileGunlukListe =
+    {
+        ("aile", "Familie", new[] { "Freund", "Nachbar", "Verwandter" }),
+        ("kardeş", "Geschwister", new[] { "Eltern", "Großeltern", "Cousin/Cousine" }),
+        ("arkadaş", "Freund/Freundin", new[] { "Fremder", "Lehrer", "Nachbar" }),
+        ("buluşmak", "sich treffen", new[] { "sich streiten", "sich verstecken", "sich verabschieden" }),
+        ("günlük rutin", "Tagesablauf", new[] { "Wochenende", "Ferienplan", "Stundenplan" }),
+        ("ev işleri", "Hausarbeiten", new[] { "Hausaufgaben", "Haustiere", "Hausordnung" }),
+        ("harçlık", "Taschengeld", new[] { "Gehalt", "Geschenk", "Ersparnis" }),
+        ("yemek tarifi", "Rezept", new[] { "Speisekarte", "Einkaufsliste", "Kochbuch" }),
+        ("alışveriş yapmak", "einkaufen", new[] { "kochen", "aufräumen", "putzen" }),
+        ("oda", "Zimmer", new[] { "Haus", "Garten", "Wohnung" }),
+        ("yol tarifi", "Wegbeschreibung", new[] { "Stadtplan", "Verkehrsschild", "Landkarte" }),
+        ("ulaşım aracı", "Verkehrsmittel", new[] { "Fahrschein", "Bahnhof", "Straße" }),
+        ("okul yolu", "Schulweg", new[] { "Schulhof", "Schulbus", "Schulranzen" }),
+        ("komşuluk", "Nachbarschaft", new[] { "Freundschaft", "Verwandtschaft", "Gemeinschaft" }),
+        ("hobi", "Hobby", new[] { "Beruf", "Pflicht", "Hausaufgabe" }),
+        ("spor yapmak", "Sport treiben", new[] { "Musik hören", "fernsehen", "lesen" }),
+        ("kıyafet", "Kleidung", new[] { "Schuhe", "Schmuck", "Tasche" }),
+        ("misafir", "Gast", new[] { "Nachbar", "Fremder", "Verwandter" }),
+        ("doğum günü", "Geburtstag", new[] { "Jahrestag", "Feiertag", "Ferientag" }),
+        ("aile büyükleri", "Familienälteste (Großeltern etc.)", new[] { "kleine Geschwister", "entfernte Verwandte", "Nachbarn" })
+    };
+
+    private static QuizQuestion AileVeGunlukYasam(Random r)
+    {
+        var d = AileGunlukListe[r.Next(AileGunlukListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Aile ve günlük yaşamla ilgili kelimeler: aile, kardeş, ev işleri, harçlık, alışveriş."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] OkulToplumListe =
+    {
+        ("okul", "Schule", new[] { "Bibliothek", "Turnhalle", "Kindergarten" }),
+        ("öğretmen", "Lehrer/in", new[] { "Schüler/in", "Direktor/in", "Hausmeister/in" }),
+        ("ders programı", "Stundenplan", new[] { "Zeugnis", "Hausaufgabenheft", "Klassenbuch" }),
+        ("sınıf arkadaşı", "Klassenkamerad/in", new[] { "Nachbar/in", "Geschwister", "Lehrer/in" }),
+        ("teneffüs", "Pause", new[] { "Unterricht", "Prüfung", "Ferien" }),
+        ("kural", "Regel", new[] { "Regal", "Vorschlag", "Meinung" }),
+        ("millet", "Nation/Volk", new[] { "Stadt", "Familie", "Klasse" }),
+        ("dil", "Sprache", new[] { "Zunge (nur anatomisch)", "Wort", "Buchstabe" }),
+        ("kültürel çeşitlilik", "kulturelle Vielfalt", new[] { "kulturelle Einheit", "Sprachbarriere", "Traditionsverlust" }),
+        ("ödev yapmak", "Hausaufgaben machen", new[] { "Hausaufgaben vergessen", "Hausaufgaben abschreiben", "Hausaufgaben verlieren" }),
+        ("okula gitmek", "zur Schule gehen", new[] { "von der Schule kommen", "die Schule verlassen", "die Schule schwänzen" }),
+        ("sınav", "Prüfung", new[] { "Ferien", "Unterrichtsstunde", "Zeugnis" }),
+        ("meslek", "Beruf", new[] { "Hobby", "Schulfach", "Freizeit" }),
+        ("vatandaş", "Bürger/in", new[] { "Ausländer/in", "Tourist/in", "Gast" }),
+        ("toplum", "Gesellschaft", new[] { "Familie", "Klasse", "Nachbarschaft" }),
+        ("saygı göstermek", "Respekt zeigen", new[] { "ignorieren", "sich streiten", "sich beschweren" }),
+        ("arkadaşlık kurmak", "Freundschaft schließen", new[] { "sich streiten", "sich verstecken", "sich distanzieren" }),
+        ("okul müdürü", "Schulleiter/in", new[] { "Klassenlehrer/in", "Hausmeister/in", "Sekretär/in" }),
+        ("ders kitabı", "Schulbuch", new[] { "Tagebuch", "Kochbuch", "Wörterbuch" }),
+        ("birlikte yaşamak", "zusammenleben", new[] { "alleine leben", "wegziehen", "sich trennen" })
+    };
+
+    private static QuizQuestion OkulVeToplum(Random r)
+    {
+        var d = OkulToplumListe[r.Next(OkulToplumListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Okul ve Toplum (Schule und Gesellschaft) – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Okul ve toplumla ilgili kelimeler: öğretmen, sınıf arkadaşı, kural, toplum, saygı göstermek."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TurkiyeKulturuListe =
+    {
+        ("Türkiye'nin başkenti neresidir?", new[] { "Ankara", "İstanbul", "İzmir" }, "Ankara", "Türkiye'nin başkenti Ankara'dır, en büyük şehri ise İstanbul'dur."),
+        ("Ramazan Bayramı ne zaman kutlanır?", new[] { "Ramazan ayının sonunda", "Yaz aylarında her zaman", "Yılbaşında" }, "Ramazan ayının sonunda", "Ramazan Bayramı, bir aylık oruç ayı olan Ramazan'ın sonunda kutlanır."),
+        ("Kurban Bayramı'nda geleneksel olarak ne yapılır?", new[] { "Kurban kesilir ve paylaşılır", "Sadece tatil yapılır", "Okullar açılır" }, "Kurban kesilir ve paylaşılır", "Kurban Bayramı'nda kurban kesilir ve et ihtiyaç sahipleriyle paylaşılır."),
+        ("Türkiye'nin en büyük şehri hangisidir (nüfusa göre)?", new[] { "İstanbul", "Ankara", "Bursa" }, "İstanbul", "İstanbul, nüfus bakımından Türkiye'nin en büyük şehridir."),
+        ("İstanbul hangi iki kıtayı birbirine bağlar?", new[] { "Avrupa ve Asya", "Afrika ve Asya", "Avrupa ve Afrika" }, "Avrupa ve Asya", "İstanbul, Avrupa ve Asya kıtaları arasında köprü niteliğindedir."),
+        ("Boğaziçi (Bosporus) neyi ayırır?", new[] { "İstanbul'un Avrupa ve Asya yakasını", "Karadeniz ve Akdeniz'i tamamen", "Türkiye ve Yunanistan'ı" }, "İstanbul'un Avrupa ve Asya yakasını", "Boğaziçi, İstanbul'un Avrupa yakası ile Asya yakasını birbirinden ayırır."),
+        ("Türkiye'de resmi dil hangisidir?", new[] { "Türkçe", "Arapça", "Kürtçe" }, "Türkçe", "Türkiye'nin resmi dili Türkçedir."),
+        ("23 Nisan hangi bayramla ilgilidir?", new[] { "Ulusal Egemenlik ve Çocuk Bayramı", "Cumhuriyet Bayramı", "Zafer Bayramı" }, "Ulusal Egemenlik ve Çocuk Bayramı", "23 Nisan, Ulusal Egemenlik ve Çocuk Bayramı olarak kutlanır."),
+        ("29 Ekim hangi önemli günü kutlar?", new[] { "Cumhuriyet Bayramı", "Çocuk Bayramı", "Zafer Bayramı" }, "Cumhuriyet Bayramı", "29 Ekim, Türkiye Cumhuriyeti'nin ilan edildiği gün olan Cumhuriyet Bayramı'dır."),
+        ("Türk mutfağının ünlü bir tatlısı hangisidir?", new[] { "Baklava", "Tiramisu", "Croissant" }, "Baklava", "Baklava, Türk mutfağının dünyaca ünlü tatlılarından biridir."),
+        ("Nazar boncuğu neyi simgeler (halk inanışına göre)?", new[] { "Kötü bakışlardan/nazardan korunmayı", "Bolluk ve bereketi", "Uğursuzluğu" }, "Kötü bakışlardan/nazardan korunmayı", "Nazar boncuğu, halk inanışına göre kötü bakışlardan/nazardan koruduğuna inanılan bir semboldür."),
+        ("Türkiye'de yaygın bir geleneksel içecek hangisidir?", new[] { "Çay", "Kola", "Meyve suyu" }, "Çay", "Çay, Türkiye'de günlük hayatta en yaygın tüketilen içeceklerden biridir."),
+        ("Anadolu ne anlama gelir (coğrafi olarak)?", new[] { "Türkiye'nin Asya kıtasındaki büyük yarımadası", "Türkiye'nin başkenti", "İstanbul'un bir semti" }, "Türkiye'nin Asya kıtasındaki büyük yarımadası", "Anadolu, Türkiye'nin Asya kıtasında yer alan büyük yarımadasıdır."),
+        ("Karadeniz Türkiye'nin hangi bölgesinde yer alır?", new[] { "Kuzeyinde", "Güneyinde", "Batısında" }, "Kuzeyinde", "Karadeniz, Türkiye'nin kuzeyinde yer alır."),
+        ("Akdeniz Türkiye'nin hangi bölgesinde yer alır?", new[] { "Güneyinde", "Kuzeyinde", "Doğusunda" }, "Güneyinde", "Akdeniz, Türkiye'nin güneyinde yer alır."),
+        ("Kapadokya, hangi doğal oluşumuyla ünlüdür?", new[] { "Peri bacaları (ilginç kaya oluşumları)", "Yüksek dağlar", "Büyük göller" }, "Peri bacaları (ilginç kaya oluşumları)", "Kapadokya, peri bacaları adı verilen ilginç kaya oluşumlarıyla ünlüdür."),
+        ("Pamukkale hangi doğal özelliğiyle ünlüdür?", new[] { "Beyaz travertenler ve termal sular", "Kum tepeleri", "Volkanik dağlar" }, "Beyaz travertenler ve termal sular", "Pamukkale, beyaz travertenleri ve termal sularıyla ünlüdür."),
+        ("Türk halk müziğinde sıkça kullanılan bir çalgı hangisidir?", new[] { "Bağlama (saz)", "Gitar", "Piyano" }, "Bağlama (saz)", "Bağlama (saz), Türk halk müziğinde sıkça kullanılan geleneksel bir çalgıdır."),
+        ("Türkiye'de misafirperverlik geleneği neyi ifade eder?", new[] { "Misafirlere karşı gösterilen konukseverlik ve saygı", "Misafirlerden uzak durmayı", "Sadece akrabaları ağırlamayı" }, "Misafirlere karşı gösterilen konukseverlik ve saygı", "Misafirperverlik, Türk kültüründe misafirlere gösterilen konukseverlik ve saygıyı ifade eder."),
+        ("Hıdırellez hangi mevsimle ilişkili bir halk bayramıdır?", new[] { "İlkbahar", "Kış", "Sonbahar" }, "İlkbahar", "Hıdırellez, ilkbaharın gelişini kutlayan geleneksel bir halk bayramıdır.")
+    };
+
+    private static QuizQuestion TurkiyeKulturu(Random r)
+    {
+        var f = TurkiyeKulturuListe[r.Next(TurkiyeKulturuListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Türk Kültürü ve Gelenekleri (Kultur und Traditionen)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Türkiye'nin başkenti Ankara, en büyük şehri İstanbul'dur. Önemli bayramlar: Ramazan, Kurban, 23 Nisan, 29 Ekim."
+        };
+    }
+
     private static readonly (string Cumle, string Oge, string Cevap)[] CumleOgeleriListe =
     {
         ("Ali topu attı.", "Yüklem", "attı"),
@@ -375,6 +497,118 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { f.Tur },
             Explanation = $"\"{f.Fiilimsi}\" bir {f.Tur} örneğidir.",
             HelpHint = "Sıfat-fiil bir ismi niteler (koşan çocuk), zarf-fiil bir eylemi nasıl/ne zaman yapıldığını anlatır (okumadan), isim-fiil eylemi isim gibi kullanır (yüzmek)."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] KimlikGelecekListe =
+    {
+        ("gelecek planı", "Zukunftsplan", new[] { "Vergangenheit", "Tatil planı", "Schulplan" }),
+        ("iki dillilik", "Zweisprachigkeit", new[] { "Einsprachigkeit", "Sprachlosigkeit", "Fremdsprache" }),
+        ("kimlik", "Identität", new[] { "Kennkarte (nur Dokument)", "Charakter", "Persönlichkeit (nur äußerlich)" }),
+        ("göç etmek", "auswandern/migrieren", new[] { "reisen", "zurückkehren", "besuchen" }),
+        ("hayal kurmak", "träumen (von der Zukunft)", new[] { "sich erinnern", "sich fürchten", "sich langweilen" }),
+        ("kendine güven", "Selbstvertrauen", new[] { "Selbstzweifel", "Bescheidenheit", "Unsicherheit" }),
+        ("rol model", "Vorbild", new[] { "Schauspieler", "Rolle im Theater", "Anführer" }),
+        ("iki kültür arasında yaşamak", "zwischen zwei Kulturen leben", new[] { "nur in einer Kultur leben", "keine Kultur haben", "eine Kultur ablehnen" }),
+        ("meslek seçimi", "Berufswahl", new[] { "Schulfachwahl", "Hobbywahl", "Studienort" }),
+        ("başarı", "Erfolg", new[] { "Misserfolg", "Zufall", "Glück" }),
+        ("hedef belirlemek", "sich ein Ziel setzen", new[] { "ein Ziel vergessen", "kein Ziel haben", "ein Ziel ablehnen" }),
+        ("özgüven kazanmak", "Selbstvertrauen gewinnen", new[] { "Selbstvertrauen verlieren", "sich verstecken", "sich zurückziehen" }),
+        ("akran baskısı", "Gruppenzwang", new[] { "Elterndruck", "Lehrerdruck", "Notendruck" }),
+        ("zorluklarla başa çıkmak", "mit Schwierigkeiten umgehen", new[] { "Schwierigkeiten ignorieren", "aufgeben", "sich beschweren" }),
+        ("kişisel gelişim", "persönliche Entwicklung", new[] { "Schulnote", "Freizeitaktivität", "Berufserfahrung" }),
+        ("aidiyet duygusu", "Zugehörigkeitsgefühl", new[] { "Fremdheitsgefühl", "Gleichgültigkeit", "Einsamkeit" }),
+        ("önyargı", "Vorurteil", new[] { "Meinung ohne Bewertung", "Tatsache", "Beweis" }),
+        ("karar vermek", "eine Entscheidung treffen", new[] { "eine Entscheidung vermeiden", "eine Entscheidung vergessen", "eine Entscheidung ablehnen" }),
+        ("gurbet", "Fremde/Ausland (fern von der Heimat)", new[] { "Heimat", "Nachbarschaft", "Verwandtschaft" }),
+        ("kültürel kimlik", "kulturelle Identität", new[] { "kulturelle Verwirrung", "kulturelle Ablehnung", "kulturelle Isolation" })
+    };
+
+    private static QuizQuestion KimlikVeGelecek(Random r)
+    {
+        var d = KimlikGelecekListe[r.Next(KimlikGelecekListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Kimlik ve Gelecek (Identität und Zukunft) – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Kimlik ve gelecekle ilgili kelimeler: gelecek planı, iki dillilik, göç etmek, kendine güven, hedef belirlemek."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TarihGelenekListe =
+    {
+        ("Türkiye Cumhuriyeti hangi yıl kuruldu?", new[] { "1923", "1918", "1938" }, "1923", "Türkiye Cumhuriyeti 29 Ekim 1923'te ilan edildi."),
+        ("Türkiye Cumhuriyeti'nin kurucusu kimdir?", new[] { "Mustafa Kemal Atatürk", "Süleyman Demirel", "İsmet İnönü" }, "Mustafa Kemal Atatürk", "Türkiye Cumhuriyeti'nin kurucusu Mustafa Kemal Atatürk'tür."),
+        ("Atatürk hangi yıl vefat etti?", new[] { "1938", "1923", "1950" }, "1938", "Mustafa Kemal Atatürk 1938 yılında vefat etti."),
+        ("Osmanlı İmparatorluğu ne zaman sona erdi?", new[] { "1922 (saltanatın kaldırılmasıyla)", "1850", "1980" }, "1922 (saltanatın kaldırılmasıyla)", "Osmanlı İmparatorluğu, 1922'de saltanatın kaldırılmasıyla sona erdi."),
+        ("Cumhuriyet öncesi Türkiye hangi imparatorluğun bir parçasıydı?", new[] { "Osmanlı İmparatorluğu", "Roma İmparatorluğu", "Bizans İmparatorluğu (doğrudan devam olarak değil)" }, "Osmanlı İmparatorluğu", "Cumhuriyet öncesinde bugünkü Türkiye toprakları Osmanlı İmparatorluğu'na aitti."),
+        ("Atatürk'ün yaptığı önemli reformlardan biri hangisidir?", new[] { "Latin alfabesine geçiş", "Osmanlıcayı zorunlu kılmak", "Eğitimi yasaklamak" }, "Latin alfabesine geçiş", "Atatürk döneminde 1928'de Latin alfabesine geçildi."),
+        ("Kurtuluş Savaşı hangi yıllar arasında gerçekleşti?", new[] { "1919-1922", "1939-1945", "1950-1955" }, "1919-1922", "Kurtuluş Savaşı 1919-1922 yılları arasında gerçekleşti."),
+        ("İstanbul'un fethi hangi yıl gerçekleşti?", new[] { "1453", "1923", "1071" }, "1453", "İstanbul, 1453 yılında Osmanlılar tarafından fethedildi."),
+        ("İstanbul'u fetheden Osmanlı padişahı kimdir?", new[] { "II. Mehmet (Fatih Sultan Mehmet)", "Kanuni Sultan Süleyman", "Yavuz Sultan Selim" }, "II. Mehmet (Fatih Sultan Mehmet)", "İstanbul'u fetheden padişah II. Mehmet, yani Fatih Sultan Mehmet'tir."),
+        ("Türkiye'de kadınlara seçme ve seçilme hakkı hangi dönemde tanındı?", new[] { "Cumhuriyetin ilk yıllarında (1930'larda)", "Osmanlı döneminde", "2000'li yıllarda" }, "Cumhuriyetin ilk yıllarında (1930'larda)", "Kadınlara seçme ve seçilme hakkı Cumhuriyetin ilk yıllarında, 1930'larda tanındı."),
+        ("Ankara neden Türkiye'nin başkenti seçildi?", new[] { "Kurtuluş Savaşı'nın merkezi ve stratejik açıdan güvenli konumu nedeniyle", "En kalabalık şehir olduğu için", "Deniz kıyısında olduğu için" }, "Kurtuluş Savaşı'nın merkezi ve stratejik açıdan güvenli konumu nedeniyle", "Ankara, Kurtuluş Savaşı'nın merkezi olması ve stratejik konumu nedeniyle başkent seçildi."),
+        ("1071 Malazgirt Savaşı'nın önemi nedir?", new[] { "Türklerin Anadolu'ya yerleşmesinin başlangıcı sayılır", "Cumhuriyetin kuruluşudur", "Osmanlı'nın sonu sayılır" }, "Türklerin Anadolu'ya yerleşmesinin başlangıcı sayılır", "Malazgirt Savaşı, Türklerin Anadolu'ya yerleşmesinin başlangıcı olarak kabul edilir."),
+        ("Selçuklu Devleti'nden sonra Anadolu'da hangi büyük devlet kuruldu?", new[] { "Osmanlı İmparatorluğu", "Bizans İmparatorluğu", "Roma İmparatorluğu" }, "Osmanlı İmparatorluğu", "Selçuklu Devleti'nden sonra Anadolu'da Osmanlı İmparatorluğu kuruldu."),
+        ("Türkiye'nin resmi bayramlarından biri olan Zafer Bayramı hangi tarihi olayı anar?", new[] { "Kurtuluş Savaşı'nın kazanılmasını (30 Ağustos)", "Cumhuriyetin ilanını", "Atatürk'ün doğumunu" }, "Kurtuluş Savaşı'nın kazanılmasını (30 Ağustos)", "Zafer Bayramı, 30 Ağustos'ta Kurtuluş Savaşı'nın kazanılmasını anar."),
+        ("Atatürk ilkelerinden biri hangisidir?", new[] { "Laiklik", "Monarşi", "Feodalizm" }, "Laiklik", "Laiklik, Atatürk'ün altı ilkesinden (Atatürk ilkeleri) biridir."),
+        ("Osmanlı İmparatorluğu'nun başkenti neresiydi (fetihten sonra)?", new[] { "İstanbul", "Ankara", "İzmir" }, "İstanbul", "1453'teki fetihten sonra İstanbul, Osmanlı İmparatorluğu'nun başkenti oldu."),
+        ("Türkiye'de eğitim hangi Atatürk reformuyla laik hâle getirildi?", new[] { "Tevhid-i Tedrisat Kanunu (Öğretim Birliği Yasası)", "Latin alfabesinin kabulü", "Kadınlara oy hakkı verilmesi" }, "Tevhid-i Tedrisat Kanunu (Öğretim Birliği Yasası)", "Tevhid-i Tedrisat Kanunu ile eğitim tek elden ve laik bir sisteme bağlandı."),
+        ("Cumhuriyet Bayramı hangi tarihte kutlanır?", new[] { "29 Ekim", "23 Nisan", "30 Ağustos" }, "29 Ekim", "Cumhuriyet Bayramı, Cumhuriyetin ilan edildiği 29 Ekim'de kutlanır."),
+        ("Atatürk'ün \"Yurtta sulh, cihanda sulh\" sözü ne anlama gelir?", new[] { "Ülke içinde ve dünyada barış", "Ülke içinde savaş, dünyada barış", "Sadece askeri güç önemlidir" }, "Ülke içinde ve dünyada barış", "Bu söz, hem ülke içinde hem de dünyada barışın önemini vurgular."),
+        ("Türkiye Cumhuriyeti'nin ilk cumhurbaşkanı kimdir?", new[] { "Mustafa Kemal Atatürk", "İsmet İnönü", "Celal Bayar" }, "Mustafa Kemal Atatürk", "Mustafa Kemal Atatürk, Türkiye Cumhuriyeti'nin ilk cumhurbaşkanıdır.")
+    };
+
+    private static QuizQuestion TarihVeGelenekler(Random r)
+    {
+        var f = TarihGelenekListe[r.Next(TarihGelenekListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Türk Tarihi ve Gelenekleri (Geschichte und Traditionen)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Türkiye Cumhuriyeti 1923'te Atatürk tarafından kuruldu. Önemli tarihler: 1453 (İstanbul'un fethi), 1919-1922 (Kurtuluş Savaşı), 29 Ekim (Cumhuriyet Bayramı)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TurkiyeCografyasiListe =
+    {
+        ("Türkiye'nin sınırları içinde tamamen yer alan en uzun nehri hangisidir?", new[] { "Kızılırmak", "Fırat", "Sakarya" }, "Kızılırmak", "Kızılırmak, tamamen Türkiye sınırları içinde akan en uzun nehirdir."),
+        ("Türkiye kaç kıtaya yakın/bağlantılıdır (coğrafi konumu itibariyle)?", new[] { "İki kıtaya (Avrupa ve Asya)", "Üç kıtaya", "Sadece Asya'ya" }, "İki kıtaya (Avrupa ve Asya)", "Türkiye topraklarının küçük bir kısmı Avrupa'da, büyük kısmı ise Asya'dadır."),
+        ("Türkiye'nin en yüksek dağı hangisidir?", new[] { "Ağrı Dağı", "Uludağ", "Erciyes Dağı" }, "Ağrı Dağı", "Ağrı Dağı, Türkiye'nin en yüksek dağıdır."),
+        ("Ege Bölgesi hangi denize kıyısı vardır?", new[] { "Ege Denizi", "Karadeniz", "Akdeniz" }, "Ege Denizi", "Ege Bölgesi, adından da anlaşılacağı gibi Ege Denizi'ne kıyıdır."),
+        ("Türkiye'nin güneydoğusunda hangi coğrafi bölge yer alır?", new[] { "Güneydoğu Anadolu Bölgesi", "Karadeniz Bölgesi", "Marmara Bölgesi" }, "Güneydoğu Anadolu Bölgesi", "Güneydoğu Anadolu Bölgesi, Türkiye'nin güneydoğusunda yer alır."),
+        ("Marmara Bölgesi'nde yer alan büyük deniz hangisidir?", new[] { "Marmara Denizi", "Van Gölü", "Tuz Gölü" }, "Marmara Denizi", "Marmara Denizi, Marmara Bölgesi'nde yer alır ve bölgeye adını verir."),
+        ("Türkiye'nin en büyük gölü hangisidir?", new[] { "Van Gölü", "Tuz Gölü", "Beyşehir Gölü" }, "Van Gölü", "Van Gölü, Türkiye'nin en büyük gölüdür."),
+        ("Kapadokya hangi bölgede yer alır?", new[] { "İç Anadolu Bölgesi", "Karadeniz Bölgesi", "Akdeniz Bölgesi" }, "İç Anadolu Bölgesi", "Kapadokya, İç Anadolu Bölgesi'nde yer alır."),
+        ("Türkiye'nin turizm açısından önemli kıyı şeridi hangi bölgelerdedir?", new[] { "Ege ve Akdeniz kıyıları", "Sadece Karadeniz kıyıları", "Sadece İç Anadolu" }, "Ege ve Akdeniz kıyıları", "Ege ve Akdeniz kıyıları, Türkiye'nin turizm açısından en önemli bölgeleridir."),
+        ("Boğazlar (İstanbul ve Çanakkale Boğazı) hangi denizleri birbirine bağlar?", new[] { "Karadeniz'i Akdeniz'e (Marmara üzerinden)", "Ege Denizi'ni Kızıldeniz'e", "Atlantik'i Pasifik'e" }, "Karadeniz'i Akdeniz'e (Marmara üzerinden)", "İstanbul ve Çanakkale Boğazları, Marmara Denizi üzerinden Karadeniz'i Akdeniz'e bağlar."),
+        ("Türkiye'de kış turizmiyle bilinen bir merkez hangisidir?", new[] { "Uludağ", "Bodrum", "Antalya" }, "Uludağ", "Uludağ, Türkiye'de kayak ve kış turizmiyle bilinen önemli bir merkezdir."),
+        ("Doğu Anadolu Bölgesi'nin iklimi genel olarak nasıldır?", new[] { "Karasal, kışları çok soğuk", "Ilıman, kışları ılık", "Tropikal, her mevsim sıcak" }, "Karasal, kışları çok soğuk", "Doğu Anadolu Bölgesi'nde sert bir karasal iklim hâkimdir, kışlar çok soğuk geçer."),
+        ("Türkiye'nin sahip olduğu doğal afet risklerinden biri hangisidir?", new[] { "Deprem", "Volkanik patlama her bölgede sık", "Kasırga sık görülür" }, "Deprem", "Türkiye, jeolojik konumu nedeniyle önemli bir deprem riski taşır."),
+        ("Türkiye hangi deprem kuşağında yer alır?", new[] { "Alp-Himalaya deprem kuşağı", "Pasifik Ateş Çemberi", "Deprem riski taşımaz" }, "Alp-Himalaya deprem kuşağı", "Türkiye, dünyanın önemli deprem kuşaklarından biri olan Alp-Himalaya kuşağında yer alır."),
+        ("Karadeniz Bölgesi'nin ekonomisinde önemli bir tarım ürünü hangisidir?", new[] { "Çay ve fındık", "Zeytin", "Pamuk" }, "Çay ve fındık", "Karadeniz Bölgesi, çay ve fındık üretimiyle bilinir."),
+        ("Ege Bölgesi'nde yaygın olarak yetiştirilen bir tarım ürünü hangisidir?", new[] { "Zeytin ve incir", "Çay", "Muz" }, "Zeytin ve incir", "Ege Bölgesi'nde zeytin ve incir yaygın olarak yetiştirilir."),
+        ("Güneydoğu Anadolu Projesi (GAP) hangi amaçla geliştirilmiştir?", new[] { "Bölgenin sulama ve enerji ihtiyacını karşılamak", "Turizmi geliştirmek", "Sadece demiryolu yapmak" }, "Bölgenin sulama ve enerji ihtiyacını karşılamak", "GAP, Güneydoğu Anadolu Bölgesi'nin sulama ve enerji ihtiyacını karşılamak amacıyla geliştirilmiştir."),
+        ("Türkiye'nin komşu ülkelerinden biri hangisidir?", new[] { "Yunanistan", "İtalya", "Fransa" }, "Yunanistan", "Yunanistan, Türkiye'nin batı komşularından biridir."),
+        ("Anadolu'nun ortasında yer alan büyük tuzlu göl hangisidir?", new[] { "Tuz Gölü", "Van Gölü", "Eğirdir Gölü" }, "Tuz Gölü", "Tuz Gölü, İç Anadolu'da yer alan büyük ve tuzlu bir göldür."),
+        ("Pamukkale hangi coğrafi bölgede yer alır?", new[] { "Ege Bölgesi", "Karadeniz Bölgesi", "Doğu Anadolu Bölgesi" }, "Ege Bölgesi", "Pamukkale, Ege Bölgesi'nde, Denizli ilinde yer alır.")
+    };
+
+    private static QuizQuestion TurkiyeCografyasi(Random r)
+    {
+        var f = TurkiyeCografyasiListe[r.Next(TurkiyeCografyasiListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Türkiye'nin Coğrafyası (Geografie der Türkei)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Türkiye Avrupa ve Asya arasında yer alır. Bölgeler: Karadeniz (kuzey), Akdeniz (güney), Ege (batı), İç Anadolu (orta), Doğu ve Güneydoğu Anadolu."
         };
     }
 }
