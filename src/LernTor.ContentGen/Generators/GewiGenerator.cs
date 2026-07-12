@@ -14,7 +14,7 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Epochen, Himmelsrichtungen, Kinderrechte, Ernaehrung },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Epochen, Himmelsrichtungen, Kinderrechte, Ernaehrung, WasserAlsRessource, StadtUndVielfalt, EuropaGrenzenlos, TourismusUndMobilitaet, DemokratieUndMitbestimmung },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Grundgesetz, Wirtschaftskreislauf, MedienGesellschaft }
         };
 
@@ -239,6 +239,286 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
             Topic = "Ernährung – wie werden Menschen satt?", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Denk an Landwirtschaft (Ertrag steigern), Verbraucherschutz (sichere Lebensmittel) und die ungleiche Verteilung von Nahrung weltweit."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WasserListe =
+    {
+        ("Warum entstand eine der ersten Hochkulturen der Geschichte gerade am Nil in Ägypten?", new[] { "Die jährliche Nilüberschwemmung machte das Land fruchtbar für Ackerbau", "Am Nil gab es überhaupt kein Wasser", "Der Nil war zu gefährlich, um dort zu siedeln" }, "Die jährliche Nilüberschwemmung machte das Land fruchtbar für Ackerbau",
+            "Die regelmäßige Überschwemmung des Nils lagerte fruchtbaren Schlamm ab, was zuverlässigen Ackerbau und damit eine frühe Hochkultur ermöglichte."),
+        ("Wozu nutzten die alten Ägypter aufwendige Bewässerungssysteme am Nil?", new[] { "Um Wasser gezielt auf die Felder zu leiten", "Um den Fluss trockenzulegen", "Um Boote zu verbrennen" }, "Um Wasser gezielt auf die Felder zu leiten",
+            "Kanäle und Bewässerungssysteme leiteten Nilwasser gezielt auf die Felder, auch abseits der direkten Uferzone."),
+        ("Warum kann Wasser heute zwischen manchen Staaten zu einem Konfliktfaktor werden?", new[] { "Flüsse fließen durch mehrere Länder, die sich um die Nutzung streiten können", "Wasser ist überall unbegrenzt vorhanden", "Wasser hat keinerlei wirtschaftliche Bedeutung" }, "Flüsse fließen durch mehrere Länder, die sich um die Nutzung streiten können",
+            "Grenzüberschreitende Flüsse wie der Nil werden von mehreren Staaten genutzt, was zu Konflikten um Wasserrechte führen kann."),
+        ("Wofür wird Wasser als Wirtschaftsfaktor neben der Landwirtschaft noch genutzt?", new[] { "Für Transport (Schifffahrt) und Energiegewinnung (Wasserkraft)", "Nur zum Blumengießen", "Wasser hat keine wirtschaftliche Bedeutung" }, "Für Transport (Schifffahrt) und Energiegewinnung (Wasserkraft)",
+            "Flüsse und Meere dienen als Transportwege für Schiffe und liefern über Wasserkraftwerke Energie."),
+        ("Was ist ein Beispiel dafür, dass Wasser auch ein Freizeitfaktor ist?", new[] { "Schwimmen, Segeln oder Angeln an Seen und Flüssen", "Wasser wird nie für Freizeit genutzt", "Nur zum Putzen verwendet" }, "Schwimmen, Segeln oder Angeln an Seen und Flüssen",
+            "Seen, Flüsse und Meere werden von vielen Menschen zum Baden, Segeln, Angeln oder für andere Freizeitaktivitäten genutzt."),
+        ("Wie formt Wasser über lange Zeiträume Küsten und Landschaften?", new[] { "Durch Erosion, also das Abtragen von Gestein und Boden", "Wasser hat keinerlei Einfluss auf Landschaften", "Nur durch Regen in der Wüste" }, "Durch Erosion, also das Abtragen von Gestein und Boden",
+            "Wellen, Strömungen und fließendes Wasser tragen über lange Zeit Gestein und Boden ab und formen so Küsten und Täler."),
+        ("Was versteht man unter Wasserknappheit?", new[] { "In einer Region steht nicht genug sauberes Wasser für den Bedarf zur Verfügung", "Es gibt überall auf der Welt zu viel Wasser", "Ein anderes Wort für Überschwemmung" }, "In einer Region steht nicht genug sauberes Wasser für den Bedarf zur Verfügung",
+            "Wasserknappheit bedeutet, dass in einer Region nicht ausreichend sauberes Trinkwasser für Menschen, Landwirtschaft und Industrie vorhanden ist."),
+        ("Warum war der Nil für die alten Ägypter wichtiger als Regen?", new[] { "In Ägypten regnet es nur sehr selten, der Nil lieferte zuverlässig Wasser", "In Ägypten regnete es jeden Tag stark", "Regen war für den Ackerbau schädlich" }, "In Ägypten regnet es nur sehr selten, der Nil lieferte zuverlässig Wasser",
+            "Ägypten liegt größtenteils in der Wüste mit sehr wenig Niederschlag - ohne den Nil wäre dauerhafter Ackerbau dort kaum möglich gewesen."),
+        ("Was ist ein Wasserkraftwerk?", new[] { "Eine Anlage, die die Bewegungsenergie von Wasser in elektrischen Strom umwandelt", "Ein Gebäude zum Trinkwasser abfüllen", "Ein Ort, an dem nur geschwommen wird" }, "Eine Anlage, die die Bewegungsenergie von Wasser in elektrischen Strom umwandelt",
+            "In Wasserkraftwerken treibt strömendes oder fallendes Wasser Turbinen an, die daraus elektrischen Strom erzeugen."),
+        ("Warum ist der Zugang zu sauberem Trinkwasser weltweit ungleich verteilt?", new[] { "Klima, Geografie und wirtschaftliche Mittel unterscheiden sich stark zwischen Regionen", "Alle Länder der Welt haben exakt gleich viel Wasser", "Trinkwasser ist überall unbegrenzt kostenlos verfügbar" }, "Klima, Geografie und wirtschaftliche Mittel unterscheiden sich stark zwischen Regionen",
+            "Trockene Klimazonen, geografische Lage und fehlende Infrastruktur führen dazu, dass sauberes Trinkwasser weltweit sehr ungleich verteilt ist."),
+        ("Was zeigt das Beispiel Ägypten über den Zusammenhang von Wasser und der Entstehung früher Staaten?", new[] { "Zuverlässige Wasserversorgung ermöglichte Ackerbau, Vorratshaltung und damit eine organisierte Gesellschaft", "Wasser hatte für die Entstehung von Staaten keine Bedeutung", "Staaten entstanden nur in wasserlosen Wüstenregionen" }, "Zuverlässige Wasserversorgung ermöglichte Ackerbau, Vorratshaltung und damit eine organisierte Gesellschaft",
+            "Verlässliche Ernten durch Bewässerung schufen Nahrungsüberschüsse, die Arbeitsteilung, Handel und eine zentrale Verwaltung wie im alten Ägypten ermöglichten."),
+        ("Was ist eine mögliche Folge, wenn zwei Länder um dasselbe Flusswasser konkurrieren?", new[] { "Politische Spannungen oder Verhandlungen über die gerechte Wasserverteilung", "Der Fluss verschwindet automatisch", "Es entstehen keinerlei Probleme" }, "Politische Spannungen oder Verhandlungen über die gerechte Wasserverteilung",
+            "Wenn mehrere Staaten von einem Fluss abhängig sind, kann die Nutzung zu politischen Spannungen führen, die oft durch Verhandlungen gelöst werden müssen."),
+        ("Was passiert mit einer Küstenlinie, wenn Wellen über lange Zeit weiches Gestein abtragen?", new[] { "Es können Buchten, Klippen oder Strände entstehen", "Die Küstenlinie bleibt für immer exakt gleich", "Das Meer verschwindet komplett" }, "Es können Buchten, Klippen oder Strände entstehen",
+            "Die Erosionskraft des Meeres formt über sehr lange Zeiträume charakteristische Küstenformen wie Buchten, Klippen oder Sandstrände."),
+        ("Was bedeutet \"Bewässerungsfeldbau\", wie ihn die alten Ägypter betrieben?", new[] { "Felder werden gezielt künstlich mit Wasser aus Kanälen versorgt", "Felder werden nur vom Regen bewässert", "Felder werden absichtlich trockengelegt" }, "Felder werden gezielt künstlich mit Wasser aus Kanälen versorgt",
+            "Beim Bewässerungsfeldbau wird Wasser über Kanäle und Gräben gezielt zu den Feldern geleitet, unabhängig vom Regen."),
+        ("Warum kann übermäßige Wasserentnahme aus einem Fluss für Anwohner flussabwärts problematisch sein?", new[] { "Ihnen bleibt dann weniger Wasser für Landwirtschaft und Alltag übrig", "Es hat keinerlei Auswirkungen flussabwärts", "Der Fluss wird dadurch automatisch breiter" }, "Ihnen bleibt dann weniger Wasser für Landwirtschaft und Alltag übrig",
+            "Wird flussaufwärts sehr viel Wasser entnommen, kann flussabwärts weniger Wasser für Landwirtschaft, Trinkwasser und Industrie übrig bleiben."),
+        ("Welche Rolle spielten Nilüberschwemmungen für die Kalenderentwicklung im alten Ägypten?", new[] { "Der Zeitpunkt der Überschwemmung half, ein frühes Kalendersystem zu entwickeln", "Überschwemmungen hatten nichts mit dem Kalender zu tun", "Es gab in Ägypten nie einen Kalender" }, "Der Zeitpunkt der Überschwemmung half, ein frühes Kalendersystem zu entwickeln",
+            "Da die Nilüberschwemmung regelmäßig zur gleichen Jahreszeit auftrat, orientierten sich die alten Ägypter bei ihrem Kalender daran."),
+        ("Was ist ein Stausee?", new[] { "Ein künstlich angelegter See hinter einem Damm, der Wasser speichert", "Ein natürlicher See ohne jeden menschlichen Einfluss", "Ein anderes Wort für Ozean" }, "Ein künstlich angelegter See hinter einem Damm, der Wasser speichert",
+            "Ein Stausee entsteht, wenn ein Damm einen Fluss aufstaut, um Wasser für Bewässerung, Trinkwasser oder Stromerzeugung zu speichern."),
+        ("Wofür wird der Assuan-Staudamm am Nil in Ägypten heute unter anderem genutzt?", new[] { "Für Hochwasserschutz und Stromerzeugung", "Nur zum Baden für Touristen", "Er hat keinerlei Funktion" }, "Für Hochwasserschutz und Stromerzeugung",
+            "Der Assuan-Staudamm reguliert seit dem 20. Jahrhundert die Nilüberschwemmungen und erzeugt zugleich elektrischen Strom."),
+        ("Warum ist der sparsame Umgang mit Trinkwasser auch in wasserreichen Ländern wie Deutschland sinnvoll?", new[] { "Die Aufbereitung von Trinkwasser kostet Energie und Ressourcen", "Wasser sparen hat überhaupt keinen Nutzen", "In Deutschland gibt es unendlich viel Wasser" }, "Die Aufbereitung von Trinkwasser kostet Energie und Ressourcen",
+            "Auch in Ländern mit viel Niederschlag verbraucht die Aufbereitung und Verteilung von Trinkwasser Energie und Ressourcen, weshalb Sparen sinnvoll bleibt."),
+        ("Was verbindet die Themen \"Wasser als Konfliktfaktor\" und \"Wasser als Wirtschaftsfaktor\" miteinander?", new[] { "Beide zeigen, wie wichtig die begrenzte Ressource Wasser für Gesellschaften ist", "Beide Themen haben nichts miteinander zu tun", "Wasser ist niemals wirtschaftlich oder politisch bedeutsam" }, "Beide zeigen, wie wichtig die begrenzte Ressource Wasser für Gesellschaften ist",
+            "Ob als Streitpunkt zwischen Staaten oder als Grundlage für Landwirtschaft und Energie - Wasser ist eine begrenzte, gesellschaftlich zentrale Ressource.")
+    };
+
+    private static QuizQuestion WasserAlsRessource(Random r)
+    {
+        var f = WasserListe[r.Next(WasserListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wasser – nur Natur oder in Menschenhand?", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Der Nil ermöglichte durch Bewässerung die Hochkultur im alten Ägypten; heute ist Wasser zugleich Konflikt-, Wirtschafts- und Freizeitfaktor."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StadtListe =
+    {
+        ("Wie viele Einwohner hatte die antike Stadt Rom auf ihrem Höhepunkt schätzungsweise?", new[] { "Über eine Million", "Nur etwa 500", "Etwa 50" }, "Über eine Million",
+            "Das antike Rom war mit schätzungsweise über einer Million Einwohnern eine der größten Städte der antiken Welt."),
+        ("Was war das Forum Romanum im antiken Rom?", new[] { "Das zentrale, öffentliche Platz- und Marktgebiet der Stadt", "Ein privates Wohnhaus", "Ein Fluss außerhalb der Stadt" }, "Das zentrale, öffentliche Platz- und Marktgebiet der Stadt",
+            "Das Forum Romanum war das politische, religiöse und wirtschaftliche Zentrum Roms mit Tempeln, Märkten und öffentlichen Gebäuden."),
+        ("Wie versorgten die Römer ihre Großstadt zuverlässig mit Trinkwasser?", new[] { "Durch Aquädukte, die Wasser über weite Strecken in die Stadt leiteten", "Sie hatten überhaupt kein fließendes Wasser", "Nur durch Regenwasser in Eimern" }, "Durch Aquädukte, die Wasser über weite Strecken in die Stadt leiteten",
+            "Römische Aquädukte transportierten Wasser oft über viele Kilometer aus den Bergen in die Stadt Rom."),
+        ("Was waren die Thermen im antiken Rom?", new[] { "Öffentliche Badeanlagen, die auch als soziale Treffpunkte dienten", "Private Gärten der Kaiser", "Getreidespeicher" }, "Öffentliche Badeanlagen, die auch als soziale Treffpunkte dienten",
+            "Die Thermen waren große öffentliche Bäder, in denen sich die Menschen wuschen, entspannten und trafen."),
+        ("Was ist ein typisches Merkmal moderner Großstädte wie dem Großraum Berlin?", new[] { "Hohe Bevölkerungsdichte und vielfältiges kulturelles Angebot", "Fast keine Einwohner", "Ausschließlich landwirtschaftliche Flächen" }, "Hohe Bevölkerungsdichte und vielfältiges kulturelles Angebot",
+            "Moderne Großstädte wie Berlin zeichnen sich durch hohe Bevölkerungsdichte, vielfältige Kultur, Wirtschaft und Infrastruktur aus."),
+        ("Was versteht man unter \"Verkehrsverdichtung\" in Großstädten?", new[] { "Viele Fahrzeuge auf engem Raum, oft mit Staus verbunden", "Es gibt in der Stadt überhaupt keinen Verkehr", "Straßen werden ständig breiter gebaut" }, "Viele Fahrzeuge auf engem Raum, oft mit Staus verbunden",
+            "Verkehrsverdichtung entsteht, wenn viele Menschen und Fahrzeuge auf begrenztem städtischem Raum unterwegs sind, was oft zu Staus führt."),
+        ("Was ist ein Vorteil von kultureller Vielfalt in einer Großstadt?", new[] { "Unterschiedliche Perspektiven, Ideen und Angebote bereichern das Zusammenleben", "Vielfalt hat ausschließlich Nachteile", "Städte mit Vielfalt haben weniger Möglichkeiten" }, "Unterschiedliche Perspektiven, Ideen und Angebote bereichern das Zusammenleben",
+            "Kulturelle Vielfalt bringt unterschiedliche Ideen, Restaurants, Feste und Perspektiven zusammen und kann eine Stadt lebendiger machen."),
+        ("Was ist ein Beispiel für Umweltbelastung durch eine Großstadt?", new[] { "Luftverschmutzung durch viele Fahrzeuge und Industrie", "Städte verursachen niemals Umweltprobleme", "Nur ländliche Gebiete verursachen Umweltbelastung" }, "Luftverschmutzung durch viele Fahrzeuge und Industrie",
+            "Der hohe Verkehrs- und Energieverbrauch in Großstädten führt häufig zu Luftverschmutzung und anderen Umweltbelastungen."),
+        ("Was war die \"Insula\" im antiken Rom?", new[] { "Ein mehrstöckiges Mietshaus für die einfache Stadtbevölkerung", "Ein Tempel für die Götter", "Ein römisches Kriegsschiff" }, "Ein mehrstöckiges Mietshaus für die einfache Stadtbevölkerung",
+            "Insulae waren mehrstöckige Wohnhäuser, in denen die Mehrheit der einfachen römischen Stadtbevölkerung dicht gedrängt lebte."),
+        ("Warum gilt Innovation als eine Chance großer Städte?", new[] { "Viele Menschen, Unternehmen und Ideen treffen auf engem Raum zusammen", "Innovation entsteht nur außerhalb von Städten", "Städte verhindern grundsätzlich neue Ideen" }, "Viele Menschen, Unternehmen und Ideen treffen auf engem Raum zusammen",
+            "Die Nähe vieler Menschen, Firmen, Universitäten und Ideen in Großstädten begünstigt oft neue Erfindungen und Entwicklungen."),
+        ("Was regelte das römische Straßennetz für den Alltag der Stadt?", new[] { "Transport von Waren, Truppen und Menschen zwischen Städten und Regionen", "Es diente ausschließlich religiösen Prozessionen", "Straßen wurden im antiken Rom nicht gebaut" }, "Transport von Waren, Truppen und Menschen zwischen Städten und Regionen",
+            "Das gut ausgebaute römische Straßennetz ermöglichte Handel, Truppenbewegungen und Reisen im gesamten Römischen Reich."),
+        ("Was ist eine typische Herausforderung bei Wohnraum in modernen Großstädten?", new[] { "Wohnungen sind oft knapp und teuer", "Wohnraum ist in Städten immer im Überfluss vorhanden", "Wohnungen kosten in Städten grundsätzlich nichts" }, "Wohnungen sind oft knapp und teuer",
+            "Durch die hohe Nachfrage in Großstädten sind Wohnungen häufig knapper und teurer als in ländlichen Gebieten."),
+        ("Was war das Kolosseum im antiken Rom?", new[] { "Ein großes Amphitheater für öffentliche Unterhaltung wie Gladiatorenkämpfe", "Ein privates Wohnhaus für Bauern", "Ein Getreidespeicher außerhalb der Stadt" }, "Ein großes Amphitheater für öffentliche Unterhaltung wie Gladiatorenkämpfe",
+            "Das Kolosseum bot Platz für tausende Zuschauer bei öffentlichen Veranstaltungen wie Gladiatorenkämpfen."),
+        ("Wie unterscheidet sich der öffentliche Nahverkehr in Großstädten oft von dem auf dem Land?", new[] { "In Großstädten gibt es meist ein dichteres Netz an Bus, Bahn und U-Bahn", "Es gibt keinerlei Unterschied", "Auf dem Land ist der Nahverkehr immer dichter" }, "In Großstädten gibt es meist ein dichteres Netz an Bus, Bahn und U-Bahn",
+            "Aufgrund der hohen Bevölkerungsdichte lohnt sich in Großstädten meist ein dichteres öffentliches Verkehrsnetz als auf dem Land."),
+        ("Was bedeutet \"Ghettoisierung\" oder soziale Trennung in manchen Stadtvierteln?", new[] { "Bestimmte Bevölkerungsgruppen leben räumlich stark getrennt voneinander", "Alle Stadtviertel sind automatisch sozial gleich gemischt", "Ein anderes Wort für Grünflächen" }, "Bestimmte Bevölkerungsgruppen leben räumlich stark getrennt voneinander",
+            "In manchen Städten konzentrieren sich bestimmte Bevölkerungsgruppen in einzelnen Vierteln, was als Herausforderung für den sozialen Zusammenhalt gilt."),
+        ("Warum brauchten römische Großstädte ein organisiertes System zur Getreideversorgung?", new[] { "So viele Menschen konnten sich nicht mehr selbst mit Nahrung versorgen", "Es gab in Rom keine hungrigen Menschen", "Getreide wurde nur für Tiere gebraucht" }, "So viele Menschen konnten sich nicht mehr selbst mit Nahrung versorgen",
+            "Bei über einer Million Einwohnern musste Getreide organisiert aus den Provinzen des Reiches nach Rom transportiert werden."),
+        ("Was ist ein Vorteil von Grünflächen und Parks in modernen Großstädten?", new[] { "Sie verbessern Luftqualität und bieten Erholungsraum", "Sie schaden der Umwelt", "Sie werden in Städten grundsätzlich nicht benötigt" }, "Sie verbessern Luftqualität und bieten Erholungsraum",
+            "Parks und Grünflächen verbessern das Stadtklima, filtern Luft und bieten Bewohnerinnen und Bewohnern Erholungsmöglichkeiten."),
+        ("Was bezeichnete man im antiken Rom als \"Brot und Spiele\" (panem et circenses)?", new[] { "Kostenlose Getreideverteilung und öffentliche Unterhaltung zur Zufriedenstellung der Bevölkerung", "Ein Sportwettkampf ohne Zuschauer", "Ein privates Familienessen" }, "Kostenlose Getreideverteilung und öffentliche Unterhaltung zur Zufriedenstellung der Bevölkerung",
+            "Mit kostenlosem Getreide und öffentlichen Unterhaltungsveranstaltungen versuchten römische Herrscher, die Stadtbevölkerung zufriedenzustellen."),
+        ("Was ist eine mögliche Chance kultureller Vielfalt für die lokale Wirtschaft einer Großstadt?", new[] { "Vielfältige Geschäfte, Restaurants und Dienstleistungen sprechen mehr Menschen an", "Vielfalt schadet immer der Wirtschaft", "Wirtschaftlich lohnt sich ausschließlich Einheitlichkeit" }, "Vielfältige Geschäfte, Restaurants und Dienstleistungen sprechen mehr Menschen an",
+            "Ein vielfältiges Angebot an Geschäften, Restaurants und Dienstleistungen kann unterschiedliche Kundengruppen ansprechen und die lokale Wirtschaft stärken."),
+        ("Warum werden Städte wie Rom in der Antike oft als Vorbild für spätere Stadtplanung genannt?", new[] { "Sie hatten organisierte Infrastruktur wie Straßen, Wasserversorgung und öffentliche Gebäude", "Antike Städte hatten überhaupt keine Planung", "Es gab keinerlei öffentliche Gebäude" }, "Sie hatten organisierte Infrastruktur wie Straßen, Wasserversorgung und öffentliche Gebäude",
+            "Die durchdachte Infrastruktur antiker Städte wie Rom - Straßen, Wasserleitungen, öffentliche Plätze - beeinflusst bis heute Ideen zur Stadtplanung.")
+    };
+
+    private static QuizQuestion StadtUndVielfalt(Random r)
+    {
+        var f = StadtListe[r.Next(StadtListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Stadt und städtische Vielfalt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Das antike Rom zeigt früh, wie Großstädte organisiert wurden (Wasser, Straßen, Nahrung); moderne Großstädte wie Berlin haben ähnliche Chancen und Herausforderungen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EuropaListe =
+    {
+        ("Was ist Europa geografisch gesehen genau genommen?", new[] { "Ein Kontinent bzw. Halbkontinent mit vielfältigen Klimazonen", "Ein einzelnes Land", "Eine Insel im Pazifik" }, "Ein Kontinent bzw. Halbkontinent mit vielfältigen Klimazonen",
+            "Europa reicht von mediterranem Klima im Süden bis zu kühlem, gemäßigtem Klima im Norden und Osten."),
+        ("Wie weit erstreckte sich das Römische Reich auf seinem Höhepunkt ungefähr?", new[] { "Rund um das gesamte Mittelmeer und weite Teile Europas", "Nur über die Stadt Rom selbst", "Nur über Nordeuropa" }, "Rund um das gesamte Mittelmeer und weite Teile Europas",
+            "Das Römische Reich umfasste auf seinem Höhepunkt Gebiete rund um das gesamte Mittelmeer sowie große Teile West- und Südeuropas."),
+        ("Was ist die Europäische Union (EU)?", new[] { "Ein politischer und wirtschaftlicher Zusammenschluss europäischer Staaten", "Ein einzelnes europäisches Land", "Ein Sportverband" }, "Ein politischer und wirtschaftlicher Zusammenschluss europäischer Staaten",
+            "Die EU ist ein Zusammenschluss europäischer Staaten, die politisch und wirtschaftlich eng zusammenarbeiten."),
+        ("Welche gemeinsame Währung nutzen viele, aber nicht alle EU-Mitgliedsstaaten?", new[] { "Den Euro", "Den Dollar", "Das Pfund" }, "Den Euro",
+            "Der Euro ist die gemeinsame Währung vieler, aber nicht aller EU-Mitgliedsstaaten (die sogenannte Eurozone)."),
+        ("Was ermöglicht der freie Personenverkehr innerhalb großer Teile der EU (Schengen-Raum)?", new[] { "Reisen zwischen vielen Mitgliedstaaten meist ohne Passkontrollen an der Grenze", "Es gibt in der EU keinerlei Reisefreiheit", "Jeder Grenzübertritt braucht ein Visum" }, "Reisen zwischen vielen Mitgliedstaaten meist ohne Passkontrollen an der Grenze",
+            "Im Schengen-Raum können Menschen zwischen vielen Mitgliedstaaten in der Regel ohne Passkontrollen an der Binnengrenze reisen."),
+        ("Was war die Berliner Mauer?", new[] { "Eine Grenzbefestigung, die von 1961 bis 1989 Ost- und West-Berlin trennte", "Eine antike römische Stadtmauer", "Eine touristische Attraktion ohne historische Bedeutung" }, "Eine Grenzbefestigung, die von 1961 bis 1989 Ost- und West-Berlin trennte",
+            "Die Berliner Mauer trennte von 1961 bis 1989 Ost- und West-Berlin und wurde zum Symbol der deutschen und europäischen Teilung."),
+        ("Was geschah mit Deutschland nach dem Zweiten Weltkrieg zunächst?", new[] { "Es wurde in verschiedene Besatzungszonen geteilt, später in BRD und DDR", "Es blieb völlig unverändert", "Es wurde sofort Teil der EU" }, "Es wurde in verschiedene Besatzungszonen geteilt, später in BRD und DDR",
+            "Nach 1945 wurde Deutschland zunächst in Besatzungszonen geteilt, aus denen später die Bundesrepublik Deutschland und die DDR entstanden."),
+        ("Was verbindet das Römische Reich und die heutige EU als historischen Vergleich?", new[] { "Beide verbanden viele verschiedene Regionen/Völker unter einem gemeinsamen politischen Rahmen", "Beide bestanden nur aus einer einzigen Stadt", "Beide existieren zur gleichen Zeit" }, "Beide verbanden viele verschiedene Regionen/Völker unter einem gemeinsamen politischen Rahmen",
+            "Sowohl das Römische Reich als auch die EU verbanden sehr unterschiedliche Regionen unter einem gemeinsamen politischen und rechtlichen Rahmen - wenn auch auf ganz unterschiedliche Weise."),
+        ("Wie viele Mitgliedstaaten hat die Europäische Union ungefähr (Stand nach dem Brexit)?", new[] { "27", "5", "100" }, "27",
+            "Nach dem Austritt Großbritanniens (Brexit) 2020 hat die EU 27 Mitgliedstaaten."),
+        ("Was bedeutet \"Binnenmarkt\" in der EU?", new[] { "Waren, Dienstleistungen, Kapital und Personen können sich weitgehend frei zwischen Mitgliedstaaten bewegen", "Jeder Staat handelt komplett isoliert für sich", "Es gibt in der EU keinerlei Handel" }, "Waren, Dienstleistungen, Kapital und Personen können sich weitgehend frei zwischen Mitgliedstaaten bewegen",
+            "Der EU-Binnenmarkt erlaubt den weitgehend freien Austausch von Waren, Dienstleistungen, Kapital und Personen zwischen den Mitgliedstaaten."),
+        ("Warum wird der 9. November 1989 auch europäisch als wichtiges Datum gesehen?", new[] { "Der Mauerfall gilt als Symbol für das Ende der Teilung Europas im Kalten Krieg", "An diesem Tag wurde die EU gegründet", "Es war der Beginn des Zweiten Weltkriegs" }, "Der Mauerfall gilt als Symbol für das Ende der Teilung Europas im Kalten Krieg",
+            "Der Fall der Berliner Mauer wird oft als Symbol für das Ende der politischen Teilung Europas im Kalten Krieg gesehen."),
+        ("Was ist eine Klimazone?", new[] { "Ein Gebiet mit ähnlichen, typischen Wetterbedingungen über das Jahr", "Ein anderes Wort für Staatsgrenze", "Eine Art politischer Vertrag" }, "Ein Gebiet mit ähnlichen, typischen Wetterbedingungen über das Jahr",
+            "Klimazonen fassen Regionen mit ähnlichen typischen Temperatur- und Niederschlagsverhältnissen zusammen, z.B. mediterran oder gemäßigt."),
+        ("Welche Klimazone prägt weite Teile Südeuropas rund um das Mittelmeer?", new[] { "Das mediterrane Klima mit trockenen, warmen Sommern", "Ein tropisches Regenwaldklima", "Ein arktisches Eisklima" }, "Das mediterrane Klima mit trockenen, warmen Sommern",
+            "Das mediterrane Klima am Mittelmeer ist geprägt von trockenen, warmen Sommern und milden, feuchteren Wintern."),
+        ("Wie wird der Bundestag gemeinsam mit den Institutionen der EU beschrieben, wenn es um Gesetzgebung geht?", new[] { "Nationale Parlamente und EU-Institutionen wirken bei bestimmten Themen zusammen", "Nationale Parlamente haben mit der EU nichts zu tun", "Nur die EU darf über alles allein entscheiden" }, "Nationale Parlamente und EU-Institutionen wirken bei bestimmten Themen zusammen",
+            "In vielen Politikbereichen arbeiten nationale Parlamente wie der Bundestag und EU-Institutionen wie das Europaparlament zusammen."),
+        ("Was ist das Europäische Parlament?", new[] { "Die von EU-Bürgerinnen und -Bürgern direkt gewählte Vertretung auf EU-Ebene", "Ein Parlament nur für Deutschland", "Ein Gericht für Verkehrsdelikte" }, "Die von EU-Bürgerinnen und -Bürgern direkt gewählte Vertretung auf EU-Ebene",
+            "Das Europäische Parlament wird direkt von den Bürgerinnen und Bürgern der EU-Mitgliedstaaten gewählt und wirkt an EU-Gesetzen mit."),
+        ("Was symbolisiert der Begriff \"Europa - grenzenlos?\" im Vergleich zur deutschen Teilung während des Kalten Krieges?", new[] { "Den Kontrast zwischen früherer strikter Grenzziehung und heutiger europäischer Reisefreiheit", "Dass es in Europa niemals Grenzen gab", "Dass Grenzen heute strenger sind als je zuvor" }, "Den Kontrast zwischen früherer strikter Grenzziehung und heutiger europäischer Reisefreiheit",
+            "Die einst streng bewachte innerdeutsche Grenze steht im starken Kontrast zur heutigen weitgehenden Reisefreiheit innerhalb der EU."),
+        ("Was ist ein Vorteil der EU-Mitgliedschaft für den Handel zwischen den Ländern?", new[] { "Weniger Zölle und einfachere Regeln zwischen Mitgliedstaaten", "Handel zwischen EU-Ländern ist grundsätzlich verboten", "Jedes Produkt braucht eine Sondererlaubnis pro Land" }, "Weniger Zölle und einfachere Regeln zwischen Mitgliedstaaten",
+            "Durch den EU-Binnenmarkt entfallen viele Zölle und bürokratische Hürden beim Handel zwischen Mitgliedstaaten."),
+        ("Was hatten das Römische Reich und moderne europäische Staaten gemeinsam in Bezug auf Straßen und Infrastruktur?", new[] { "Beide bauten überregionale Verkehrsnetze für Handel und Austausch aus", "Beide bauten überhaupt keine Straßen", "Straßenbau spielte in beiden keine Rolle" }, "Beide bauten überregionale Verkehrsnetze für Handel und Austausch aus",
+            "Sowohl das antike Straßennetz Roms als auch moderne europäische Verkehrsnetze (Autobahnen, Schienen) fördern Handel und Austausch über Regionen hinweg."),
+        ("Was ist ein Unterschied zwischen dem Römischen Reich und der heutigen EU?", new[] { "Das Römische Reich wurde militärisch erobert, die EU beruht auf freiwilligem Beitritt der Mitgliedstaaten", "Beide beruhten auf exakt denselben Prinzipien", "Beide bestehen aus genau denselben Ländern" }, "Das Römische Reich wurde militärisch erobert, die EU beruht auf freiwilligem Beitritt der Mitgliedstaaten",
+            "Anders als das durch Eroberung entstandene Römische Reich basiert die EU auf dem freiwilligen politischen Zusammenschluss unabhängiger Staaten."),
+        ("Warum ist die deutsche Wiedervereinigung 1990 auch ein europäisches Ereignis?", new[] { "Sie markierte das Ende der europäischen Teilung im Kalten Krieg und stärkte die europäische Zusammenarbeit", "Sie betraf ausschließlich innerdeutsche Angelegenheiten", "Sie hatte keinerlei Auswirkungen auf Europa" }, "Sie markierte das Ende der europäischen Teilung im Kalten Krieg und stärkte die europäische Zusammenarbeit",
+            "Die deutsche Wiedervereinigung 1990 wird oft als wichtiger Schritt im größeren Prozess der europäischen Annäherung nach dem Kalten Krieg gesehen.")
+    };
+
+    private static QuizQuestion EuropaGrenzenlos(Random r)
+    {
+        var f = EuropaListe[r.Next(EuropaListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Europa – grenzenlos?", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Vom Römischen Reich über die geteilte Berliner Mauer bis zur heutigen EU: Europa hat seine Grenzen im Lauf der Geschichte immer wieder verändert."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TourismusListe =
+    {
+        ("Welche Art von Reisen betrieben Menschen im Mittelalter vor allem aus wirtschaftlichen Gründen?", new[] { "Handelsreisen, um Waren zu kaufen und zu verkaufen", "Reisen nur zum Vergnügen", "Reisen mit dem Flugzeug" }, "Handelsreisen, um Waren zu kaufen und zu verkaufen",
+            "Handelsreisende zogen im Mittelalter oft weite Strecken, um Waren wie Gewürze, Stoffe oder Metalle zu handeln."),
+        ("Was war das Ziel vieler Entdeckungsreisen ab dem 15. Jahrhundert, wie der von Kolumbus?", new[] { "Neue Handelswege und unbekannte Gebiete zu finden", "Nur zum Vergnügen zu reisen", "Ausschließlich wissenschaftliche Neugier ohne wirtschaftliches Interesse" }, "Neue Handelswege und unbekannte Gebiete zu finden",
+            "Entdeckungsreisen wie die von Kolumbus suchten meist neue Handelswege (z.B. nach Indien) und brachten dabei bislang unbekannte Gebiete in Kontakt mit Europa."),
+        ("Was unterscheidet eine Forschungsreise von einer reinen Handelsreise?", new[] { "Bei Forschungsreisen steht die wissenschaftliche Erkundung im Vordergrund", "Beide sind exakt dasselbe", "Forschungsreisen dienten nur dem persönlichen Vergnügen" }, "Bei Forschungsreisen steht die wissenschaftliche Erkundung im Vordergrund",
+            "Forschungsreisen wie die von Alexander von Humboldt zielten vor allem auf wissenschaftliche Erkenntnisse über Natur, Länder und Völker."),
+        ("Was ist Massentourismus?", new[] { "Sehr viele Menschen reisen gleichzeitig an dieselben, oft bekannten Reiseziele", "Reisen, die nur einzelne Personen unternehmen", "Ein anderes Wort für Handelsreisen im Mittelalter" }, "Sehr viele Menschen reisen gleichzeitig an dieselben, oft bekannten Reiseziele",
+            "Beim Massentourismus konzentrieren sich sehr viele Reisende auf wenige, populäre Ziele, was Umwelt und Infrastruktur dort stark belasten kann."),
+        ("Was versteht man unter \"sanftem Tourismus\"?", new[] { "Reisen, die Umwelt, Kultur und lokale Bevölkerung möglichst wenig belasten", "Reisen mit möglichst großen Kreuzfahrtschiffen", "Reisen, bei denen man niemals die Region verlässt" }, "Reisen, die Umwelt, Kultur und lokale Bevölkerung möglichst wenig belasten",
+            "Sanfter Tourismus versucht, Umwelt und lokale Kultur zu schonen, z.B. durch kleinere Gruppen und respektvollen Umgang mit der Region."),
+        ("Was ist ein möglicher Nachteil von Massentourismus für die Umwelt?", new[] { "Überlastung von Natur, mehr Müll und höherer Ressourcenverbrauch", "Massentourismus hat keinerlei Umweltwirkung", "Die Umwelt profitiert automatisch von mehr Touristen" }, "Überlastung von Natur, mehr Müll und höherer Ressourcenverbrauch",
+            "Sehr viele Touristinnen und Touristen an einem Ort können zu Umweltbelastung, mehr Abfall und höherem Ressourcenverbrauch führen."),
+        ("Was ist ein Vorteil von Tourismus für eine Region?", new[] { "Er kann Arbeitsplätze und Einkommen für die lokale Bevölkerung schaffen", "Tourismus bringt einer Region grundsätzlich nur Nachteile", "Tourismus verhindert jede wirtschaftliche Entwicklung" }, "Er kann Arbeitsplätze und Einkommen für die lokale Bevölkerung schaffen",
+            "Tourismus kann Arbeitsplätze in Hotels, Gastronomie und Handel schaffen und der lokalen Bevölkerung Einkommen bringen."),
+        ("Was zeichnete die berühmten Seidenstraßen-Handelsrouten historisch aus?", new[] { "Sie verbanden Asien und Europa für den Warenaustausch über weite Strecken", "Sie verliefen ausschließlich innerhalb einer einzigen Stadt", "Sie wurden nur für Kriege genutzt" }, "Sie verbanden Asien und Europa für den Warenaustausch über weite Strecken",
+            "Die Seidenstraßen waren jahrhundertealte Handelsrouten, über die Waren wie Seide und Gewürze zwischen Asien und Europa transportiert wurden."),
+        ("Wie unterscheiden sich die geografischen Landschaften der deutschen Bundesländer beispielsweise?", new[] { "Von Küsten im Norden über Mittelgebirge bis zu den Alpen im Süden", "Alle Bundesländer haben exakt dieselbe Landschaft", "Deutschland hat keinerlei geografische Vielfalt" }, "Von Küsten im Norden über Mittelgebirge bis zu den Alpen im Süden",
+            "Deutschland reicht von den Küsten Norddeutschlands über Mittelgebirge bis zu den Alpen in Bayern - eine große landschaftliche Vielfalt."),
+        ("Welches Bundesland grenzt im Süden Deutschlands an die Alpen?", new[] { "Bayern", "Schleswig-Holstein", "Bremen" }, "Bayern",
+            "Bayern liegt im Süden Deutschlands und grenzt mit den Alpen an Österreich."),
+        ("Was ist ein Beispiel für ein modernes Reisemittel, das Entdeckungsreisen früherer Jahrhunderte stark verändert hat?", new[] { "Das Flugzeug", "Das Segelboot allein", "Der Handkarren" }, "Das Flugzeug",
+            "Das Flugzeug ermöglicht es heute, in wenigen Stunden Distanzen zurückzulegen, für die frühere Entdecker Monate benötigten."),
+        ("Warum reisten viele Forscherinnen und Forscher in der Vergangenheit oft mit großen wissenschaftlichen Expeditionen?", new[] { "Um Länder, Pflanzen, Tiere und Kulturen systematisch zu erforschen und zu dokumentieren", "Nur, um möglichst viel Gepäck mitzunehmen", "Weil es damals verboten war, allein zu reisen" }, "Um Länder, Pflanzen, Tiere und Kulturen systematisch zu erforschen und zu dokumentieren",
+            "Große Expeditionen sammelten systematisch Wissen über unbekannte Regionen, Pflanzen, Tiere und die dort lebenden Menschen."),
+        ("Was kann sanfter Tourismus für die lokale Bevölkerung bedeuten?", new[] { "Wirtschaftlicher Nutzen bei gleichzeitigem Schutz von Natur und Kultur", "Verlust jeglichen wirtschaftlichen Nutzens", "Automatische Zerstörung der lokalen Kultur" }, "Wirtschaftlicher Nutzen bei gleichzeitigem Schutz von Natur und Kultur",
+            "Sanfter Tourismus versucht, wirtschaftliche Vorteile für die Region mit dem Schutz von Umwelt und lokaler Kultur zu verbinden."),
+        ("Warum entstanden im Mittelalter viele Handelsstädte an wichtigen Fluss- oder Küstenlagen?", new[] { "Wasserwege waren wichtige, schnelle Transportrouten für Handelswaren", "Handelsstädte mieden Wasser bewusst", "Flüsse hatten keinerlei Bedeutung für Handel" }, "Wasserwege waren wichtige, schnelle Transportrouten für Handelswaren",
+            "Flüsse und Küsten ermöglichten den effizienten Transport großer Warenmengen per Schiff, weshalb sich dort viele Handelsstädte entwickelten."),
+        ("Was zeichnet die Nord- und Ostseeküste Deutschlands geografisch aus?", new[] { "Flaches Küstenland mit Häfen, Watt und Inseln", "Hohe Gebirgsketten direkt am Meer", "Wüstenlandschaft" }, "Flaches Küstenland mit Häfen, Watt und Inseln",
+            "Die deutsche Nord- und Ostseeküste ist geprägt von flachem Küstenland, Wattenmeer, Häfen und vorgelagerten Inseln."),
+        ("Was können Reisende tun, um die Umweltbelastung durch ihre Reisen zu verringern?", new[] { "Umweltfreundlichere Verkehrsmittel wählen und Region/Kultur respektvoll behandeln", "Möglichst viel Müll am Reiseziel hinterlassen", "Ausschließlich mit dem Flugzeug auf kurze Strecken reisen" }, "Umweltfreundlichere Verkehrsmittel wählen und Region/Kultur respektvoll behandeln",
+            "Die Wahl umweltfreundlicherer Verkehrsmittel und ein respektvoller Umgang mit Natur und Kultur vor Ort können die negativen Folgen von Reisen verringern."),
+        ("Was war ein wichtiger Antrieb für Entdeckungsreisen der europäischen Seefahrer im 15./16. Jahrhundert?", new[] { "Die Suche nach neuen Seewegen für den Gewürzhandel", "Reines Interesse an Strandurlaub", "Die Flucht vor Massentourismus" }, "Die Suche nach neuen Seewegen für den Gewürzhandel",
+            "Viele Entdeckungsreisen wie die portugiesischer und spanischer Seefahrer zielten auf neue Seewege für den lukrativen Gewürzhandel mit Asien."),
+        ("Wie hat sich die durchschnittliche Reisedauer zwischen Kontinenten seit dem Mittelalter verändert?", new[] { "Sie hat sich durch moderne Verkehrsmittel drastisch verkürzt", "Sie ist exakt gleich geblieben", "Sie hat sich deutlich verlängert" }, "Sie hat sich durch moderne Verkehrsmittel drastisch verkürzt",
+            "Was früher Wochen oder Monate dauerte (Schiffsreisen), ist mit modernen Flugzeugen oft in wenigen Stunden möglich."),
+        ("Was ist ein Grund dafür, dass Reisen heute für viel mehr Menschen möglich ist als früher?", new[] { "Günstigere und schnellere Verkehrsmittel sowie höherer allgemeiner Wohlstand", "Reisen ist heute komplizierter als früher", "Es gibt heute weniger Verkehrsmittel als früher" }, "Günstigere und schnellere Verkehrsmittel sowie höherer allgemeiner Wohlstand",
+            "Günstigere Flugpreise, bessere Infrastruktur und gestiegener Wohlstand machen Reisen heute für deutlich mehr Menschen zugänglich als in früheren Jahrhunderten."),
+        ("Welche Rolle spielten venezianische Kaufleute wie Marco Polo für den Handel zwischen Europa und Asien im Mittelalter?", new[] { "Sie erkundeten und beschrieben neue Handelsrouten und brachten Wissen über ferne Länder nach Europa", "Sie reisten ausschließlich innerhalb Venedigs", "Sie hatten mit Handel nichts zu tun" }, "Sie erkundeten und beschrieben neue Handelsrouten und brachten Wissen über ferne Länder nach Europa",
+            "Reisende wie Marco Polo berichteten von fernen Ländern wie China und förderten so den Handel und das Wissen über Asien in Europa.")
+    };
+
+    private static QuizQuestion TourismusUndMobilitaet(Random r)
+    {
+        var f = TourismusListe[r.Next(TourismusListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Tourismus und Mobilität – schneller, weiter, klüger?", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Von Handels- und Entdeckungsreisen bis zum modernen Massen- oder sanften Tourismus: Reisen hat sich stark verändert, bringt aber immer Chancen und Umweltfolgen mit sich."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DemokratieMitList =
+    {
+        ("In welcher antiken Stadt entstand eine frühe Form der Demokratie, auf die man sich bis heute bezieht?", new[] { "Athen", "Rom", "Sparta" }, "Athen",
+            "Im antiken Athen entwickelte sich mit der Volksversammlung eine der ersten bekannten Formen direkter Demokratie."),
+        ("Wer durfte in der athenischen Demokratie in der Volksversammlung mitbestimmen?", new[] { "Nur freie männliche Bürger, nicht Frauen, Sklaven oder Fremde", "Alle Einwohnerinnen und Einwohner gleichermaßen", "Nur Kinder" }, "Nur freie männliche Bürger, nicht Frauen, Sklaven oder Fremde",
+            "Anders als moderne Demokratien war die athenische Demokratie stark eingeschränkt: Nur freie männliche Bürger durften mitbestimmen."),
+        ("Was ist ein zentraler Unterschied zwischen der athenischen und der heutigen deutschen Demokratie?", new[] { "Heute dürfen alle erwachsenen Staatsbürgerinnen und Staatsbürger unabhängig von Geschlecht wählen", "In Athen durften auch Kinder abstimmen", "Es gibt keinerlei Unterschiede" }, "Heute dürfen alle erwachsenen Staatsbürgerinnen und Staatsbürger unabhängig von Geschlecht wählen",
+            "Im Gegensatz zur athenischen Demokratie gilt das Wahlrecht heute unabhängig vom Geschlecht für alle erwachsenen Staatsbürgerinnen und Staatsbürger."),
+        ("Was ist der Unterschied zwischen direkter und repräsentativer (indirekter) Demokratie?", new[] { "Bei direkter Demokratie stimmt das Volk selbst über Sachfragen ab, bei repräsentativer wählt es Vertreter", "Beide Formen bedeuten exakt dasselbe", "Repräsentative Demokratie kennt keine Wahlen" }, "Bei direkter Demokratie stimmt das Volk selbst über Sachfragen ab, bei repräsentativer wählt es Vertreter",
+            "In der direkten Demokratie (wie im antiken Athen) stimmt das Volk direkt ab, in der repräsentativen Demokratie (wie in Deutschland) wählt es Abgeordnete, die entscheiden."),
+        ("Was ist eine politische Partei?", new[] { "Eine Organisation von Menschen mit ähnlichen politischen Zielen, die sich zur Wahl stellt", "Ein anderes Wort für Parlament", "Eine sportliche Mannschaft" }, "Eine Organisation von Menschen mit ähnlichen politischen Zielen, die sich zur Wahl stellt",
+            "Parteien bündeln Menschen mit ähnlichen politischen Zielen und Vorstellungen und treten gemeinsam zu Wahlen an."),
+        ("Was ist ein Parlament?", new[] { "Die gewählte Volksvertretung, die Gesetze berät und beschließt", "Ein Gerichtsgebäude", "Ein Ort, an dem nur der Bundeskanzler entscheidet" }, "Die gewählte Volksvertretung, die Gesetze berät und beschließt",
+            "Ein Parlament (z.B. der Bundestag) besteht aus gewählten Abgeordneten, die Gesetze beraten, ändern und beschließen."),
+        ("Was ist ein Klassenrat in der Schule ein Beispiel für?", new[] { "Mitbestimmung im Alltag durch gemeinsame Beratung und Entscheidung", "Eine Form der Diktatur", "Eine reine Vorlesung ohne Mitsprache" }, "Mitbestimmung im Alltag durch gemeinsame Beratung und Entscheidung",
+            "Im Klassenrat können Schülerinnen und Schüler gemeinsam Themen besprechen und mitentscheiden - ein alltagsnahes Beispiel für Mitbestimmung."),
+        ("Was bedeutet \"Wahlrecht\" in einer modernen Demokratie?", new[] { "Das Recht, bei Wahlen die eigene Stimme abzugeben", "Die Pflicht, für eine bestimmte Partei zu stimmen", "Ein Vorrecht nur für bestimmte Berufsgruppen" }, "Das Recht, bei Wahlen die eigene Stimme abzugeben",
+            "Das Wahlrecht gibt Bürgerinnen und Bürgern das Recht, bei politischen Wahlen ihre Stimme abzugeben."),
+        ("Was ist ein Beispiel für einen Interessenkonflikt im lokalen Umfeld, wie er in einer Demokratie gelöst werden muss?", new[] { "Streit um die Nutzung einer Fläche, z.B. für einen Spielplatz oder einen Parkplatz", "Zwei Personen mögen dasselbe Buch", "Ein Streit ohne jede Lösungsmöglichkeit" }, "Streit um die Nutzung einer Fläche, z.B. für einen Spielplatz oder einen Parkplatz",
+            "Interessenkonflikte, etwa um die Nutzung einer Fläche für Spielplatz oder Parkplatz, müssen in einer Demokratie durch Diskussion und Abstimmung gelöst werden."),
+        ("Was bedeutet \"Mehrheitsprinzip\" bei demokratischen Abstimmungen?", new[] { "Die Meinung, die die meisten Stimmen erhält, setzt sich in der Regel durch", "Nur eine einzige Person entscheidet immer allein", "Abstimmungsergebnisse werden zufällig ausgelost" }, "Die Meinung, die die meisten Stimmen erhält, setzt sich in der Regel durch",
+            "Nach dem Mehrheitsprinzip setzt sich bei einer Abstimmung in der Regel die Position durch, die die meisten Stimmen erhalten hat."),
+        ("Warum ist der Minderheitenschutz in einer Demokratie trotz Mehrheitsprinzip wichtig?", new[] { "Auch die Rechte und Interessen von Menschen in der Minderheit müssen geachtet werden", "Minderheiten haben in einer Demokratie keine Rechte", "Minderheitenschutz widerspricht grundsätzlich der Demokratie" }, "Auch die Rechte und Interessen von Menschen in der Minderheit müssen geachtet werden",
+            "Damit die Mehrheit nicht über die Rechte Einzelner hinweggeht, schützt eine funktionierende Demokratie auch die Interessen von Minderheiten."),
+        ("Was unterscheidet eine Demokratie grundsätzlich von einer Diktatur?", new[] { "In einer Demokratie kann die Bevölkerung die Regierung wählen und kontrollieren", "In einer Diktatur haben alle Bürger gleich viel Mitspracherecht", "Beide Regierungsformen sind identisch" }, "In einer Demokratie kann die Bevölkerung die Regierung wählen und kontrollieren",
+            "In einer Demokratie wählt und kontrolliert die Bevölkerung die Regierung, während in einer Diktatur die Macht meist bei Einzelnen oder wenigen liegt, ohne echte Kontrolle durch das Volk."),
+        ("Wie können sich Jugendliche schon vor dem Erreichen des Wahlalters an Mitbestimmung beteiligen?", new[] { "Z.B. über Klassenrat, Schülervertretung oder Jugendparlamente", "Jugendliche haben grundsätzlich keinerlei Möglichkeit zur Mitbestimmung", "Nur durch das Bundestagswahlrecht" }, "Z.B. über Klassenrat, Schülervertretung oder Jugendparlamente",
+            "Auch vor dem Erreichen des Wahlalters können sich Jugendliche z.B. über Klassenrat, Schülervertretung oder Jugendparlamente an Entscheidungen beteiligen."),
+        ("Was war ein wesentlicher Unterschied zwischen der athenischen Demokratie und modernen Demokratien in Bezug auf die Größe der Bevölkerung?", new[] { "Athen war eine kleine Stadt, moderne Demokratien umfassen oft Millionen Menschen", "Athen hatte mehr Einwohner als heutige Staaten", "Beide hatten exakt dieselbe Bevölkerungsgröße" }, "Athen war eine kleine Stadt, moderne Demokratien umfassen oft Millionen Menschen",
+            "Da moderne Staaten viel größer als das antike Athen sind, ist direkte Demokratie über alle Themen praktisch kaum umsetzbar - deshalb wählt man Vertreter."),
+        ("Was ist eine Volksabstimmung (Referendum)?", new[] { "Eine direkte Abstimmung der Bevölkerung über eine bestimmte Sachfrage", "Eine Wahl von Abgeordneten ins Parlament", "Ein Gerichtsverfahren" }, "Eine direkte Abstimmung der Bevölkerung über eine bestimmte Sachfrage",
+            "Bei einer Volksabstimmung stimmt die Bevölkerung direkt über eine konkrete politische Sachfrage ab, statt nur Vertreter zu wählen."),
+        ("Warum ist Redefreiheit für eine funktionierende Demokratie wichtig?", new[] { "Bürgerinnen und Bürger können ihre Meinung offen äußern und mitdiskutieren", "Redefreiheit ist für Demokratien unwichtig", "In einer Demokratie darf nur die Regierung sprechen" }, "Bürgerinnen und Bürger können ihre Meinung offen äußern und mitdiskutieren",
+            "Ohne Redefreiheit könnten Bürgerinnen und Bürger nicht offen über politische Themen diskutieren und mitbestimmen."),
+        ("Was zeigt das Beispiel des antiken Athen über die Entwicklung demokratischer Ideen?", new[] { "Demokratische Grundideen wie Mitbestimmung haben eine sehr lange Geschichte", "Demokratie ist eine ganz neue Erfindung des 21. Jahrhunderts", "Demokratische Ideen entstanden erst nach dem Zweiten Weltkrieg" }, "Demokratische Grundideen wie Mitbestimmung haben eine sehr lange Geschichte",
+            "Schon vor über 2000 Jahren entwickelten die Menschen im antiken Athen grundlegende demokratische Ideen wie Mitbestimmung durch die Bürgerschaft."),
+        ("Was ist eine Bürgerinitiative?", new[] { "Ein freiwilliger Zusammenschluss von Bürgerinnen und Bürgern, um sich für ein bestimmtes Anliegen einzusetzen", "Eine staatliche Behörde", "Ein anderes Wort für Parlament" }, "Ein freiwilliger Zusammenschluss von Bürgerinnen und Bürgern, um sich für ein bestimmtes Anliegen einzusetzen",
+            "In einer Bürgerinitiative engagieren sich Menschen freiwillig gemeinsam für ein lokales oder gesellschaftliches Anliegen."),
+        ("Warum gilt Gleichberechtigung als wichtiges Ziel moderner Demokratien im Unterschied zur athenischen Demokratie?", new[] { "Heute sollen alle Menschen unabhängig von Geschlecht oder Herkunft gleiche politische Rechte haben", "Gleichberechtigung war in Athen bereits vollständig verwirklicht", "Gleichberechtigung spielt in Demokratien keine Rolle" }, "Heute sollen alle Menschen unabhängig von Geschlecht oder Herkunft gleiche politische Rechte haben",
+            "Anders als im antiken Athen, wo nur ein Teil der Bevölkerung Rechte hatte, streben moderne Demokratien nach gleichen politischen Rechten für alle Menschen."),
+        ("Was bedeutet das Losverfahren, das im antiken Athen für manche öffentliche Ämter genutzt wurde?", new[] { "Bestimmte Ämter wurden per Zufall unter den Bürgern verlost statt gewählt", "Alle Ämter wurden vererbt", "Ämter wurden ausschließlich durch Reichtum vergeben" }, "Bestimmte Ämter wurden per Zufall unter den Bürgern verlost statt gewählt",
+            "Im antiken Athen wurden manche öffentliche Ämter durch Losverfahren unter den stimmberechtigten Bürgern vergeben, um Machtmissbrauch vorzubeugen.")
+    };
+
+    private static QuizQuestion DemokratieUndMitbestimmung(Random r)
+    {
+        var f = DemokratieMitList[r.Next(DemokratieMitList.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Demokratie und Mitbestimmung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Die Demokratie entstand im antiken Athen (nur für freie männliche Bürger); heute gilt das Wahlrecht für alle - im Alltag übt man Mitbestimmung z.B. im Klassenrat."
         };
     }
 
