@@ -34,7 +34,12 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
     private static readonly (string Fiil, string Simdiki)[] SimdikiZamanBeispiele =
     {
         ("gitmek", "gidiyor"), ("okumak", "okuyor"), ("yazmak", "yazıyor"),
-        ("oynamak", "oynuyor"), ("koşmak", "koşuyor"), ("gelmek", "geliyor")
+        ("oynamak", "oynuyor"), ("koşmak", "koşuyor"), ("gelmek", "geliyor"),
+        ("içmek", "içiyor"), ("görmek", "görüyor"), ("bilmek", "biliyor"),
+        ("sevmek", "seviyor"), ("gülmek", "gülüyor"), ("ağlamak", "ağlıyor"),
+        ("uyumak", "uyuyor"), ("konuşmak", "konuşuyor"), ("düşünmek", "düşünüyor"),
+        ("beklemek", "bekliyor"), ("çalışmak", "çalışıyor"), ("dinlemek", "dinliyor"),
+        ("anlamak", "anlıyor"), ("yemek", "yiyor")
     };
 
     private static QuizQuestion SimdikiZaman(Random r)
@@ -58,7 +63,12 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
     private static readonly (string Fiil, string Gecmis)[] GecmisZamanBeispiele =
     {
         ("gelmek", "geldi"), ("almak", "aldı"), ("görmek", "gördü"),
-        ("okumak", "okudu"), ("yazmak", "yazdı"), ("gitmek", "gitti")
+        ("okumak", "okudu"), ("yazmak", "yazdı"), ("gitmek", "gitti"),
+        ("içmek", "içti"), ("bilmek", "bildi"), ("sevmek", "sevdi"),
+        ("gülmek", "güldü"), ("ağlamak", "ağladı"), ("uyumak", "uyudu"),
+        ("konuşmak", "konuştu"), ("düşünmek", "düşündü"), ("beklemek", "bekledi"),
+        ("çalışmak", "çalıştı"), ("dinlemek", "dinledi"), ("anlamak", "anladı"),
+        ("yemek", "yedi"), ("oynamak", "oynadı")
     };
 
     private static QuizQuestion GecmisZaman(Random r)
@@ -85,7 +95,22 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("büyük", "iri", new[] { "küçük", "az", "kısa" }),
         ("güzel", "hoş", new[] { "çirkin", "kötü", "sıkıcı" }),
         ("hızlı", "çabuk", new[] { "yavaş", "ağır", "durgun" }),
-        ("akıllı", "zeki", new[] { "aptal", "tembel", "yorgun" })
+        ("akıllı", "zeki", new[] { "aptal", "tembel", "yorgun" }),
+        ("üzgün", "kederli", new[] { "mutlu", "neşeli", "sakin" }),
+        ("cesur", "yürekli", new[] { "korkak", "çekingen", "tembel" }),
+        ("yorgun", "bitkin", new[] { "dinç", "zinde", "canlı" }),
+        ("kolay", "basit", new[] { "zor", "karmaşık", "güç" }),
+        ("zengin", "varlıklı", new[] { "fakir", "yoksul", "muhtaç" }),
+        ("temiz", "pak", new[] { "kirli", "pis", "bulaşık" }),
+        ("sessiz", "sakin", new[] { "gürültülü", "yüksek sesli", "hareketli" }),
+        ("cömert", "eli açık", new[] { "cimri", "pinti", "hasis" }),
+        ("korkak", "ürkek", new[] { "cesur", "yiğit", "atılgan" }),
+        ("tembel", "uyuşuk", new[] { "çalışkan", "gayretli", "hareketli" }),
+        ("güçlü", "kuvvetli", new[] { "zayıf", "güçsüz", "halsiz" }),
+        ("neşeli", "şen", new[] { "üzgün", "kederli", "asık suratlı" }),
+        ("eski", "köhne", new[] { "yeni", "modern", "taze" }),
+        ("basit", "yalın", new[] { "karmaşık", "zor", "girift" }),
+        ("ünlü", "meşhur", new[] { "tanınmamış", "bilinmeyen", "sıradan" })
     };
 
     private static QuizQuestion EsAnlamli(Random r)
@@ -114,7 +139,22 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("uzun", "kısa", new[] { "geniş", "dar", "derin" }),
         ("kolay", "zor", new[] { "basit", "hızlı", "yavaş" }),
         ("erken", "geç", new[] { "yakın", "uzak", "yeni" }),
-        ("kalın", "ince", new[] { "sert", "yumuşak", "ağır" })
+        ("kalın", "ince", new[] { "sert", "yumuşak", "ağır" }),
+        ("büyük", "küçük", new[] { "orta", "iri", "kocaman" }),
+        ("hızlı", "yavaş", new[] { "seri", "çevik", "atik" }),
+        ("güzel", "çirkin", new[] { "hoş", "şık", "sevimli" }),
+        ("temiz", "kirli", new[] { "pak", "düzenli", "bakımlı" }),
+        ("açık", "kapalı", new[] { "aralık", "yarım", "geniş" }),
+        ("yukarı", "aşağı", new[] { "yan", "ileri", "geri" }),
+        ("ileri", "geri", new[] { "yukarı", "yan", "aşağı" }),
+        ("dolu", "boş", new[] { "yarım", "az", "hafif" }),
+        ("ağır", "hafif", new[] { "kalın", "büyük", "sert" }),
+        ("zengin", "fakir", new[] { "varlıklı", "cömert", "tok" }),
+        ("genç", "yaşlı", new[] { "küçük", "olgun", "deneyimli" }),
+        ("gündüz", "gece", new[] { "sabah", "akşam", "öğle" }),
+        ("iyi", "kötü", new[] { "güzel", "hoş", "mükemmel" }),
+        ("mutlu", "mutsuz", new[] { "üzgün", "sinirli", "yorgun" }),
+        ("sabah", "akşam", new[] { "öğle", "gece", "gündüz" })
     };
 
     private static QuizQuestion ZitAnlamli(Random r)
@@ -144,7 +184,21 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("çevre kirliliği", "Umweltverschmutzung", new[] { "Umweltschutz", "Naturschutz", "Klimawandel" }),
         ("geri dönüşüm", "Recycling", new[] { "Müllabfuhr", "Umweltschutz", "Naturschutz" }),
         ("hayvan türü", "Tierart", new[] { "Pflanzenart", "Lebensraum", "Ökosystem" }),
-        ("iklim değişikliği", "Klimawandel", new[] { "Umweltverschmutzung", "Naturschutz", "Wetterbericht" })
+        ("iklim değişikliği", "Klimawandel", new[] { "Umweltverschmutzung", "Naturschutz", "Wetterbericht" }),
+        ("deniz", "Meer", new[] { "Teich", "Bach", "Brunnen" }),
+        ("dağ", "Berg", new[] { "Tal", "Hügel", "Wüste" }),
+        ("göl", "See", new[] { "Meer", "Fluss", "Teich" }),
+        ("hava kirliliği", "Luftverschmutzung", new[] { "Wasserverschmutzung", "Umweltschutz", "Lärmbelastung" }),
+        ("güneş enerjisi", "Sonnenenergie", new[] { "Windenergie", "Wasserkraft", "Kernenergie" }),
+        ("yenilenebilir enerji", "Erneuerbare Energie", new[] { "Fossile Energie", "Atomenergie", "Kohleenergie" }),
+        ("sera etkisi", "Treibhauseffekt", new[] { "Ozonloch", "Klimawandel", "Luftverschmutzung" }),
+        ("çöl", "Wüste", new[] { "Steppe", "Savanne", "Tundra" }),
+        ("yağmur ormanı", "Regenwald", new[] { "Nadelwald", "Laubwald", "Mischwald" }),
+        ("doğal kaynak", "natürliche Ressource", new[] { "künstliche Ressource", "Rohstoffmangel", "Energiequelle" }),
+        ("ekosistem", "Ökosystem", new[] { "Lebensraum", "Nahrungskette", "Biotop" }),
+        ("biyoçeşitlilik", "Artenvielfalt", new[] { "Umweltschutz", "Naturschutz", "Tierschutz" }),
+        ("nesli tükenmekte olan tür", "vom Aussterben bedrohte Art", new[] { "geschützte Art", "seltene Art", "wilde Art" }),
+        ("su tasarrufu", "Wassersparen", new[] { "Wasserverschmutzung", "Wasserversorgung", "Wasserkraft" })
     };
 
     private static QuizQuestion DogaVeCevre(Random r)
@@ -173,7 +227,22 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("Ali topu attı.", "Özne", "Ali"),
         ("Annem bana kitap aldı.", "Nesne", "kitap"),
         ("Öğretmen sınıfta ders anlattı.", "Yer Tamlayıcısı (Zarf Tümleci)", "sınıfta"),
-        ("Çocuklar bahçede oynadı.", "Yer Tamlayıcısı (Zarf Tümleci)", "bahçede")
+        ("Çocuklar bahçede oynadı.", "Yer Tamlayıcısı (Zarf Tümleci)", "bahçede"),
+        ("Annem bana kitap aldı.", "Özne", "Annem"),
+        ("Öğretmen sınıfta ders anlattı.", "Yüklem", "anlattı"),
+        ("Çocuklar bahçede oynadı.", "Özne", "Çocuklar"),
+        ("Kedi süt içti.", "Yüklem", "içti"),
+        ("Kedi süt içti.", "Nesne", "süt"),
+        ("Babam arabayı yıkadı.", "Nesne", "arabayı"),
+        ("Babam arabayı yıkadı.", "Özne", "Babam"),
+        ("Kardeşim akşam eve geldi.", "Zaman Tamlayıcısı (Zarf Tümleci)", "akşam"),
+        ("Kardeşim akşam eve geldi.", "Yer Tamlayıcısı (Zarf Tümleci)", "eve"),
+        ("Ayşe dün mektup yazdı.", "Zaman Tamlayıcısı (Zarf Tümleci)", "dün"),
+        ("Ayşe dün mektup yazdı.", "Nesne", "mektup"),
+        ("Öğrenciler parkta top oynadı.", "Yer Tamlayıcısı (Zarf Tümleci)", "parkta"),
+        ("Öğrenciler parkta top oynadı.", "Nesne", "top"),
+        ("Anne mutfakta yemek pişirdi.", "Yer Tamlayıcısı (Zarf Tümleci)", "mutfakta"),
+        ("Anne mutfakta yemek pişirdi.", "Nesne", "yemek")
     };
 
     private static QuizQuestion CumleOgeleri(Random r)
@@ -197,7 +266,12 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
     private static readonly (string Fiil, string Gelecek)[] GelecekZamanBeispiele =
     {
         ("gitmek", "gidecek"), ("gelmek", "gelecek"), ("okumak", "okuyacak"),
-        ("yazmak", "yazacak"), ("oynamak", "oynayacak")
+        ("yazmak", "yazacak"), ("oynamak", "oynayacak"),
+        ("içmek", "içecek"), ("görmek", "görecek"), ("bilmek", "bilecek"),
+        ("sevmek", "sevecek"), ("gülmek", "gülecek"), ("ağlamak", "ağlayacak"),
+        ("uyumak", "uyuyacak"), ("konuşmak", "konuşacak"), ("düşünmek", "düşünecek"),
+        ("beklemek", "bekleyecek"), ("çalışmak", "çalışacak"), ("dinlemek", "dinleyecek"),
+        ("anlamak", "anlayacak"), ("yemek", "yiyecek"), ("almak", "alacak")
     };
 
     private static QuizQuestion GelecekZaman(Random r)
@@ -224,7 +298,22 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("Kitab___ okudum.", "ı", "\"Kitap\" kelimesi ünlüyle başlayan ek aldığında p -> b yumuşamasına uğrar: kitab-ı."),
         ("Ali'___ gördüm.", "yi", "Özel isimlere gelen ekler kesme işareti ile ayrılır: Ali'yi."),
         ("Renkli kalem___ getir.", "i", "Belirtili nesne \"-i\" hâl ekini alır: kalem-i."),
-        ("Öğretmen___ soruyu sordu.", "e", "Yönelme (-e/-a) hâl eki, ünsüz yumuşamasına uğramayan kelimelere doğrudan eklenir: öğretmen-e.")
+        ("Öğretmen___ soruyu sordu.", "e", "Yönelme (-e/-a) hâl eki, ünsüz yumuşamasına uğramayan kelimelere doğrudan eklenir: öğretmen-e."),
+        ("Yarın parka gid___im.", "eceğ", "Gelecek zaman ekinin sonundaki \"k\", ünlüyle başlayan kişi ekinden önce \"ğ\"ye yumuşar: gid-eceğ-im."),
+        ("Kitabı yarın oku___ım.", "yacağ", "Ünlüyle biten fiile gelecek zaman eki \"y\" kaynaştırma harfiyle eklenir, sondaki \"k\" de ünlüden önce yumuşar: oku-yacağ-ım."),
+        ("Yarın erken kalk___ım.", "acağ", "Gelecek zaman ekinin sonundaki \"k\", ünlüyle başlayan kişi ekinden önce \"ğ\"ye yumuşar: kalk-acağ-ım."),
+        ("Dolab___ açtım.", "ı", "\"Dolap\" kelimesi ünlüyle başlayan ek aldığında p -> b yumuşamasına uğrar: dolab-ı."),
+        ("Ağac___ çok büyük.", "ı", "\"Ağaç\" kelimesi ünlüyle başlayan ek aldığında ç -> c yumuşamasına uğrar: ağac-ı."),
+        ("Kağıd___ buruştu.", "ı", "\"Kağıt\" kelimesi ünlüyle başlayan ek aldığında t -> d yumuşamasına uğrar: kağıd-ı."),
+        ("Zeynep'___ aradım.", "i", "Özel isimlere gelen ekler kesme işareti ile ayrılır: Zeynep'i."),
+        ("İstanbul'___ gittik.", "a", "Özel isimlere gelen ekler kesme işareti ile ayrılır: İstanbul'a."),
+        ("Mehmet'___ kitap verdim.", "e", "Özel isimlere gelen ekler kesme işareti ile ayrılır: Mehmet'e."),
+        ("Yeni çanta___ aldım.", "yı", "Belirtili nesne \"-yı\" hâl ekini alır (ünlüyle biten kelimeye kaynaştırma harfi \"y\" ile): çanta-yı."),
+        ("Kırmızı elma___ ye.", "yı", "Belirtili nesne hâl eki ünlüyle biten kelimeye \"y\" kaynaştırma harfiyle eklenir: elma-yı."),
+        ("Büyük top___ getir.", "u", "Belirtili nesne \"-u\" hâl ekini alır (ünlü uyumuna göre): top-u."),
+        ("Anne___ çiçek getirdim.", "ye", "Yönelme hâl eki ünlüyle biten kelimeye \"y\" kaynaştırma harfiyle eklenir: anne-ye."),
+        ("Okul___ gidiyorum.", "a", "Yönelme (-e/-a) hâl eki ünsüz yumuşamasına uğramayan kelimelere doğrudan eklenir: okul-a."),
+        ("Doktor___ gittik.", "a", "Yönelme (-e/-a) hâl eki, ünlü uyumuna göre kelimeye doğrudan eklenir: doktor-a.")
     };
 
     private static QuizQuestion YazimKurallari(Random r)
@@ -251,7 +340,22 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("Okumadan sınava girdi.", "Okumadan", "Zarf-fiil (Adverbialpartizip)"),
         ("Yüzmek çok eğlencelidir.", "Yüzmek", "İsim-fiil (Verbalnomen)"),
         ("Gülen yüzüyle herkesi mutlu etti.", "Gülen", "Sıfat-fiil (Partizip)"),
-        ("Eve gelir gelmez uyudu.", "gelir gelmez", "Zarf-fiil (Adverbialpartizip)")
+        ("Eve gelir gelmez uyudu.", "gelir gelmez", "Zarf-fiil (Adverbialpartizip)"),
+        ("Uçan kuşu izledik.", "Uçan", "Sıfat-fiil (Partizip)"),
+        ("Yazmak benim hobimdir.", "Yazmak", "İsim-fiil (Verbalnomen)"),
+        ("Konuşurken gülümsedi.", "Konuşurken", "Zarf-fiil (Adverbialpartizip)"),
+        ("Kırılan cam yerlere düştü.", "Kırılan", "Sıfat-fiil (Partizip)"),
+        ("Okumak çok önemlidir.", "Okumak", "İsim-fiil (Verbalnomen)"),
+        ("Eve varınca telefon etti.", "varınca", "Zarf-fiil (Adverbialpartizip)"),
+        ("Gelen misafirleri karşıladık.", "Gelen", "Sıfat-fiil (Partizip)"),
+        ("Yüzmeyi çok seviyorum.", "Yüzmeyi", "İsim-fiil (Verbalnomen)"),
+        ("Düşünmeden konuştu.", "Düşünmeden", "Zarf-fiil (Adverbialpartizip)"),
+        ("Ağlayan bebek uyudu.", "Ağlayan", "Sıfat-fiil (Partizip)"),
+        ("Koşmak sağlık için iyidir.", "Koşmak", "İsim-fiil (Verbalnomen)"),
+        ("Kapıyı açar açmaz içeri girdi.", "açar açmaz", "Zarf-fiil (Adverbialpartizip)"),
+        ("Uyuyan çocuğu uyandırmadık.", "Uyuyan", "Sıfat-fiil (Partizip)"),
+        ("Yazmak zaman alır.", "Yazmak", "İsim-fiil (Verbalnomen)"),
+        ("Gülerek bize baktı.", "Gülerek", "Zarf-fiil (Adverbialpartizip)")
     };
 
     private static QuizQuestion FiilimsiTuru(Random r)
