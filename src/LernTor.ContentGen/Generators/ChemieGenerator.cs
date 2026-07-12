@@ -12,7 +12,7 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften, StoffeImAlltag },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { Atommodell, ChemischeReaktion, Periodensystem }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { Atommodell, ChemischeReaktion, Periodensystem, Stoechiometrie, SaeureBaseVertieft, Kohlenwasserstoffe, Alkohole, OrganischeSaeuren, Ester }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TrennListe =
@@ -463,6 +463,342 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
             Topic = "Periodensystem", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Elemente in derselben Spalte (Gruppe) des Periodensystems haben ähnliche Eigenschaften - Edelgase reagieren kaum."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StoechiometrieListe =
+    {
+        ("Was ist ein Mol in der Chemie?", new[] { "Eine festgelegte Stoffmenge von genau 6,022 · 10^23 Teilchen", "Ein anderes Wort für Gramm", "Eine Einheit für die Temperatur" }, "Eine festgelegte Stoffmenge von genau 6,022 · 10^23 Teilchen",
+            "Ein Mol entspricht der Avogadro-Konstante von rund 6,022 · 10^23 Teilchen (Atomen, Molekülen oder Ionen) eines Stoffes."),
+        ("Was beschreibt die molare Masse eines Stoffes?", new[] { "Die Masse von einem Mol dieses Stoffes in Gramm pro Mol", "Die Masse eines einzelnen Atoms in Kilogramm", "Das Volumen eines Stoffes bei Zimmertemperatur" }, "Die Masse von einem Mol dieses Stoffes in Gramm pro Mol",
+            "Die molare Masse gibt an, wie viel Gramm ein Mol eines Stoffes wiegt, z.B. hat Wasser (H₂O) eine molare Masse von etwa 18 g/mol."),
+        ("Wie berechnet man die Stoffmenge n aus der gegebenen Masse m und der molaren Masse M?", new[] { "n = m / M", "n = m · M", "n = M / m" }, "n = m / M",
+            "Die Stoffmenge in Mol ergibt sich, indem man die Masse eines Stoffes durch seine molare Masse teilt (n = m/M)."),
+        ("Was gibt die Stoffmengenkonzentration einer wässrigen Lösung an?", new[] { "Wie viel Mol eines gelösten Stoffes in einem Liter Lösung enthalten sind", "Nur die Farbe der Lösung", "Die Temperatur der Lösung" }, "Wie viel Mol eines gelösten Stoffes in einem Liter Lösung enthalten sind",
+            "Die Stoffmengenkonzentration (in mol/l) beschreibt, wie viel Mol eines gelösten Stoffes in einem Liter der Lösung vorhanden sind."),
+        ("Was bedeutet \"stöchiometrisches Rechnen\" bei einer chemischen Reaktion?", new[] { "Die Mengenverhältnisse von Edukten und Produkten anhand der Reaktionsgleichung berechnen", "Nur die Farbe der Reaktion beschreiben", "Die Reaktionszeit mit einer Stoppuhr messen" }, "Die Mengenverhältnisse von Edukten und Produkten anhand der Reaktionsgleichung berechnen",
+            "Stöchiometrisches Rechnen nutzt die Zahlenverhältnisse einer ausgeglichenen Reaktionsgleichung, um Massen, Stoffmengen oder Volumina von Edukten und Produkten zu berechnen."),
+        ("Warum muss eine chemische Reaktionsgleichung ausgeglichen (stimmig) sein, bevor man stöchiometrisch rechnet?", new[] { "Damit die Anzahl der Atome auf beiden Seiten der Gleichung übereinstimmt (Erhaltung der Masse)", "Weil das Aussehen der Gleichung sonst nicht ordentlich wäre", "Ausgeglichene Gleichungen sind für die Rechnung nicht notwendig" }, "Damit die Anzahl der Atome auf beiden Seiten der Gleichung übereinstimmt (Erhaltung der Masse)",
+            "Nach dem Gesetz der Erhaltung der Masse müssen bei einer chemischen Reaktion auf beiden Seiten der Gleichung gleich viele Atome jeder Sorte vorhanden sein."),
+        ("Was versteht man unter einer isotonischen Kochsalzlösung?", new[] { "Eine Salzlösung mit einer Konzentration, die der des menschlichen Blutes entspricht", "Eine Lösung ganz ohne gelöstes Salz", "Eine Lösung mit maximal möglicher Salzkonzentration" }, "Eine Salzlösung mit einer Konzentration, die der des menschlichen Blutes entspricht",
+            "Eine isotonische Kochsalzlösung (ca. 0,9 % NaCl) hat eine Konzentration, die osmotisch der von Blutplasma entspricht und wird u.a. medizinisch verwendet."),
+        ("Welches Gasvolumen nimmt ein Mol eines idealen Gases bei Normbedingungen ungefähr ein?", new[] { "Etwa 22,4 Liter", "Etwa 1 Liter", "Etwa 100 Liter" }, "Etwa 22,4 Liter",
+            "Unter Normbedingungen (0 °C, 1013 hPa) nimmt ein Mol eines idealen Gases ein molares Volumen von etwa 22,4 Litern ein."),
+        ("Wie berechnet man die Masse eines Reaktionsprodukts, wenn man die eingesetzte Stoffmenge und die molare Masse des Produkts kennt?", new[] { "Man multipliziert die Stoffmenge mit der molaren Masse (m = n · M)", "Man dividiert die Stoffmenge durch die Zeit", "Man addiert die Stoffmenge und die molare Masse" }, "Man multipliziert die Stoffmenge mit der molaren Masse (m = n · M)",
+            "Die Masse eines Stoffes berechnet man, indem man die vorhandene Stoffmenge mit seiner molaren Masse multipliziert (m = n · M)."),
+        ("Was ist die molare Masse von Wasser (H₂O) ungefähr, ausgehend von H ≈ 1 g/mol und O ≈ 16 g/mol?", new[] { "Etwa 18 g/mol", "Etwa 2 g/mol", "Etwa 32 g/mol" }, "Etwa 18 g/mol",
+            "Wasser besteht aus zwei Wasserstoffatomen (2 · 1 g/mol) und einem Sauerstoffatom (16 g/mol), zusammen ergibt das etwa 18 g/mol."),
+        ("Warum ist das Mol als \"Zählmaß\" in der Chemie besonders praktisch?", new[] { "Es erlaubt, mit sehr großen Teilchenzahlen wie mit handlichen, alltagstauglichen Zahlen zu rechnen", "Weil ein Mol immer exakt einem Gramm entspricht", "Weil sich damit die Farbe von Stoffen bestimmen lässt" }, "Es erlaubt, mit sehr großen Teilchenzahlen wie mit handlichen, alltagstauglichen Zahlen zu rechnen",
+            "Da einzelne Atome und Moleküle extrem klein und zahlreich sind, fasst das Mol riesige Teilchenzahlen in handlichen, gut nutzbaren Werten zusammen."),
+        ("Wie verändert sich die Stoffmengenkonzentration einer Lösung, wenn man dieselbe Menge Salz in mehr Wasser löst?", new[] { "Sie sinkt, da dieselbe Stoffmenge auf ein größeres Volumen verteilt wird", "Sie steigt automatisch an", "Sie bleibt exakt unverändert" }, "Sie sinkt, da dieselbe Stoffmenge auf ein größeres Volumen verteilt wird",
+            "Da die Konzentration Stoffmenge pro Volumen beschreibt, sinkt sie, wenn dieselbe Stoffmenge in mehr Lösungsmittel verdünnt wird."),
+        ("Was bedeutet die Avogadro-Konstante für die Chemie?", new[] { "Sie gibt die Anzahl der Teilchen in einem Mol an", "Sie gibt die Temperatur an, bei der Wasser kocht", "Sie beschreibt nur die Farbe chemischer Verbindungen" }, "Sie gibt die Anzahl der Teilchen in einem Mol an",
+            "Die Avogadro-Konstante (ca. 6,022 · 10^23 pro Mol) definiert, wie viele Teilchen in einem Mol eines Stoffes enthalten sind."),
+        ("Warum spielt stöchiometrisches Rechnen im Labor eine wichtige praktische Rolle?", new[] { "Es hilft, die richtigen Mengen an Ausgangsstoffen für eine gewünschte Reaktion abzumessen", "Es hat im echten Labor keinerlei praktische Bedeutung", "Es dient ausschließlich der Beschreibung der Reaktionsfarbe" }, "Es hilft, die richtigen Mengen an Ausgangsstoffen für eine gewünschte Reaktion abzumessen",
+            "Stöchiometrische Berechnungen ermöglichen es, im Labor exakt die benötigten Mengen an Chemikalien für eine gewünschte Reaktion und Ausbeute einzusetzen."),
+        ("Wie verändert sich das Volumen eines Gases bei einer chemischen Reaktion im Vergleich zu seiner Stoffmenge, bei gleichbleibenden Bedingungen (Temperatur, Druck)?", new[] { "Das Volumen ist direkt proportional zur Stoffmenge des Gases", "Volumen und Stoffmenge stehen in keinerlei Zusammenhang", "Das Volumen verringert sich immer, wenn die Stoffmenge steigt" }, "Das Volumen ist direkt proportional zur Stoffmenge des Gases",
+            "Bei gleichbleibenden Bedingungen ist das Volumen eines Gases direkt proportional zu seiner Stoffmenge (mehr Mol Gas nehmen mehr Volumen ein)."),
+        ("Was ist ein Beispiel für die praktische Anwendung von Stoffmengenkonzentrationen im Alltag?", new[] { "Die Dosierung von Kochsalzlösungen in der Medizin", "Die Bestimmung der Uhrzeit", "Das Wiegen von Gegenständen ohne jeden Bezug zu Lösungen" }, "Die Dosierung von Kochsalzlösungen in der Medizin",
+            "Genaue Konzentrationsangaben sind z.B. bei medizinischen Infusionslösungen entscheidend, damit sie im Körper richtig wirken."),
+        ("Was passiert mit der Stoffmenge eines Edukts, wenn es bei einer Reaktion vollständig umgesetzt wird?", new[] { "Seine Stoffmenge sinkt auf null, während Produkte entsprechend der Reaktionsgleichung entstehen", "Seine Stoffmenge bleibt exakt unverändert", "Seine Stoffmenge steigt während der Reaktion immer weiter an" }, "Seine Stoffmenge sinkt auf null, während Produkte entsprechend der Reaktionsgleichung entstehen",
+            "Wird ein Edukt vollständig verbraucht, sinkt seine Stoffmenge auf null, während gleichzeitig entsprechend den stöchiometrischen Verhältnissen Produkte entstehen."),
+        ("Warum kann man aus der Reaktionsgleichung 2 H₂ + O₂ → 2 H₂O ablesen, wie viel Mol Wasserstoff für ein Mol Sauerstoff benötigt werden?", new[] { "Die Zahlen vor den Formeln (Koeffizienten) geben das Stoffmengenverhältnis der Reaktion an", "Die Reaktionsgleichung sagt nichts über Mengenverhältnisse aus", "Nur die chemischen Symbole selbst, nicht die Zahlen davor, sind relevant" }, "Die Zahlen vor den Formeln (Koeffizienten) geben das Stoffmengenverhältnis der Reaktion an",
+            "Die Koeffizienten vor den Formeln in einer ausgeglichenen Reaktionsgleichung geben direkt das Stoffmengenverhältnis an, in dem die Stoffe reagieren."),
+        ("Was ist ein Grund, warum in der Chemie oft mit der Einheit \"mol/l\" statt direkt mit Gramm gearbeitet wird?", new[] { "So lassen sich Teilchenzahlen unabhängig von unterschiedlichen molaren Massen direkt vergleichen", "Gramm ist in der Chemie grundsätzlich verboten zu verwenden", "mol/l hat mit der Stoffmenge nichts zu tun" }, "So lassen sich Teilchenzahlen unabhängig von unterschiedlichen molaren Massen direkt vergleichen",
+            "Da unterschiedliche Stoffe unterschiedliche molare Massen haben, ermöglicht die Angabe in mol/l einen direkten Vergleich der tatsächlichen Teilchenzahlen in Lösungen."),
+        ("Welche zwei Größen braucht man mindestens, um die Stoffmengenkonzentration einer Lösung zu berechnen?", new[] { "Die Stoffmenge des gelösten Stoffes und das Volumen der Lösung", "Nur die Farbe und den Geruch der Lösung", "Nur die Raumtemperatur des Labors" }, "Die Stoffmenge des gelösten Stoffes und das Volumen der Lösung",
+            "Die Stoffmengenkonzentration berechnet sich als Stoffmenge (in mol) geteilt durch das Volumen der Lösung (in Litern).")
+    };
+
+    private static QuizQuestion Stoechiometrie(Random r)
+    {
+        var f = StoechiometrieListe[r.Next(StoechiometrieListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Klare Verhältnisse – Stöchiometrie", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ein Mol sind 6,022 · 10^23 Teilchen; Stoffmenge n = Masse m / molare Masse M; die Koeffizienten der Reaktionsgleichung geben die Stoffmengenverhältnisse an."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SaeureBaseListe =
+    {
+        ("Was gibt der pH-Wert einer Lösung an?", new[] { "Wie sauer oder basisch (alkalisch) eine Lösung ist", "Die Temperatur einer Lösung", "Die Farbe einer Lösung" }, "Wie sauer oder basisch (alkalisch) eine Lösung ist",
+            "Der pH-Wert misst die Konzentration von Wasserstoff- bzw. Oxonium-Ionen und zeigt, wie sauer (niedriger pH) oder basisch (hoher pH) eine Lösung ist."),
+        ("Welcher pH-Wert gilt als neutral, wie bei reinem Wasser?", new[] { "pH 7", "pH 0", "pH 14" }, "pH 7",
+            "Reines Wasser hat bei Raumtemperatur einen neutralen pH-Wert von etwa 7 - Werte darunter gelten als sauer, darüber als basisch."),
+        ("Was passiert bei einer Neutralisationsreaktion zwischen einer Säure und einer Lauge?", new[] { "Wasserstoff-Ionen und Hydroxid-Ionen reagieren zu Wasser, ein Salz entsteht", "Es entsteht ausschließlich ein neues Gas ohne Wasser", "Es findet grundsätzlich keine chemische Reaktion statt" }, "Wasserstoff-Ionen und Hydroxid-Ionen reagieren zu Wasser, ein Salz entsteht",
+            "Bei der Neutralisation reagieren Wasserstoff-Ionen (H⁺) der Säure mit Hydroxid-Ionen (OH⁻) der Lauge zu Wasser, während sich außerdem ein Salz bildet."),
+        ("Was passiert, wenn ein unedles Metall wie Zink mit einer sauren Lösung reagiert?", new[] { "Es löst sich unter Wasserstoffgas-Entwicklung auf", "Es reagiert überhaupt nicht mit der Säure", "Es verwandelt sich in ein Edelmetall" }, "Es löst sich unter Wasserstoffgas-Entwicklung auf",
+            "Unedle Metalle wie Zink reagieren mit Säuren, wobei sich das Metall auflöst und Wasserstoffgas entsteht."),
+        ("Was passiert, wenn ein Carbonat (z.B. Kalk) mit einer Säure reagiert?", new[] { "Es entsteht Kohlenstoffdioxid-Gas unter Aufschäumen", "Es entsteht reiner Sauerstoff", "Es findet keinerlei Reaktion statt" }, "Es entsteht Kohlenstoffdioxid-Gas unter Aufschäumen",
+            "Carbonate reagieren mit Säuren unter Bildung von Kohlenstoffdioxid, Wasser und einem Salz, sichtbar als Aufschäumen (Gasentwicklung)."),
+        ("Was beschreibt das erweiterte Säure-Base-Konzept nach Brønsted?", new[] { "Säuren sind Protonendonatoren, Basen sind Protonenakzeptoren", "Säuren und Basen unterscheiden sich ausschließlich durch ihre Farbe", "Nach Brønsted gibt es keinen Unterschied zwischen Säuren und Basen" }, "Säuren sind Protonendonatoren, Basen sind Protonenakzeptoren",
+            "Nach Brønsted ist eine Säure ein Stoff, der ein Proton (H⁺) abgibt, eine Base ein Stoff, der ein Proton aufnimmt."),
+        ("Was ist ein Oxonium-Ion (H₃O⁺)?", new[] { "Ein Wassermolekül, das zusätzlich ein Proton aufgenommen hat", "Ein anderes Wort für Hydroxid-Ion", "Ein reines Sauerstoffmolekül ohne Wasserstoff" }, "Ein Wassermolekül, das zusätzlich ein Proton aufgenommen hat",
+            "In wässriger Lösung docken abgegebene Protonen (H⁺) an Wassermoleküle an, wodurch Oxonium-Ionen (H₃O⁺) entstehen."),
+        ("Was ist ein Hydroxid-Ion (OH⁻)?", new[] { "Ein negativ geladenes Ion aus einem Sauerstoff- und einem Wasserstoffatom, typisch für Basen", "Ein anderes Wort für Oxonium-Ion", "Ein Bestandteil, der nur in Säuren vorkommt" }, "Ein negativ geladenes Ion aus einem Sauerstoff- und einem Wasserstoffatom, typisch für Basen",
+            "Hydroxid-Ionen (OH⁻) sind charakteristisch für basische (alkalische) Lösungen und entstehen z.B. beim Lösen von Laugen in Wasser."),
+        ("Warum kann man das Entkalken einer Kaffeemaschine mit Essig als chemische Reaktion beschreiben?", new[] { "Die Essigsäure reagiert mit dem Kalk (Carbonat) und löst ihn dadurch auf", "Essig hat überhaupt keine Wirkung auf Kalkablagerungen", "Kalk besteht ausschließlich aus reinem Wasser" }, "Die Essigsäure reagiert mit dem Kalk (Carbonat) und löst ihn dadurch auf",
+            "Essigsäure reagiert mit dem Calciumcarbonat (Kalk) unter Bildung von Kohlenstoffdioxid, Wasser und einem löslichen Salz, wodurch sich der Kalk auflöst."),
+        ("Was zeigt ein niedriger pH-Wert (z.B. pH 2) über eine Lösung an?", new[] { "Sie ist stark sauer", "Sie ist stark basisch", "Sie ist absolut neutral" }, "Sie ist stark sauer",
+            "Je niedriger der pH-Wert (unter 7), desto saurer ist die Lösung, das heißt desto mehr Wasserstoff-Ionen enthält sie."),
+        ("Was zeigt ein hoher pH-Wert (z.B. pH 12) über eine Lösung an?", new[] { "Sie ist stark basisch (alkalisch)", "Sie ist stark sauer", "Sie ist absolut neutral" }, "Sie ist stark basisch (alkalisch)",
+            "Je höher der pH-Wert (über 7), desto basischer ist die Lösung, das heißt desto mehr Hydroxid-Ionen enthält sie im Verhältnis."),
+        ("Wie kann man den Donator-Akzeptor-Charakter der Neutralisation formulieren?", new[] { "Die Säure gibt ein Proton ab (Donator), die Base nimmt es auf (Akzeptor)", "Beide Reaktionspartner geben gleichzeitig ein Proton ab", "Weder Säure noch Base sind an einem Protonenübergang beteiligt" }, "Die Säure gibt ein Proton ab (Donator), die Base nimmt es auf (Akzeptor)",
+            "Nach dem Brønsted-Konzept überträgt die Säure als Protonendonator ein Proton an die Base, die als Protonenakzeptor fungiert."),
+        ("Was passiert mit dem pH-Wert, wenn man eine saure Lösung schrittweise mit einer Lauge neutralisiert?", new[] { "Der pH-Wert steigt schrittweise in Richtung 7 (neutral)", "Der pH-Wert sinkt immer weiter Richtung 0", "Der pH-Wert bleibt während der Neutralisation exakt unverändert" }, "Der pH-Wert steigt schrittweise in Richtung 7 (neutral)",
+            "Gibt man einer sauren Lösung schrittweise eine Base hinzu, steigt der pH-Wert an, bis am Neutralisationspunkt idealerweise ein pH-Wert von etwa 7 erreicht wird."),
+        ("Was entsteht typischerweise bei einer vollständigen Neutralisation neben Wasser?", new[] { "Ein Salz", "Ausschließlich ein neues Gas", "Reiner Sauerstoff" }, "Ein Salz",
+            "Bei der Reaktion einer Säure mit einer Base entstehen neben Wasser auch die Ionen eines Salzes, das nach dem Eindampfen der Lösung sichtbar wird."),
+        ("Warum eignet sich Essigsäure als vergleichsweise umweltschonender Haushaltsreiniger gegen Kalk?", new[] { "Sie ist eine schwächere organische Säure, die Kalk dennoch löst, aber weniger aggressiv als starke Mineralsäuren ist", "Essigsäure hat überhaupt keine chemische Wirkung auf Kalk", "Essigsäure ist die stärkste bekannte Säure überhaupt" }, "Sie ist eine schwächere organische Säure, die Kalk dennoch löst, aber weniger aggressiv als starke Mineralsäuren ist",
+            "Essigsäure gilt als vergleichsweise milde, biologisch leichter abbaubare Säure, die Kalk zuverlässig löst, ohne so aggressiv wie starke anorganische Säuren zu sein."),
+        ("Wie unterscheidet sich eine starke Säure von einer schwachen Säure hinsichtlich der Abgabe von Protonen?", new[] { "Eine starke Säure gibt ihre Protonen in Wasser nahezu vollständig ab, eine schwache nur teilweise", "Beide geben ihre Protonen exakt im gleichen Maß ab", "Schwache Säuren geben grundsätzlich mehr Protonen ab als starke Säuren" }, "Eine starke Säure gibt ihre Protonen in Wasser nahezu vollständig ab, eine schwache nur teilweise",
+            "Starke Säuren dissoziieren in Wasser nahezu vollständig in Ionen, schwache Säuren dagegen nur teilweise - das beeinflusst auch den pH-Wert einer Lösung gleicher Konzentration."),
+        ("Was ist ein Indikator in der Säure-Base-Chemie?", new[] { "Ein Stoff, der je nach pH-Wert seine Farbe ändert", "Ein Gerät zur Temperaturmessung", "Ein anderes Wort für ein Salz" }, "Ein Stoff, der je nach pH-Wert seine Farbe ändert",
+            "Indikatoren wie Universalindikator oder Rotkohlsaft ändern ihre Farbe abhängig vom pH-Wert einer Lösung und zeigen so an, ob sie sauer oder basisch ist."),
+        ("Warum ist die Reaktion von Metallen mit Säuren unter Wasserstoffentwicklung ein Beispiel für eine Redoxreaktion?", new[] { "Das Metall gibt Elektronen ab (Oxidation), die Wasserstoff-Ionen nehmen Elektronen auf (Reduktion)", "Bei dieser Reaktion werden überhaupt keine Elektronen übertragen", "Nur die Säure verändert sich chemisch, das Metall bleibt unverändert" }, "Das Metall gibt Elektronen ab (Oxidation), die Wasserstoff-Ionen nehmen Elektronen auf (Reduktion)",
+            "Beim Auflösen eines unedlen Metalls in Säure gibt das Metall Elektronen ab (wird oxidiert), während Wasserstoff-Ionen diese Elektronen aufnehmen und zu Wasserstoffgas reduziert werden."),
+        ("Was zeigt sich auf Teilchenebene, wenn man Kochsalz (NaCl) in Wasser löst, im Vergleich zu einer Säure-Base-Reaktion?", new[] { "Beim Lösen von Kochsalz findet kein Protonenübergang statt, anders als bei Säure-Base-Reaktionen", "Beim Lösen von Kochsalz findet immer ein Protonenübergang wie bei einer Neutralisation statt", "Kochsalz kann sich grundsätzlich nicht in Wasser lösen" }, "Beim Lösen von Kochsalz findet kein Protonenübergang statt, anders als bei Säure-Base-Reaktionen",
+            "Das Lösen von Kochsalz ist ein rein physikalischer Vorgang (Dissoziation in Ionen durch Wasser), während bei Säure-Base-Reaktionen tatsächlich Protonen übertragen werden."),
+        ("Warum wird beim Umgang mit konzentrierten Säuren und Laugen im Labor besondere Schutzausrüstung getragen?", new[] { "Beide können stark ätzend wirken und Haut, Augen oder Kleidung schädigen", "Säuren und Laugen sind im konzentrierten Zustand völlig ungefährlich", "Schutzausrüstung dient ausschließlich der Optik, nicht dem Schutz" }, "Beide können stark ätzend wirken und Haut, Augen oder Kleidung schädigen",
+            "Konzentrierte Säuren und Laugen wirken stark ätzend und können Haut, Augen und Materialien schwer schädigen, weshalb Schutzbrille und Handschuhe Pflicht sind.")
+    };
+
+    private static QuizQuestion SaeureBaseVertieft(Random r)
+    {
+        var f = SaeureBaseListe[r.Next(SaeureBaseListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Säuren und Laugen – echt ätzend", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nach Brønsted ist eine Säure ein Protonendonator, eine Base ein Protonenakzeptor; bei der Neutralisation entstehen aus H⁺ und OH⁻ Wasser und ein Salz."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KohlenwasserstoffeListe =
+    {
+        ("Was ist ein Kohlenwasserstoff?", new[] { "Eine chemische Verbindung, die nur aus Kohlenstoff- und Wasserstoffatomen besteht", "Eine Verbindung, die ausschließlich Sauerstoff und Wasserstoff enthält", "Ein anderes Wort für ein Salz" }, "Eine chemische Verbindung, die nur aus Kohlenstoff- und Wasserstoffatomen besteht",
+            "Kohlenwasserstoffe bestehen ausschließlich aus den Elementen Kohlenstoff (C) und Wasserstoff (H)."),
+        ("Was zeichnet Alkane als gesättigte Kohlenwasserstoffe aus?", new[] { "Sie enthalten ausschließlich Einfachbindungen zwischen den Kohlenstoffatomen", "Sie enthalten mindestens eine Doppelbindung", "Sie enthalten mindestens eine Dreifachbindung" }, "Sie enthalten ausschließlich Einfachbindungen zwischen den Kohlenstoffatomen",
+            "Alkane gelten als gesättigt, weil zwischen den Kohlenstoffatomen ausschließlich Einfachbindungen vorliegen und jedes C-Atom maximal mit Wasserstoff abgesättigt ist."),
+        ("Was unterscheidet ein Alken von einem Alkan?", new[] { "Ein Alken besitzt mindestens eine Kohlenstoff-Kohlenstoff-Doppelbindung", "Ein Alken besteht nur aus Wasserstoffatomen", "Alkene enthalten grundsätzlich keinen Kohlenstoff" }, "Ein Alken besitzt mindestens eine Kohlenstoff-Kohlenstoff-Doppelbindung",
+            "Alkene sind ungesättigte Kohlenwasserstoffe mit mindestens einer C=C-Doppelbindung, im Gegensatz zu den nur einfach gebundenen Alkanen."),
+        ("Was zeichnet ein Alkin aus?", new[] { "Es besitzt mindestens eine Kohlenstoff-Kohlenstoff-Dreifachbindung", "Es besitzt ausschließlich Einfachbindungen", "Es enthält kein einziges Kohlenstoffatom" }, "Es besitzt mindestens eine Kohlenstoff-Kohlenstoff-Dreifachbindung",
+            "Alkine sind ungesättigte Kohlenwasserstoffe mit mindestens einer C≡C-Dreifachbindung, z.B. Ethin (Acetylen)."),
+        ("Was versteht man unter einer \"homologen Reihe\" bei Alkanen?", new[] { "Eine Reihe von Verbindungen, die sich jeweils um eine CH₂-Gruppe unterscheiden und ähnliche Eigenschaften haben", "Eine zufällige Auswahl völlig unterschiedlicher Stoffklassen", "Eine Reihe von Metallen im Periodensystem" }, "Eine Reihe von Verbindungen, die sich jeweils um eine CH₂-Gruppe unterscheiden und ähnliche Eigenschaften haben",
+            "In einer homologen Reihe wie der der Alkane unterscheidet sich jedes Glied vom nächsten durch eine zusätzliche CH₂-Gruppe, wobei sich die Eigenschaften regelmäßig verändern."),
+        ("Warum steigt der Siedepunkt innerhalb der homologen Reihe der Alkane mit zunehmender Kettenlänge meist an?", new[] { "Längere Ketten haben stärkere Van-der-Waals-Kräfte zwischen den Molekülen", "Längere Ketten haben grundsätzlich schwächere zwischenmolekulare Kräfte", "Die Kettenlänge hat keinerlei Einfluss auf den Siedepunkt" }, "Längere Ketten haben stärkere Van-der-Waals-Kräfte zwischen den Molekülen",
+            "Mit zunehmender Molekülgröße und Kettenlänge nehmen die Van-der-Waals-Kräfte zwischen den Molekülen zu, wodurch mehr Energie zum Trennen (Sieden) nötig ist und der Siedepunkt steigt."),
+        ("Was sind Van-der-Waals-Kräfte?", new[] { "Schwache, zwischenmolekulare Anziehungskräfte zwischen unpolaren Molekülen", "Starke chemische Bindungen innerhalb eines Moleküls", "Ein anderes Wort für Ionenbindungen" }, "Schwache, zwischenmolekulare Anziehungskräfte zwischen unpolaren Molekülen",
+            "Van-der-Waals-Kräfte sind schwache, aber mit zunehmender Molekülgröße stärker werdende Anziehungskräfte zwischen unpolaren Molekülen wie Alkanen."),
+        ("Was ist Isomerie bei Kohlenwasserstoffen?", new[] { "Verschiedene Moleküle mit derselben Summenformel, aber unterschiedlichem Aufbau", "Zwei völlig identische Moleküle mit unterschiedlicher Summenformel", "Ein anderes Wort für eine chemische Reaktion" }, "Verschiedene Moleküle mit derselben Summenformel, aber unterschiedlichem Aufbau",
+            "Isomere haben dieselbe Summenformel, unterscheiden sich aber in der Anordnung der Atome (Strukturisomerie), was zu unterschiedlichen Eigenschaften führen kann."),
+        ("Was ist Methan (CH₄), das einfachste Alkan, in der Natur häufig?", new[] { "Ein Hauptbestandteil von Erdgas", "Ein seltenes Edelmetall", "Eine feste Kristallstruktur bei Raumtemperatur" }, "Ein Hauptbestandteil von Erdgas",
+            "Methan (CH₄) ist das einfachste Alkan und ein Hauptbestandteil von Erdgas, das u.a. als Campinggas verwendet wird."),
+        ("Warum haben kurzkettige Alkane wie Methan oder Propan bei Raumtemperatur einen gasförmigen Zustand?", new[] { "Ihre Van-der-Waals-Kräfte sind wegen der kurzen Kette relativ schwach", "Ihre Van-der-Waals-Kräfte sind extrem stark", "Sie besitzen keinerlei zwischenmolekulare Kräfte" }, "Ihre Van-der-Waals-Kräfte sind wegen der kurzen Kette relativ schwach",
+            "Kurzkettige Alkane haben schwächere Van-der-Waals-Kräfte, wodurch schon bei niedrigen Temperaturen die Molekülbewegung ausreicht, um den gasförmigen Zustand zu erreichen."),
+        ("Warum wird Superbenzin (längerkettige Kohlenwasserstoffe) bei Raumtemperatur flüssig, während Campinggas gasförmig bleibt?", new[] { "Längere Kohlenstoffketten haben stärkere Van-der-Waals-Kräfte und damit einen höheren Siedepunkt", "Beide Stoffe haben exakt denselben Aggregatzustand", "Kettenlänge hat keinen Einfluss auf den Aggregatzustand" }, "Längere Kohlenstoffketten haben stärkere Van-der-Waals-Kräfte und damit einen höheren Siedepunkt",
+            "Die längeren Molekülketten in Benzinbestandteilen erzeugen stärkere Van-der-Waals-Kräfte, wodurch ihr Siedepunkt über der Raumtemperatur liegt und sie flüssig bleiben."),
+        ("Was bezeichnet die Nomenklatur \"Propan\", \"Butan\", \"Pentan\" bei Alkanen?", new[] { "Die Namen geben die Anzahl der Kohlenstoffatome in der Kette an", "Die Namen beziehen sich auf die Farbe der Stoffe", "Die Namen haben nichts mit der Molekülstruktur zu tun" }, "Die Namen geben die Anzahl der Kohlenstoffatome in der Kette an",
+            "Die Namensendungen der Alkane (z.B. Prop-, But-, Pent-) leiten sich von der Anzahl der Kohlenstoffatome in der Hauptkette ab (3, 4, 5 Kohlenstoffatome)."),
+        ("Was passiert chemisch bei der vollständigen Verbrennung eines Kohlenwasserstoffs wie Methan?", new[] { "Es entstehen Kohlenstoffdioxid und Wasser unter Freisetzung von Energie", "Es entsteht ausschließlich reiner Kohlenstoff", "Es findet keinerlei chemische Reaktion statt" }, "Es entstehen Kohlenstoffdioxid und Wasser unter Freisetzung von Energie",
+            "Bei vollständiger Verbrennung reagieren Kohlenwasserstoffe mit Sauerstoff zu Kohlenstoffdioxid und Wasser, wobei Energie in Form von Wärme freigesetzt wird."),
+        ("Warum sind Alkene chemisch reaktiver als Alkane?", new[] { "Die Doppelbindung kann leichter aufgebrochen und für Additionsreaktionen genutzt werden", "Alkene besitzen grundsätzlich mehr Kohlenstoffatome als Alkane", "Alkene sind chemisch komplett träge und reagieren nie" }, "Die Doppelbindung kann leichter aufgebrochen und für Additionsreaktionen genutzt werden",
+            "Die C=C-Doppelbindung von Alkenen kann leichter aufgebrochen werden, was Additionsreaktionen (z.B. mit Wasserstoff oder Halogenen) ermöglicht - Alkane reagieren dagegen deutlich träger."),
+        ("Was passiert bei einer Additionsreaktion an einem Alken, z.B. mit Wasserstoff?", new[] { "Die Doppelbindung wird aufgebrochen und zusätzliche Atome werden angelagert", "Es entsteht dabei keinerlei neue Verbindung", "Die Doppelbindung bleibt dabei zwingend vollständig erhalten" }, "Die Doppelbindung wird aufgebrochen und zusätzliche Atome werden angelagert",
+            "Bei einer Addition wird die Doppelbindung des Alkens aufgebrochen, wobei sich zusätzliche Atome (z.B. Wasserstoff) an die beiden Kohlenstoffatome anlagern."),
+        ("Was ist Ethin (Acetylin), ein bekanntes Alkin, für ein Beispiel?", new[] { "Ein Gas, das u.a. beim Schweißen als Brenngas mit sehr heißer Flamme genutzt wird", "Ein Metall, das bei Raumtemperatur fest ist", "Ein Bestandteil von Kochsalz" }, "Ein Gas, das u.a. beim Schweißen als Brenngas mit sehr heißer Flamme genutzt wird",
+            "Ethin (Acetylen) verbrennt mit sehr hoher Flammtemperatur und wird deshalb u.a. beim Autogenschweißen als Brenngas eingesetzt."),
+        ("Was ist der Unterschied zwischen einer geradkettigen und einer verzweigten Isomerie bei Alkanen?", new[] { "Bei verzweigter Isomerie zweigen zusätzliche Kohlenstoffketten von der Hauptkette ab", "Beide Formen haben exakt dieselbe Struktur", "Geradkettige Isomere besitzen grundsätzlich mehr Kohlenstoffatome" }, "Bei verzweigter Isomerie zweigen zusätzliche Kohlenstoffketten von der Hauptkette ab",
+            "Bei verzweigten Isomeren gehen von der Hauptkette zusätzliche Seitenketten ab, wodurch sich trotz gleicher Summenformel andere physikalische Eigenschaften (z.B. Siedepunkt) ergeben."),
+        ("Warum haben verzweigte Alkane oft einen niedrigeren Siedepunkt als ihre geradkettigen Isomere?", new[] { "Verzweigte Moleküle haben eine kompaktere Form mit weniger Kontaktfläche für Van-der-Waals-Kräfte", "Verzweigte Moleküle haben grundsätzlich stärkere Van-der-Waals-Kräfte", "Die Verzweigung hat keinerlei Einfluss auf den Siedepunkt" }, "Verzweigte Moleküle haben eine kompaktere Form mit weniger Kontaktfläche für Van-der-Waals-Kräfte",
+            "Verzweigte Isomere sind kompakter geformt und bieten benachbarten Molekülen weniger Kontaktfläche, wodurch die Van-der-Waals-Kräfte schwächer sind und der Siedepunkt sinkt."),
+        ("Warum zählt Erdöl als wichtigste Rohstoffquelle für viele Kohlenwasserstoffe wie Benzin?", new[] { "Erdöl besteht aus einem komplexen Gemisch verschiedenster Kohlenwasserstoffe, die destillativ getrennt werden können", "Erdöl enthält überhaupt keine Kohlenwasserstoffe", "Erdöl besteht ausschließlich aus reinem Methan" }, "Erdöl besteht aus einem komplexen Gemisch verschiedenster Kohlenwasserstoffe, die destillativ getrennt werden können",
+            "Erdöl ist ein Gemisch unterschiedlichster Kohlenwasserstoffe, das durch fraktionierte Destillation in verschiedene Produkte wie Benzin, Diesel oder Gase aufgetrennt wird."),
+        ("Was versteht man unter der \"fraktionierten Destillation\" von Erdöl?", new[] { "Die Auftrennung des Kohlenwasserstoffgemischs anhand unterschiedlicher Siedepunkte in einzelne Fraktionen", "Ein Verfahren, das ausschließlich Wasser aus Erdöl entfernt", "Ein Vorgang, bei dem Erdöl chemisch in Sauerstoff umgewandelt wird" }, "Die Auftrennung des Kohlenwasserstoffgemischs anhand unterschiedlicher Siedepunkte in einzelne Fraktionen",
+            "Bei der fraktionierten Destillation wird Erdöl erhitzt und die enthaltenen Kohlenwasserstoffe verdampfen bei unterschiedlichen Temperaturen, wodurch sie in einzelne Fraktionen wie Benzin, Diesel oder Heizöl getrennt werden können.")
+    };
+
+    private static QuizQuestion Kohlenwasserstoffe(Random r)
+    {
+        var f = KohlenwasserstoffeListe[r.Next(KohlenwasserstoffeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Kohlenwasserstoffe – vom Campinggas zum Superbenzin", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Alkane haben nur Einfachbindungen, Alkene mindestens eine Doppel-, Alkine mindestens eine Dreifachbindung; längere Ketten haben stärkere Van-der-Waals-Kräfte und höhere Siedepunkte."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AlkoholeListe =
+    {
+        ("Was ist die funktionelle Gruppe, die Alkohole (Alkanole) kennzeichnet?", new[] { "Die Hydroxy-Gruppe (-OH)", "Die Carboxy-Gruppe", "Die Estergruppe" }, "Die Hydroxy-Gruppe (-OH)",
+            "Alkohole (Alkanole) besitzen als charakteristische funktionelle Gruppe die Hydroxy-Gruppe (-OH), die an ein Kohlenstoffatom gebunden ist."),
+        ("Was ist der bekannteste und in Getränken enthaltene Alkohol?", new[] { "Ethanol", "Methanol", "Glycerin" }, "Ethanol",
+            "Ethanol ist der Alkohol, der in alkoholischen Getränken enthalten ist und z.B. durch Vergärung von Zucker entsteht."),
+        ("Warum wird Methanol umgangssprachlich manchmal als \"Holzgeist\" bezeichnet?", new[] { "Es wurde früher u.a. durch trockene Destillation von Holz gewonnen", "Weil es ausschließlich in Bäumen wächst", "Weil es keinerlei industrielle Bedeutung hat" }, "Es wurde früher u.a. durch trockene Destillation von Holz gewonnen",
+            "Methanol wurde historisch unter anderem durch trockene Destillation (Erhitzen ohne Luft) von Holz gewonnen, daher der Name \"Holzgeist\"."),
+        ("Warum ist Methanol im Gegensatz zu Ethanol für den Menschen hochgiftig?", new[] { "Es wird im Körper zu giftigen Abbauprodukten wie Formaldehyd und Ameisensäure umgewandelt", "Methanol hat exakt dieselbe Wirkung wie Ethanol", "Methanol wird vom Körper überhaupt nicht aufgenommen" }, "Es wird im Körper zu giftigen Abbauprodukten wie Formaldehyd und Ameisensäure umgewandelt",
+            "Im Körper wird Methanol zu giftigem Formaldehyd und weiter zu Ameisensäure abgebaut, die u.a. den Sehnerv schädigen können."),
+        ("Was ist Glycerin (Propantriol) im Vergleich zu einfachen Alkoholen wie Ethanol?", new[] { "Ein mehrwertiger Alkohol mit drei Hydroxy-Gruppen", "Ein Alkohol ganz ohne Hydroxy-Gruppe", "Ein anderes Wort für Methanol" }, "Ein mehrwertiger Alkohol mit drei Hydroxy-Gruppen",
+            "Glycerin besitzt gleich drei Hydroxy-Gruppen pro Molekül und zählt deshalb zu den mehrwertigen Alkoholen."),
+        ("Warum sind kurzkettige Alkohole wie Ethanol gut in Wasser löslich?", new[] { "Die Hydroxy-Gruppe kann Wasserstoffbrückenbindungen mit Wassermolekülen ausbilden", "Kurzkettige Alkohole besitzen keinerlei funktionelle Gruppe", "Wasserstoffbrückenbindungen spielen bei der Löslichkeit keine Rolle" }, "Die Hydroxy-Gruppe kann Wasserstoffbrückenbindungen mit Wassermolekülen ausbilden",
+            "Die polare Hydroxy-Gruppe kurzkettiger Alkohole bildet Wasserstoffbrückenbindungen zu Wassermolekülen aus, was eine gute Löslichkeit ermöglicht."),
+        ("Warum werden langkettige Alkohole zunehmend schlechter wasserlöslich?", new[] { "Der wachsende, unpolare Kohlenwasserstoffrest überwiegt gegenüber der einzelnen polaren Hydroxy-Gruppe", "Langkettige Alkohole besitzen mehr Hydroxy-Gruppen als kurzkettige", "Die Kettenlänge hat keinerlei Einfluss auf die Löslichkeit" }, "Der wachsende, unpolare Kohlenwasserstoffrest überwiegt gegenüber der einzelnen polaren Hydroxy-Gruppe",
+            "Mit zunehmender Kettenlänge dominiert der unpolare Kohlenwasserstoffanteil des Moleküls, wodurch die wasserlösende Wirkung der einzelnen Hydroxy-Gruppe relativ abnimmt."),
+        ("Was bedeutet \"hydrophil\" bei einem Molekülteil?", new[] { "Wasseranziehend, gut wasserlöslich", "Wasserabstoßend", "Ein anderes Wort für giftig" }, "Wasseranziehend, gut wasserlöslich",
+            "Hydrophile (\"wasserliebende\") Molekülteile wie die Hydroxy-Gruppe interagieren gut mit polaren Wassermolekülen."),
+        ("Was bedeutet \"hydrophob\" bei einem Molekülteil?", new[] { "Wasserabstoßend, schlecht wasserlöslich", "Wasseranziehend", "Ein anderes Wort für eine Säure" }, "Wasserabstoßend, schlecht wasserlöslich",
+            "Hydrophobe (\"wasserabweisende\") Molekülteile wie lange Kohlenwasserstoffketten mischen sich schlecht mit Wasser."),
+        ("Was entsteht bei der Oxidation eines primären Alkohols wie Ethanol?", new[] { "Ein Aldehyd (Alkanal), z.B. Ethanal", "Ausschließlich reines Wasser", "Ein Edelmetall" }, "Ein Aldehyd (Alkanal), z.B. Ethanal",
+            "Primäre Alkohole werden bei der Oxidation zunächst zu Aldehyden (Alkanalen) umgesetzt, z.B. Ethanol zu Ethanal."),
+        ("Was kennzeichnet die Aldehyd-Gruppe chemisch?", new[] { "Eine Kohlenstoff-Sauerstoff-Doppelbindung mit einem zusätzlichen Wasserstoffatom am selben Kohlenstoff", "Eine Gruppe, die ausschließlich aus Kohlenstoff und Stickstoff besteht", "Ein anderes Wort für die Hydroxy-Gruppe" }, "Eine Kohlenstoff-Sauerstoff-Doppelbindung mit einem zusätzlichen Wasserstoffatom am selben Kohlenstoff",
+            "Die Aldehyd-Gruppe (-CHO) besteht aus einem Kohlenstoffatom mit einer Doppelbindung zu Sauerstoff und einem gebundenen Wasserstoffatom."),
+        ("Was passiert mit der Oxidationszahl des Kohlenstoffatoms, wenn Ethanol zu Ethanal oxidiert wird?", new[] { "Sie steigt an, da bei der Oxidation Elektronen abgegeben werden", "Sie sinkt, da Elektronen aufgenommen werden", "Sie bleibt exakt unverändert" }, "Sie steigt an, da bei der Oxidation Elektronen abgegeben werden",
+            "Bei einer Oxidationsreaktion steigt die Oxidationszahl des betroffenen Kohlenstoffatoms an, da formal Elektronen abgegeben werden."),
+        ("Warum ist ein primärer Alkohol anders aufgebaut als ein sekundärer oder tertiärer Alkohol?", new[] { "Die Anzahl der Kohlenstoffatome, die direkt an das Kohlenstoffatom mit der OH-Gruppe gebunden sind, unterscheidet sich", "Alle Alkoholtypen haben exakt denselben Aufbau", "Nur primäre Alkohole besitzen überhaupt eine Hydroxy-Gruppe" }, "Die Anzahl der Kohlenstoffatome, die direkt an das Kohlenstoffatom mit der OH-Gruppe gebunden sind, unterscheidet sich",
+            "Primäre, sekundäre und tertiäre Alkohole unterscheiden sich danach, wie viele weitere Kohlenstoffatome direkt an das die Hydroxy-Gruppe tragende Kohlenstoffatom gebunden sind."),
+        ("Wofür wird Ethanol in der Industrie und im Alltag unter anderem verwendet?", new[] { "Als Lösungsmittel, Desinfektionsmittel und Kraftstoffbeimischung", "Ausschließlich zum Trinken", "Ausschließlich als Baumaterial" }, "Als Lösungsmittel, Desinfektionsmittel und Kraftstoffbeimischung",
+            "Ethanol wird u.a. als Lösungsmittel, Desinfektionsmittel und als Beimischung zu Kraftstoffen (Biosprit) genutzt."),
+        ("Warum wird Glycerin häufig in Kosmetikprodukten eingesetzt?", new[] { "Es bindet gut Feuchtigkeit aufgrund seiner mehreren Hydroxy-Gruppen", "Es ist stark giftig und wirkt deshalb konservierend", "Es hat überhaupt keine Wechselwirkung mit Wasser" }, "Es bindet gut Feuchtigkeit aufgrund seiner mehreren Hydroxy-Gruppen",
+            "Die mehreren Hydroxy-Gruppen des Glycerins können viele Wasserstoffbrückenbindungen zu Wasser ausbilden, was Feuchtigkeit bindet - deshalb wird es oft in Cremes verwendet."),
+        ("Was passiert bei einer weiteren Oxidation eines Aldehyds (Alkanals)?", new[] { "Es entsteht eine Carbonsäure (Alkansäure)", "Es entsteht wieder der ursprüngliche Alkohol", "Es entsteht ein Edelgas" }, "Es entsteht eine Carbonsäure (Alkansäure)",
+            "Wird ein Aldehyd weiter oxidiert, entsteht daraus eine Carbonsäure, z.B. aus Ethanal entsteht Essigsäure (Ethansäure)."),
+        ("Warum verdunstet Ethanol bei Raumtemperatur schneller als Wasser?", new[] { "Ethanol hat schwächere zwischenmolekulare Kräfte als Wasser und dadurch einen niedrigeren Siedepunkt", "Ethanol hat stärkere zwischenmolekulare Kräfte als Wasser", "Beide Stoffe verdunsten exakt gleich schnell" }, "Ethanol hat schwächere zwischenmolekulare Kräfte als Wasser und dadurch einen niedrigeren Siedepunkt",
+            "Ethanol besitzt insgesamt schwächere zwischenmolekulare Anziehungskräfte als Wasser, wodurch es einen niedrigeren Siedepunkt hat und schneller verdunstet."),
+        ("Was zeigt die Löslichkeit von Ethanol sowohl in Wasser als auch in unpolaren Stoffen wie Ölen?", new[] { "Ethanol besitzt sowohl einen polaren (Hydroxy-Gruppe) als auch einen unpolaren Molekülteil (Kohlenwasserstoffkette)", "Ethanol besteht ausschließlich aus einem einzigen, völlig unpolaren Molekülteil", "Löslichkeit hat mit dem Molekülbau überhaupt nichts zu tun" }, "Ethanol besitzt sowohl einen polaren (Hydroxy-Gruppe) als auch einen unpolaren Molekülteil (Kohlenwasserstoffkette)",
+            "Da Ethanol sowohl eine polare Hydroxy-Gruppe als auch einen unpolaren Kohlenwasserstoffrest besitzt, kann es sowohl mit polaren (Wasser) als auch unpolaren Stoffen wechselwirken."),
+        ("Was ist ein Grund, warum Alkoholkonsum den Körper beeinträchtigt?", new[] { "Ethanol wirkt auf das zentrale Nervensystem und beeinflusst dort die Signalübertragung", "Ethanol hat auf den Körper überhaupt keine erkennbare Wirkung", "Ethanol wird vom Körper vollständig ignoriert und gar nicht abgebaut" }, "Ethanol wirkt auf das zentrale Nervensystem und beeinflusst dort die Signalübertragung",
+            "Ethanol beeinflusst als psychoaktive Substanz die Signalübertragung im zentralen Nervensystem, was Reaktionsfähigkeit und Urteilsvermögen einschränken kann."),
+        ("Was passiert im Körper beim Abbau von Ethanol, das zunächst über die Leber verarbeitet wird?", new[] { "Ethanol wird schrittweise über Acetaldehyd zu Essigsäure oxidiert", "Ethanol wird ohne jede chemische Veränderung ausgeatmet", "Ethanol wandelt sich direkt in Glucose um" }, "Ethanol wird schrittweise über Acetaldehyd zu Essigsäure oxidiert",
+            "Die Leber baut Ethanol in mehreren Oxidationsschritten ab: zunächst zu Acetaldehyd, dann weiter zu Essigsäure, die der Körper schließlich verwerten kann.")
+    };
+
+    private static QuizQuestion Alkohole(Random r)
+    {
+        var f = AlkoholeListe[r.Next(AlkoholeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Alkohole – vom Holzgeist zum Glycerin", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Alkohole tragen eine Hydroxy-Gruppe (-OH); kurze Ketten sind gut wasserlöslich (Wasserstoffbrücken), primäre Alkohole werden über Aldehyde zu Carbonsäuren oxidiert."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] OrganischeSaeurenListe =
+    {
+        ("Welche funktionelle Gruppe kennzeichnet organische Säuren (Alkansäuren)?", new[] { "Die Carboxy-Gruppe (-COOH)", "Die Hydroxy-Gruppe", "Die Estergruppe" }, "Die Carboxy-Gruppe (-COOH)",
+            "Carbonsäuren (Alkansäuren) besitzen als charakteristische funktionelle Gruppe die Carboxy-Gruppe (-COOH)."),
+        ("Was ist die im Essig enthaltene organische Säure?", new[] { "Essigsäure (Ethansäure)", "Salzsäure", "Schwefelsäure" }, "Essigsäure (Ethansäure)",
+            "Essig enthält verdünnte Essigsäure (Ethansäure, CH₃COOH), eine typische Carbonsäure."),
+        ("Wie verändert sich die Säurestärke organischer Carbonsäuren im Vergleich zu vielen anorganischen Säuren wie Salzsäure?", new[] { "Carbonsäuren sind meist schwächer und dissoziieren in Wasser nur teilweise", "Carbonsäuren sind grundsätzlich stärker als jede anorganische Säure", "Beide Säuretypen sind chemisch exakt identisch" }, "Carbonsäuren sind meist schwächer und dissoziieren in Wasser nur teilweise",
+            "Organische Carbonsäuren wie Essigsäure gelten meist als schwächere Säuren, da sie in Wasser nur teilweise in Ionen dissoziieren, im Gegensatz zu starken Säuren wie Salzsäure."),
+        ("Was passiert innerhalb der homologen Reihe der Alkansäuren mit zunehmender Kettenlänge, ähnlich wie bei Alkanen?", new[] { "Der Schmelz- und Siedepunkt steigt tendenziell an", "Der Schmelz- und Siedepunkt sinkt immer weiter", "Die Kettenlänge hat keinerlei Einfluss auf diese Eigenschaften" }, "Der Schmelz- und Siedepunkt steigt tendenziell an",
+            "Wie bei anderen homologen Reihen nehmen auch bei den Alkansäuren mit wachsender Kettenlänge die zwischenmolekularen Kräfte und damit meist Schmelz- und Siedepunkt zu."),
+        ("Was sind Aminosäuren im Vergleich zu einfachen Carbonsäuren?", new[] { "Moleküle, die sowohl eine Carboxy- als auch eine Amino-Gruppe besitzen", "Moleküle, die ausschließlich aus Kohlenwasserstoffketten bestehen", "Ein anderes Wort für Alkansäuren allgemein" }, "Moleküle, die sowohl eine Carboxy- als auch eine Amino-Gruppe besitzen",
+            "Aminosäuren besitzen neben der Carboxy-Gruppe zusätzlich eine Amino-Gruppe (-NH₂) und sind die Bausteine von Proteinen."),
+        ("Warum gelten Aminosäuren als wichtige Bausteine des Lebens?", new[] { "Sie verbinden sich zu Proteinen, die zentrale Funktionen im Körper übernehmen", "Sie haben mit Proteinen überhaupt nichts zu tun", "Sie kommen ausschließlich in Mineralien vor" }, "Sie verbinden sich zu Proteinen, die zentrale Funktionen im Körper übernehmen",
+            "Aminosäuren verknüpfen sich zu Ketten (Proteinen), die im Körper u.a. Strukturen bilden, Stoffe transportieren und als Enzyme Reaktionen ermöglichen."),
+        ("Was ist ein Vorteil von Essigsäure als Haushaltsreiniger gegenüber sehr starken anorganischen Säuren?", new[] { "Sie ist bei richtiger Anwendung weniger aggressiv und leichter biologisch abbaubar", "Essigsäure hat keinerlei reinigende Wirkung", "Essigsäure ist grundsätzlich gefährlicher als starke Mineralsäuren" }, "Sie ist bei richtiger Anwendung weniger aggressiv und leichter biologisch abbaubar",
+            "Essigsäure gilt bei sachgemäßer Verdünnung als vergleichsweise milde und gut abbaubare Alternative zu aggressiveren, stark ätzenden Reinigungssäuren."),
+        ("Was zeigt die Struktur der Carboxy-Gruppe (-COOH) chemisch?", new[] { "Eine Kombination aus einer Carbonylgruppe (C=O) und einer Hydroxy-Gruppe (-OH) am selben Kohlenstoffatom", "Ausschließlich eine einfache Kohlenstoff-Wasserstoff-Bindung", "Eine reine Metall-Sauerstoff-Verbindung" }, "Eine Kombination aus einer Carbonylgruppe (C=O) und einer Hydroxy-Gruppe (-OH) am selben Kohlenstoffatom",
+            "Die Carboxy-Gruppe vereint strukturell eine Carbonyl- (C=O) und eine Hydroxy-Gruppe (-OH) am selben Kohlenstoffatom, was ihre saure Wirkung erklärt."),
+        ("Warum kann eine Carbonsäure in Wasser Protonen abgeben und damit als Säure wirken?", new[] { "Das Wasserstoffatom der -OH-Gruppe in der Carboxy-Gruppe kann als Proton abgespalten werden", "Carbonsäuren besitzen überhaupt kein abspaltbares Wasserstoffatom", "Nur anorganische Säuren können Protonen abgeben" }, "Das Wasserstoffatom der -OH-Gruppe in der Carboxy-Gruppe kann als Proton abgespalten werden",
+            "Das Wasserstoffatom der Carboxy-Gruppe ist relativ leicht als Proton (H⁺) abspaltbar, wodurch Carbonsäuren in Wasser sauer reagieren."),
+        ("Was ist Zitronensäure ein bekanntes Beispiel für?", new[] { "Eine natürlich vorkommende organische Säure in Früchten wie Zitronen", "Eine anorganische Säure aus dem Labor", "Ein Metall aus dem Periodensystem" }, "Eine natürlich vorkommende organische Säure in Früchten wie Zitronen",
+            "Zitronensäure ist eine natürlich in Zitrusfrüchten vorkommende Carbonsäure, die z.B. für deren sauren Geschmack verantwortlich ist."),
+        ("Was ist Ameisensäure (Methansäure), die einfachste Carbonsäure, ein Beispiel für?", new[] { "Eine Säure, die auch natürlich z.B. in manchen Insektenstichen vorkommt", "Ein Edelmetall", "Ein reines Edelgas" }, "Eine Säure, die auch natürlich z.B. in manchen Insektenstichen vorkommt",
+            "Ameisensäure kommt natürlich vor, u.a. im Gift mancher Ameisen und Brennnesseln, und ist die einfachste Alkansäure."),
+        ("Was passiert grundsätzlich beim Vergleich der Säurestärke innerhalb der homologen Reihe der Alkansäuren mit zunehmender Kettenlänge?", new[] { "Die Säurestärke nimmt tendenziell leicht ab", "Die Säurestärke nimmt immer stark zu", "Die Kettenlänge hat überhaupt keinen Einfluss auf die Säurestärke" }, "Die Säurestärke nimmt tendenziell leicht ab",
+            "Mit zunehmender Kettenlänge nimmt der elektronenschiebende Effekt der Kohlenwasserstoffkette zu, was die Säurestärke der Carbonsäure tendenziell leicht verringert."),
+        ("Was unterscheidet organische Carbonsäuren strukturell grundlegend von anorganischen Säuren wie Salzsäure?", new[] { "Organische Säuren enthalten eine Kohlenstoffkette mit funktioneller Carboxy-Gruppe, anorganische Säuren nicht", "Beide Säuretypen besitzen exakt dieselbe chemische Struktur", "Anorganische Säuren enthalten immer eine Carboxy-Gruppe" }, "Organische Säuren enthalten eine Kohlenstoffkette mit funktioneller Carboxy-Gruppe, anorganische Säuren nicht",
+            "Organische Säuren basieren auf einem Kohlenwasserstoffgerüst mit angehängter Carboxy-Gruppe, während anorganische Säuren wie Salzsäure kein Kohlenstoffgerüst besitzen."),
+        ("Wofür wird Essigsäure im Haushalt neben der Verwendung als Speisezutat noch häufig eingesetzt?", new[] { "Zum Entkalken von Geräten wie Wasserkochern oder Kaffeemaschinen", "Ausschließlich zum Färben von Textilien", "Ausschließlich zur Metallverarbeitung in der Industrie" }, "Zum Entkalken von Geräten wie Wasserkochern oder Kaffeemaschinen",
+            "Essigsäure wird im Haushalt häufig zum Entkalken genutzt, da sie mit Kalkablagerungen (Carbonaten) reagiert und diese auflöst."),
+        ("Was passiert, wenn zwei Aminosäuren unter Wasserabspaltung miteinander verbunden werden?", new[] { "Es entsteht eine Peptidbindung zwischen ihnen", "Es entsteht eine Esterbindung wie bei Fetten", "Es findet keinerlei chemische Reaktion statt" }, "Es entsteht eine Peptidbindung zwischen ihnen",
+            "Aminosäuren verknüpfen sich unter Wasserabspaltung über eine sogenannte Peptidbindung zu längeren Ketten, den Proteinen."),
+        ("Warum ist die Umweltverträglichkeit ein wichtiges Kriterium beim Vergleich verschiedener Haushaltsreiniger?", new[] { "Manche Reinigungsmittel können, wenn sie ins Abwasser gelangen, Gewässer oder Böden belasten", "Umweltverträglichkeit spielt bei Reinigungsmitteln überhaupt keine Rolle", "Alle Haushaltsreiniger sind grundsätzlich völlig umweltneutral" }, "Manche Reinigungsmittel können, wenn sie ins Abwasser gelangen, Gewässer oder Böden belasten",
+            "Nicht biologisch abbaubare oder besonders aggressive Reinigungsmittel können bei falscher Entsorgung Gewässer oder Böden belasten - deshalb wird ihre Umweltverträglichkeit bewertet."),
+        ("Was ist ein Grund, warum Milchsäure beim Sport in den Muskeln entstehen kann?", new[] { "Bei intensiver Belastung wird Energie teilweise ohne ausreichend Sauerstoff gewonnen, wobei Milchsäure entsteht", "Milchsäure hat mit sportlicher Belastung überhaupt nichts zu tun", "Milchsäure entsteht ausschließlich beim Schlafen" }, "Bei intensiver Belastung wird Energie teilweise ohne ausreichend Sauerstoff gewonnen, wobei Milchsäure entsteht",
+            "Bei hoher körperlicher Belastung mit unzureichender Sauerstoffversorgung gewinnt der Muskel Energie teils anaerob, wobei Milchsäure als Nebenprodukt entsteht."),
+        ("Warum sind viele Carbonsäuren mit kurzer Kette wie Essigsäure gut wasserlöslich?", new[] { "Die polare Carboxy-Gruppe kann Wasserstoffbrückenbindungen zu Wassermolekülen bilden", "Kurzkettige Carbonsäuren besitzen keinerlei polare Gruppe", "Wasserlöslichkeit hat mit der Molekülstruktur nichts zu tun" }, "Die polare Carboxy-Gruppe kann Wasserstoffbrückenbindungen zu Wassermolekülen bilden",
+            "Ähnlich wie bei kurzkettigen Alkoholen ermöglicht die polare, wasserstoffbrückenbildende Carboxy-Gruppe eine gute Löslichkeit kurzkettiger Carbonsäuren in Wasser."),
+        ("Was passiert grundsätzlich mit der Löslichkeit von Carbonsäuren in Wasser, wenn ihre Kohlenwasserstoffkette immer länger wird?", new[] { "Die Löslichkeit nimmt tendenziell ab, weil der unpolare Kettenanteil überwiegt", "Die Löslichkeit steigt immer weiter an", "Die Kettenlänge hat keinerlei Einfluss auf die Löslichkeit" }, "Die Löslichkeit nimmt tendenziell ab, weil der unpolare Kettenanteil überwiegt",
+            "Wie bei den Alkoholen überwiegt bei längeren Ketten zunehmend der unpolare Kohlenwasserstoffanteil, wodurch die Wasserlöslichkeit der Carbonsäure abnimmt."),
+        ("Was ist Buttersäure ein bekanntes (wenn auch unangenehm riechendes) Beispiel für?", new[] { "Eine kurzkettige Carbonsäure, die z.B. beim Ranzigwerden von Butter entsteht", "Ein Edelmetall", "Ein reines Edelgas ohne jeden Eigengeruch" }, "Eine kurzkettige Carbonsäure, die z.B. beim Ranzigwerden von Butter entsteht",
+            "Buttersäure ist eine kurzkettige Carbonsäure mit unangenehmem Geruch, die u.a. beim Ranzigwerden von Fetten wie Butter freigesetzt wird.")
+    };
+
+    private static QuizQuestion OrganischeSaeuren(Random r)
+    {
+        var f = OrganischeSaeurenListe[r.Next(OrganischeSaeurenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Organische Säuren – Salatsauce, Entkalker & Co", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Carbonsäuren tragen die Carboxy-Gruppe (-COOH) und sind meist schwächere Säuren als anorganische Säuren; Aminosäuren tragen zusätzlich eine Amino-Gruppe und bilden Proteine."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EsterListe =
+    {
+        ("Was entsteht chemisch, wenn eine Carbonsäure mit einem Alkohol reagiert?", new[] { "Ein Ester und Wasser (Kondensationsreaktion)", "Ausschließlich ein neues Salz", "Ein reines Edelgas" }, "Ein Ester und Wasser (Kondensationsreaktion)",
+            "Bei der Veresterung reagieren Carbonsäure und Alkohol unter Wasserabspaltung (Kondensation) zu einem Ester."),
+        ("Was kennzeichnet die Estergruppe strukturell?", new[] { "Eine C(=O)-O-Bindung zwischen dem Säure- und dem Alkoholteil des Moleküls", "Eine reine Kohlenstoff-Wasserstoff-Bindung ohne Sauerstoff", "Eine Bindung, die ausschließlich aus Stickstoffatomen besteht" }, "Eine C(=O)-O-Bindung zwischen dem Säure- und dem Alkoholteil des Moleküls",
+            "Die Estergruppe entsteht durch die Verbindung des Carbonylkohlenstoffs der Säure mit dem Sauerstoffatom des Alkohols."),
+        ("Was ist Hydrolyse eines Esters?", new[] { "Die Rückreaktion, bei der ein Ester unter Wasseraufnahme wieder in Säure und Alkohol gespalten wird", "Die erstmalige Bildung eines Esters aus Säure und Alkohol", "Ein anderes Wort für eine Neutralisation" }, "Die Rückreaktion, bei der ein Ester unter Wasseraufnahme wieder in Säure und Alkohol gespalten wird",
+            "Bei der Hydrolyse wird ein Ester unter Aufnahme von Wasser wieder in seine ursprüngliche Säure und den ursprünglichen Alkohol gespalten - die Umkehrung der Veresterung."),
+        ("Warum gelten Veresterung und Hydrolyse als Beispiele für umkehrbare (reversible) Reaktionen?", new[] { "Je nach Bedingungen kann die Reaktion in beide Richtungen ablaufen (Ester bilden oder wieder spalten)", "Die Reaktion kann grundsätzlich nur in eine einzige Richtung ablaufen", "Umkehrbarkeit hat mit dieser Reaktion nichts zu tun" }, "Je nach Bedingungen kann die Reaktion in beide Richtungen ablaufen (Ester bilden oder wieder spalten)",
+            "Veresterung (Kondensation) und Hydrolyse sind Hin- und Rückreaktion desselben Gleichgewichts - je nach Bedingungen (z.B. Wasserüberschuss) verschiebt sich das Gleichgewicht in die eine oder andere Richtung."),
+        ("Was bewirkt eine saure Katalyse bei der Veresterung?", new[] { "Sie beschleunigt die Reaktion, ohne selbst verbraucht zu werden", "Sie verlangsamt die Reaktion drastisch", "Sie verändert das Endprodukt der Reaktion vollständig" }, "Sie beschleunigt die Reaktion, ohne selbst verbraucht zu werden",
+            "Ein saurer Katalysator (z.B. Schwefelsäure) beschleunigt die Veresterungsreaktion, indem er den Reaktionsmechanismus erleichtert, wird dabei aber selbst nicht verbraucht."),
+        ("Warum riechen viele Fruchtester (z.B. in Fruchtaromen) angenehm fruchtig?", new[] { "Bestimmte kleine Estermoleküle sind für charakteristische Fruchtdüfte verantwortlich", "Ester haben grundsätzlich überhaupt keinen Eigengeruch", "Fruchtgeruch hat mit der chemischen Struktur nichts zu tun" }, "Bestimmte kleine Estermoleküle sind für charakteristische Fruchtdüfte verantwortlich",
+            "Viele natürliche und künstliche Fruchtaromen bestehen aus spezifischen Estern, die für den charakteristischen, oft fruchtigen Geruch verantwortlich sind."),
+        ("Was sind Fette chemisch betrachtet größtenteils?", new[] { "Ester aus Glycerin und langkettigen Fettsäuren", "Reine Kohlenwasserstoffe ohne Sauerstoffanteil", "Anorganische Salze" }, "Ester aus Glycerin und langkettigen Fettsäuren",
+            "Fette sind Ester, die aus dem dreiwertigen Alkohol Glycerin und drei langkettigen Fettsäuren aufgebaut sind (Triglyceride)."),
+        ("Was passiert bei der Verseifung (alkalischen Hydrolyse) eines Fettes?", new[] { "Das Fett wird in Glycerin und die Salze der Fettsäuren (Seifen) gespalten", "Das Fett bleibt dabei chemisch völlig unverändert", "Es entsteht ausschließlich reines Wasser ohne weitere Produkte" }, "Das Fett wird in Glycerin und die Salze der Fettsäuren (Seifen) gespalten",
+            "Bei der Verseifung wird ein Fett mit einer Lauge zu Glycerin und den Natrium- oder Kaliumsalzen der Fettsäuren (Seifen) gespalten."),
+        ("Warum können Seifenmoleküle sowohl Fett als auch Wasser \"verbinden\" und dadurch reinigen?", new[] { "Sie besitzen einen wasserabweisenden (lipophilen) und einen wasseranziehenden (hydrophilen) Molekülteil", "Seifenmoleküle bestehen ausschließlich aus einem einzigen, komplett unpolaren Teil", "Seifenmoleküle haben mit Wasser oder Fett überhaupt keine Wechselwirkung" }, "Sie besitzen einen wasserabweisenden (lipophilen) und einen wasseranziehenden (hydrophilen) Molekülteil",
+            "Der lipophile (fettliebende) Teil der Seife lagert sich an Fett an, der hydrophile (wasserliebende) Teil bleibt zum Wasser hin ausgerichtet - so können Fetttröpfchen im Wasser \"eingeschlossen\" und weggespült werden."),
+        ("Was bedeutet \"lipophil\" bei einem Molekülteil?", new[] { "Fettliebend, gut in Fetten löslich", "Wasseranziehend", "Ein anderes Wort für Carbonsäure" }, "Fettliebend, gut in Fetten löslich",
+            "Lipophile (\"fettliebende\") Molekülteile lösen sich gut in unpolaren, fettähnlichen Substanzen."),
+        ("Was bedeutet \"lipophob\" bei einem Molekülteil?", new[] { "Fettabstoßend, schlecht in Fetten löslich", "Fettliebend", "Ein anderes Wort für Ester" }, "Fettabstoßend, schlecht in Fetten löslich",
+            "Lipophobe (\"fettmeidende\") Molekülteile mischen sich schlecht mit fettähnlichen, unpolaren Substanzen."),
+        ("Was ist ein typisches Beispiel für einen Ester, der als künstliches Aroma in Lebensmitteln verwendet wird?", new[] { "Ein Fruchtester wie Ethylbutanoat (nach Ananas riechend)", "Kochsalz", "Reines Ethanol ohne Säureanteil" }, "Ein Fruchtester wie Ethylbutanoat (nach Ananas riechend)",
+            "Bestimmte kleine Ester wie Ethylbutanoat erinnern geruchlich an Früchte wie Ananas und werden deshalb als Aromastoffe eingesetzt."),
+        ("Warum verschiebt ein Überschuss an Wasser das Gleichgewicht einer Veresterungsreaktion tendenziell in Richtung Hydrolyse?", new[] { "Nach dem Prinzip von Le Chatelier begünstigt mehr Wasser die Rückreaktion, bei der Wasser verbraucht wird", "Wasserüberschuss hat auf ein chemisches Gleichgewicht überhaupt keinen Einfluss", "Wasserüberschuss verschiebt jedes Gleichgewicht ausschließlich in Richtung Ester" }, "Nach dem Prinzip von Le Chatelier begünstigt mehr Wasser die Rückreaktion, bei der Wasser verbraucht wird",
+            "Nach dem Prinzip des kleinsten Zwangs (Le Chatelier) verschiebt ein Überschuss an einem Reaktionspartner (hier Wasser) das Gleichgewicht in die Richtung, in der dieser Stoff verbraucht wird - also zur Hydrolyse."),
+        ("Was unterscheidet ein Fett grundlegend von einem Öl bei Raumtemperatur?", new[] { "Fette sind bei Raumtemperatur meist fest, Öle meist flüssig", "Fette und Öle sind chemisch völlig identisch und unterscheiden sich in nichts", "Nur Öle bestehen aus Estern, Fette hingegen nicht" }, "Fette sind bei Raumtemperatur meist fest, Öle meist flüssig",
+            "Der Unterschied zwischen Fetten und Ölen liegt meist im Aggregatzustand bei Raumtemperatur, der u.a. vom Sättigungsgrad der enthaltenen Fettsäuren abhängt."),
+        ("Was passiert mit dem Schmelzpunkt eines Fettes, wenn es viele ungesättigte Fettsäuren (mit Doppelbindungen) enthält?", new[] { "Der Schmelzpunkt sinkt tendenziell, das Fett bleibt eher flüssig (Öl)", "Der Schmelzpunkt steigt immer stark an", "Ungesättigte Fettsäuren haben keinerlei Einfluss auf den Schmelzpunkt" }, "Der Schmelzpunkt sinkt tendenziell, das Fett bleibt eher flüssig (Öl)",
+            "Doppelbindungen in ungesättigten Fettsäuren führen zu einer weniger dichten Packung der Moleküle, wodurch der Schmelzpunkt sinkt und das Fett bei Raumtemperatur eher flüssig bleibt."),
+        ("Warum wird Seife seit Jahrhunderten zur Reinigung genutzt?", new[] { "Sie kann Fett und Schmutz im Wasser binden und abspülbar machen", "Seife hat historisch nie eine reinigende Wirkung gehabt", "Seife wirkt ausschließlich als Duftstoff ohne jede Reinigungsfunktion" }, "Sie kann Fett und Schmutz im Wasser binden und abspülbar machen",
+            "Aufgrund ihres lipophilen und hydrophilen Molekülteils kann Seife Fett- und Schmutzpartikel umschließen und im Wasser abtransportierbar machen - eine Eigenschaft, die seit Jahrhunderten genutzt wird."),
+        ("Was ist der Unterschied zwischen einer Kondensationsreaktion (Veresterung) und einer einfachen Additionsreaktion?", new[] { "Bei der Kondensation wird zusätzlich ein kleines Molekül (meist Wasser) abgespalten", "Bei einer Additionsreaktion wird immer Wasser freigesetzt", "Beide Reaktionstypen laufen exakt identisch ab" }, "Bei der Kondensation wird zusätzlich ein kleines Molekül (meist Wasser) abgespalten",
+            "Kondensationsreaktionen wie die Veresterung erzeugen neben dem Hauptprodukt zusätzlich ein kleines Molekül (meist Wasser), das abgespalten wird - bei einer reinen Addition passiert das nicht."),
+        ("Was zeigt die Vielfalt an Estern in der Natur und Industrie (Aromen, Fette, Kunststoffe)?", new[] { "Aus wenigen Grundbausteinen (Säuren und Alkoholen) lässt sich eine große Produktvielfalt herstellen", "Ester kommen ausschließlich in einer einzigen, immer identischen Form vor", "Ester haben in Natur und Industrie praktisch keine Bedeutung" }, "Aus wenigen Grundbausteinen (Säuren und Alkoholen) lässt sich eine große Produktvielfalt herstellen",
+            "Durch Kombination unterschiedlicher Carbonsäuren und Alkohole entsteht eine riesige Vielfalt an Estern mit ganz unterschiedlichen Eigenschaften und Anwendungen."),
+        ("Warum werden pflanzliche Öle in der Lebensmittelindustrie manchmal gehärtet (Fetthärtung)?", new[] { "Durch Anlagerung von Wasserstoff an Doppelbindungen werden ungesättigte Fettsäuren gesättigt und das Fett fester", "Härtung entfernt sämtliche Esterbindungen aus dem Öl", "Härtung hat auf den Aggregatzustand des Fetts keinerlei Einfluss" }, "Durch Anlagerung von Wasserstoff an Doppelbindungen werden ungesättigte Fettsäuren gesättigt und das Fett fester",
+            "Bei der Fetthärtung wird Wasserstoff an die Doppelbindungen ungesättigter Fettsäuren addiert, wodurch das Fett gesättigter und bei Raumtemperatur fester wird."),
+        ("Was ist ein Grund, warum manche Kunststoffe (Polyester) auf Esterbindungen aufgebaut sind?", new[] { "Viele einzelne Ester-Bausteine lassen sich zu langen, stabilen Kettenmolekülen verknüpfen", "Esterbindungen können grundsätzlich keine langen Ketten bilden", "Polyester enthalten keinerlei Esterbindung" }, "Viele einzelne Ester-Bausteine lassen sich zu langen, stabilen Kettenmolekülen verknüpfen",
+            "Polyester entstehen durch die Verknüpfung vieler Säure- und Alkoholbausteine über Esterbindungen zu langen, stabilen Polymerketten, die z.B. für Textilfasern genutzt werden.")
+    };
+
+    private static QuizQuestion Ester(Random r)
+    {
+        var f = EsterListe[r.Next(EsterListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Ester – Vielfalt der Produkte aus Alkoholen und Säuren", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ester entstehen aus Säure + Alkohol unter Wasserabspaltung (Veresterung), Hydrolyse ist die Rückreaktion; Fette sind Ester aus Glycerin und Fettsäuren, Verseifung ergibt Seife."
         };
     }
 }
