@@ -67,10 +67,15 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    🤖 KI & Technik, 🎮 Spiele, 💰 Finanzen, ⛅ Wetter. Themen-Rubriken werden per
    Schlüsselwort-Klassifikation quer über alle Quellen erkannt (`NewsCategoryClassifier`).
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
-   (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), die Boxen „Warum ist das wichtig?"/„Was bedeutet das für
-   dich?" (ehrliche rubrikbezogene Einordnungen aus `KidNewsMetadata` – eine regelbasierte Pipeline
-   erfindet bewusst keine artikel-spezifischen Behauptungen), sofort erklärte schwierige Wörter
-   (kuratiertes `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und 1-2 Verständnisfragen.
+   (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes
+   `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und zwei Verständnisfragen, die
+   echtes Lesen verlangen: eine Rubrik-Frage („Zu welchem Themenbereich gehört diese Nachricht?")
+   und ein Lückentext aus der Zusammenfassung (die frühere „Nenne ein wichtiges Wort aus der
+   Überschrift"-Frage war ohne Lesen lösbar und wurde entfernt; ebenso die früheren
+   Einordnungs-Boxen „Warum ist das wichtig?"/„Was bedeutet das für dich?" - auf Nutzerwunsch,
+   der Fokus liegt auf der Nachricht selbst). **Mindest-Lesezeit**: wie bei den Fach-Übungen wird
+   „Weiter" erst frei, wenn die Fragen beantwortet sind UND ein 20-Sekunden-Countdown abgelaufen
+   ist - Nachrichten sollen gelesen, nicht weggeklickt werden.
    Verstörende Themen (Krieg, Gewalt – auch türkischsprachige Schlüsselwörter) werden im Ranking
    stark heruntergestuft. **Finanzwissen**: weil es zu Finanzthemen kaum kindtaugliche Tagesmeldungen
    gibt, wird täglich ein rotierendes, kuratiertes Erklärstück angehängt (Was ist Geld? Inflation,
@@ -86,19 +91,16 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Eine Marker-Leiste im Kopf zeigt je Artikel einen Kreis (grün mit ✓ =
    Fragen beantwortet, auch aus einer früheren Session desselben Tages nach Absturz/Neustart;
    lila = aktueller Artikel; grau = offen). **Die Marker sind klickbar** (direkt zum Artikel
-   springen), und ein **Suchfeld** durchsucht Titel+Zusammenfassung der heutigen Artikel (Treffer
-   anklicken springt hin). „Weiter" führt zum nächsten noch offenen Artikel; der Abschluss-Button
+   springen). „Weiter" führt zum nächsten noch offenen Artikel; der Abschluss-Button
    erscheint erst, wenn wirklich ALLE Artikel beantwortet sind. **Automatischer Altersfilter**:
    bis einschließlich 9 Jahren (Profil-Alter) werden Artikel mit verstörenden Schlüsselwörtern
    komplett ausgefiltert statt nur herabgestuft. **Tages-Archiv & Offline-Rückfall**: die
    aufbereiteten Tagesartikel werden automatisch ~7 Tage archiviert (`ArchivedArticleRepository`,
    inkl. Verständnisfragen); sind morgens alle Feeds unerreichbar, liest das Kind die Artikel des
    letzten erfolgreichen Tages statt vor einem fast leeren News-Teil zu stehen (im
-   Fehlerprotokoll vermerkt). **Lesezeichen & Offline-Lesen**: der 🔖-Button
-   merkt einen Artikel (pro Profil); der komplette aufbereitete Text landet dabei in der lokalen
-   SQLite-Datenbank und ist über „🔖 Gemerkte Artikel" auch ohne Internet wieder lesbar
-   (neue Tabelle `SavedArticles` - bestehende `lerntor.db` einmal löschen, siehe
-   [docs/BUILD.md](docs/BUILD.md)).
+   Fehlerprotokoll vermerkt). (Eine frühere Lesezeichen-/Suchfunktion im News-Teil wurde auf
+   Nutzerwunsch wieder entfernt - im geführten Pflicht-Ablauf brachte sie keinen Mehrwert und
+   verschob das Layout.)
 4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.

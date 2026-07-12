@@ -1,26 +1,39 @@
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
-using LernTor.Data.Entities;
-using LernTor.Data.Repositories;
 using LernTor.News;
 
 namespace LernTor.App.ViewModels;
 
+/// <summary>
+/// Pflicht-News-Teil: Artikel nacheinander lesen und die Verständnisfragen beantworten.
+/// Die Marker im Kopf sind klickbar (Sprung-Navigation); "Weiter" führt zum nächsten OFFENEN
+/// Artikel, der Abschluss-Button erscheint erst, wenn ALLE Artikel beantwortet sind.
+///
+/// <para><b>Mindest-Lesezeit pro Artikel:</b> wie bei den Fach-Übungen wird "Weiter" erst frei,
+/// wenn die Fragen beantwortet sind UND ein kurzer Countdown abgelaufen ist - die Nachricht soll
+/// gelesen und verstanden werden, nicht weggeklickt. Bereits erledigte Artikel (Wiederbesuch
+/// über die Marker) haben keinen Countdown.</para>
+/// </summary>
 public sealed partial class NewsViewModel : ObservableObject
 {
+    /// <summary>Mindest-Lesezeit pro Artikel in Sekunden.</summary>
+    private const int MinSecondsPerArticle = 20;
+
     private readonly IReadOnlyList<NewsArticle> _articles;
     private readonly Action<NewsArticle, QuestionOutcome, QuizQuestion> _onArticleAnswered;
     private readonly Action<IReadOnlyList<QuizQuestion>> _onSectionCompleted;
     private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly List<QuizQuestion> _allAskedQuestions = new();
+    private readonly DispatcherTimer _minTimeTimer;
 
     /// <summary>Verhindert Doppel-Einträge in <see cref="_allAskedQuestions"/>, wenn ein Artikel
-    /// über die Sprung-Navigation (Marker/Suche) mehrfach besucht wird.</summary>
+    /// über die Marker-Navigation mehrfach besucht wird.</summary>
     private readonly HashSet<string> _askedQuestionIds = new();
 
     /// <summary>Artikel-IDs, deren Fragen bereits vollständig beantwortet wurden - vorbefüllt mit den
@@ -34,12 +47,18 @@ public sealed partial class NewsViewModel : ObservableObject
     private NewsArticle? currentArticle;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanGoNext))]
     private bool canProceed;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanGoNext))]
+    [NotifyPropertyChangedFor(nameof(ShowLockCountdown))]
+    private int lockSecondsRemaining;
 
     public ObservableCollection<QuestionAnswerViewModel> CurrentQuestions { get; } = new();
 
-    /// <summary>Ein Marker je Artikel (erledigt/aktuell/offen) für die Übersichtsleiste im Kopf -
-    /// so sieht das Kind auch nach einem Neustart, welche Artikel heute schon geschafft sind.</summary>
+    /// <summary>Ein klickbarer Marker je Artikel (erledigt/aktuell/offen) für die Übersichtsleiste
+    /// im Kopf - so sieht das Kind auch nach einem Neustart, welche Artikel heute geschafft sind.</summary>
     public ObservableCollection<SessionStepViewModel> ArticleMarkers { get; } = new();
 
     public int TotalArticles => _articles.Count;
@@ -47,9 +66,15 @@ public sealed partial class NewsViewModel : ObservableObject
     public bool IsLastArticle => CurrentIndex >= _articles.Count - 1;
     public bool HasArticles => _articles.Count > 0;
 
+    /// <summary>"Weiter"/"Abschließen" erst nach Antwort UND abgelaufener Mindest-Lesezeit.</summary>
+    public bool CanGoNext => CanProceed && LockSecondsRemaining <= 0;
+
+    /// <summary>Countdown-Hinweis nur zeigen, solange die Mindest-Lesezeit noch läuft.</summary>
+    public bool ShowLockCountdown => LockSecondsRemaining > 0;
+
     /// <summary>True, sobald die Fragen ALLER Artikel beantwortet sind - erst dann erscheint der
-    /// Abschluss-Button. Nötig, weil die Sprung-Navigation (Marker/Suche) die frühere rein
-    /// lineare Reihenfolge aufhebt: "letzter Artikel erreicht" heißt nicht mehr "alles erledigt".</summary>
+    /// Abschluss-Button. Nötig wegen der Marker-Sprung-Navigation: "letzter Artikel erreicht"
+    /// heißt nicht mehr automatisch "alles erledigt".</summary>
     public bool AllArticlesCompleted =>
         _articles.Count == 0 || _articles.All(a => _completedArticleIds.Contains(a.Id));
 
@@ -57,11 +82,7 @@ public sealed partial class NewsViewModel : ObservableObject
     /// Einträge soll gar nicht erst erscheinen).</summary>
     public bool HasExplainedTerms => CurrentArticle?.ExplainedTerms.Count > 0;
 
-    partial void OnCurrentArticleChanged(NewsArticle? value)
-    {
-        OnPropertyChanged(nameof(HasExplainedTerms));
-        OnPropertyChanged(nameof(IsCurrentArticleSaved));
-    }
+    partial void OnCurrentArticleChanged(NewsArticle? value) => OnPropertyChanged(nameof(HasExplainedTerms));
 
     // --- Wetter-Widget (Berlin, Open-Meteo; null = Abruf fehlgeschlagen → Widget ausgeblendet) ---
 
@@ -98,110 +119,39 @@ public sealed partial class NewsViewModel : ObservableObject
         Action<NewsArticle, QuestionOutcome, QuizQuestion> onArticleAnswered,
         Action<IReadOnlyList<QuizQuestion>> onSectionCompleted,
         IHomeworkHelpChatService homeworkChat,
-        KidWeatherReport? weather = null,
-        SavedArticleRepository? savedArticleRepo = null,
-        string? profileId = null)
+        KidWeatherReport? weather = null)
     {
         Weather = weather;
-        _savedArticleRepo = savedArticleRepo;
-        _profileId = profileId;
         _articles = articles;
         _onArticleAnswered = onArticleAnswered;
         _onSectionCompleted = onSectionCompleted;
         _homeworkChat = homeworkChat;
         _completedArticleIds = new HashSet<string>(alreadyCompletedIds);
 
-        // Bereits an einem Vortag abgeschlossene Artikel dieser Session überspringen (Fortschritt aus Absturz/Neustart).
+        _minTimeTimer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };
+        _minTimeTimer.Tick += (_, _) => Tick();
+
+        // Bereits abgeschlossene Artikel dieser Session überspringen (Fortschritt aus Absturz/Neustart).
         while (CurrentIndex < _articles.Count && alreadyCompletedIds.Contains(_articles[CurrentIndex].Id))
         {
             CurrentIndex++;
         }
 
         LoadCurrentArticle();
-        _ = LoadSavedArticlesAsync();
     }
 
-    // --- 🔖 Gemerkte Artikel (pro Profil, offline lesbar - siehe SavedArticleEntity) ---
-
-    private readonly SavedArticleRepository? _savedArticleRepo;
-    private readonly string? _profileId;
-    private readonly HashSet<string> _savedArticleIds = new();
-
-    public ObservableCollection<SavedArticleEntity> SavedArticles { get; } = new();
-
-    [ObservableProperty]
-    private bool showSavedArticles;
-
-    public bool HasSavedArticles => SavedArticles.Count > 0;
-
-    public bool IsCurrentArticleSaved =>
-        CurrentArticle is not null && _savedArticleIds.Contains(CurrentArticle.Id);
-
-    /// <summary>Anzeige-Zähler für den Panel-Umschalter ("🔖 Gemerkte Artikel (n)").</summary>
-    public string SavedArticlesToggleLabel =>
-        $"{LocalizationService.Instance["News_SavedArticles"]} ({SavedArticles.Count})";
-
-    private async Task LoadSavedArticlesAsync()
+    private void Tick()
     {
-        if (_savedArticleRepo is null || _profileId is null)
+        if (LockSecondsRemaining > 0)
         {
-            return;
+            LockSecondsRemaining--;
         }
 
-        var saved = await _savedArticleRepo.GetForProfileAsync(_profileId);
-        SavedArticles.Clear();
-        _savedArticleIds.Clear();
-        foreach (var entity in saved)
+        if (LockSecondsRemaining <= 0)
         {
-            SavedArticles.Add(entity);
-            _savedArticleIds.Add(entity.ArticleId);
+            _minTimeTimer.Stop();
         }
-
-        NotifySavedStateChanged();
     }
-
-    private void NotifySavedStateChanged()
-    {
-        OnPropertyChanged(nameof(HasSavedArticles));
-        OnPropertyChanged(nameof(IsCurrentArticleSaved));
-        OnPropertyChanged(nameof(SavedArticlesToggleLabel));
-    }
-
-    [RelayCommand]
-    private async Task ToggleSaveCurrentArticleAsync()
-    {
-        if (_savedArticleRepo is null || _profileId is null || CurrentArticle is null)
-        {
-            return;
-        }
-
-        var nowSaved = await _savedArticleRepo.ToggleAsync(_profileId, CurrentArticle);
-        if (nowSaved)
-        {
-            _savedArticleIds.Add(CurrentArticle.Id);
-        }
-        else
-        {
-            _savedArticleIds.Remove(CurrentArticle.Id);
-        }
-
-        await LoadSavedArticlesAsync();
-    }
-
-    [RelayCommand]
-    private async Task RemoveSavedArticleAsync(SavedArticleEntity entity)
-    {
-        if (_savedArticleRepo is null)
-        {
-            return;
-        }
-
-        await _savedArticleRepo.RemoveAsync(entity.Id);
-        await LoadSavedArticlesAsync();
-    }
-
-    [RelayCommand]
-    private void ToggleSavedArticlesPanel() => ShowSavedArticles = !ShowSavedArticles;
 
     /// <summary>Baut die Marker-Leiste neu auf. Erledigt = Fragen vollständig beantwortet (auch aus
     /// einer früheren Session heute), aktuell = gerade angezeigter Artikel.</summary>
@@ -230,13 +180,14 @@ public sealed partial class NewsViewModel : ObservableObject
         {
             CurrentArticle = null;
             CanProceed = true;
+            LockSecondsRemaining = 0;
             return;
         }
 
         CurrentArticle = _articles[CurrentIndex];
         foreach (var question in CurrentArticle.ComprehensionQuestions)
         {
-            // Doppelbesuche über die Sprung-Navigation dürfen die Fragen nicht erneut in die
+            // Doppelbesuche über die Marker-Navigation dürfen die Fragen nicht erneut in die
             // Abschluss-Sammlung legen (sonst tauchen sie doppelt in der News-Wertung auf).
             if (_askedQuestionIds.Add(question.Id))
             {
@@ -246,9 +197,19 @@ public sealed partial class NewsViewModel : ObservableObject
             CurrentQuestions.Add(new QuestionAnswerViewModel(question, _homeworkChat, OnQuestionSubmitted));
         }
 
+        var alreadyCompleted = _completedArticleIds.Contains(CurrentArticle.Id);
+
         // "Weiter" ist frei, wenn es nichts zu beantworten gibt ODER dieser Artikel schon
-        // erledigt ist (Wiederbesuch über Marker/Suche - erneutes Beantworten wäre unfair).
-        CanProceed = CurrentQuestions.Count == 0 || _completedArticleIds.Contains(CurrentArticle.Id);
+        // erledigt ist (Wiederbesuch über Marker - erneutes Beantworten wäre unfair).
+        CanProceed = CurrentQuestions.Count == 0 || alreadyCompleted;
+
+        // Mindest-Lesezeit nur für noch offene Artikel; beim Wiederbesuch erledigter Artikel
+        // wäre ein erneuter Countdown reine Navigations-Schikane.
+        LockSecondsRemaining = alreadyCompleted ? 0 : MinSecondsPerArticle;
+        if (LockSecondsRemaining > 0)
+        {
+            _minTimeTimer.Start();
+        }
 
         // Fragenlose Artikel zählen sofort als erledigt, sonst könnte AllArticlesCompleted
         // (und damit der Abschluss-Button) nie wahr werden.
@@ -282,11 +243,11 @@ public sealed partial class NewsViewModel : ObservableObject
     }
 
     /// <summary>Springt zum nächsten noch offenen Artikel (hinter dem aktuellen, sonst von vorn) -
-    /// durch die Sprung-Navigation ist "einfach Index+1" nicht mehr zwingend der nächste offene.</summary>
+    /// durch die Marker-Navigation ist "einfach Index+1" nicht mehr zwingend der nächste offene.</summary>
     [RelayCommand]
     private void NextArticle()
     {
-        if (!CanProceed || AllArticlesCompleted)
+        if (!CanGoNext || AllArticlesCompleted)
         {
             return;
         }
@@ -303,12 +264,14 @@ public sealed partial class NewsViewModel : ObservableObject
         }
     }
 
-    /// <summary>Schließt den News-Bereich ab - Button erscheint erst, wenn ALLE Artikel erledigt sind.</summary>
+    /// <summary>Schließt den News-Bereich ab - Button erscheint erst, wenn ALLE Artikel erledigt
+    /// sind, und respektiert die Mindest-Lesezeit des zuletzt beantworteten Artikels.</summary>
     [RelayCommand]
     private void FinishSection()
     {
-        if (AllArticlesCompleted)
+        if (AllArticlesCompleted && LockSecondsRemaining <= 0)
         {
+            _minTimeTimer.Stop();
             _onSectionCompleted(_allAskedQuestions);
         }
     }
@@ -325,51 +288,4 @@ public sealed partial class NewsViewModel : ObservableObject
         CurrentIndex = marker.Index;
         LoadCurrentArticle();
     }
-
-    // --- Suche über die heutigen Artikel (Titel + Zusammenfassung) ---
-
-    [ObservableProperty]
-    private string searchText = string.Empty;
-
-    public ObservableCollection<SessionStepViewModel> SearchResults { get; } = new();
-
-    public bool HasSearchResults => SearchResults.Count > 0;
-
-    partial void OnSearchTextChanged(string value)
-    {
-        SearchResults.Clear();
-
-        var query = value.Trim();
-        if (query.Length >= 2)
-        {
-            for (var i = 0; i < _articles.Count; i++)
-            {
-                var article = _articles[i];
-                if (article.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                    article.SimplifiedSummary.Contains(query, StringComparison.OrdinalIgnoreCase))
-                {
-                    SearchResults.Add(new SessionStepViewModel
-                    {
-                        Label = $"{i + 1}. {Shorten(article.Title, 70)}",
-                        IsDone = _completedArticleIds.Contains(article.Id),
-                        IsCurrent = i == CurrentIndex,
-                        Index = i
-                    });
-                }
-            }
-        }
-
-        OnPropertyChanged(nameof(HasSearchResults));
-    }
-
-    /// <summary>Klick auf ein Suchergebnis: hinspringen und die Ergebnisliste schließen.</summary>
-    [RelayCommand]
-    private void JumpToSearchResult(SessionStepViewModel result)
-    {
-        JumpToArticle(result);
-        SearchText = string.Empty;
-    }
-
-    private static string Shorten(string text, int maxLength) =>
-        text.Length <= maxLength ? text : text[..maxLength].TrimEnd() + "…";
 }

@@ -28,7 +28,6 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ActivityLogRepository _activityLogRepo;
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
-    private readonly SavedArticleRepository _savedArticleRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
     private readonly RewardRepository _rewardRepo;
@@ -71,7 +70,6 @@ public sealed partial class MainViewModel : ObservableObject
         ActivityLogRepository activityLogRepo,
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
-        SavedArticleRepository savedArticleRepo,
         ReviewQuestionRepository reviewRepo,
         ArchivedArticleRepository archiveRepo,
         RewardRepository rewardRepo,
@@ -90,7 +88,6 @@ public sealed partial class MainViewModel : ObservableObject
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
         _customQuestionRepo = customQuestionRepo;
-        _savedArticleRepo = savedArticleRepo;
         _reviewRepo = reviewRepo;
         _archiveRepo = archiveRepo;
         _rewardRepo = rewardRepo;
@@ -283,7 +280,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         return new NewsViewModel(
             articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted,
-            _homeworkChat, weather, _savedArticleRepo, CurrentProfile?.Id);
+            _homeworkChat, weather);
     }
 
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)

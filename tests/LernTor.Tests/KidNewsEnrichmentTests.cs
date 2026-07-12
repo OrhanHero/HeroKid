@@ -93,6 +93,68 @@ public class KidTermGlossaryTests
     }
 }
 
+public class HeuristicComprehensionQuestionGeneratorTests
+{
+    private static NewsArticle Article(string summary) => new()
+    {
+        Id = "a1",
+        Title = "Neue Schwimmhalle in Spandau eröffnet",
+        SimplifiedSummary = summary,
+        SourceName = "rbb24 Berlin",
+        SourceUrl = "https://example.org",
+        PublishedAt = DateTimeOffset.Now,
+        RegionFocus = NewsRegionFocus.Berlin,
+        Category = NewsCategory.Berlin,
+        CategoryEmoji = "🐻",
+        ComprehensionQuestions = Array.Empty<QuizQuestion>()
+    };
+
+    [Fact]
+    public void Keine_Ueberschrift_Wort_Frage_mehr()
+    {
+        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
+            Article("Die neue Schwimmhalle wurde nach zwei Jahren Bauzeit feierlich eröffnet."));
+
+        Assert.DoesNotContain(questions, q => q.Prompt.Contains("wichtiges Wort aus der Überschrift"));
+    }
+
+    [Fact]
+    public void Rubrik_Frage_ist_beantwortbar()
+    {
+        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
+            Article("Die neue Schwimmhalle wurde nach zwei Jahren Bauzeit feierlich eröffnet."));
+
+        var rubrik = questions.Single(q => q.Id.EndsWith("-rubrik"));
+        Assert.Contains("Berlin", rubrik.Options);
+        Assert.Contains(rubrik.CorrectAnswers[0], rubrik.Options);
+        Assert.True(rubrik.CheckAnswer("Berlin"));
+    }
+
+    [Fact]
+    public void Lueckentext_verlangt_Lesen_der_Zusammenfassung()
+    {
+        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
+            Article("Die neue Schwimmhalle wurde nach zwei Jahren Bauzeit feierlich eröffnet. " +
+                    "Hunderte Familien kamen zur Eröffnung und probierten die Rutschen aus."));
+
+        var cloze = questions.Single(q => q.Id.EndsWith("-lueckentext"));
+        Assert.Contains("_____", cloze.Prompt);
+        Assert.Contains(cloze.CorrectAnswers[0], cloze.Options);
+        Assert.True(cloze.Options.Count >= 3);
+        Assert.True(cloze.CheckAnswer(cloze.CorrectAnswers[0]));
+        // Das gesuchte Wort darf im Lücken-Satz des Prompts nicht mehr sichtbar sein.
+        Assert.DoesNotContain(cloze.CorrectAnswers[0], cloze.Prompt);
+    }
+
+    [Fact]
+    public void Zu_kurze_Zusammenfassung_faellt_auf_Regionsfrage_zurueck()
+    {
+        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(Article("Kurz."));
+
+        Assert.Contains(questions, q => q.Id.EndsWith("-region"));
+    }
+}
+
 public class KidNewsMetadataTests
 {
     [Fact]

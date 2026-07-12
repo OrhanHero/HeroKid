@@ -11,7 +11,6 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<SettingsEntity> Settings => Set<SettingsEntity>();
     public DbSet<StudentProfileEntity> Profiles => Set<StudentProfileEntity>();
     public DbSet<CustomQuestionEntity> CustomQuestions => Set<CustomQuestionEntity>();
-    public DbSet<SavedArticleEntity> SavedArticles => Set<SavedArticleEntity>();
     public DbSet<ReviewQuestionEntity> ReviewQuestions => Set<ReviewQuestionEntity>();
     public DbSet<ArchivedArticleEntity> ArchivedArticles => Set<ArchivedArticleEntity>();
     public DbSet<RewardEntity> Rewards => Set<RewardEntity>();
@@ -54,12 +53,6 @@ public sealed class LernTorDbContext : DbContext
         modelBuilder.Entity<CustomQuestionEntity>(e =>
         {
             e.HasKey(c => c.Id);
-        });
-
-        modelBuilder.Entity<SavedArticleEntity>(e =>
-        {
-            e.HasKey(a => a.Id);
-            e.HasIndex(a => new { a.ProfileId, a.ArticleId });
         });
 
         modelBuilder.Entity<ReviewQuestionEntity>(e =>

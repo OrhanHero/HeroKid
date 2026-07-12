@@ -22,7 +22,7 @@ namespace LernTor.Data;
 /// neue Spalten, neue Indizes. Entfernte/umbenannte Spalten bleiben als tote Spalten stehen
 /// (harmlos), und eine Umdeutung vorhandener Werte (z.B. Enum-Umsortierung bei numerischer
 /// Speicherung) kann kein Schema-Abgleich der Welt heilen - dagegen hilft weiterhin die Regel,
-/// Enums als Strings zu persistieren (siehe JsonOptions.Default / SavedArticleEntity).</para>
+/// Enums als Strings zu persistieren (siehe JsonOptions.Default / ArchivedArticleEntity).</para>
 /// </summary>
 public static class SqliteSchemaUpdater
 {

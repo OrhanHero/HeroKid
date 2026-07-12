@@ -80,16 +80,8 @@ public static class Translations
             ["News_Diff_Mittel"] = L("🟡 Mittel", "🟡 Orta"),
             ["News_Diff_Schwer"] = L("🔴 Schwer", "🔴 Zor"),
             ["News_ReadingMinutes"] = L("🕒 ca. {0} Min.", "🕒 yakl. {0} dk"),
-            ["News_WhyImportant"] = L("❓ Warum ist das wichtig?", "❓ Bu neden önemli?"),
-            ["News_MeaningForKids"] = L("🧒 Was bedeutet das für dich?", "🧒 Bu senin için ne anlama geliyor?"),
             ["News_ExplainedTerms"] = L("💡 Schwierige Wörter, einfach erklärt", "💡 Zor kelimeler, basitçe açıklandı"),
             ["News_WeatherTitle"] = L("Wetter heute in Berlin", "Bugün Berlin'de hava"),
-            ["News_SaveArticle"] = L("🔖 Merken", "🔖 Kaydet"),
-            ["News_SavedState"] = L("✓ Gemerkt", "✓ Kaydedildi"),
-            ["News_SavedArticles"] = L("🔖 Gemerkte Artikel", "🔖 Kaydedilen haberler"),
-            ["News_SearchHint"] = L(
-                "In den heutigen Artikeln suchen (mindestens 2 Buchstaben) - Treffer anklicken springt zum Artikel.",
-                "Bugünkü haberlerde ara (en az 2 harf) - sonuca tıklamak habere götürür."),
             ["News_NextArticle"] = L("Nächster Artikel ➜", "Sonraki Haber ➜"),
             ["News_FinishSection"] = L("Weiter zu Mathematik ➜", "Matematiğe geç ➜"),
 

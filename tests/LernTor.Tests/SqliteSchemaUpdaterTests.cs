@@ -36,7 +36,7 @@ public sealed class SqliteSchemaUpdaterTests : IDisposable
     public void Fehlende_Spalten_und_Tabellen_werden_ergaenzt_ohne_Datenverlust()
     {
         // Veraltete DB von Hand anlegen: Profiles ohne die späteren Spalten AvatarEmoji/TotalStars,
-        // SavedArticles fehlt komplett - genau der Zustand einer Installation von vor ein paar Updates.
+        // Rewards fehlt komplett - genau der Zustand einer Installation von vor ein paar Updates.
         using (var db = CreateContext())
         {
             db.Database.ExecuteSqlRaw("""
@@ -60,7 +60,7 @@ public sealed class SqliteSchemaUpdaterTests : IDisposable
 
             Assert.Contains(applied, c => c.Contains("Profiles") && c.Contains("AvatarEmoji"));
             Assert.Contains(applied, c => c.Contains("Profiles") && c.Contains("TotalStars"));
-            Assert.Contains(applied, c => c.Contains("SavedArticles"));
+            Assert.Contains(applied, c => c.Contains("Rewards"));
         }
 
         // Die Altzeile muss die neuen Spalten mit Standardwerten bekommen haben und über EF lesbar sein.
@@ -70,7 +70,7 @@ public sealed class SqliteSchemaUpdaterTests : IDisposable
             Assert.Equal("Testkind", profile.Name);
             Assert.Equal(0, profile.TotalStars);
 
-            Assert.Empty(db.SavedArticles.ToList()); // Neue Tabelle existiert und ist abfragbar.
+            Assert.Empty(db.Rewards.ToList()); // Neue Tabelle existiert und ist abfragbar.
         }
     }
 

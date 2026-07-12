@@ -16,9 +16,10 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- Wetter-Widget (Berlin, Open-Meteo): nur sichtbar, wenn der Abruf geklappt hat. -->
+            <!-- Wetter-Widget (Berlin, Open-Meteo): nur sichtbar, wenn der Abruf geklappt hat.
+                 Oberer Abstand, damit es nicht am Profilnamen des Kiosk-Fensters klebt. -->
             <Border Grid.Column="1" Style="{StaticResource CardBorder}" Padding="16" VerticalAlignment="Top"
-                    MaxWidth="300"
+                    MaxWidth="300" Margin="0,28,0,0"
                     Visibility="{Binding HasWeather, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
                     <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_WeatherTitle]}"
@@ -104,59 +105,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- Suche über die heutigen Artikel: Treffer anklicken springt zum Artikel. -->
-            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                <TextBlock Text="🔍" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0" />
-                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         Width="300" FontSize="14"
-                         ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_SearchHint]}" />
-                <!-- Umschalter für die gemerkten Artikel (offline lesbar) - nur sichtbar, wenn es welche gibt. -->
-                <Button Content="{Binding SavedArticlesToggleLabel}" Style="{StaticResource TabPillButton}"
-                        FontSize="13" Margin="16,0,0,0"
-                        Visibility="{Binding HasSavedArticles, Converter={StaticResource BoolToVis}}"
-                        Command="{Binding ToggleSavedArticlesPanelCommand}" />
-            </StackPanel>
-
-            <!-- Panel: gemerkte Artikel, komplett aus der lokalen Datenbank (funktioniert offline). -->
-            <ItemsControl ItemsSource="{Binding SavedArticles}" Margin="0,10,0,0" MaxWidth="700" HorizontalAlignment="Left"
-                          Visibility="{Binding ShowSavedArticles, Converter={StaticResource BoolToVis}}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource CardBorder}" Padding="14" Margin="0,0,0,8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock FontWeight="Bold" FontSize="15" TextWrapping="Wrap">
-                                        <Run Text="{Binding CategoryEmoji, Mode=OneWay}" />
-                                        <Run Text="{Binding Title, Mode=OneWay}" />
-                                    </TextBlock>
-                                    <TextBlock Text="{Binding SourceName}" FontSize="12" Opacity="0.7" Margin="0,2,0,4" />
-                                    <TextBlock Text="{Binding SimplifiedSummary}" FontSize="14" TextWrapping="Wrap" />
-                                </StackPanel>
-                                <Button Grid.Column="1" Content="✕" Style="{StaticResource RoundedButton}"
-                                        Background="{StaticResource TextSecondaryBrush}" FontSize="12" Padding="10,6"
-                                        VerticalAlignment="Top"
-                                        Command="{Binding DataContext.RemoveSavedArticleCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        CommandParameter="{Binding}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <ItemsControl ItemsSource="{Binding SearchResults}" Margin="0,6,0,0"
-                          Visibility="{Binding HasSearchResults, Converter={StaticResource BoolToVis}}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding Label}" Style="{StaticResource TabPillButton}"
-                                FontSize="13" Margin="0,2" HorizontalAlignment="Left"
-                                Command="{Binding DataContext.JumpToSearchResultCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                CommandParameter="{Binding}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
             </StackPanel>
         </Grid>
 
@@ -200,40 +148,9 @@
                                     <Run Text="📍 " /><Run Text="{Binding CurrentArticle.BerlinDistrict, Mode=OneWay}" />
                                 </TextBlock>
                             </Border>
-
-                            <!-- 🔖 Lesezeichen: speichert den ganzen Artikeltext lokal (offline lesbar). -->
-                            <Button Style="{StaticResource TabPillButton}" FontSize="13" Margin="8,0,0,0"
-                                    Command="{Binding ToggleSaveCurrentArticleCommand}">
-                                <TextBlock>
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_SaveArticle], Mode=OneWay}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsCurrentArticleSaved}" Value="True">
-                                                    <Setter Property="Text" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_SavedState], Mode=OneWay}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </Button>
                         </StackPanel>
 
                         <TextBlock Text="{Binding CurrentArticle.SimplifiedSummary}" Style="{StaticResource BodyText}" />
-
-                        <!-- "Warum ist das wichtig?" + "Was bedeutet das für dich?": ehrliche,
-                             rubrikbezogene Einordnung (siehe KidNewsMetadata) statt erfundener Details. -->
-                        <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="14" Padding="16" Margin="0,16,0,0"
-                                Visibility="{Binding CurrentArticle.WhyImportant, Converter={StaticResource EmptyStringToVis}}">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_WhyImportant]}"
-                                           FontWeight="Bold" FontSize="15" Margin="0,0,0,4" />
-                                <TextBlock Text="{Binding CurrentArticle.WhyImportant}" Style="{StaticResource BodyText}" FontSize="15" />
-                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_MeaningForKids]}"
-                                           FontWeight="Bold" FontSize="15" Margin="0,12,0,4" />
-                                <TextBlock Text="{Binding CurrentArticle.MeaningForKids}" Style="{StaticResource BodyText}" FontSize="15" />
-                            </StackPanel>
-                        </Border>
 
                         <!-- Schwierige Wörter, sofort erklärt (KidTermGlossary) -->
                         <Border Background="{StaticResource TileMintBrush}" CornerRadius="14" Padding="16" Margin="0,12,0,0"
@@ -271,18 +188,33 @@
             </StackPanel>
         </ScrollViewer>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,32">
-            <!-- "Weiter" führt zum nächsten OFFENEN Artikel (Sprung-Navigation); der Abschluss-
-                 Button erscheint erst, wenn wirklich alle Artikel beantwortet sind. -->
-            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_NextArticle]}"
-                    Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
-                    IsEnabled="{Binding CanProceed}"
-                    Visibility="{Binding AllArticlesCompleted, Converter={StaticResource InverseBoolToVis}}"
-                    Command="{Binding NextArticleCommand}" />
-            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_FinishSection]}"
-                    Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
-                    Visibility="{Binding AllArticlesCompleted, Converter={StaticResource BoolToVis}}"
-                    Command="{Binding FinishSectionCommand}" />
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,32">
+            <!-- Mindest-Lesezeit-Countdown (siehe NewsViewModel): sichtbar, solange die Zeit läuft. -->
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,8" FontSize="15"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Visibility="{Binding ShowLockCountdown, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Exercise_MinTimeCountdown]" />
+                        <Binding Path="LockSecondsRemaining" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- "Weiter" führt zum nächsten OFFENEN Artikel (Marker-Navigation); der Abschluss-
+                     Button erscheint erst, wenn wirklich alle Artikel beantwortet sind. Beide erst
+                     nach Antwort UND abgelaufener Mindest-Lesezeit klickbar. -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_NextArticle]}"
+                        Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                        IsEnabled="{Binding CanGoNext}"
+                        Visibility="{Binding AllArticlesCompleted, Converter={StaticResource InverseBoolToVis}}"
+                        Command="{Binding NextArticleCommand}" />
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_FinishSection]}"
+                        Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                        IsEnabled="{Binding CanGoNext}"
+                        Visibility="{Binding AllArticlesCompleted, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding FinishSectionCommand}" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
