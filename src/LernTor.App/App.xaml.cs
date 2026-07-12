@@ -130,6 +130,7 @@ public partial class App : Application
                 services.AddSingleton<SavedArticleRepository>();
                 services.AddSingleton<ReviewQuestionRepository>();
                 services.AddSingleton<ArchivedArticleRepository>();
+                services.AddSingleton<RewardRepository>();
 
                 services.AddSingleton<KioskLockService>();
 

@@ -211,6 +211,31 @@ public static class Translations
 
             ["Parent_DeleteProfile"] = L("🗑 Profil löschen", "🗑 Profili sil"),
 
+            ["Parent_Rewards_Title"] = L("🎁 Belohnungen (Sterne einlösen)", "🎁 Ödüller (yıldızlarla al)"),
+            ["Parent_Rewards_Intro"] = L(
+                "Lege fest, was die Kinder mit ihren gesammelten Sternen einlösen können - z.B. " +
+                "\"30 Minuten extra Spielzeit\" für 20 ⭐. Die Belohnungen erscheinen nach dem " +
+                "bestandenen Abschlussquiz; eingelöste Belohnungen werden hier je Profil angezeigt " +
+                "und von euch in der echten Welt eingelöst.",
+                "Çocukların topladıkları yıldızlarla neler alabileceğini belirle - örneğin 20 ⭐ " +
+                "karşılığında \"30 dakika ekstra oyun süresi\". Ödüller final sınavı geçildikten " +
+                "sonra görünür; kullanılan ödüller burada profil bazında listelenir ve gerçek " +
+                "hayatta sizin tarafınızdan verilir."),
+            ["Parent_Rewards_EmojiHint"] = L("Emoji (optional, Standard 🎁)", "Emoji (isteğe bağlı, varsayılan 🎁)"),
+            ["Parent_Rewards_TitleHint"] = L("Belohnung, z.B. \"30 Minuten extra Spielzeit\"", "Ödül, örn. \"30 dakika ekstra oyun süresi\""),
+            ["Parent_Rewards_CostHint"] = L("Sterne-Kosten, z.B. 20", "Yıldız bedeli, örn. 20"),
+            ["Parent_Rewards_Add"] = L("Hinzufügen", "Ekle"),
+            ["Parent_Rewards_Empty"] = L("Noch keine Belohnungen angelegt.", "Henüz ödül eklenmedi."),
+            ["Parent_Rewards_RedemptionsTitle"] = L("Eingelöste Belohnungen (gewähltes Profil oben):", "Kullanılan ödüller (yukarıda seçilen profil):"),
+            ["Parent_Rewards_ErrorTitleMissing"] = L("Bitte eine Belohnung eintragen.", "Lütfen bir ödül gir."),
+            ["Parent_Rewards_ErrorCostInvalid"] = L("Bitte gültige Sterne-Kosten eingeben (mindestens 1).", "Lütfen geçerli bir yıldız bedeli gir (en az 1)."),
+
+            ["Result_Rewards_Title"] = L("🎁 Deine Belohnungen", "🎁 Ödüllerin"),
+            ["Result_Rewards_Redeem"] = L("Einlösen", "Kullan"),
+            ["Result_Rewards_Confirm"] = L(
+                "{0} für {1} ⭐ einlösen? Deine Eltern lösen die Belohnung dann ein.",
+                "{0} ödülünü {1} ⭐ karşılığında kullanmak istiyor musun? Ödülü ailen verecek."),
+
             ["Parent_Log_Title"] = L("Fehlerprotokoll", "Hata günlüğü"),
             ["Parent_Log_Intro"] = L(
                 "Technisches Protokoll für die Fehlersuche: hier steht z.B., welche News-Quelle " +

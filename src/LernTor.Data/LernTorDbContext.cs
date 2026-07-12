@@ -14,6 +14,8 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<SavedArticleEntity> SavedArticles => Set<SavedArticleEntity>();
     public DbSet<ReviewQuestionEntity> ReviewQuestions => Set<ReviewQuestionEntity>();
     public DbSet<ArchivedArticleEntity> ArchivedArticles => Set<ArchivedArticleEntity>();
+    public DbSet<RewardEntity> Rewards => Set<RewardEntity>();
+    public DbSet<RewardRedemptionEntity> RewardRedemptions => Set<RewardRedemptionEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -70,6 +72,17 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(a => a.Id);
             e.HasIndex(a => a.ArchivedDate);
+        });
+
+        modelBuilder.Entity<RewardEntity>(e =>
+        {
+            e.HasKey(r => r.Id);
+        });
+
+        modelBuilder.Entity<RewardRedemptionEntity>(e =>
+        {
+            e.HasKey(r => r.Id);
+            e.HasIndex(r => r.ProfileId);
         });
     }
 

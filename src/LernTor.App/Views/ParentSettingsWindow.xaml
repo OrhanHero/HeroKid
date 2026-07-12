@@ -396,6 +396,66 @@
                 <TextBlock Text="{Binding PiperErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,20"
                            Visibility="{Binding PiperErrorMessage, Converter={StaticResource EmptyStringToVis}}" />
 
+                <!-- 🎁 Belohnungen: Eltern legen fest, was Kinder mit ihren Sternen einlösen können;
+                     Einlösungen erscheinen unten je gewähltem Profil (oben beim Aktivitätsprotokoll). -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_Intro]}"
+                           Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBox Text="{Binding NewRewardEmoji, UpdateSourceTrigger=PropertyChanged}" Width="60"
+                             ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_EmojiHint]}"
+                             Margin="0,0,8,0" />
+                    <TextBox Text="{Binding NewRewardTitle, UpdateSourceTrigger=PropertyChanged}" Width="320"
+                             ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_TitleHint]}"
+                             Margin="0,0,8,0" />
+                    <TextBox Text="{Binding NewRewardCostText, UpdateSourceTrigger=PropertyChanged}" Width="70"
+                             ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_CostHint]}"
+                             Margin="0,0,8,0" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_Add]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8"
+                            Command="{Binding AddRewardCommand}" />
+                </StackPanel>
+                <TextBlock Text="{Binding RewardErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,8"
+                           Visibility="{Binding RewardErrorMessage, Converter={StaticResource EmptyStringToVis}}" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_Empty]}"
+                           Style="{StaticResource BodyText}" Margin="0,0,0,12"
+                           Visibility="{Binding HasNoRewards, Converter={StaticResource BoolToVis}}" />
+                <ItemsControl ItemsSource="{Binding Rewards}" Margin="0,0,0,12">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,3">
+                                <TextBlock FontSize="14" VerticalAlignment="Center" MinWidth="360">
+                                    <Run Text="{Binding Emoji, Mode=OneWay}" />
+                                    <Run Text="{Binding Title, Mode=OneWay}" />
+                                    <Run Text=" – " />
+                                    <Run Text="{Binding StarCost, Mode=OneWay}" FontWeight="Bold" />
+                                    <Run Text=" ⭐" />
+                                </TextBlock>
+                                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Delete]}"
+                                        Style="{StaticResource OptionButton}" Margin="12,0,0,0"
+                                        Command="{Binding DataContext.DeleteRewardCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_RedemptionsTitle]}"
+                           FontWeight="Bold" FontSize="14" Margin="0,0,0,6" />
+                <ItemsControl ItemsSource="{Binding RewardRedemptions}" Margin="0,0,0,20">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="13" Margin="0,2">
+                                <Run Text="{Binding RedeemedAt, Mode=OneWay, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" Foreground="Gray" />
+                                <Run Text="  " />
+                                <Run Text="{Binding RewardEmoji, Mode=OneWay}" />
+                                <Run Text="{Binding RewardTitle, Mode=OneWay}" />
+                                <Run Text=" (" /><Run Text="{Binding StarCost, Mode=OneWay}" /><Run Text=" ⭐)" />
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
                 <!-- Fehlerprotokoll: lokale Log-Dateien (AppLog), z.B. übersprungene News-Feeds,
                      Download-Fehler, Abstürze - komplett lokal, keine Telemetrie. -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Title]}"

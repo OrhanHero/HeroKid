@@ -31,6 +31,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly SavedArticleRepository _savedArticleRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
+    private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
     private readonly QuizComposer _quizComposer;
@@ -73,6 +74,7 @@ public sealed partial class MainViewModel : ObservableObject
         SavedArticleRepository savedArticleRepo,
         ReviewQuestionRepository reviewRepo,
         ArchivedArticleRepository archiveRepo,
+        RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
         QuizComposer quizComposer,
@@ -91,6 +93,7 @@ public sealed partial class MainViewModel : ObservableObject
         _savedArticleRepo = savedArticleRepo;
         _reviewRepo = reviewRepo;
         _archiveRepo = archiveRepo;
+        _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
@@ -399,7 +402,8 @@ public sealed partial class MainViewModel : ObservableObject
     {
         return new ResultViewModel(
             passed, result, Progress.EarnedStarsToday, CurrentProfile?.TotalStars ?? 0,
-            OnRetryWeakSubjectsRequested, OnUnlockConfirmed);
+            OnRetryWeakSubjectsRequested, OnUnlockConfirmed,
+            _rewardRepo, CurrentProfile?.Id);
     }
 
     private async void OnRetryWeakSubjectsRequested()

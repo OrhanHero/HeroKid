@@ -60,9 +60,43 @@
 
             <!-- Belohnungs-Sterne: heute verdient + Gesamtstand (Gamification) -->
             <Border Background="{StaticResource TileSandBrush}" CornerRadius="14" Padding="18,10"
-                    HorizontalAlignment="Center" Margin="0,8,0,32"
+                    HorizontalAlignment="Center" Margin="0,8,0,16"
                     Visibility="{Binding HasStarsToShow, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{Binding StarsSummary}" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
+            </Border>
+
+            <!-- 🎁 Belohnungen (von den Eltern gepflegt, mit Sternen einlösbar): erreichbare zeigen
+                 Kosten + Einlösen-Button, für die anderen steht der Fortschritt ("12 / 20 ⭐"). -->
+            <Border Style="{StaticResource CardBorder}" Padding="20" MaxWidth="520" Margin="0,0,0,24"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding HasRewards, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Rewards_Title]}"
+                               FontWeight="Bold" FontSize="17" Margin="0,0,0,10" HorizontalAlignment="Center" />
+                    <ItemsControl ItemsSource="{Binding Rewards}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Display}" FontSize="15"
+                                               VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding CostDisplay}" FontSize="14" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="0,0,12,0"
+                                               Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <Button Grid.Column="2" Style="{StaticResource TabPillButton}" FontSize="13"
+                                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Rewards_Redeem]}"
+                                            IsEnabled="{Binding CanRedeem}"
+                                            Command="{Binding DataContext.RedeemRewardCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </Border>
 
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_UnlockButton]}"

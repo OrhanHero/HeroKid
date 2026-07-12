@@ -26,6 +26,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly LocalLlmOptions _localLlmOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
     private readonly PiperTtsEngine _piperTts;
+    private readonly RewardRepository _rewardRepo;
 
     private AppSettings _settings = new();
 
@@ -154,6 +155,67 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string piperErrorMessage = string.Empty;
 
+    // --- 🎁 Belohnungen (Sterne einlösen; Kind-Ansicht siehe ResultViewModel) ---
+
+    public ObservableCollection<RewardEntity> Rewards { get; } = new();
+    public ObservableCollection<RewardRedemptionEntity> RewardRedemptions { get; } = new();
+
+    public bool HasNoRewards => Rewards.Count == 0;
+
+    [ObservableProperty]
+    private string newRewardEmoji = string.Empty;
+
+    [ObservableProperty]
+    private string newRewardTitle = string.Empty;
+
+    [ObservableProperty]
+    private string newRewardCostText = string.Empty;
+
+    [ObservableProperty]
+    private string rewardErrorMessage = string.Empty;
+
+    private async Task ReloadRewardsAsync()
+    {
+        Rewards.Clear();
+        foreach (var reward in await _rewardRepo.GetAllAsync())
+        {
+            Rewards.Add(reward);
+        }
+
+        OnPropertyChanged(nameof(HasNoRewards));
+    }
+
+    [RelayCommand]
+    private async Task AddRewardAsync()
+    {
+        RewardErrorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(NewRewardTitle))
+        {
+            RewardErrorMessage = LocalizationService.Instance["Parent_Rewards_ErrorTitleMissing"];
+            return;
+        }
+
+        if (!int.TryParse(NewRewardCostText.Trim(), out var cost) || cost < 1)
+        {
+            RewardErrorMessage = LocalizationService.Instance["Parent_Rewards_ErrorCostInvalid"];
+            return;
+        }
+
+        await _rewardRepo.AddAsync(NewRewardEmoji, NewRewardTitle, cost);
+        NewRewardEmoji = string.Empty;
+        NewRewardTitle = string.Empty;
+        NewRewardCostText = string.Empty;
+        await ReloadRewardsAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteRewardAsync(RewardEntity reward)
+    {
+        await _rewardRepo.DeleteAsync(reward.Id);
+        await ReloadRewardsAsync();
+    }
+
     // --- Fehlerprotokoll (lokale Log-Dateien, siehe LernTor.Core.Logging.AppLog) ---
 
     [ObservableProperty]
@@ -196,8 +258,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         KioskLockService kioskLock,
         LocalLlmOptions localLlmOptions,
         TeacherDocumentImportService teacherImportService,
-        PiperTtsEngine piperTts)
+        PiperTtsEngine piperTts,
+        RewardRepository rewardRepo)
     {
+        _rewardRepo = rewardRepo;
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
@@ -232,6 +296,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         ApplyLocalLlmOptions();
         RefreshErrorLog();
+        await ReloadRewardsAsync();
     }
 
     private void ApplyLocalLlmOptions()
@@ -369,6 +434,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         RecentActivity.Clear();
         QuizHistory.Clear();
+        RewardRedemptions.Clear();
         _reportActivity = Array.Empty<ActivityLogEntity>();
 
         if (SelectedProfile is null)
@@ -385,6 +451,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         foreach (var attempt in await _activityLogRepo.GetQuizHistoryAsync(SelectedProfile.Id))
         {
             QuizHistory.Add(attempt);
+        }
+
+        // Eingelöste Belohnungen des gewählten Profils (die Eltern lösen sie in der echten Welt ein).
+        foreach (var redemption in await _rewardRepo.GetRedemptionsAsync(SelectedProfile.Id))
+        {
+            RewardRedemptions.Add(redemption);
         }
 
         // 30 Tage einmal laden - die 7/30-Tage-Umschaltung filtert danach nur noch in-memory.

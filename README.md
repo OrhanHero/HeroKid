@@ -171,8 +171,14 @@ deshalb bewusst nicht umgesetzt.
 - **Konfettiregen**: beim bestandenen Abschlussquiz fällt einmalig Konfetti in den App-Farben über
   den Ergebnis-Bildschirm (einmalige Animation, keine Dauerschleife - keine bleibende CPU-Last im
   Kiosk-Betrieb).
+- **🎁 Belohnungsliste**: Eltern legen im Eltern-Bereich Belohnungen mit Sterne-Kosten an
+  (z.B. „30 Minuten extra Spielzeit" für 20 ⭐). Nach dem bestandenen Abschlussquiz sieht das Kind
+  die Liste mit Fortschritt („12 / 20 ⭐") und kann erreichbare Belohnungen einlösen (mit
+  Rückfrage; Abbuchung + Protokolleintrag passieren in einem Schritt). Eingelöste Belohnungen
+  erscheinen je Profil im Eltern-Bereich - eingelöst wird in der echten Welt von den Eltern.
+  Die Historie bleibt als Schnappschuss erhalten, auch wenn die Belohnung später gelöscht wird.
 - Bewusst KEINE Tages-Streaks: ein verpasster Tag soll kein schlechtes Gewissen erzeugen - Sterne
-  können nur wachsen, nie verfallen.
+  können nur wachsen, nie verfallen (einlösen ja, verfallen nein).
 
 ## Eltern-Features
 
