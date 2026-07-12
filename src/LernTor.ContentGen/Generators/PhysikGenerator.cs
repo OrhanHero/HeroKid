@@ -22,7 +22,11 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         ("In welchem Aggregatzustand ist Wasser bei 100°C (bei normalem Luftdruck)?", new[] { "Fest (Eis)", "Flüssig", "Gasförmig (Wasserdampf)" }, "Gasförmig (Wasserdampf)",
             "Wasser siedet bei 100°C und geht dann in den gasförmigen Zustand (Wasserdampf) über."),
         ("Wie nennt man den Übergang von fest zu flüssig?", new[] { "Schmelzen", "Verdampfen", "Sublimieren" }, "Schmelzen",
-            "Der Übergang von fest zu flüssig heißt Schmelzen (z.B. Eis wird zu Wasser).")
+            "Der Übergang von fest zu flüssig heißt Schmelzen (z.B. Eis wird zu Wasser)."),
+        ("Wie nennt man den Übergang von flüssig zu gasförmig?", new[] { "Verdampfen (Verdunsten)", "Schmelzen", "Erstarren" }, "Verdampfen (Verdunsten)",
+            "Der Übergang von flüssig zu gasförmig heißt Verdampfen (bei Erreichen des Siedepunkts) bzw. Verdunsten (auch darunter, langsamer)."),
+        ("Wie nennt man den direkten Übergang von fest zu gasförmig (ohne flüssige Phase)?", new[] { "Sublimation", "Kondensation", "Schmelzen" }, "Sublimation",
+            "Bei der Sublimation geht ein Stoff direkt vom festen in den gasförmigen Zustand über, z.B. Trockeneis (gefrorenes CO₂).")
     };
 
     private static QuizQuestion Aggregatzustaende(Random r)
@@ -46,7 +50,11 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             "Die Lampe leuchtet nicht mehr",
             "Ist der Stromkreis unterbrochen, kann kein Strom fließen, die Lampe bleibt dunkel."),
         ("Welches Material leitet elektrischen Strom gut?", new[] { "Kupfer (Metall)", "Holz", "Gummi" },
-            "Kupfer (Metall)", "Metalle wie Kupfer sind gute elektrische Leiter, Holz und Gummi sind Isolatoren.")
+            "Kupfer (Metall)", "Metalle wie Kupfer sind gute elektrische Leiter, Holz und Gummi sind Isolatoren."),
+        ("Was zeigt ein Amperemeter im Stromkreis an?", new[] { "Die Stromstärke", "Die Spannung", "Den Widerstand" },
+            "Die Stromstärke", "Ein Amperemeter misst die Stromstärke in Ampere und wird in Reihe in den Stromkreis geschaltet."),
+        ("Was passiert, wenn man zwei Lampen in Reihe (hintereinander) schaltet und eine Lampe kaputtgeht?", new[] { "Beide Lampen gehen aus", "Nur die kaputte Lampe bleibt dunkel, die andere leuchtet weiter", "Beide Lampen leuchten heller" },
+            "Beide Lampen gehen aus", "Bei einer Reihenschaltung ist der Stromkreis unterbrochen, sobald eine Lampe ausfällt - beide gehen aus.")
     };
 
     private static QuizQuestion Stromkreis(Random r)
@@ -66,7 +74,13 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         ("Welche Metalle werden von einem Magneten angezogen?", new[] { "Eisen, Nickel, Kobalt", "Gold und Silber", "Aluminium und Kupfer" },
             "Eisen, Nickel, Kobalt", "Nur ferromagnetische Metalle wie Eisen, Nickel und Kobalt werden von Magneten angezogen."),
         ("Was passiert, wenn sich zwei gleiche Pole (Nord-Nord) eines Magneten nähern?", new[] { "Sie stoßen sich ab", "Sie ziehen sich an", "Nichts passiert" },
-            "Sie stoßen sich ab", "Gleiche Pole stoßen sich ab, ungleiche Pole (Nord-Süd) ziehen sich an.")
+            "Sie stoßen sich ab", "Gleiche Pole stoßen sich ab, ungleiche Pole (Nord-Süd) ziehen sich an."),
+        ("Wie viele Pole hat jeder Magnet mindestens?", new[] { "Zwei (Nord- und Südpol)", "Nur einen", "Drei" },
+            "Zwei (Nord- und Südpol)", "Jeder Magnet hat einen Nord- und einen Südpol - schneidet man ihn durch, entstehen zwei neue Magnete mit je zwei Polen."),
+        ("Wonach richtet sich eine frei bewegliche Kompassnadel aus?", new[] { "Nach dem Erdmagnetfeld - sie zeigt nach Norden", "Nach der Sonne", "Nach der Uhrzeit" },
+            "Nach dem Erdmagnetfeld - sie zeigt nach Norden", "Die Erde wirkt selbst wie ein großer Magnet - eine frei bewegliche Kompassnadel richtet sich daran aus."),
+        ("Wodurch kann man aus einem Eisennagel vorübergehend einen Magneten machen?", new[] { "Ihn an einen starken Magneten halten/damit bestreichen", "Ihn erhitzen", "Ihn ins Wasser legen" },
+            "Ihn an einen starken Magneten halten/damit bestreichen", "Eisen kann durch Kontakt mit einem starken Magneten selbst vorübergehend magnetisch werden.")
     };
 
     private static QuizQuestion Magnetismus(Random r)
@@ -106,7 +120,13 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             "In einem geschlossenen System bleibt die Gesamtenergie konstant, sie wandelt sich nur zwischen Formen (z.B. Höhen- in Bewegungsenergie) um."),
         ("Ein Ball fällt aus großer Höhe herunter. In welche Energieform wandelt sich die Höhenenergie dabei um?", new[] { "Bewegungsenergie (kinetische Energie)", "Wärmeenergie allein", "Elektrische Energie" },
             "Bewegungsenergie (kinetische Energie)",
-            "Beim Fallen wird die Höhenenergie (potenzielle Energie) in Bewegungsenergie (kinetische Energie) umgewandelt.")
+            "Beim Fallen wird die Höhenenergie (potenzielle Energie) in Bewegungsenergie (kinetische Energie) umgewandelt."),
+        ("Ein Auto bremst und wird langsamer. Wohin \"verschwindet\" die Bewegungsenergie hauptsächlich?", new[] { "Sie wandelt sich in Wärme (Reibung) um", "Sie verschwindet komplett spurlos", "Sie wird zu Licht" },
+            "Sie wandelt sich in Wärme (Reibung) um", "Reibung beim Bremsen wandelt Bewegungsenergie hauptsächlich in Wärmeenergie um - die Bremsen werden warm."),
+        ("Was ist eine erneuerbare Energiequelle?", new[] { "Sonne, Wind oder Wasser", "Kohle", "Erdöl" },
+            "Sonne, Wind oder Wasser", "Erneuerbare Energien wie Sonne, Wind und Wasser stehen (im Gegensatz zu Kohle/Öl) dauerhaft zur Verfügung."),
+        ("Was beschreibt der Begriff \"potenzielle Energie\" (Höhenenergie) am einfachsten?", new[] { "Gespeicherte Energie aufgrund der Lage/Höhe eines Körpers", "Energie, die durch Bewegung entsteht", "Energie aus elektrischem Strom" },
+            "Gespeicherte Energie aufgrund der Lage/Höhe eines Körpers", "Ein angehobener Ball hat potenzielle Energie - je höher er ist, desto mehr Energie kann beim Fallen frei werden.")
     };
 
     private static QuizQuestion Energieerhaltung(Random r)
@@ -128,7 +148,13 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             "Das Trägheitsgesetz: Ohne einwirkende Kraft ändert ein Körper seinen Bewegungszustand nicht."),
         ("Newton'sches Gesetz \"Kraft = Masse · Beschleunigung\" (F = m·a) - wie nennt man dieses Gesetz?", new[] { "Grundgesetz der Mechanik (2. Newtonsches Gesetz)", "Trägheitsgesetz", "Wechselwirkungsgesetz" },
             "Grundgesetz der Mechanik (2. Newtonsches Gesetz)",
-            "F = m·a beschreibt, wie stark eine Kraft einen Körper abhängig von seiner Masse beschleunigt.")
+            "F = m·a beschreibt, wie stark eine Kraft einen Körper abhängig von seiner Masse beschleunigt."),
+        ("Was besagt Newtons drittes Gesetz (\"Actio = Reactio\")?", new[] { "Zu jeder Kraft gibt es eine gleich große Gegenkraft", "Kräfte verschwinden nach kurzer Zeit von selbst", "Nur schwere Objekte üben Kräfte aus" },
+            "Zu jeder Kraft gibt es eine gleich große Gegenkraft", "Drückt man gegen eine Wand, drückt die Wand mit gleicher Kraft zurück (Wechselwirkungsgesetz)."),
+        ("Ein Einkaufswagen wird doppelt so schwer beladen. Bei gleicher Kraft: was passiert laut F = m·a mit der Beschleunigung?", new[] { "Sie wird halb so groß", "Sie wird doppelt so groß", "Sie bleibt gleich" },
+            "Sie wird halb so groß", "Bei gleicher Kraft F verringert eine größere Masse m die Beschleunigung a, da F = m·a."),
+        ("Warum spürt man beim plötzlichen Anfahren eines Busses einen Ruck nach hinten?", new[] { "Der Körper bleibt durch Trägheit zunächst in Ruhe, während sich der Bus schon bewegt", "Der Bus schiebt einen absichtlich nach hinten", "Es gibt dafür keinen physikalischen Grund" },
+            "Der Körper bleibt durch Trägheit zunächst in Ruhe, während sich der Bus schon bewegt", "Das ist das Trägheitsgesetz in Aktion: Der Körper \"will\" seinen Bewegungszustand (Ruhe) zunächst beibehalten.")
     };
 
     private static QuizQuestion NewtonscheGesetze(Random r)
@@ -150,7 +176,11 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         ("Wie nennt man es, wenn durch ein sich änderndes Magnetfeld in einer Spule eine Spannung erzeugt wird?", new[] { "Elektromagnetische Induktion", "Ohmsches Gesetz", "Trägheitsgesetz" },
             "Elektromagnetische Induktion", "Bei der elektromagnetischen Induktion erzeugt ein sich änderndes Magnetfeld (z.B. durch Bewegung) eine Spannung in einer Spule - Grundprinzip von Generatoren."),
         ("In welchem Alltagsgerät wird elektromagnetische Induktion zur Stromerzeugung genutzt?", new[] { "Fahrraddynamo/Generator im Kraftwerk", "Batterie", "Glühlampe" },
-            "Fahrraddynamo/Generator im Kraftwerk", "Fahrraddynamos und Generatoren in Kraftwerken erzeugen Strom durch Bewegung eines Magneten relativ zu einer Spule (Induktion).")
+            "Fahrraddynamo/Generator im Kraftwerk", "Fahrraddynamos und Generatoren in Kraftwerken erzeugen Strom durch Bewegung eines Magneten relativ zu einer Spule (Induktion)."),
+        ("Was passiert mit der induzierten Spannung, wenn sich der Magnet schneller durch die Spule bewegt?", new[] { "Die induzierte Spannung wird größer", "Die induzierte Spannung wird kleiner", "Es ändert sich nichts" },
+            "Die induzierte Spannung wird größer", "Je schneller sich das Magnetfeld relativ zur Spule ändert, desto größer ist die induzierte Spannung."),
+        ("Wofür wird das Prinzip der elektromagnetischen Induktion außer bei Generatoren noch genutzt?", new[] { "Transformatoren", "Batterien", "Glühlampen" },
+            "Transformatoren", "Transformatoren nutzen Induktion, um Wechselspannung auf eine höhere oder niedrigere Spannung umzuwandeln.")
     };
 
     private static QuizQuestion MagnetfelderInduktion(Random r)

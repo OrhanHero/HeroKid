@@ -7,6 +7,15 @@ Architektur (ein `TopicFactory`-Delegate pro Thema in `ExerciseGeneratorBase`) i
 gebaut, dass weitere Themen einfach als zusätzliche private Methode + Eintrag in `TopicsByGrade`
 ergänzt werden können.
 
+**Poolgröße je Thema**: Jedes Thema wird von einer festen Liste kuratierter Beispiele bedient
+(außer Mathematik, das echte Zahlenwerte würfelt statt aus einer festen Liste zu ziehen - dort ist
+die Zahl der möglichen Aufgaben pro Thema praktisch unbegrenzt). Der Zielwert für diese Listen ist
+**5 Beispiele pro Thema**: Bei zu kleinen Pools (vorher oft nur 2-4 Beispiele) griff die
+Wiederholungs-Vermeidung in `ExerciseGeneratorBase.Generate` schnell ins Leere, und dasselbe Kind
+sah dieselben Fragen bereits nach 1-2 Tagen wieder. Eine Erweiterungsrunde hat Deutsch, Englisch,
+Türkisch, ITG, Politik und Physik bereits auf diesen Zielwert gebracht; die übrigen Fächer
+(Biologie, Chemie, Geografie, Gewi, Ethik) folgen in weiteren Runden.
+
 ## Mathematik (`MathGenerator.cs`)
 
 | Klasse 6 | Klasse 9 |

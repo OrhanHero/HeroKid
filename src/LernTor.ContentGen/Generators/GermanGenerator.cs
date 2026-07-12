@@ -106,7 +106,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("Der Hund jagt den Ball.", "Der Hund", "jagt", "den Ball"),
         ("Die Lehrerin erklärt die Aufgabe.", "Die Lehrerin", "erklärt", "die Aufgabe"),
         ("Mein Bruder liest ein Buch.", "Mein Bruder", "liest", "ein Buch"),
-        ("Die Kinder spielen Fußball.", "Die Kinder", "spielen", "Fußball")
+        ("Die Kinder spielen Fußball.", "Die Kinder", "spielen", "Fußball"),
+        ("Der Vater repariert das Fahrrad.", "Der Vater", "repariert", "das Fahrrad")
     };
 
     private static QuizQuestion Satzglieder(Random r)
@@ -138,7 +139,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("ich gehe heute ins ___ (kino).", "Kino", "Nomen werden immer großgeschrieben."),
         ("das ist mein ___ (lieblings)buch.", "Lieblingsbuch", "Zusammengesetzte Nomen werden großgeschrieben."),
         ("wir treffen uns am ___ (montag).", "Montag", "Wochentage sind Nomen und werden großgeschrieben."),
-        ("sie ist sehr ___ (fleissig).", "fleißig", "Adjektive werden kleingeschrieben, außer am Satzanfang.")
+        ("sie ist sehr ___ (fleissig).", "fleißig", "Adjektive werden kleingeschrieben, außer am Satzanfang."),
+        ("er kauft ein neues ___ (fahrrad).", "Fahrrad", "Nomen werden immer großgeschrieben, auch nach einem Adjektiv wie \"neues\".")
     };
 
     private static QuizQuestion GrossKleinschreibung(Random r)
@@ -191,7 +193,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("Der Gärtner gießt die Blumen.", "Die Blumen werden von dem Gärtner gegossen."),
         ("Die Firma baut das Haus.", "Das Haus wird von der Firma gebaut."),
         ("Der Lehrer korrigiert die Klassenarbeit.", "Die Klassenarbeit wird von dem Lehrer korrigiert."),
-        ("Die Köchin kocht die Suppe.", "Die Suppe wird von der Köchin gekocht.")
+        ("Die Köchin kocht die Suppe.", "Die Suppe wird von der Köchin gekocht."),
+        ("Die Schüler lösen die Matheaufgabe.", "Die Matheaufgabe wird von den Schülern gelöst.")
     };
 
     private static QuizQuestion AktivPassiv(Random r)
@@ -218,7 +221,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("Wir bleiben zu Hause, ___ es regnet.", "weil", "kausal (Grund)"),
         ("Sie lernt viel, ___ sie eine gute Note bekommt.", "damit", "final (Zweck)"),
         ("___ er müde war, ging er trotzdem joggen.", "Obwohl", "konzessiv (Einräumung)"),
-        ("Er ruft an, ___ er ankommt.", "sobald", "temporal (Zeit)")
+        ("Er ruft an, ___ er ankommt.", "sobald", "temporal (Zeit)"),
+        ("Ich nehme einen Schirm mit, ___ es regnen könnte.", "falls", "konditional (Bedingung)")
     };
 
     private static QuizQuestion Konjunktionen(Random r)
@@ -244,7 +248,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("Nachdem er gegessen hatte___ ging er schlafen.", ",", "Vor Nebensätzen steht immer ein Komma."),
         ("Ich möchte Pizza___ Pasta oder Salat bestellen.", "", "Bei einer einfachen Aufzählung mit \"oder\" steht meist kein Komma."),
         ("Er sagte___ dass er komme.", ",", "Vor \"dass\"-Sätzen steht immer ein Komma."),
-        ("Sie kaufte Äpfel___ Birnen und Bananen.", ",", "Bei Aufzählungen ohne Bindewort steht ein Komma.")
+        ("Sie kaufte Äpfel___ Birnen und Bananen.", ",", "Bei Aufzählungen ohne Bindewort steht ein Komma."),
+        ("Der Hund bellte___ und lief davon.", "", "Bei zwei durch \"und\" verbundenen Verben mit demselben Subjekt (kein vollständiger Nebensatz) steht meist kein Komma.")
     };
 
     private static QuizQuestion Kommasetzung(Random r)
@@ -271,7 +276,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("Ich weiß, ___ du kommst.", "dass"),
         ("Das Buch, ___ auf dem Tisch liegt, gehört mir.", "das"),
         ("Er hofft, ___ alles gut geht.", "dass"),
-        ("Das Auto, ___ dort steht, ist neu.", "das")
+        ("Das Auto, ___ dort steht, ist neu.", "das"),
+        ("Ich glaube, ___ er Recht hat.", "dass")
     };
 
     private static QuizQuestion DassOderDas(Random r)
@@ -299,7 +305,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
         ("Trotzdem kam sie pünktlich.", "Trotzdem", "Adverb"),
         ("Das Buch liegt auf dem Tisch.", "auf", "Präposition"),
         ("Er und sie gehen ins Kino.", "und", "Konjunktion"),
-        ("Sie rannte sehr schnell.", "sehr", "Adverb")
+        ("Sie rannte sehr schnell.", "sehr", "Adverb"),
+        ("Endlich kam der Bus.", "Endlich", "Adverb")
     };
 
     private static QuizQuestion Wortarten9(Random r)

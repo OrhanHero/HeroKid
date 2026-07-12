@@ -84,7 +84,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("mutlu", "sevinçli", new[] { "üzgün", "yorgun", "kızgın" }),
         ("büyük", "iri", new[] { "küçük", "az", "kısa" }),
         ("güzel", "hoş", new[] { "çirkin", "kötü", "sıkıcı" }),
-        ("hızlı", "çabuk", new[] { "yavaş", "ağır", "durgun" })
+        ("hızlı", "çabuk", new[] { "yavaş", "ağır", "durgun" }),
+        ("akıllı", "zeki", new[] { "aptal", "tembel", "yorgun" })
     };
 
     private static QuizQuestion EsAnlamli(Random r)
@@ -112,7 +113,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("sıcak", "soğuk", new[] { "ılık", "nemli", "kuru" }),
         ("uzun", "kısa", new[] { "geniş", "dar", "derin" }),
         ("kolay", "zor", new[] { "basit", "hızlı", "yavaş" }),
-        ("erken", "geç", new[] { "yakın", "uzak", "yeni" })
+        ("erken", "geç", new[] { "yakın", "uzak", "yeni" }),
+        ("kalın", "ince", new[] { "sert", "yumuşak", "ağır" })
     };
 
     private static QuizQuestion ZitAnlamli(Random r)
@@ -170,7 +172,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("Ali topu attı.", "Yüklem", "attı"),
         ("Ali topu attı.", "Özne", "Ali"),
         ("Annem bana kitap aldı.", "Nesne", "kitap"),
-        ("Öğretmen sınıfta ders anlattı.", "Yer Tamlayıcısı (Zarf Tümleci)", "sınıfta")
+        ("Öğretmen sınıfta ders anlattı.", "Yer Tamlayıcısı (Zarf Tümleci)", "sınıfta"),
+        ("Çocuklar bahçede oynadı.", "Yer Tamlayıcısı (Zarf Tümleci)", "bahçede")
     };
 
     private static QuizQuestion CumleOgeleri(Random r)
@@ -220,7 +223,8 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
         ("Yarın okula gid___im.", "eceğ", "Gelecek zaman eki ünlü ile başlayan ekten önce yumuşar: gid-eceğ-im."),
         ("Kitab___ okudum.", "ı", "\"Kitap\" kelimesi ünlüyle başlayan ek aldığında p -> b yumuşamasına uğrar: kitab-ı."),
         ("Ali'___ gördüm.", "yi", "Özel isimlere gelen ekler kesme işareti ile ayrılır: Ali'yi."),
-        ("Renkli kalem___ getir.", "i", "Belirtili nesne \"-i\" hâl ekini alır: kalem-i.")
+        ("Renkli kalem___ getir.", "i", "Belirtili nesne \"-i\" hâl ekini alır: kalem-i."),
+        ("Öğretmen___ soruyu sordu.", "e", "Yönelme (-e/-a) hâl eki, ünsüz yumuşamasına uğramayan kelimelere doğrudan eklenir: öğretmen-e.")
     };
 
     private static QuizQuestion YazimKurallari(Random r)
@@ -245,7 +249,9 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
     {
         ("Koşan çocuk düştü.", "Koşan", "Sıfat-fiil (Partizip)"),
         ("Okumadan sınava girdi.", "Okumadan", "Zarf-fiil (Adverbialpartizip)"),
-        ("Yüzmek çok eğlencelidir.", "Yüzmek", "İsim-fiil (Verbalnomen)")
+        ("Yüzmek çok eğlencelidir.", "Yüzmek", "İsim-fiil (Verbalnomen)"),
+        ("Gülen yüzüyle herkesi mutlu etti.", "Gülen", "Sıfat-fiil (Partizip)"),
+        ("Eve gelir gelmez uyudu.", "gelir gelmez", "Zarf-fiil (Adverbialpartizip)")
     };
 
     private static QuizQuestion FiilimsiTuru(Random r)

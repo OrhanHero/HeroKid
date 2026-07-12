@@ -19,7 +19,9 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
     {
         ("Look! She ___ (run) to the bus.", "is running", "Bei einer Handlung, die gerade jetzt passiert, nutzt man Present Progressive (is/are + -ing)."),
         ("Every morning, he ___ (brush) his teeth.", "brushes", "Bei Gewohnheiten/regelmäßigen Handlungen nutzt man Simple Present (bei he/she/it + -s)."),
-        ("I usually ___ (walk) to school, but today I ___ (take) the bus.", "walk / am taking", "Gewohnheit = Simple Present (\"usually\"), aktuelle Ausnahme = Present Progressive (\"today\").")
+        ("I usually ___ (walk) to school, but today I ___ (take) the bus.", "walk / am taking", "Gewohnheit = Simple Present (\"usually\"), aktuelle Ausnahme = Present Progressive (\"today\")."),
+        ("They ___ (not/like) football, but they ___ (play) it every weekend.", "don't like / play", "Verneinung im Simple Present mit \"don't\" + Grundform; die Gewohnheit (\"every weekend\") bleibt im Simple Present."),
+        ("Right now, the children ___ (play) in the garden.", "are playing", "Eine Handlung, die genau JETZT im Moment passiert, steht im Present Progressive (are + -ing).")
     };
 
     private static QuizQuestion SimplePresentVsProgressive(Random r)
@@ -40,7 +42,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
         ("child", "children", new[] { "childs", "childes" }),
         ("mouse", "mice", new[] { "mouses", "mices" }),
         ("foot", "feet", new[] { "foots", "feets" }),
-        ("man", "men", new[] { "mans", "manes" })
+        ("man", "men", new[] { "mans", "manes" }),
+        ("tooth", "teeth", new[] { "tooths", "teeths" })
     };
 
     private static QuizQuestion IrregularPlurals(Random r)
@@ -63,7 +66,9 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
     {
         ("___ is your birthday?", new[] { "When", "Who", "Why" }, "When", "\"When\" fragt nach einem Zeitpunkt - passend für ein Datum wie einen Geburtstag."),
         ("___ is the capital of Germany?", new[] { "What", "Who", "When" }, "What", "\"What\" fragt nach einer Sache/einem Ort/Begriff, hier nach dem Namen der Hauptstadt."),
-        ("___ lives next door to you?", new[] { "Who", "What", "Where" }, "Who", "\"Who\" fragt nach einer Person.")
+        ("___ lives next door to you?", new[] { "Who", "What", "Where" }, "Who", "\"Who\" fragt nach einer Person."),
+        ("___ do you go to school - by bus or on foot?", new[] { "How", "What", "Who" }, "How", "\"How\" fragt nach der Art und Weise - hier nach dem Verkehrsmittel."),
+        ("___ is the museum? - It's next to the park.", new[] { "Where", "When", "Who" }, "Where", "\"Where\" fragt nach einem Ort.")
     };
 
     private static QuizQuestion QuestionWords(Random r)
@@ -82,7 +87,9 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
     {
         ("I ___ (visit) London last year.", "visited", "Eine abgeschlossene Handlung mit genauer Zeitangabe in der Vergangenheit (\"last year\") steht im Simple Past."),
         ("She ___ (never/be) to the USA. (up to now)", "has never been", "Eine Erfahrung ohne genaue Zeitangabe, mit Bezug zur Gegenwart, steht im Present Perfect (has/have + Partizip II)."),
-        ("We ___ (already/finish) our homework, so we can go out now.", "have already finished", "Present Perfect wird genutzt, wenn das Ergebnis einer Handlung für die Gegenwart wichtig ist.")
+        ("We ___ (already/finish) our homework, so we can go out now.", "have already finished", "Present Perfect wird genutzt, wenn das Ergebnis einer Handlung für die Gegenwart wichtig ist."),
+        ("He ___ (move) to Berlin in 2020.", "moved", "Eine abgeschlossene Handlung mit einem genauen Zeitpunkt in der Vergangenheit (\"in 2020\") steht im Simple Past."),
+        ("I ___ (just/finish) my homework.", "have just finished", "\"just\" weist auf eine gerade abgeschlossene Handlung mit Bezug zur Gegenwart hin - deshalb Present Perfect.")
     };
 
     private static QuizQuestion SimplePastVsPresentPerfect(Random r)
@@ -102,7 +109,9 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
     {
         ("If it ___ (rain) tomorrow, we will stay at home.", "rains", "Conditional Type 1: If + Simple Present, ... will + Grundform (für eine realistische zukünftige Möglichkeit)."),
         ("If you study hard, you ___ (pass) the exam.", "will pass", "Im Hauptsatz des 1. Conditionals steht \"will\" + Grundform des Verbs."),
-        ("If she ___ (have) time, she will call you.", "has", "Der \"if\"-Nebensatz steht im Simple Present, auch wenn es um die Zukunft geht.")
+        ("If she ___ (have) time, she will call you.", "has", "Der \"if\"-Nebensatz steht im Simple Present, auch wenn es um die Zukunft geht."),
+        ("If we ___ (leave) now, we will catch the train.", "leave", "Der \"if\"-Satz des 1. Conditionals steht im Simple Present, auch bei zukünftiger Bedeutung."),
+        ("She will be happy if you ___ (come) to the party.", "come", "Nach \"if\" steht im 1. Conditional das Simple Present, im Hauptsatz \"will\" + Grundform.")
     };
 
     private static QuizQuestion FirstConditional(Random r)
@@ -122,7 +131,9 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
     {
         ("The company builds many cars.", "Many cars are built by the company."),
         ("Someone stole my bike yesterday.", "My bike was stolen yesterday."),
-        ("They will announce the results tomorrow.", "The results will be announced tomorrow.")
+        ("They will announce the results tomorrow.", "The results will be announced tomorrow."),
+        ("The teacher checks the homework every day.", "The homework is checked by the teacher every day."),
+        ("People speak English all over the world.", "English is spoken all over the world.")
     };
 
     private static QuizQuestion PassiveVoice(Random r)
