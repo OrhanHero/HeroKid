@@ -110,34 +110,25 @@ public class HeuristicComprehensionQuestionGeneratorTests
     };
 
     [Fact]
-    public void Keine_Ueberschrift_Wort_Frage_mehr()
+    public void Keine_Ueberschrift_Wort_Frage_und_keine_Rubrik_Frage_mehr()
     {
         var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
             Article("Die neue Schwimmhalle wurde nach zwei Jahren Bauzeit feierlich eröffnet."));
 
         Assert.DoesNotContain(questions, q => q.Prompt.Contains("wichtiges Wort aus der Überschrift"));
+        Assert.DoesNotContain(questions, q => q.Prompt.Contains("Themenbereich"));
+        Assert.All(questions, q => Assert.EndsWith("-lueckentext", q.Id));
     }
 
     [Fact]
-    public void Rubrik_Frage_ist_beantwortbar()
-    {
-        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
-            Article("Die neue Schwimmhalle wurde nach zwei Jahren Bauzeit feierlich eröffnet."));
-
-        var rubrik = questions.Single(q => q.Id.EndsWith("-rubrik"));
-        Assert.Contains("Berlin", rubrik.Options);
-        Assert.Contains(rubrik.CorrectAnswers[0], rubrik.Options);
-        Assert.True(rubrik.CheckAnswer("Berlin"));
-    }
-
-    [Fact]
-    public void Lueckentext_verlangt_Lesen_der_Zusammenfassung()
+    public void Genau_eine_Lueckentext_Frage_pro_Artikel()
     {
         var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
             Article("Die neue Schwimmhalle wurde nach zwei Jahren Bauzeit feierlich eröffnet. " +
                     "Hunderte Familien kamen zur Eröffnung und probierten die Rutschen aus."));
 
-        var cloze = questions.Single(q => q.Id.EndsWith("-lueckentext"));
+        var cloze = Assert.Single(questions);
+        Assert.EndsWith("-lueckentext", cloze.Id);
         Assert.Contains("_____", cloze.Prompt);
         Assert.Contains(cloze.CorrectAnswers[0], cloze.Options);
         Assert.True(cloze.Options.Count >= 3);
@@ -147,11 +138,11 @@ public class HeuristicComprehensionQuestionGeneratorTests
     }
 
     [Fact]
-    public void Zu_kurze_Zusammenfassung_faellt_auf_Regionsfrage_zurueck()
+    public void Zu_kurze_Zusammenfassung_liefert_keine_Frage()
     {
         var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(Article("Kurz."));
 
-        Assert.Contains(questions, q => q.Id.EndsWith("-region"));
+        Assert.Empty(questions);
     }
 }
 

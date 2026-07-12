@@ -5,14 +5,14 @@ using LernTor.Core.Models;
 namespace LernTor.News;
 
 /// <summary>
-/// Erzeugt pro Artikel zwei Verständnisfragen ohne externes NLP/LLM - beide so gebaut, dass die
-/// NACHRICHT selbst gelesen und verstanden werden muss (die frühere "Nenne ein wichtiges Wort aus
-/// der Überschrift"-Frage war mit einem Blick auf die Überschrift lösbar und wurde entfernt):
-/// 1) Rubrik-Frage: zu welchem Themenbereich gehört die Nachricht? (Multiple Choice)
-/// 2) Lückentext: ein Satz aus der Zusammenfassung mit ausgeblendetem Schlüsselwort - wer den
-///    Text gelesen hat, erkennt das fehlende Wort sofort. Rückfall auf eine Regionsfrage, wenn
-///    die Zusammenfassung kein geeignetes Wort hergibt.
-/// Deterministisch (kein Random): dieselbe Nachricht ergibt immer dieselben Fragen.
+/// Erzeugt pro Artikel EINE Verständnisfrage ohne externes NLP/LLM: einen Lückentext - ein Satz
+/// aus der Zusammenfassung mit ausgeblendetem Schlüsselwort. Wer den Text gelesen hat, erkennt
+/// das fehlende Wort sofort; ohne Lesen ist die Frage nicht lösbar. Frühere Fragetypen wurden
+/// auf Nutzerwunsch entfernt: die "Nenne ein wichtiges Wort aus der Überschrift"-Frage (mit
+/// einem Blick lösbar) und die Rubrik-/Regionsfrage (unnötig, und bei Fehlklassifikation der
+/// Rubrik sogar unfair). Gibt die Zusammenfassung keinen Lückentext her (sehr kurzer Text),
+/// bleibt der Artikel ohne Frage - die Mindest-Lesezeit gilt trotzdem (siehe NewsViewModel).
+/// Deterministisch (kein Random): dieselbe Nachricht ergibt immer dieselbe Frage.
 /// </summary>
 public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQuestionGenerator
 {
@@ -24,63 +24,17 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
         "einer", "nicht", "noch", "schon", "aber", "oder", "wurde", "wurden", "worden", "gegen"
     };
 
-    /// <summary>Anzeigenamen der Rubriken für die Rubrik-Frage (deutsch - die Fragen des
-    /// Generators sind durchgehend deutsch formuliert).</summary>
-    private static readonly IReadOnlyDictionary<NewsCategory, string> CategoryNames =
-        new Dictionary<NewsCategory, string>
-    {
-        [NewsCategory.Berlin] = "Berlin",
-        [NewsCategory.Deutschland] = "Deutschland",
-        [NewsCategory.Welt] = "Welt",
-        [NewsCategory.Tuerkei] = "Türkei",
-        [NewsCategory.Ki] = "KI & Technik",
-        [NewsCategory.Spiele] = "Spiele",
-        [NewsCategory.Finanzen] = "Finanzen",
-        [NewsCategory.Wetter] = "Wetter",
-    };
-
     public IReadOnlyList<QuizQuestion> GenerateQuestions(NewsArticle article)
     {
-        var questions = new List<QuizQuestion> { BuildCategoryQuestion(article) };
-
         var clozeQuestion = BuildClozeQuestion(article);
-        questions.Add(clozeQuestion ?? BuildRegionQuestion(article));
-
-        return questions;
-    }
-
-    /// <summary>Rubrik-Frage: verlangt, das THEMA der Nachricht erfasst zu haben. Die beiden
-    /// falschen Optionen werden deterministisch aus den übrigen Rubriken gewählt.</summary>
-    private static QuizQuestion BuildCategoryQuestion(NewsArticle article)
-    {
-        var correct = CategoryNames[article.Category];
-        var distractors = Enum.GetValues<NewsCategory>()
-            .Where(c => c != article.Category)
-            .Take(2)
-            .Select(c => CategoryNames[c]);
-
-        var options = distractors.Append(correct).OrderBy(o => o, StringComparer.OrdinalIgnoreCase).ToList();
-
-        return new QuizQuestion
-        {
-            Id = $"news-{article.Id}-rubrik",
-            Subject = Subject.News,
-            GradeLevel = GradeLevel.Klasse6,
-            Topic = $"News: {article.Title}",
-            Type = QuestionType.MultipleChoice,
-            Prompt = $"Zu welchem Themenbereich gehört diese Nachricht: \"{article.Title}\"?",
-            Options = options,
-            CorrectAnswers = new[] { correct },
-            Explanation = $"Diese Nachricht gehört in die Rubrik {article.CategoryEmoji} {correct}.",
-            ImageUrl = article.ImageUrl
-        };
+        return clozeQuestion is null ? Array.Empty<QuizQuestion>() : new[] { clozeQuestion };
     }
 
     /// <summary>
     /// Lückentext aus dem ersten brauchbaren Satz der Zusammenfassung: das längste inhaltstragende
     /// Wort (≥ 6 Buchstaben, kein Stoppwort) wird durch eine Lücke ersetzt; die Ablenker-Optionen
     /// sind andere Inhaltswörter aus dem restlichen Text. Liefert null, wenn Satz oder Wörter
-    /// fehlen - dann greift die Regionsfrage als Rückfall.
+    /// fehlen (sehr kurze Zusammenfassung) - der Artikel bleibt dann ohne Frage.
     /// </summary>
     private static QuizQuestion? BuildClozeQuestion(NewsArticle article)
     {
@@ -146,28 +100,4 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
             StringSplitOptions.RemoveEmptyEntries)
         .Where(w => w.Length >= 6 && !Stopwords.Contains(w) && w.All(char.IsLetter))
         .ToList();
-
-    /// <summary>Rückfall, wenn kein Lückentext möglich ist (sehr kurze Zusammenfassung).</summary>
-    private static QuizQuestion BuildRegionQuestion(NewsArticle article)
-    {
-        var alleRegionen = new[] { "Deutschland/Berlin", "Türkei" };
-        var richtig = article.RegionFocus is NewsRegionFocus.Tuerkei or NewsRegionFocus.Istanbul
-            or NewsRegionFocus.Samsun or NewsRegionFocus.Uenye
-            ? "Türkei"
-            : "Deutschland/Berlin";
-
-        return new QuizQuestion
-        {
-            Id = $"news-{article.Id}-region",
-            Subject = Subject.News,
-            GradeLevel = GradeLevel.Klasse6,
-            Topic = $"News: {article.Title}",
-            Type = QuestionType.MultipleChoice,
-            Prompt = $"Artikel \"{article.Title}\" (Quelle: {article.SourceName}) – worum geht es hier hauptsächlich?",
-            Options = alleRegionen,
-            CorrectAnswers = new[] { richtig },
-            Explanation = $"Dieser Artikel von {article.SourceName} behandelt hauptsächlich Themen aus: {richtig}.",
-            ImageUrl = article.ImageUrl
-        };
-    }
 }

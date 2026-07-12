@@ -68,14 +68,15 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Schlüsselwort-Klassifikation quer über alle Quellen erkannt (`NewsCategoryClassifier`).
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
    (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes
-   `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und zwei Verständnisfragen, die
-   echtes Lesen verlangen: eine Rubrik-Frage („Zu welchem Themenbereich gehört diese Nachricht?")
-   und ein Lückentext aus der Zusammenfassung (die frühere „Nenne ein wichtiges Wort aus der
-   Überschrift"-Frage war ohne Lesen lösbar und wurde entfernt; ebenso die früheren
-   Einordnungs-Boxen „Warum ist das wichtig?"/„Was bedeutet das für dich?" - auf Nutzerwunsch,
-   der Fokus liegt auf der Nachricht selbst). **Mindest-Lesezeit**: wie bei den Fach-Übungen wird
-   „Weiter" erst frei, wenn die Fragen beantwortet sind UND ein 20-Sekunden-Countdown abgelaufen
-   ist - Nachrichten sollen gelesen, nicht weggeklickt werden.
+   `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und EINE Verständnisfrage, die
+   echtes Lesen verlangt: ein Lückentext aus der Zusammenfassung mit ausgeblendetem Schlüsselwort
+   (frühere Fragetypen wurden auf Nutzerwunsch entfernt: die „Nenne ein wichtiges Wort aus der
+   Überschrift"-Frage war ohne Lesen lösbar, und eine zusätzliche Rubrik-Frage erwies sich als
+   unnötig und bei Fehlklassifikation sogar unfair; ebenso die Einordnungs-Boxen „Warum ist das
+   wichtig?"/„Was bedeutet das für dich?" - der Fokus liegt auf der Nachricht selbst). Gibt die
+   Zusammenfassung keinen Lückentext her, bleibt der Artikel ohne Frage. **Mindest-Lesezeit**: wie
+   bei den Fach-Übungen wird „Weiter" erst frei, wenn die Frage(n) beantwortet sind UND ein
+   20-Sekunden-Countdown abgelaufen ist - Nachrichten sollen gelesen, nicht weggeklickt werden.
    Verstörende Themen (Krieg, Gewalt – auch türkischsprachige Schlüsselwörter) werden im Ranking
    stark heruntergestuft. **Finanzwissen**: weil es zu Finanzthemen kaum kindtaugliche Tagesmeldungen
    gibt, wird täglich ein rotierendes, kuratiertes Erklärstück angehängt (Was ist Geld? Inflation,
