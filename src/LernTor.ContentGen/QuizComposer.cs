@@ -6,10 +6,11 @@ namespace LernTor.ContentGen;
 
 /// <summary>
 /// Stellt das gemischte Abschlussquiz aus allen aktiven Fachbereichen zusammen (Ziel beim ersten
-/// Versuch: 20 Fragen, bei einer Wiederholung nach nicht bestandenem Quiz: 15 Fragen - die genaue
-/// Zielzahl gibt der Aufrufer über den Parameter <c>targetTotalQuestions</c> vor, siehe
+/// Versuch: exakt 20 Fragen, bei einer Wiederholung nach nicht bestandenem Quiz: exakt 15 Fragen -
+/// die genaue Zielzahl gibt der Aufrufer über den Parameter <c>targetTotalQuestions</c> vor, siehe
 /// <c>MainViewModel.BuildFinalQuizViewModelAsync</c>) und kann gezielt schwache Bereiche für eine
-/// Wiederholung nachliefern.
+/// Wiederholung nachliefern. News-Verständnisfragen fließen NICHT ins Abschlussquiz ein - sie
+/// werden ausschließlich im News-Bereich selbst gestellt.
 /// </summary>
 public sealed class QuizComposer
 {
@@ -31,17 +32,16 @@ public sealed class QuizComposer
     }
 
     /// <summary>
-    /// Baut das Abschlussquiz aus allen NICHT deaktivierten Fachbereichen plus den mitgegebenen
-    /// News-Verständnisfragen. Die Fragenzahl pro Fach wird dynamisch so verteilt, dass insgesamt
-    /// ungefähr <paramref name="targetTotalQuestions"/> Fragen herauskommen - unabhängig davon, ob
-    /// gerade 3 oder 12 Fächer aktiv sind (bei mehr aktiven Fächern also weniger Fragen je Fach).
+    /// Baut das Abschlussquiz aus allen NICHT deaktivierten Fachbereichen. Die Fragenzahl pro Fach
+    /// wird so verteilt, dass in Summe GENAU <paramref name="targetTotalQuestions"/> Fragen
+    /// herauskommen (Rest der Ganzzahl-Division auf die ersten Fächer verteilt) - unabhängig davon,
+    /// ob gerade 3 oder 12 Fächer aktiv sind.
     /// </summary>
     public IReadOnlyList<QuizQuestion> ComposeFinalQuiz(
         GradeLevel grade,
         Random random,
-        IReadOnlyList<QuizQuestion>? newsQuestions = null,
         IReadOnlySet<Subject>? disabledSubjects = null,
-        int targetTotalQuestions = 22,
+        int targetTotalQuestions = 20,
         IReadOnlySet<string>? recentlySeenPrompts = null)
     {
         disabledSubjects ??= new HashSet<Subject>();
@@ -49,25 +49,23 @@ public sealed class QuizComposer
 
         var questions = new List<QuizQuestion>();
 
-        // News höchstens etwa ein Drittel des Quiz - sonst würde ein Tag mit vielen Artikeln
-        // das Quiz allein schon sprengen.
-        var newsPool = (newsQuestions ?? Array.Empty<QuizQuestion>()).OrderBy(_ => random.Next()).ToList();
-        var maxNewsQuestions = Math.Min(newsPool.Count, Math.Max(1, targetTotalQuestions / 3));
-        questions.AddRange(newsPool.Take(maxNewsQuestions));
-
         if (activeGenerators.Count > 0)
         {
-            var remainingBudget = Math.Max(targetTotalQuestions - questions.Count, activeGenerators.Count);
-            var perSubjectCount = Math.Max(1, remainingBudget / activeGenerators.Count);
+            var baseCount = targetTotalQuestions / activeGenerators.Count;
+            var remainder = targetTotalQuestions % activeGenerators.Count;
 
-            foreach (var generator in activeGenerators)
+            for (var i = 0; i < activeGenerators.Count; i++)
             {
-                questions.AddRange(generator.Generate(grade, perSubjectCount, random, recentlySeenPrompts));
+                var count = baseCount + (i < remainder ? 1 : 0);
+                if (count > 0)
+                {
+                    questions.AddRange(activeGenerators[i].Generate(grade, count, random, recentlySeenPrompts));
+                }
             }
         }
 
-        // Zusätzliche Absicherung: falls trotz der Deduplizierung in den Generatoren/News
-        // irgendwo doch derselbe Fragetext zweimal zusammenkommt, hier ein letztes Mal filtern.
+        // Zusätzliche Absicherung: falls trotz der Deduplizierung in den Generatoren irgendwo doch
+        // derselbe Fragetext zweimal zusammenkommt, hier ein letztes Mal filtern.
         var distinctQuestions = questions
             .GroupBy(q => q.Prompt)
             .Select(group => group.First())

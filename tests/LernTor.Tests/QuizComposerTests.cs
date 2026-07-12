@@ -12,13 +12,21 @@ public class QuizComposerTests
     [Fact]
     public void ComposeFinalQuiz_WithoutDisabledSubjects_IncludesEveryDefaultGenerator()
     {
-        var questions = _composer.ComposeFinalQuiz(GradeLevel.Klasse6, new Random(1), newsQuestions: null);
+        var questions = _composer.ComposeFinalQuiz(GradeLevel.Klasse6, new Random(1));
 
         var subjectsPresent = questions.Select(q => q.Subject).Distinct().ToList();
 
         // Standard-Composer deckt 12 Fächer ab (alle außer News); jedes bekommt mindestens 1 Frage.
         Assert.Equal(12, subjectsPresent.Count);
         Assert.True(questions.Count > 0);
+    }
+
+    [Fact]
+    public void ComposeFinalQuiz_WithoutDisabledSubjects_ReturnsExactTargetCount()
+    {
+        var questions = _composer.ComposeFinalQuiz(GradeLevel.Klasse6, new Random(1), targetTotalQuestions: 20);
+
+        Assert.Equal(20, questions.Count);
     }
 
     [Fact]
@@ -29,29 +37,12 @@ public class QuizComposerTests
             .Where(s => s != Subject.News && !enabled.Contains(s))
             .ToHashSet();
 
-        var questions = _composer.ComposeFinalQuiz(GradeLevel.Klasse6, new Random(1), null, disabled, targetTotalQuestions: 20);
+        var questions = _composer.ComposeFinalQuiz(GradeLevel.Klasse6, new Random(1), disabled, targetTotalQuestions: 20);
 
         var subjectsPresent = questions.Select(q => q.Subject).Distinct().ToList();
         Assert.Equal(4, subjectsPresent.Count);
         Assert.All(subjectsPresent, s => Assert.Contains(s, enabled));
-    }
-
-    [Fact]
-    public void ComposeFinalQuiz_WithNews_IncludesNewsQuestions()
-    {
-        var newsQuestions = new List<QuizQuestion>
-        {
-            new()
-            {
-                Id = "news-1", Subject = Subject.News, GradeLevel = GradeLevel.Klasse6, Topic = "Test",
-                Prompt = "Testfrage?", Type = QuestionType.OpenText,
-                CorrectAnswers = new[] { "Berlin" }, Explanation = "Weil Berlin die Hauptstadt ist."
-            }
-        };
-
-        var questions = _composer.ComposeFinalQuiz(GradeLevel.Klasse6, new Random(2), newsQuestions);
-
-        Assert.Contains(questions, q => q.Id == "news-1");
+        Assert.Equal(20, questions.Count);
     }
 
     [Fact]

@@ -2,9 +2,9 @@
 
 Eine kindersichere Windows-Kiosk-Lern-App: Nach dem Login startet LernTor im Vollbild und
 sperrt den PC, bis das Kind News gelesen, Übungsaufgaben in den freigeschalteten Fächern
-bearbeitet und das Abschlussquiz mit mindestens 50% bestanden hat. Erst dann wird der PC
-freigegeben. Eltern legen im Eltern-Bereich fest, welche der 12 verfügbaren Fächer für den
-Tag/das Profil überhaupt aktiv sind (siehe "Bereiche deaktivieren").
+bearbeitet und das Abschlussquiz bestanden hat. Erst dann wird der PC freigegeben. Eltern
+legen im Eltern-Bereich fest, welche der 12 verfügbaren Fächer für den Tag/das Profil
+überhaupt aktiv sind (siehe "Bereiche deaktivieren").
 
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
 am Berliner Rahmenlehrplan, Klasse 6 und 9 (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
@@ -77,7 +77,9 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Überschrift"-Frage war ohne Lesen lösbar, und eine zusätzliche Rubrik-Frage erwies sich als
    unnötig und bei Fehlklassifikation sogar unfair; ebenso die Einordnungs-Boxen „Warum ist das
    wichtig?"/„Was bedeutet das für dich?" - der Fokus liegt auf der Nachricht selbst). Gibt die
-   Zusammenfassung keinen Lückentext her, bleibt der Artikel ohne Frage. **Mindest-Lesezeit**: wie
+   Zusammenfassung keinen Lückentext her, bleibt der Artikel ohne Frage. Diese Verständnisfragen
+   zählen NICHT ins Abschlussquiz - sie werden ausschließlich hier im News-Bereich gestellt.
+   **Mindest-Lesezeit**: wie
    bei den Fach-Übungen wird „Weiter" erst frei, wenn die Frage(n) beantwortet sind UND ein
    20-Sekunden-Countdown abgelaufen ist - Nachrichten sollen gelesen, nicht weggeklickt werden.
    Verstörende Themen (Krieg, Gewalt – auch türkischsprachige Schlüsselwörter) werden im Ranking
@@ -120,13 +122,16 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:
-   dort bestraft sich Raten von selbst (unter 50 % bleibt der PC gesperrt).
+   dort bestraft sich Raten von selbst (unter 50 % beim ersten Versuch gibt es eine Wiederholung,
+   siehe unten).
 5. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl je Fach passt sich automatisch
-   an, wie viele Fächer aktiv sind), Ziel **20 Fragen** beim ersten Versuch, ≥50% richtig → PC wird
-   freigeschaltet. Bei Nichtbestehen ein kürzeres Wiederholungsquiz mit Ziel **15 Fragen**: schwache
+   an, wie viele Fächer aktiv sind), Nachrichten-Verständnisfragen zählen NICHT mit (die werden nur im
+   News-Bereich selbst gestellt). Erster Versuch am Tag: exakt **20 Fragen**, ≥50% richtig → PC wird
+   freigeschaltet. Bei Nichtbestehen ein kürzeres Wiederholungsquiz mit exakt **15 Fragen**: schwache
    Fächer bekommen konzentriert Fragen (mind. 2 je Fach), der Rest füllt ein allgemeines Mini-Quiz über
-   alle aktiven Fächer auf. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder Anzeige neu
-   gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
+   alle aktiven Fächer auf - für diesen zweiten Anlauf gilt keine 50%-Hürde mehr, nach dem Durcharbeiten
+   wird in jedem Fall freigeschaltet. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder
+   Anzeige neu gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
 
 Fortschritt wird laufend in einer lokalen SQLite-Datenbank gespeichert (`%LOCALAPPDATA%\LernTor\lerntor.db`),
 ein Absturz oder Neustart verliert also keinen Fortschritt.
@@ -294,12 +299,13 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
   durch Rückfragen und Denkanstöße zu helfen - erst wenn das Kind es mehrfach probiert hat oder
   ausdrücklich danach fragt, soll die KI die Lösung erklären.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
-  KI-/Technik-Quelle (heise online), einer dedizierten Spiele-Quelle (GameStar) und einer dedizierten
-  Finanzen-Quelle (finanzen.net), sowie einer Herabstufung (nicht Ausfilterung) von Artikeln mit
-  verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von
-  Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare Feeds werden übersprungen, sollten aber
-  gelegentlich geprüft werden. Inzwischen auf einem echten Windows-Rechner getestet und bestätigt
-  funktionsfähig (inkl. der neuen heise.de-Quelle).
+  KI-/Technik-Quelle (heise online, IT Boltwise), einer dedizierten Spiele-Quelle (GameStar), einer
+  dedizierten Finanzen-Quelle (finanzen.net) sowie offizieller Bundesregierungs-Quellen (Bundesregierung
+  kompakt, Bundesregierung Pressemitteilungen, BMBFSFJ für Bildungs-/Familienthemen), dazu einer
+  Herabstufung (nicht Ausfilterung) von Artikeln mit verstörenden Themen (Krieg, Gewaltverbrechen, ...)
+  über `SensitiveKeywords`. RSS-URLs von Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare
+  Feeds werden übersprungen, sollten aber gelegentlich geprüft werden. Inzwischen auf einem echten
+  Windows-Rechner getestet und bestätigt funktionsfähig (inkl. der neuen heise.de-Quelle).
 - **Vereinfachung der Artikeltexte** ist aktuell regelbasiert (kein LLM). Ein lokales LLM (Phi-3, Gemma 2,
   Llama 3.1 über Ollama) ließe sich über das `ITextSimplifier`-Interface in `LernTor.News` als zweite
   Implementierung ergänzen, ohne den Rest der App anzufassen.

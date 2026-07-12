@@ -63,6 +63,21 @@ public static class CuratedNewsFeeds
         // Finanzwissen-Erklärstück in FinanceKnowledgeArticles.
         new NewsFeedSource("finanzen.net", "https://www.finanzen.net/rss/news",
             NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Finanzen),
+
+        // Bundesregierung: offizielle, seriöse Quelle für "was macht eigentlich die Regierung" -
+        // kompakt für kurze Meldungen, Pressemitteilungen für ausführlichere Themen.
+        new NewsFeedSource("Bundesregierung kompakt", "https://www.bundesregierung.de/service/rss/breg-de/1151242/feed.xml",
+            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Deutschland),
+        new NewsFeedSource("Bundesregierung Pressemitteilungen", "https://www.bundesregierung.de/service/rss/breg-de/1151244/feed.xml",
+            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Deutschland),
+
+        // BMBFSFJ: Themen wie Bildung, Familie und Jugendschutz betreffen die Zielgruppe direkt.
+        new NewsFeedSource("BMBFSFJ", "https://www.bmbfsfj.bund.de/service/rss/bmbfsfj/108854/feed.rss",
+            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Deutschland),
+
+        // IT Boltwise: zusätzliche Technik-/KI-Quelle neben heise, stärkt die KI-Rubrik.
+        new NewsFeedSource("IT Boltwise", "https://www.it-boltwise.de/themen/allgemein/feed",
+            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Ki),
     };
 
     /// <summary>Schlüsselwörter zur Priorisierung von Artikeln nach den gewünschten Regionen/Themen.</summary>

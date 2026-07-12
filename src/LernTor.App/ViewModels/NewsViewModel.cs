@@ -27,14 +27,9 @@ public sealed partial class NewsViewModel : ObservableObject
 
     private readonly IReadOnlyList<NewsArticle> _articles;
     private readonly Action<NewsArticle, QuestionOutcome, QuizQuestion> _onArticleAnswered;
-    private readonly Action<IReadOnlyList<QuizQuestion>> _onSectionCompleted;
+    private readonly Action _onSectionCompleted;
     private readonly IHomeworkHelpChatService _homeworkChat;
-    private readonly List<QuizQuestion> _allAskedQuestions = new();
     private readonly DispatcherTimer _minTimeTimer;
-
-    /// <summary>Verhindert Doppel-Einträge in <see cref="_allAskedQuestions"/>, wenn ein Artikel
-    /// über die Marker-Navigation mehrfach besucht wird.</summary>
-    private readonly HashSet<string> _askedQuestionIds = new();
 
     /// <summary>Artikel-IDs, deren Fragen bereits vollständig beantwortet wurden - vorbefüllt mit den
     /// Abschlüssen aus einer früheren (z.B. abgestürzten) Session desselben Tages.</summary>
@@ -117,7 +112,7 @@ public sealed partial class NewsViewModel : ObservableObject
         IReadOnlyList<NewsArticle> articles,
         HashSet<string> alreadyCompletedIds,
         Action<NewsArticle, QuestionOutcome, QuizQuestion> onArticleAnswered,
-        Action<IReadOnlyList<QuizQuestion>> onSectionCompleted,
+        Action onSectionCompleted,
         IHomeworkHelpChatService homeworkChat,
         KidWeatherReport? weather = null)
     {
@@ -187,13 +182,6 @@ public sealed partial class NewsViewModel : ObservableObject
         CurrentArticle = _articles[CurrentIndex];
         foreach (var question in CurrentArticle.ComprehensionQuestions)
         {
-            // Doppelbesuche über die Marker-Navigation dürfen die Fragen nicht erneut in die
-            // Abschluss-Sammlung legen (sonst tauchen sie doppelt in der News-Wertung auf).
-            if (_askedQuestionIds.Add(question.Id))
-            {
-                _allAskedQuestions.Add(question);
-            }
-
             CurrentQuestions.Add(new QuestionAnswerViewModel(question, _homeworkChat, OnQuestionSubmitted));
         }
 
@@ -272,7 +260,7 @@ public sealed partial class NewsViewModel : ObservableObject
         if (AllArticlesCompleted && LockSecondsRemaining <= 0)
         {
             _minTimeTimer.Stop();
-            _onSectionCompleted(_allAskedQuestions);
+            _onSectionCompleted();
         }
     }
 

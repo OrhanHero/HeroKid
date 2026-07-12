@@ -58,6 +58,30 @@ public class ProgressGateServiceTests
     }
 
     [Fact]
+    public void ApplyQuizResult_FailingScoreOnRetryAttempt_UnlocksAnyway()
+    {
+        var progress = new StudentProgress
+        {
+            ProfileId = "test-profile",
+            CurrentStage = LearningStage.Abschlussquiz,
+            SubjectsToRetry = new List<Subject> { Subject.Mathematik }
+        };
+        var outcomes = new[]
+        {
+            new QuestionOutcome { QuestionId = "q1", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
+            new QuestionOutcome { QuestionId = "q2", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
+        };
+        var result = _scoring.BuildResult(outcomes);
+
+        _gate.ApplyQuizResult(progress, result, isRetryAttempt: true);
+
+        // Die 50%-Hürde gilt nur beim ersten Versuch - ein zweiter Anlauf schaltet in jedem Fall frei.
+        Assert.True(progress.IsUnlocked);
+        Assert.Equal(LearningStage.Freigeschaltet, progress.CurrentStage);
+        Assert.Empty(progress.SubjectsToRetry);
+    }
+
+    [Fact]
     public void CanEnterStage_BlocksSkippingUncompletedSubject()
     {
         var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.News };

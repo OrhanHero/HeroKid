@@ -58,7 +58,7 @@ public sealed class RssNewsService
 
         // Verschiedene Feeds (oder URL-Varianten desselben Anbieters) liefern gelegentlich exakt
         // dieselbe Meldung - ohne Deduplizierung nach Titel würde derselbe Artikel doppelt
-        // hintereinander im News-Bereich (und darüber auch im Abschlussquiz) auftauchen.
+        // hintereinander im News-Bereich auftauchen.
         var deduplicated = allRawItems
             .GroupBy(x => NormalizeTitleForDeduplication(x.Item.Title?.Text))
             .Select(group => group.First())

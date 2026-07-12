@@ -39,7 +39,6 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly TextToSpeechService _tts;
     private readonly Random _random = new();
 
-    private readonly List<QuizQuestion> _collectedNewsQuestions = new();
     private readonly DispatcherTimer _clockTimer;
 
     [ObservableProperty]
@@ -290,10 +289,8 @@ public sealed partial class MainViewModel : ObservableObject
         await PersistProgressAsync();
     }
 
-    private async void OnNewsSectionCompleted(IReadOnlyList<QuizQuestion> askedQuestions)
+    private async void OnNewsSectionCompleted()
     {
-        _collectedNewsQuestions.Clear();
-        _collectedNewsQuestions.AddRange(askedQuestions);
         await AwardStarsAsync(2);
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.News));
     }
@@ -370,14 +367,14 @@ public sealed partial class MainViewModel : ObservableObject
 
             var topUpTarget = Math.Max(RetryQuizTargetQuestions - retryQuestions.Count, 1);
             var topUpQuestions = _quizComposer.ComposeFinalQuiz(
-                grade, _random, null, disabledSubjects, targetTotalQuestions: topUpTarget, recentlySeenPrompts: recentlySeen);
+                grade, _random, disabledSubjects, targetTotalQuestions: topUpTarget, recentlySeenPrompts: recentlySeen);
 
             questions = retryQuestions.Concat(topUpQuestions);
         }
         else
         {
             questions = _quizComposer.ComposeFinalQuiz(
-                grade, _random, _collectedNewsQuestions, disabledSubjects,
+                grade, _random, disabledSubjects,
                 targetTotalQuestions: InitialQuizTargetQuestions, recentlySeenPrompts: recentlySeen);
         }
 
@@ -393,27 +390,32 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)
     {
+        // Ein zweiter Anlauf (Wiederholung nach nicht bestandenem ersten Versuch) schaltet danach
+        // in jedem Fall frei - die 50%-Hürde gilt nur beim allerersten Versuch am Tag. Muss VOR
+        // ApplyQuizResult geprüft werden, da dieses Progress.SubjectsToRetry beim Bestehen leert.
+        var isRetryAttempt = Progress.SubjectsToRetry.Count > 0;
+
         var result = _scoring.BuildResult(outcomes);
         await _activityLogRepo.LogQuizAttemptAsync(CurrentProfile!.Id, result);
-        _gate.ApplyQuizResult(Progress, result);
+        _gate.ApplyQuizResult(Progress, result, isRetryAttempt);
 
-        if (result.Passed)
+        if (Progress.IsUnlocked)
         {
             // Quiz-Sterne vor dem Persistieren gutschreiben, damit EarnedStarsToday mitgespeichert
-            // wird. Kann pro Tag nur einmal passieren: nach dem Bestehen steht der Fortschritt auf
-            // Freigeschaltet, ein weiterer Quiz-Durchlauf findet heute nicht mehr statt.
+            // wird. Kann pro Tag nur einmal passieren: nach dem Freischalten steht der Fortschritt
+            // auf Freigeschaltet, ein weiterer Quiz-Durchlauf findet heute nicht mehr statt.
             await AwardStarsAsync(5);
         }
 
         await PersistProgressAsync();
         UpdateSessionSteps();
 
-        if (result.Passed)
+        if (Progress.IsUnlocked)
         {
             _kioskLock.Unlock();
         }
 
-        CurrentViewModel = BuildResultViewModel(result.Passed, result);
+        CurrentViewModel = BuildResultViewModel(Progress.IsUnlocked, result);
     }
 
     private ResultViewModel BuildResultViewModel(bool passed, QuizResult? result)
