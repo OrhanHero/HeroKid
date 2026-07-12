@@ -12,6 +12,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<StudentProfileEntity> Profiles => Set<StudentProfileEntity>();
     public DbSet<CustomQuestionEntity> CustomQuestions => Set<CustomQuestionEntity>();
     public DbSet<SavedArticleEntity> SavedArticles => Set<SavedArticleEntity>();
+    public DbSet<ReviewQuestionEntity> ReviewQuestions => Set<ReviewQuestionEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -56,6 +57,12 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(a => a.Id);
             e.HasIndex(a => new { a.ProfileId, a.ArticleId });
+        });
+
+        modelBuilder.Entity<ReviewQuestionEntity>(e =>
+        {
+            e.HasKey(r => r.Id);
+            e.HasIndex(r => new { r.ProfileId, r.QuestionId });
         });
     }
 

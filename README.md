@@ -100,6 +100,13 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.
    Bei offenen Mathematik-Aufgaben steht ein Taschenrechner zur Verfügung; Aufgaben mit hinterlegtem
    Tipp zeigen einen abrufbaren Formel-/Vorgehens-Hinweis (verrät nicht die Lösung).
+   **Fehler-Kartei** (vereinfachtes Spaced-Repetition): im Übungsteil falsch beantwortete Aufgaben
+   werden als Schnappschuss gespeichert (generierte Aufgaben wären am Folgetag nicht reproduzierbar)
+   und erscheinen an FOLGETAGEN im selben Fach zuerst wieder (mit 🔁 markiert, am häufigsten falsch
+   beantwortete zuerst, nie am selben Tag erneut) - bis sie zweimal in Folge richtig beantwortet
+   wurden, dann gelten sie als gelernt und verschwinden. News-Fragen sind ausgenommen (deren
+   Tagesartikel gibt es später nicht mehr). Siehe `ReviewQuestionRepository`/`ReviewQuestionEntity`;
+   die neue Tabelle legt der automatische Schema-Abgleich selbst an.
    **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:

@@ -29,6 +29,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly SavedArticleRepository _savedArticleRepo;
+    private readonly ReviewQuestionRepository _reviewRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
     private readonly QuizComposer _quizComposer;
@@ -69,6 +70,7 @@ public sealed partial class MainViewModel : ObservableObject
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
         SavedArticleRepository savedArticleRepo,
+        ReviewQuestionRepository reviewRepo,
         RssNewsService newsService,
         WeatherService weatherService,
         QuizComposer quizComposer,
@@ -85,6 +87,7 @@ public sealed partial class MainViewModel : ObservableObject
         _profileRepo = profileRepo;
         _customQuestionRepo = customQuestionRepo;
         _savedArticleRepo = savedArticleRepo;
+        _reviewRepo = reviewRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
         _kioskLock = kioskLock;
@@ -278,13 +281,27 @@ public sealed partial class MainViewModel : ObservableObject
         var recentlySeen = await _activityLogRepo.GetRecentPromptsAsync(CurrentProfile!.Id, RecentPromptsWindow);
         var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, recentlySeen);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
-        var questions = generated.Concat(custom).OrderBy(_ => _random.Next()).ToList();
+
+        // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST
+        // (mit 🔁-Thema markiert), bis sie zweimal in Folge richtig beantwortet wurden. Zufällige
+        // Dubletten aus dem Generator werden über den Aufgabentext aussortiert.
+        var review = await _reviewRepo.GetDueQuestionsAsync(CurrentProfile!.Id, subject, maxCount: 3);
+        var reviewPrompts = review.Select(r => r.Prompt).ToHashSet();
+
+        var questions = review
+            .Concat(generated.Concat(custom)
+                .Where(q => !reviewPrompts.Contains(q.Prompt))
+                .OrderBy(_ => _random.Next()))
+            .ToList();
+
         return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject), _homeworkChat);
     }
 
     private async void OnExerciseQuestionAnswered(Subject subject, QuestionOutcome outcome, QuizQuestion question)
     {
         await _activityLogRepo.LogAnswerAsync(CurrentProfile!.Id, outcome, question.Topic, question.Prompt);
+        // Fehler-Kartei pflegen: falsch → aufnehmen/zurücksetzen, richtig → Streak hoch, bei 2 gelernt.
+        await _reviewRepo.RecordOutcomeAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
     }
 
     private async void OnExerciseSubjectCompleted(Subject subject)
