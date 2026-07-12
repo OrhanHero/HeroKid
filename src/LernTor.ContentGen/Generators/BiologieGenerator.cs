@@ -12,7 +12,7 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem, Immunsystem, Nervensystem, SuchtUndSuchtpraevention, Humangenetik, Evolution }
         };
 
     private static readonly (string Organ, string Funktion, string[] Falsch)[] OrganeListe =
@@ -391,6 +391,286 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Topic = "Ökosysteme", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Produzenten (Pflanzen) stellen Energie her, Konsumenten fressen andere Lebewesen, Destruenten (Pilze/Bakterien) zersetzen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ImmunsystemListe =
+    {
+        ("Was ist der Unterschied zwischen Bakterien und Viren als Krankheitserreger?", new[] { "Bakterien sind eigenständige Zellen, Viren benötigen eine Wirtszelle zur Vermehrung", "Beide sind identisch aufgebaut", "Viren sind größer als Bakterien" }, "Bakterien sind eigenständige Zellen, Viren benötigen eine Wirtszelle zur Vermehrung",
+            "Bakterien sind eigenständige, sich selbst vermehrende Zellen, während Viren keinen eigenen Stoffwechsel haben und eine Wirtszelle zur Vermehrung kapern müssen."),
+        ("Was versteht man unter der unspezifischen Immunabwehr?", new[] { "Eine allgemeine, angeborene Abwehr gegen viele verschiedene Erreger (z.B. Haut, Fresszellen)", "Eine Abwehr, die sich gezielt gegen einen einzigen bekannten Erreger richtet", "Ein anderes Wort für Impfung" }, "Eine allgemeine, angeborene Abwehr gegen viele verschiedene Erreger (z.B. Haut, Fresszellen)",
+            "Die unspezifische (angeborene) Immunabwehr wirkt sofort und allgemein gegen viele Erreger, u.a. durch Haut als Barriere und Fresszellen (Phagozyten)."),
+        ("Was kennzeichnet die spezifische Immunabwehr im Unterschied zur unspezifischen?", new[] { "Sie richtet sich gezielt gegen einen bestimmten Erreger und bildet ein Immungedächtnis", "Sie wirkt sofort gegen jeden beliebigen Erreger ohne Unterschied", "Sie hat mit Antikörpern nichts zu tun" }, "Sie richtet sich gezielt gegen einen bestimmten Erreger und bildet ein Immungedächtnis",
+            "Die spezifische Immunabwehr erkennt gezielt einen bestimmten Erreger (über Antigene) und bildet passende Antikörper sowie ein Immungedächtnis."),
+        ("Was sind Antikörper?", new[] { "Von B-Lymphozyten gebildete Eiweiße, die gezielt an bestimmte Antigene binden", "Ein anderes Wort für Bakterien", "Zellen, die nur bei Viruserkrankungen vorkommen" }, "Von B-Lymphozyten gebildete Eiweiße, die gezielt an bestimmte Antigene binden",
+            "Antikörper sind spezifische Eiweißmoleküle, die von B-Lymphozyten produziert werden und passgenau an ein bestimmtes Antigen binden."),
+        ("Was ist die Aufgabe von Fresszellen (Phagozyten) im Immunsystem?", new[] { "Sie nehmen Krankheitserreger auf und bauen sie ab", "Sie produzieren ausschließlich Hormone", "Sie speichern die Erbinformation" }, "Sie nehmen Krankheitserreger auf und bauen sie ab",
+            "Fresszellen (Phagozyten) gehören zur unspezifischen Abwehr und bauen Krankheitserreger durch Aufnahme (Phagozytose) ab."),
+        ("Was passiert bei einer aktiven Immunisierung (Impfung)?", new[] { "Der Körper wird mit abgeschwächten/inaktiven Erregerbestandteilen konfrontiert und bildet selbst Antikörper", "Fertige Antikörper werden direkt von außen zugeführt", "Es passiert gar nichts im Körper" }, "Der Körper wird mit abgeschwächten/inaktiven Erregerbestandteilen konfrontiert und bildet selbst Antikörper",
+            "Bei der aktiven Immunisierung regt ein Impfstoff das Immunsystem an, selbst spezifische Antikörper und ein Immungedächtnis zu bilden."),
+        ("Was passiert bei einer passiven Immunisierung?", new[] { "Fertige Antikörper werden direkt verabreicht, ohne dass der Körper sie selbst bildet", "Der Körper bildet über Wochen selbst Antikörper", "Es handelt sich um dieselbe Methode wie die aktive Immunisierung" }, "Fertige Antikörper werden direkt verabreicht, ohne dass der Körper sie selbst bildet",
+            "Bei der passiven Immunisierung werden fertige Antikörper direkt zugeführt - der Schutz wirkt sofort, hält aber nicht dauerhaft an, da kein eigenes Immungedächtnis entsteht."),
+        ("Warum kann man nach einer überstandenen Infektionskrankheit oft nicht noch einmal an derselben Krankheit erkranken?", new[] { "Das Immunsystem hat ein Immungedächtnis gebildet und reagiert beim erneuten Kontakt viel schneller", "Der Körper vergisst jeden Erreger sofort wieder", "Es gibt kein Immungedächtnis beim Menschen" }, "Das Immunsystem hat ein Immungedächtnis gebildet und reagiert beim erneuten Kontakt viel schneller",
+            "Gedächtniszellen des Immunsystems ermöglichen bei erneutem Kontakt mit demselben Erreger eine deutlich schnellere und stärkere Abwehrreaktion."),
+        ("Welches Virus verursacht die Immunschwächekrankheit AIDS?", new[] { "HIV (Humanes Immundefizienz-Virus)", "Das Grippevirus", "Das Masernvirus" }, "HIV (Humanes Immundefizienz-Virus)",
+            "HIV greift gezielt bestimmte Zellen des Immunsystems (T-Helferzellen) an und schwächt dadurch die körpereigene Abwehr - im fortgeschrittenen Stadium spricht man von AIDS."),
+        ("Warum gilt die Grippe (Influenza) jedes Jahr aufs Neue als Herausforderung für Impfstoffe?", new[] { "Das Grippevirus verändert sich (mutiert) häufig, sodass neue Impfstoffe nötig werden", "Das Grippevirus verändert sich nie", "Gegen Grippe kann man sich nicht impfen lassen" }, "Das Grippevirus verändert sich (mutiert) häufig, sodass neue Impfstoffe nötig werden",
+            "Influenzaviren mutieren häufig, wodurch bestehende Immunität oder ältere Impfstoffe oft nicht mehr vollständig wirksam gegen neue Varianten sind."),
+        ("Was ist der gesellschaftliche Nutzen einer hohen Impfquote in der Bevölkerung (\"Herdenimmunität\")?", new[] { "Auch Menschen, die selbst nicht geimpft werden können, werden indirekt geschützt", "Impfungen haben keinerlei gesellschaftlichen Effekt", "Eine hohe Impfquote schadet der Allgemeinheit" }, "Auch Menschen, die selbst nicht geimpft werden können, werden indirekt geschützt",
+            "Ist ein großer Teil der Bevölkerung immun, kann sich ein Erreger schlechter verbreiten - das schützt auch Menschen, die z.B. aus medizinischen Gründen nicht geimpft werden können."),
+        ("Was ist ein Antigen?", new[] { "Eine Struktur auf einem Erreger, die vom Immunsystem als körperfremd erkannt wird", "Ein anderes Wort für Antikörper", "Eine Körperzelle, die niemals erkannt wird" }, "Eine Struktur auf einem Erreger, die vom Immunsystem als körperfremd erkannt wird",
+            "Antigene sind Oberflächenstrukturen von Erregern, die das spezifische Immunsystem als fremd erkennt und gegen die es Antikörper bildet."),
+        ("Was sind T-Helferzellen im Immunsystem?", new[] { "Lymphozyten, die andere Immunzellen bei der spezifischen Abwehr koordinieren", "Zellen, die nur Sauerstoff transportieren", "Zellen, die ausschließlich Hormone produzieren" }, "Lymphozyten, die andere Immunzellen bei der spezifischen Abwehr koordinieren",
+            "T-Helferzellen koordinieren die spezifische Immunantwort, u.a. indem sie B-Lymphozyten zur Antikörperbildung anregen."),
+        ("Warum ist HIV besonders gefährlich für das Immunsystem selbst?", new[] { "Es befällt gezielt T-Helferzellen, die für die Koordination der Abwehr wichtig sind", "Es befällt ausschließlich rote Blutkörperchen", "Es hat keinerlei Wirkung auf das Immunsystem" }, "Es befällt gezielt T-Helferzellen, die für die Koordination der Abwehr wichtig sind",
+            "Da HIV T-Helferzellen zerstört, die für die Koordination der spezifischen Abwehr zentral sind, wird das gesamte Immunsystem im Verlauf stark geschwächt."),
+        ("Was bedeutet \"Antibiotikaresistenz\" bei Bakterien?", new[] { "Bakterien werden gegen bestimmte Antibiotika unempfindlich", "Bakterien werden durch Antibiotika immer sofort abgetötet", "Antibiotika wirken nur gegen Viren" }, "Bakterien werden gegen bestimmte Antibiotika unempfindlich",
+            "Durch Mutationen und natürliche Selektion können Bakterienstämme entstehen, gegen die bestimmte Antibiotika nicht mehr wirken."),
+        ("Warum wirken Antibiotika nicht gegen Viruserkrankungen wie Grippe?", new[] { "Antibiotika greifen bakterielle Strukturen an, die Viren nicht besitzen", "Antibiotika wirken gegen alle Krankheitserreger gleichermaßen", "Viren haben dieselbe Zellstruktur wie Bakterien" }, "Antibiotika greifen bakterielle Strukturen an, die Viren nicht besitzen",
+            "Antibiotika wirken meist gegen bakterienspezifische Strukturen (z.B. Zellwand) - Viren haben diese Strukturen nicht, weshalb Antibiotika hier wirkungslos sind."),
+        ("Was ist eine Autoimmunerkrankung?", new[] { "Das Immunsystem greift fälschlicherweise körpereigenes Gewebe an", "Eine Krankheit, die nur durch Bakterien ausgelöst wird", "Ein anderes Wort für eine erfolgreiche Impfung" }, "Das Immunsystem greift fälschlicherweise körpereigenes Gewebe an",
+            "Bei Autoimmunerkrankungen erkennt das Immunsystem fälschlicherweise körpereigenes Gewebe als fremd und greift es an."),
+        ("Was zeigen statistische Daten zu Masern in Ländern mit sinkender Impfquote häufig?", new[] { "Die Zahl der Erkrankungsfälle steigt tendenziell wieder an", "Die Erkrankung verschwindet automatisch von selbst", "Die Impfquote hat keinerlei Einfluss auf die Fallzahlen" }, "Die Zahl der Erkrankungsfälle steigt tendenziell wieder an",
+            "Sinkt die Impfquote gegen hochansteckende Krankheiten wie Masern, steigen in der Regel auch die gemeldeten Erkrankungsfälle wieder an."),
+        ("Was ist der Unterschied zwischen einer Epidemie und einer Pandemie?", new[] { "Eine Pandemie betrifft im Unterschied zur regional begrenzten Epidemie viele Länder oder die ganze Welt", "Beide Begriffe bedeuten exakt dasselbe", "Eine Epidemie ist immer weltweit, eine Pandemie nur lokal" }, "Eine Pandemie betrifft im Unterschied zur regional begrenzten Epidemie viele Länder oder die ganze Welt",
+            "Eine Epidemie ist meist regional oder national begrenzt, eine Pandemie breitet sich dagegen über mehrere Länder oder Kontinente aus."),
+        ("Warum werden manche Impfstoffe in mehreren Dosen (Auffrischimpfungen) verabreicht?", new[] { "Um einen möglichst starken und langanhaltenden Immunschutz mit stabilem Immungedächtnis aufzubauen", "Weil eine einzige Impfdosis grundsätzlich schädlich wäre", "Weil Impfstoffe sonst gar keine Wirkung zeigen würden" }, "Um einen möglichst starken und langanhaltenden Immunschutz mit stabilem Immungedächtnis aufzubauen",
+            "Auffrischimpfungen sollen das Immungedächtnis stärken und einen möglichst zuverlässigen, lang anhaltenden Schutz sicherstellen.")
+    };
+
+    private static QuizQuestion Immunsystem(Random r)
+    {
+        var f = ImmunsystemListe[r.Next(ImmunsystemListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Gesundheit und Krankheit (Immunologie)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Unspezifische Abwehr wirkt sofort gegen viele Erreger (z.B. Fresszellen), spezifische Abwehr bildet gezielt Antikörper und ein Immungedächtnis."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NervensystemListe =
+    {
+        ("Aus welchen Grundbestandteilen besteht eine Nervenzelle (Neuron) hauptsächlich?", new[] { "Zellkörper, Dendriten und Axon", "Nur einem einzigen runden Zellkörper ohne Fortsätze", "Zellwand und Chloroplasten" }, "Zellkörper, Dendriten und Axon",
+            "Ein Neuron besteht aus dem Zellkörper mit Zellkern, den Dendriten (Reizaufnahme) und dem Axon (Reizweiterleitung)."),
+        ("Was ist eine Synapse?", new[] { "Die Kontaktstelle zwischen zwei Nervenzellen zur Signalübertragung", "Ein anderes Wort für Zellkern", "Ein Sinnesorgan" }, "Die Kontaktstelle zwischen zwei Nervenzellen zur Signalübertragung",
+            "An der Synapse wird ein Nervenimpuls meist chemisch über Botenstoffe (Neurotransmitter) von einer Zelle zur nächsten übertragen."),
+        ("Was sind Neurotransmitter?", new[] { "Chemische Botenstoffe, die Signale an der Synapse übertragen", "Ein anderes Wort für Hormone der Schilddrüse", "Bestandteile der Zellwand" }, "Chemische Botenstoffe, die Signale an der Synapse übertragen",
+            "Neurotransmitter werden am Ende eines Neurons freigesetzt und docken an Rezeptoren der nächsten Zelle an, um das Signal weiterzugeben."),
+        ("Welche Aufgabe haben Sinnesorgane grundsätzlich?", new[] { "Sie nehmen Reize aus der Umwelt oder dem Körper auf", "Sie speichern ausschließlich Erbinformationen", "Sie produzieren Verdauungsenzyme" }, "Sie nehmen Reize aus der Umwelt oder dem Körper auf",
+            "Sinnesorgane (z.B. Auge, Ohr, Haut) nehmen spezifische Reize auf und wandeln sie in Nervenimpulse um."),
+        ("Was gehört zum zentralen Nervensystem (ZNS) des Menschen?", new[] { "Gehirn und Rückenmark", "Nur die Sinnesorgane", "Nur die Muskeln" }, "Gehirn und Rückenmark",
+            "Das zentrale Nervensystem besteht aus Gehirn und Rückenmark und verarbeitet und steuert eingehende Informationen."),
+        ("Was ist die Aufgabe des vegetativen (autonomen) Nervensystems?", new[] { "Es steuert unbewusste Körperfunktionen wie Herzschlag und Verdauung", "Es steuert ausschließlich bewusste, willkürliche Bewegungen", "Es hat keine erkennbare Funktion" }, "Es steuert unbewusste Körperfunktionen wie Herzschlag und Verdauung",
+            "Das vegetative Nervensystem reguliert unwillkürliche Vorgänge wie Herzschlag, Atmung und Verdauung, meist ohne bewusste Kontrolle."),
+        ("Was beschreibt eine Reiz-Reaktions-Kette?", new[] { "Den Weg eines Reizes vom Sinnesorgan über das Nervensystem bis zur motorischen Reaktion", "Eine zufällige, unzusammenhängende Abfolge von Zellprozessen", "Einen Vorgang, der nur in Pflanzenzellen stattfindet" }, "Den Weg eines Reizes vom Sinnesorgan über das Nervensystem bis zur motorischen Reaktion",
+            "Eine Reiz-Reaktions-Kette beschreibt den Weg von der Reizaufnahme über die Verarbeitung im Nervensystem bis zur ausgelösten Reaktion, z.B. einer Muskelbewegung."),
+        ("Was ist ein Reflex, z.B. das Zurückziehen der Hand bei einer heißen Herdplatte?", new[] { "Eine sehr schnelle, unwillkürliche Reaktion, oft über das Rückenmark gesteuert", "Eine langsame, bewusst durchdachte Entscheidung", "Ein Vorgang, der nur im Gehirn abläuft" }, "Eine sehr schnelle, unwillkürliche Reaktion, oft über das Rückenmark gesteuert",
+            "Bei manchen Reflexen wird die Reaktion bereits im Rückenmark ausgelöst, bevor das Signal bewusst im Gehirn verarbeitet wird - das ermöglicht besonders schnelles Handeln."),
+        ("Wie wird ein elektrisches Signal (Aktionspotenzial) entlang eines Axons weitergeleitet?", new[] { "Durch die Bewegung geladener Teilchen (Ionen) über die Zellmembran", "Durch direkten Kontakt mit dem Gehirn ohne jede Signalübertragung", "Durch chemische Reaktionen im Zellkern" }, "Durch die Bewegung geladener Teilchen (Ionen) über die Zellmembran",
+            "Ein- und ausströmende Ionen (v.a. Natrium und Kalium) über die Zellmembran erzeugen das elektrische Signal, das entlang des Axons weiterläuft."),
+        ("Was passiert am Ende eines Axons, wenn ein elektrisches Signal die Synapse erreicht?", new[] { "Neurotransmitter werden freigesetzt und wirken auf die nächste Zelle", "Das Signal verschwindet einfach spurlos", "Es entsteht eine neue Nervenzelle" }, "Neurotransmitter werden freigesetzt und wirken auf die nächste Zelle",
+            "Am Ende des Axons löst das ankommende Signal die Ausschüttung von Neurotransmittern aus, die auf die nachfolgende Zelle wirken."),
+        ("Warum verlaufen manche Nervenimpulse im Körper besonders schnell?", new[] { "Eine isolierende Markscheide (Myelinscheide) um das Axon beschleunigt die Signalweiterleitung", "Weil alle Nervenzellen exakt gleich schnell leiten", "Weil das Signal dabei gar nicht durch Axone verläuft" }, "Eine isolierende Markscheide (Myelinscheide) um das Axon beschleunigt die Signalweiterleitung",
+            "Die Myelinscheide isoliert das Axon und ermöglicht eine sprunghafte, dadurch schnellere Signalweiterleitung."),
+        ("Welche Rolle spielt das Rückenmark im Nervensystem?", new[] { "Es leitet Signale zwischen Gehirn und Körper weiter und steuert Reflexe", "Es speichert ausschließlich Langzeiterinnerungen", "Es hat mit dem Nervensystem nichts zu tun" }, "Es leitet Signale zwischen Gehirn und Körper weiter und steuert Reflexe",
+            "Das Rückenmark verbindet Gehirn und übrigen Körper über Nervenbahnen und kann bestimmte Reflexe eigenständig steuern."),
+        ("Was unterscheidet das sympathische vom parasympathischen Nervensystem (beide Teil des vegetativen Nervensystems)?", new[] { "Sympathikus aktiviert den Körper (z.B. bei Stress), Parasympathikus fördert Erholung", "Beide haben exakt dieselbe Funktion", "Nur der Parasympathikus gehört zum vegetativen Nervensystem" }, "Sympathikus aktiviert den Körper (z.B. bei Stress), Parasympathikus fördert Erholung",
+            "Der Sympathikus versetzt den Körper in erhöhte Leistungsbereitschaft (z.B. schnellerer Herzschlag), der Parasympathikus fördert Ruhe, Verdauung und Erholung."),
+        ("Was passiert, wenn ein Sinnesorgan wie das Auge einen Reiz aufnimmt?", new[] { "Der Reiz wird in ein elektrisches Signal umgewandelt und über Nervenbahnen weitergeleitet", "Der Reiz bleibt ausschließlich im Sinnesorgan selbst", "Es entsteht sofort eine Muskelbewegung ohne jede Signalverarbeitung" }, "Der Reiz wird in ein elektrisches Signal umgewandelt und über Nervenbahnen weitergeleitet",
+            "Sinneszellen wandeln physikalische oder chemische Reize (z.B. Licht) in elektrische Signale um, die über Nervenbahnen zum Gehirn geleitet werden."),
+        ("Was versteht man unter der Reizschwelle einer Nervenzelle?", new[] { "Die Mindeststärke eines Reizes, ab der ein Nervenimpuls ausgelöst wird", "Die maximale Anzahl an Nervenzellen im Körper", "Ein anderes Wort für Synapse" }, "Die Mindeststärke eines Reizes, ab der ein Nervenimpuls ausgelöst wird",
+            "Erst wenn ein Reiz eine bestimmte Reizschwelle überschreitet, wird ein Aktionspotenzial (Nervenimpuls) in der Zelle ausgelöst (Alles-oder-Nichts-Prinzip)."),
+        ("Wodurch unterscheiden sich verschiedene Sinnesorgane in der Art der aufgenommenen Reize?", new[] { "Jedes Sinnesorgan ist auf eine bestimmte Reizart spezialisiert, z.B. Auge auf Licht, Ohr auf Schall", "Alle Sinnesorgane nehmen exakt dieselben Reize wahr", "Sinnesorgane nehmen überhaupt keine Reize auf" }, "Jedes Sinnesorgan ist auf eine bestimmte Reizart spezialisiert, z.B. Auge auf Licht, Ohr auf Schall",
+            "Sinnesorgane sind auf bestimmte Reizarten spezialisiert: Das Auge reagiert auf Licht, das Ohr auf Schallwellen, die Haut u.a. auf Druck und Temperatur."),
+        ("Was passiert bei einer Schädigung des Rückenmarks häufig mit der Signalweiterleitung zu darunterliegenden Körperbereichen?", new[] { "Sie kann teilweise oder vollständig unterbrochen sein, was zu Lähmungen führen kann", "Die Signalweiterleitung wird automatisch verbessert", "Es hat keinerlei Auswirkung auf die Körperfunktionen" }, "Sie kann teilweise oder vollständig unterbrochen sein, was zu Lähmungen führen kann",
+            "Da das Rückenmark Signale zwischen Gehirn und Körper weiterleitet, kann eine Schädigung zu teilweisen oder vollständigen Lähmungen unterhalb der Verletzungsstelle führen."),
+        ("Warum reagiert der Körper bei Gefahr oft mit erhöhtem Puls und schnellerer Atmung?", new[] { "Der Sympathikus aktiviert den Körper für eine schnelle Reaktion (\"Kampf oder Flucht\")", "Das Nervensystem hat damit nichts zu tun", "Es handelt sich um eine zufällige, ungesteuerte Reaktion" }, "Der Sympathikus aktiviert den Körper für eine schnelle Reaktion (\"Kampf oder Flucht\")",
+            "Der Sympathikus versetzt den Körper in Alarmbereitschaft, u.a. durch erhöhten Puls und schnellere Atmung, um schnell reagieren zu können."),
+        ("Was passiert grundsätzlich, wenn ein Neurotransmitter an einen Rezeptor der nachfolgenden Nervenzelle andockt?", new[] { "Er kann dort ein neues elektrisches Signal auslösen oder hemmen", "Er zerstört die nachfolgende Zelle vollständig", "Es passiert überhaupt keine Reaktion" }, "Er kann dort ein neues elektrisches Signal auslösen oder hemmen",
+            "Je nach Neurotransmitter und Rezeptor kann die Signalübertragung an der Synapse ein neues Signal in der Folgezelle auslösen oder es hemmen."),
+        ("Was passiert mit ausgeschütteten Neurotransmittern im synaptischen Spalt, nachdem sie ihre Wirkung entfaltet haben?", new[] { "Sie werden abgebaut oder wiederaufgenommen, damit das Signal nicht dauerhaft anhält", "Sie bleiben für immer im synaptischen Spalt aktiv", "Sie wandeln sich sofort in Antikörper um" }, "Sie werden abgebaut oder wiederaufgenommen, damit das Signal nicht dauerhaft anhält",
+            "Enzyme bauen Neurotransmitter ab oder die abgebende Zelle nimmt sie wieder auf, damit die Synapse für ein neues Signal bereit ist.")
+    };
+
+    private static QuizQuestion Nervensystem(Random r)
+    {
+        var f = NervensystemListe[r.Next(NervensystemListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Bau und Funktion des Nervensystems", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ein Reiz wird vom Sinnesorgan aufgenommen, als elektrisches Signal über Neuronen geleitet und an Synapsen chemisch (Neurotransmitter) weitergegeben."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SuchtListe =
+    {
+        ("Wie wirken viele Suchtmittel (z.B. Alkohol, bestimmte Drogen) grundlegend auf das Nervensystem?", new[] { "Sie beeinflussen die Signalübertragung an Synapsen, z.B. über Neurotransmitter", "Sie haben überhaupt keine Wirkung auf Nervenzellen", "Sie wirken ausschließlich auf die Verdauung" }, "Sie beeinflussen die Signalübertragung an Synapsen, z.B. über Neurotransmitter",
+            "Viele Suchtmittel greifen gezielt in die Signalübertragung an Synapsen ein, indem sie z.B. die Ausschüttung oder Wirkung von Neurotransmittern verändern."),
+        ("Was versteht man unter physiologischer (körperlicher) Abhängigkeit?", new[] { "Der Körper hat sich an eine Substanz gewöhnt und reagiert bei Entzug mit körperlichen Symptomen", "Ein rein psychisches Verlangen ohne jede körperliche Reaktion", "Ein Zustand, der niemals bei Suchtmitteln auftritt" }, "Der Körper hat sich an eine Substanz gewöhnt und reagiert bei Entzug mit körperlichen Symptomen",
+            "Bei körperlicher Abhängigkeit hat sich der Organismus an eine Substanz angepasst - beim Absetzen treten körperliche Entzugserscheinungen auf."),
+        ("Was ist psychische Abhängigkeit?", new[] { "Ein starkes seelisches Verlangen nach einer Substanz oder einem Verhalten", "Ausschließlich eine körperliche Reaktion ohne jedes Verlangen", "Ein anderes Wort für Immunität" }, "Ein starkes seelisches Verlangen nach einer Substanz oder einem Verhalten",
+            "Bei psychischer Abhängigkeit besteht ein starkes inneres Verlangen (Craving) nach der Substanz oder dem Verhalten, unabhängig von rein körperlichen Symptomen."),
+        ("Wie beeinflusst Alkohol typischerweise die Signalübertragung im Gehirn?", new[] { "Er verstärkt hemmende Signale und verlangsamt dadurch Reaktionen", "Er hat gar keine Wirkung auf das Gehirn", "Er beschleunigt ausschließlich alle Reaktionen des Körpers" }, "Er verstärkt hemmende Signale und verlangsamt dadurch Reaktionen",
+            "Alkohol verstärkt u.a. hemmende Neurotransmitter im Gehirn, was Reaktionsfähigkeit, Koordination und Urteilsvermögen verlangsamt und beeinträchtigt."),
+        ("Was passiert bei einer sogenannten Toleranzentwicklung gegenüber einer Substanz?", new[] { "Der Körper benötigt zunehmend höhere Dosen für dieselbe Wirkung", "Der Körper reagiert mit der Zeit immer empfindlicher auf kleinste Mengen", "Toleranzentwicklung hat mit Sucht nichts zu tun" }, "Der Körper benötigt zunehmend höhere Dosen für dieselbe Wirkung",
+            "Bei Toleranzentwicklung gewöhnt sich der Körper an eine Substanz, sodass zunehmend höhere Dosen für denselben Effekt nötig werden."),
+        ("Was ist ein Beispiel für eine Verhaltenssucht ohne eine chemische Substanz?", new[] { "Glücksspielsucht", "Grippe", "Diabetes" }, "Glücksspielsucht",
+            "Auch ohne den Konsum einer Substanz kann eine Abhängigkeit entstehen, z.B. bei Glücksspiel- oder Mediennutzungssucht."),
+        ("Warum spricht man bei der Entstehung von Sucht von \"Multikausalität\"?", new[] { "Mehrere Ursachen (biologisch, psychologisch, sozial) wirken meist zusammen", "Es gibt immer nur eine einzige, klar bestimmbare Ursache", "Sucht entsteht rein zufällig ohne jeden erkennbaren Grund" }, "Mehrere Ursachen (biologisch, psychologisch, sozial) wirken meist zusammen",
+            "Sucht entsteht meist durch ein Zusammenspiel biologischer (z.B. Veranlagung), psychologischer (z.B. Stress) und sozialer (z.B. Gruppendruck) Faktoren."),
+        ("Was ist ein Beispiel für eine soziale Ursache, die zu Sucht beitragen kann?", new[] { "Gruppendruck oder das Umfeld von Freunden und Familie", "Nur die genetische Veranlagung allein", "Ausschließlich die chemische Struktur der Substanz" }, "Gruppendruck oder das Umfeld von Freunden und Familie",
+            "Soziales Umfeld, Gruppendruck und familiäre Vorbilder können das Risiko für die Entstehung einer Sucht mit beeinflussen."),
+        ("Was bedeutet Suchtprävention?", new[] { "Maßnahmen, die das Entstehen einer Sucht von vornherein verhindern sollen", "Maßnahmen, die eine bestehende Sucht verstärken sollen", "Ein anderes Wort für Impfung" }, "Maßnahmen, die das Entstehen einer Sucht von vornherein verhindern sollen",
+            "Suchtprävention umfasst Aufklärung, Förderung von Selbstbewusstsein und alternative Bewältigungsstrategien, um Sucht vorzubeugen."),
+        ("Warum sind Jugendliche laut Forschung teilweise anfälliger für die Entwicklung von Süchten als Erwachsene?", new[] { "Das Gehirn, insbesondere Bereiche für Impulskontrolle, ist noch in der Entwicklung", "Jugendliche haben ein bereits vollständig ausgereiftes Gehirn", "Es gibt keinerlei Unterschied zwischen Jugendlichen und Erwachsenen" }, "Das Gehirn, insbesondere Bereiche für Impulskontrolle, ist noch in der Entwicklung",
+            "Da sich Gehirnbereiche für Impulskontrolle und Entscheidungsfindung bei Jugendlichen noch entwickeln, gelten sie oft als anfälliger für risikoreiches Verhalten und Suchtentwicklung."),
+        ("Wie wirken sich manche Suchtmittel auf das Belohnungssystem des Gehirns aus?", new[] { "Sie lösen eine übermäßige Ausschüttung von Botenstoffen wie Dopamin aus", "Sie haben keinerlei Einfluss auf das Belohnungssystem", "Sie blockieren jede Art von Botenstoff vollständig" }, "Sie lösen eine übermäßige Ausschüttung von Botenstoffen wie Dopamin aus",
+            "Viele Suchtmittel erhöhen die Ausschüttung von Dopamin im Belohnungssystem des Gehirns, was ein starkes Verlangen nach Wiederholung erzeugen kann."),
+        ("Was ist ein möglicher Auslöser für einen Rückfall nach einer erfolgreichen Suchttherapie?", new[] { "Stress oder eine Rückkehr in das alte soziale Umfeld", "Ein Rückfall ist grundsätzlich ausgeschlossen", "Nur körperliche Erkrankungen können einen Rückfall auslösen" }, "Stress oder eine Rückkehr in das alte soziale Umfeld",
+            "Belastende Situationen wie Stress oder die Rückkehr in ein Umfeld, das mit dem früheren Konsum verbunden ist, können das Rückfallrisiko erhöhen."),
+        ("Was unterscheidet Medikamentenmissbrauch von der bestimmungsgemäßen Einnahme von Medikamenten?", new[] { "Missbrauch bedeutet eine unsachgemäße, oft übermäßige Einnahme entgegen ärztlicher Verordnung", "Beides bedeutet exakt dasselbe", "Medikamente können grundsätzlich nicht missbräuchlich verwendet werden" }, "Missbrauch bedeutet eine unsachgemäße, oft übermäßige Einnahme entgegen ärztlicher Verordnung",
+            "Medikamentenmissbrauch liegt vor, wenn Medikamente unsachgemäß, in zu hoher Dosis oder ohne medizinischen Grund eingenommen werden."),
+        ("Warum gelten manche Dopingmittel im Sport auch als gesundheitlich riskant für das Nervensystem?", new[] { "Sie können ähnlich wie andere Suchtmittel in die Signalübertragung des Körpers eingreifen", "Dopingmittel haben grundsätzlich keine Nebenwirkungen", "Doping betrifft ausschließlich die Muskulatur, nie das Nervensystem" }, "Sie können ähnlich wie andere Suchtmittel in die Signalübertragung des Körpers eingreifen",
+            "Manche Dopingsubstanzen beeinflussen wie andere psychoaktive Stoffe die Signalübertragung im Körper und können gesundheitliche Risiken für das Nervensystem bergen."),
+        ("Was kann eine wirksame Strategie zur Suchtprävention bei Jugendlichen sein?", new[] { "Förderung von Selbstwertgefühl, Stressbewältigung und Aufklärung über Risiken", "Das Thema komplett zu verschweigen", "Ausschließlich strenge Verbote ohne jede Aufklärung" }, "Förderung von Selbstwertgefühl, Stressbewältigung und Aufklärung über Risiken",
+            "Wirksame Prävention setzt oft auf Stärkung von Selbstwertgefühl und Bewältigungsstrategien kombiniert mit sachlicher Aufklärung über Risiken."),
+        ("Was zeigt der Vergleich verschiedener Suchtmittel hinsichtlich ihrer Wirkung auf Synapsen?", new[] { "Unterschiedliche Substanzen beeinflussen die Signalübertragung auf unterschiedliche, spezifische Weise", "Alle Suchtmittel wirken auf exakt identische Weise", "Suchtmittel haben grundsätzlich keinerlei Wirkung auf Synapsen" }, "Unterschiedliche Substanzen beeinflussen die Signalübertragung auf unterschiedliche, spezifische Weise",
+            "Verschiedene Suchtmittel greifen auf unterschiedliche Weise in die Signalübertragung an Synapsen ein, z.B. durch Nachahmung, Blockade oder verstärkte Ausschüttung von Neurotransmittern."),
+        ("Was ist ein Grund, warum Suchtprävention oft schon in der Schule ansetzt?", new[] { "Frühzeitige Aufklärung kann das Risiko für spätere Suchtentwicklung verringern", "Schule hat mit Suchtprävention grundsätzlich nichts zu tun", "Prävention wirkt ausschließlich bei bereits erwachsenen Menschen" }, "Frühzeitige Aufklärung kann das Risiko für spätere Suchtentwicklung verringern",
+            "Da sich Verhaltensmuster und Einstellungen oft schon im Jugendalter entwickeln, gilt frühzeitige, altersgerechte Aufklärung als wichtiger Baustein der Suchtprävention."),
+        ("Was ist ein wichtiger Unterschied zwischen gelegentlichem Substanzkonsum und einer Sucht?", new[] { "Bei einer Sucht besteht ein starkes, oft unkontrollierbares Verlangen trotz negativer Folgen", "Beides bedeutet exakt dasselbe", "Gelegentlicher Konsum ist per Definition immer eine Sucht" }, "Bei einer Sucht besteht ein starkes, oft unkontrollierbares Verlangen trotz negativer Folgen",
+            "Eine Sucht zeichnet sich durch anhaltendes, oft unkontrollierbares Verlangen trotz erkennbarer negativer Folgen für Gesundheit, Beziehungen oder Alltag aus."),
+        ("Warum kann der Konsum von Suchtmitteln während der Pubertät besonders schädlich für die Gehirnentwicklung sein?", new[] { "Das Gehirn befindet sich noch in einer sensiblen Entwicklungsphase", "Das jugendliche Gehirn ist gegen jede äußere Einwirkung völlig unempfindlich", "Suchtmittel wirken bei Jugendlichen grundsätzlich schwächer als bei Erwachsenen" }, "Das Gehirn befindet sich noch in einer sensiblen Entwicklungsphase",
+            "Da sich wichtige Gehirnstrukturen bei Jugendlichen noch entwickeln, kann der Konsum von Suchtmitteln diese Entwicklung besonders stark beeinträchtigen."),
+        ("Was versteht man unter \"Co-Abhängigkeit\" im Umfeld einer suchtkranken Person?", new[] { "Nahestehende Personen unterstützen unbewusst das Suchtverhalten mit, statt es zu unterbinden", "Ein anderes Wort für die Sucht selbst", "Ein Zustand, der ausschließlich bei der süchtigen Person selbst auftritt" }, "Nahestehende Personen unterstützen unbewusst das Suchtverhalten mit, statt es zu unterbinden",
+            "Bei Co-Abhängigkeit decken oder erleichtern nahestehende Personen ungewollt das Suchtverhalten, z.B. durch Beschönigen oder Vertuschen der Folgen.")
+    };
+
+    private static QuizQuestion SuchtUndSuchtpraevention(Random r)
+    {
+        var f = SuchtListe[r.Next(SuchtListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Sucht und Suchtprävention", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Suchtmittel greifen oft in die Signalübertragung an Synapsen ein; Sucht entsteht meist durch ein Zusammenspiel biologischer, psychischer und sozialer Ursachen (Multikausalität)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] HumangenetikListe =
+    {
+        ("Was ist der Unterschied zwischen Mitose und Meiose?", new[] { "Mitose bildet zwei identische Körperzellen, Meiose bildet vier unterschiedliche Keimzellen mit halbem Chromosomensatz", "Beide Prozesse führen zu exakt demselben Ergebnis", "Meiose findet nur in Pflanzenzellen statt" }, "Mitose bildet zwei identische Körperzellen, Meiose bildet vier unterschiedliche Keimzellen mit halbem Chromosomensatz",
+            "Die Mitose dient dem Wachstum und erzeugt zwei genetisch identische Tochterzellen, die Meiose erzeugt vier genetisch unterschiedliche Keimzellen mit halbiertem Chromosomensatz."),
+        ("Warum ist die Halbierung des Chromosomensatzes bei der Meiose für die Fortpflanzung wichtig?", new[] { "So entsteht bei der Befruchtung wieder der volle, arttypische Chromosomensatz", "Ohne Halbierung könnten sich Zellen nicht teilen", "Die Halbierung hat mit Fortpflanzung nichts zu tun" }, "So entsteht bei der Befruchtung wieder der volle, arttypische Chromosomensatz",
+            "Da Ei- und Samenzelle je einen halben Chromosomensatz besitzen, ergibt sich bei ihrer Verschmelzung wieder der volle, arttypische Chromosomensatz."),
+        ("Was ist ein Karyogramm?", new[] { "Eine geordnete Darstellung aller Chromosomen eines Menschen zur Untersuchung von Anzahl und Struktur", "Ein anderes Wort für Stammbaum", "Eine Darstellung des Blutkreislaufs" }, "Eine geordnete Darstellung aller Chromosomen eines Menschen zur Untersuchung von Anzahl und Struktur",
+            "Ein Karyogramm ordnet die Chromosomen einer Zelle nach Größe und Form und kann so z.B. auf Chromosomenanomalien hinweisen."),
+        ("Was zeigt ein Karyogramm bei Trisomie 21 (Down-Syndrom)?", new[] { "Ein zusätzliches, drittes Chromosom 21 statt der üblichen zwei Kopien", "Ein vollständig fehlendes Chromosom 21", "Ein völlig normales Chromosomenbild ohne jede Abweichung" }, "Ein zusätzliches, drittes Chromosom 21 statt der üblichen zwei Kopien",
+            "Bei Trisomie 21 liegt Chromosom 21 dreifach statt zweifach vor, was im Karyogramm sichtbar wird."),
+        ("Wie wird die Blutgruppe im AB0-System hauptsächlich bestimmt?", new[] { "Durch bestimmte Merkmale (Antigene) auf der Oberfläche der roten Blutkörperchen", "Durch die Augenfarbe eines Menschen", "Durch das Körpergewicht" }, "Durch bestimmte Merkmale (Antigene) auf der Oberfläche der roten Blutkörperchen",
+            "Die Blutgruppen A, B, AB und 0 ergeben sich aus bestimmten Antigen-Merkmalen auf der Oberfläche der roten Blutkörperchen, die genetisch festgelegt sind."),
+        ("Welche Blutgruppe gilt im AB0-System oft als \"Universalspender\" für Blutkonserven?", new[] { "Blutgruppe 0", "Blutgruppe AB", "Blutgruppe B" }, "Blutgruppe 0",
+            "Blutgruppe 0 (insbesondere 0 negativ) kann in Notfällen oft an Empfänger verschiedener Blutgruppen gespendet werden, da ihr die A- und B-Antigene fehlen."),
+        ("Wie werden die Allele für die Blutgruppen A, B und 0 im AB0-System grundsätzlich vererbt?", new[] { "A und B sind dominant über 0, A und B zueinander sind kodominant", "Nur die Blutgruppe 0 kann überhaupt vererbt werden", "Blutgruppen werden zufällig, unabhängig von den Eltern, bestimmt" }, "A und B sind dominant über 0, A und B zueinander sind kodominant",
+            "Die Allele A und B sind gegenüber 0 dominant, verhalten sich zueinander aber kodominant - bei AB-Genotyp werden deshalb beide Merkmale gleichzeitig ausgeprägt."),
+        ("Was ist eine Genmutation?", new[] { "Eine Veränderung in der Basensequenz eines einzelnen Gens", "Eine Veränderung, die ausschließlich das gesamte Chromosom betrifft", "Ein anderes Wort für Zellteilung" }, "Eine Veränderung in der Basensequenz eines einzelnen Gens",
+            "Bei einer Genmutation verändert sich die Basensequenz innerhalb eines einzelnen Gens, was sich auf das codierte Protein auswirken kann."),
+        ("Was versteht man unter \"modifikatorischer Variabilität\" im Unterschied zu einer Mutation?", new[] { "Merkmalsunterschiede durch Umwelteinflüsse, ohne dass sich die Erbinformation ändert", "Eine dauerhafte Veränderung der DNA-Sequenz", "Ein anderes Wort für eine Chromosomenmutation" }, "Merkmalsunterschiede durch Umwelteinflüsse, ohne dass sich die Erbinformation ändert",
+            "Modifikatorische Variabilität entsteht durch Umwelteinflüsse (z.B. Ernährung, Training) auf bereits vorhandene Erbanlagen, ohne dass sich die DNA selbst verändert."),
+        ("Was ist ein Beispiel für eine genetisch bedingte Erbkrankheit beim Menschen?", new[] { "Mukoviszidose", "Eine Erkältung", "Ein Sonnenbrand" }, "Mukoviszidose",
+            "Mukoviszidose ist eine erblich bedingte Stoffwechselkrankheit, die durch eine Genmutation verursacht wird und Lunge und Verdauungssystem betrifft."),
+        ("Was ist die Aufgabe eines Familienstammbaums in der Humangenetik?", new[] { "Er zeigt das Auftreten eines Merkmals über mehrere Generationen und hilft, den Erbgang zu erkennen", "Er zeigt ausschließlich den Wohnort der Familie", "Er hat keinerlei Aussagekraft für Vererbung" }, "Er zeigt das Auftreten eines Merkmals über mehrere Generationen und hilft, den Erbgang zu erkennen",
+            "Anhand eines Familienstammbaums lässt sich oft ableiten, ob ein Merkmal dominant, rezessiv oder geschlechtsgebunden vererbt wird."),
+        ("Was ist ein zentrales Ziel der genetischen Beratung bei Kinderwunsch?", new[] { "Eltern über mögliche genetisch bedingte Risiken für ihr Kind sachlich zu informieren", "Eltern eine bestimmte Entscheidung vorzuschreiben", "Ausschließlich die Blutgruppe des Kindes vorherzusagen" }, "Eltern über mögliche genetisch bedingte Risiken für ihr Kind sachlich zu informieren",
+            "Genetische Beratung informiert werdende Eltern sachlich über mögliche erbliche Risiken, ohne ihnen eine bestimmte Entscheidung vorzuschreiben."),
+        ("Was ist pränatale Diagnostik?", new[] { "Untersuchungsmethoden, die schon vor der Geburt Hinweise auf die Gesundheit des Kindes liefern können", "Eine Untersuchung, die erst nach der Geburt durchgeführt wird", "Ein anderes Wort für Impfung" }, "Untersuchungsmethoden, die schon vor der Geburt Hinweise auf die Gesundheit des Kindes liefern können",
+            "Pränatale Diagnostik umfasst Untersuchungen während der Schwangerschaft, die z.B. Hinweise auf bestimmte genetisch bedingte Erkrankungen des ungeborenen Kindes geben können."),
+        ("Warum wird pränatale Diagnostik auch ethisch kontrovers diskutiert?", new[] { "Ergebnisse können schwierige Entscheidungen über den weiteren Schwangerschaftsverlauf aufwerfen", "Weil sie überhaupt keine Ergebnisse liefert", "Weil sie gesetzlich in jedem Fall verboten ist" }, "Ergebnisse können schwierige Entscheidungen über den weiteren Schwangerschaftsverlauf aufwerfen",
+            "Da Untersuchungsergebnisse Eltern vor schwierige ethische Entscheidungen stellen können, wird der Einsatz pränataler Diagnostik gesellschaftlich kontrovers diskutiert."),
+        ("Was bestimmt beim Menschen in der Regel das biologische Geschlecht auf Chromosomenebene?", new[] { "Die Kombination der Geschlechtschromosomen (XX oder XY)", "Die Blutgruppe der Mutter", "Der Geburtsmonat des Kindes" }, "Die Kombination der Geschlechtschromosomen (XX oder XY)",
+            "Zwei X-Chromosomen führen in der Regel zu weiblichem, ein X- und ein Y-Chromosom zu männlichem biologischem Geschlecht."),
+        ("Was ist ein Beispiel für ein geschlechtsgebunden vererbtes Merkmal beim Menschen?", new[] { "Rot-Grün-Sehschwäche", "Augenfarbe im Allgemeinen", "Körpergröße im Allgemeinen" }, "Rot-Grün-Sehschwäche",
+            "Das Gen für die Rot-Grün-Sehschwäche liegt auf dem X-Chromosom, weshalb sie bei Männern (nur ein X-Chromosom) häufiger auftritt als bei Frauen."),
+        ("Was passiert bei einer Chromosomenmutation im Unterschied zu einer Genmutation?", new[] { "Die Struktur oder Anzahl ganzer Chromosomen verändert sich", "Nur ein einzelnes Basenpaar eines Gens verändert sich", "Es passiert exakt dasselbe wie bei einer Genmutation" }, "Die Struktur oder Anzahl ganzer Chromosomen verändert sich",
+            "Chromosomenmutationen betreffen größere Abschnitte oder ganze Chromosomen (z.B. zusätzliche oder fehlende Chromosomen), Genmutationen dagegen einzelne Gene."),
+        ("Was kann bei der Auswertung eines Familienstammbaums auf einen rezessiven Erbgang hindeuten?", new[] { "Ein Merkmal tritt nur auf, wenn beide Elternteile das entsprechende Allel tragen, auch wenn sie selbst gesund erscheinen", "Das Merkmal tritt bei jedem einzelnen Nachkommen zwingend auf", "Rezessive Erbgänge lassen sich nie an Stammbäumen erkennen" }, "Ein Merkmal tritt nur auf, wenn beide Elternteile das entsprechende Allel tragen, auch wenn sie selbst gesund erscheinen",
+            "Bei rezessiven Erbgängen können äußerlich gesunde Eltern (Träger eines rezessiven Allels) ein betroffenes Kind bekommen, wenn beide das Allel weitergeben."),
+        ("Warum ist die Meiose entscheidend für die genetische Vielfalt innerhalb einer Art?", new[] { "Durch Neukombination der Chromosomen entstehen genetisch unterschiedliche Keimzellen", "Die Meiose erzeugt immer genetisch identische Keimzellen", "Genetische Vielfalt entsteht ausschließlich durch Mutationen, nie durch Meiose" }, "Durch Neukombination der Chromosomen entstehen genetisch unterschiedliche Keimzellen",
+            "Während der Meiose werden mütterliche und väterliche Chromosomenanteile neu kombiniert, wodurch genetisch unterschiedliche Keimzellen und damit Vielfalt entstehen."),
+        ("Was ist eine mögliche Ursache für eine Trisomie wie das Down-Syndrom bei der Keimzellbildung?", new[] { "Eine Fehlverteilung der Chromosomen während der Meiose (Non-Disjunction)", "Eine bewusste Entscheidung der Eltern", "Ein Fehler, der ausschließlich nach der Geburt entstehen kann" }, "Eine Fehlverteilung der Chromosomen während der Meiose (Non-Disjunction)",
+            "Trennen sich Chromosomen während der Meiose nicht korrekt (Non-Disjunction), kann eine Keimzelle mit einem zusätzlichen oder fehlenden Chromosom entstehen.")
+    };
+
+    private static QuizQuestion Humangenetik(Random r)
+    {
+        var f = HumangenetikListe[r.Next(HumangenetikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Vererbung beim Menschen (Humangenetik)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Mitose erzeugt identische Körperzellen, Meiose halbierte, unterschiedliche Keimzellen; Karyogramme und Stammbäume helfen, Erbgänge und Chromosomenbesonderheiten zu erkennen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EvolutionListe =
+    {
+        ("Wer entwickelte die Evolutionstheorie der natürlichen Selektion, die bis heute als grundlegend gilt?", new[] { "Charles Darwin", "Gregor Mendel", "Jean-Baptiste de Lamarck" }, "Charles Darwin",
+            "Charles Darwin veröffentlichte 1859 seine Theorie der natürlichen Selektion (\"Die Entstehung der Arten\"), die bis heute die Grundlage der modernen Evolutionsbiologie bildet."),
+        ("Was besagte Lamarcks Theorie der \"Vererbung erworbener Eigenschaften\" (vereinfacht)?", new[] { "Im Laufe des Lebens erworbene Merkmale (z.B. durch Training) würden an die Nachkommen weitergegeben", "Nur zufällige Mutationen könnten vererbt werden", "Erworbene Eigenschaften hätten mit Vererbung nichts zu tun" }, "Im Laufe des Lebens erworbene Merkmale (z.B. durch Training) würden an die Nachkommen weitergegeben",
+            "Lamarck nahm an, dass z.B. ein durch häufiges Strecken \"verlängerter\" Hals an die nächste Generation weitergegeben würde - diese Annahme gilt heute als widerlegt."),
+        ("Warum gilt Lamarcks Theorie heute als widerlegt?", new[] { "Erworbene körperliche Veränderungen verändern nicht die Erbinformation in den Keimzellen", "Weil Darwins Theorie zeitlich vor Lamarcks Theorie entstand", "Weil Lamarck nie irgendeine Theorie aufgestellt hat" }, "Erworbene körperliche Veränderungen verändern nicht die Erbinformation in den Keimzellen",
+            "Nach heutigem Wissen verändern im Leben erworbene Eigenschaften (z.B. trainierte Muskeln) nicht die DNA der Keimzellen und werden daher nicht direkt vererbt."),
+        ("Was ist der zentrale Mechanismus der Darwinschen Evolutionstheorie?", new[] { "Zufällige Variation der Merkmale kombiniert mit natürlicher Selektion (Auslese) durch die Umwelt", "Ausschließlich der bewusste Wille der Lebewesen, sich anzupassen", "Reiner Zufall ohne jede Auslese durch die Umwelt" }, "Zufällige Variation der Merkmale kombiniert mit natürlicher Selektion (Auslese) durch die Umwelt",
+            "Nach Darwin entstehen zufällige Merkmalsunterschiede (Variabilität); Lebewesen mit vorteilhaften Merkmalen überleben und pflanzen sich häufiger erfolgreich fort (Selektion)."),
+        ("Was ist ein Fossil?", new[] { "Ein erhaltener Überrest oder Abdruck eines Lebewesens aus früheren Erdzeitaltern", "Ein lebendes Tier, das heute noch existiert", "Ein anderes Wort für Chromosom" }, "Ein erhaltener Überrest oder Abdruck eines Lebewesens aus früheren Erdzeitaltern",
+            "Fossilien sind versteinerte Überreste oder Abdrücke von Lebewesen und liefern wichtige Belege für die Evolution und ausgestorbene Arten."),
+        ("Was sind homologe Organe (Homologie)?", new[] { "Organe mit demselben evolutionären Ursprung, aber möglicherweise unterschiedlicher Funktion", "Organe mit völlig unterschiedlicher Herkunft, aber zufällig ähnlicher Funktion", "Organe, die bei keiner zwei Arten jemals gleichzeitig vorkommen" }, "Organe mit demselben evolutionären Ursprung, aber möglicherweise unterschiedlicher Funktion",
+            "Homologe Organe, z.B. der Vorderarm bei Mensch, Fledermaus und Wal, haben denselben stammesgeschichtlichen Ursprung, auch wenn sie heute unterschiedliche Funktionen (Greifen, Fliegen, Schwimmen) erfüllen."),
+        ("Was sind analoge Organe (Analogie) im Unterschied zu homologen Organen?", new[] { "Organe mit ähnlicher Funktion, aber unabhängiger evolutionärer Entstehung", "Organe mit identischem evolutionärem Ursprung", "Ein anderes Wort für Fossilien" }, "Organe mit ähnlicher Funktion, aber unabhängiger evolutionärer Entstehung",
+            "Analoge Organe wie die Flügel von Vögeln und Insekten erfüllen eine ähnliche Funktion, sind aber evolutionär unabhängig voneinander entstanden."),
+        ("Was sind rudimentäre Organe?", new[] { "Zurückgebildete Organe, die im Laufe der Evolution ihre ursprüngliche Funktion verloren haben", "Organe, die erst kürzlich neu entstanden sind", "Organe, die bei allen Lebewesen exakt gleich stark ausgeprägt sind" }, "Zurückgebildete Organe, die im Laufe der Evolution ihre ursprüngliche Funktion verloren haben",
+            "Rudimentäre Organe wie der Blinddarmwurmfortsatz beim Menschen gelten als Überbleibsel von Organen, die bei Vorfahren eine größere Funktion hatten."),
+        ("Was zählt neben Mutation und Selektion als weiterer wichtiger Evolutionsfaktor?", new[] { "Isolation (z.B. geografische Trennung von Populationen)", "Ausschließlich das Wetter", "Nur die Körpergröße eines Lebewesens" }, "Isolation (z.B. geografische Trennung von Populationen)",
+            "Isolation trennt Populationen räumlich oder genetisch voneinander, wodurch sich getrennte Gruppen im Laufe der Zeit unterschiedlich entwickeln und neue Arten entstehen können."),
+        ("Was versteht man unter natürlicher Selektion (Auslese)?", new[] { "Besser angepasste Individuen überleben und pflanzen sich häufiger erfolgreich fort", "Alle Individuen einer Art haben exakt dieselben Überlebenschancen", "Selektion bedeutet, dass sich Lebewesen bewusst für Merkmale entscheiden" }, "Besser angepasste Individuen überleben und pflanzen sich häufiger erfolgreich fort",
+            "Individuen mit Merkmalen, die besser an die Umwelt angepasst sind, haben tendenziell höhere Überlebens- und Fortpflanzungschancen - das ist der Kern natürlicher Selektion."),
+        ("Wie erklärt die moderne Evolutionsbiologie die Angepasstheit von Organismen an ihre Umwelt?", new[] { "Durch das Zusammenspiel von zufälliger Variabilität und Selektion über viele Generationen", "Durch bewusste Entscheidungen einzelner Lebewesen", "Angepasstheit entsteht ohne jede erkennbare Ursache" }, "Durch das Zusammenspiel von zufälliger Variabilität und Selektion über viele Generationen",
+            "Zufällige genetische Variation liefert unterschiedliche Merkmale, die natürliche Selektion \"filtert\" über viele Generationen die vorteilhaften Merkmale heraus."),
+        ("Was zeigt der Vergleich von Hominidenschädeln (z.B. Australopithecus, Homo erectus, Homo sapiens) in der Stammesgeschichte des Menschen?", new[] { "Schrittweise Veränderungen von Schädelform und Gehirnvolumen im Laufe der menschlichen Evolution", "Dass sich der menschliche Schädel niemals verändert hat", "Dass alle Hominidenarten exakt gleichzeitig entstanden sind" }, "Schrittweise Veränderungen von Schädelform und Gehirnvolumen im Laufe der menschlichen Evolution",
+            "Der Vergleich fossiler Hominidenschädel zeigt allmähliche Veränderungen wie ein wachsendes Gehirnvolumen und andere anatomische Anpassungen im Verlauf der Menschheitsentwicklung."),
+        ("Was ist eine Art im biologischen Sinn (vereinfacht)?", new[] { "Eine Gruppe von Lebewesen, die sich untereinander fortpflanzen und fruchtbare Nachkommen zeugen kann", "Jedes einzelne Lebewesen für sich genommen", "Eine rein zufällige Einteilung ohne biologische Grundlage" }, "Eine Gruppe von Lebewesen, die sich untereinander fortpflanzen und fruchtbare Nachkommen zeugen kann",
+            "Der biologische Artbegriff definiert eine Art meist über die Fähigkeit, sich untereinander erfolgreich fortzupflanzen und fruchtbare Nachkommen zu bekommen."),
+        ("Was ist ein Beispiel für einen direkten Evolutionsbeleg, der in Gesteinsschichten gefunden werden kann?", new[] { "Versteinerte Fossilien ausgestorbener Arten", "Lebende Tiere im heutigen Zoo", "Aktuelle DNA-Proben von heute lebenden Menschen" }, "Versteinerte Fossilien ausgestorbener Arten",
+            "In Gesteinsschichten unterschiedlichen Alters finden sich Fossilien, die Rückschlüsse auf die stammesgeschichtliche Entwicklung von Arten ermöglichen."),
+        ("Warum gilt die Ähnlichkeit der DNA zwischen Mensch und anderen Primaten als Hinweis auf eine gemeinsame Abstammung?", new[] { "Eine hohe genetische Übereinstimmung deutet auf einen gemeinsamen evolutionären Vorfahren hin", "Genetische Ähnlichkeit hat mit Abstammung nichts zu tun", "DNA-Vergleiche liefern grundsätzlich keine verwertbaren Hinweise" }, "Eine hohe genetische Übereinstimmung deutet auf einen gemeinsamen evolutionären Vorfahren hin",
+            "Je ähnlicher sich die DNA zweier Arten ist, desto näher liegt in der Regel ihr gemeinsamer evolutionärer Vorfahre zeitlich zurück."),
+        ("Was passiert, wenn eine Population durch eine geografische Barriere (z.B. Gebirge, Insel) von einer anderen Population getrennt wird?", new[] { "Beide Gruppen können sich über viele Generationen genetisch unterschiedlich entwickeln", "Beide Populationen bleiben zwangsläufig für immer genetisch identisch", "Eine geografische Trennung hat keinerlei Einfluss auf die Evolution" }, "Beide Gruppen können sich über viele Generationen genetisch unterschiedlich entwickeln",
+            "Durch geografische Isolation können sich getrennte Populationen unabhängig voneinander weiterentwickeln, was langfristig zur Bildung neuer Arten führen kann."),
+        ("Was ist ein Beispiel für die Angepasstheit eines Lebewesens an seinen Lebensraum, die sich evolutionsbiologisch erklären lässt?", new[] { "Die Fellfarbe von Eisbären als Anpassung an die schneereiche arktische Umgebung", "Die Farbe eines künstlich gefärbten Spielzeugs", "Ein zufällig ausgewähltes menschengemachtes Bauwerk" }, "Die Fellfarbe von Eisbären als Anpassung an die schneereiche arktische Umgebung",
+            "Das weiße Fell von Eisbären gilt als evolutionäre Anpassung, die eine bessere Tarnung in der schneebedeckten arktischen Umgebung ermöglicht."),
+        ("Warum betrachten Wissenschaftlerinnen und Wissenschaftler Evolution heute als gut belegte Theorie und nicht als bloße Vermutung?", new[] { "Zahlreiche unabhängige Beweislinien wie Fossilien, Homologien und Genetik stützen sie übereinstimmend", "Es gibt bislang überhaupt keine Belege dafür", "Die Theorie beruht ausschließlich auf einer einzigen Beobachtung" }, "Zahlreiche unabhängige Beweislinien wie Fossilien, Homologien und Genetik stützen sie übereinstimmend",
+            "Fossilfunde, vergleichende Anatomie (Homologien), Genetik und direkt beobachtbare Anpassungsprozesse liefern gemeinsam ein sehr stimmiges Bild, das die Evolutionstheorie stark stützt."),
+        ("Was unterscheidet die Rolle des Zufalls bei Darwin von der bei Lamarck grundlegend?", new[] { "Bei Darwin entsteht Variation zufällig, bei Lamarck sollten gezielt erworbene Veränderungen vererbt werden", "Bei beiden Theorien spielt Zufall exakt dieselbe Rolle", "Zufall spielt bei keiner der beiden Theorien eine Rolle" }, "Bei Darwin entsteht Variation zufällig, bei Lamarck sollten gezielt erworbene Veränderungen vererbt werden",
+            "Darwin ging von zufälliger Variation aus, auf die die Selektion einwirkt; Lamarck nahm dagegen an, dass gezielt im Leben erworbene Anpassungen weitervererbt würden - das gilt heute als widerlegt."),
+        ("Was bedeutet \"Koevolution\" zwischen zwei Arten, z.B. einer Blüte und ihrem Bestäuber?", new[] { "Beide Arten beeinflussen im Laufe der Evolution wechselseitig die Entwicklung der jeweils anderen Art", "Nur eine der beiden Arten entwickelt sich weiter, die andere bleibt exakt gleich", "Koevolution beschreibt zwei völlig unabhängige, sich nie beeinflussende Arten" }, "Beide Arten beeinflussen im Laufe der Evolution wechselseitig die Entwicklung der jeweils anderen Art",
+            "Bei Koevolution passen sich zwei Arten über viele Generationen wechselseitig aneinander an, z.B. eine Blütenform an die Kopfform ihres Bestäubers.")
+    };
+
+    private static QuizQuestion Evolution(Random r)
+    {
+        var f = EvolutionListe[r.Next(EvolutionListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Evolution – Theorien und Stammesgeschichte", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Darwins Theorie (Variation + Selektion) gilt als bestätigt, Lamarcks Theorie der Vererbung erworbener Eigenschaften als widerlegt; Fossilien, Homologien und Genetik belegen die Evolution."
         };
     }
 }
