@@ -74,7 +74,14 @@ public class GermanTurkishScienceGeneratorTests
         // gestellt" und prüft, dass der eine übrig gebliebene, frische Prompt bevorzugt gezogen
         // wird statt einer der bereits gesehenen Wiederholungen.
         var generator = new GewiGenerator();
-        var allPrompts = generator.Generate(GradeLevel.Klasse6, 30, new Random(1)).Select(q => q.Prompt).Distinct().ToList();
+
+        // Fordert deutlich mehr Fragen an, als das feste Themen-Pool-Universum enthalten kann
+        // (4 Themen x 20 Beispiele = 80), damit der Retry-Mechanismus in
+        // ExerciseGeneratorBase.Generate (Versuche = angeforderte Zahl * 20) genug Spielraum hat,
+        // um wirklich jeden einzigartigen Prompt mindestens einmal zu ziehen - sonst wäre
+        // `allPrompts` nur eine zufällige Teilmenge und der weiter unten als "einziger frischer
+        // Prompt" behandelte Eintrag könnte in Wahrheit noch mehrfach im echten Pool vorkommen.
+        var allPrompts = generator.Generate(GradeLevel.Klasse6, 200, new Random(1)).Select(q => q.Prompt).Distinct().ToList();
         Assert.True(allPrompts.Count > 1, "Testaufbau erwartet mehrere unterschiedliche Prompts im Pool.");
 
         var freshPrompt = allPrompts[0];
