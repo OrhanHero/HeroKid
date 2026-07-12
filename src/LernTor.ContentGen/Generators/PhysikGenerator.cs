@@ -12,7 +12,7 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion, Kinematik, RadioaktivitaetUndKernphysik, SchwingungenWellenOptik }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AggregatzustaendeListe =
@@ -540,6 +540,174 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Topic = "Magnetfelder und elektromagnetische Induktion", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Strom durch eine Spule erzeugt ein Magnetfeld (Elektromagnet); ein sich änderndes Magnetfeld erzeugt umgekehrt Spannung (Induktion, z.B. im Generator)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KinematikListe =
+    {
+        ("Was kennzeichnet eine gleichförmige Bewegung?", new[] { "Die Geschwindigkeit bleibt über die Zeit konstant", "Die Geschwindigkeit nimmt ständig zu", "Der Körper bleibt die ganze Zeit in Ruhe" }, "Die Geschwindigkeit bleibt über die Zeit konstant",
+            "Bei einer gleichförmigen Bewegung legt ein Körper in gleichen Zeitabständen immer gleich große Strecken zurück - die Geschwindigkeit ist konstant."),
+        ("Was kennzeichnet eine gleichmäßig beschleunigte Bewegung?", new[] { "Die Geschwindigkeit ändert sich pro Zeiteinheit immer um denselben Betrag", "Die Geschwindigkeit bleibt während der gesamten Bewegung konstant", "Der Körper bewegt sich überhaupt nicht" }, "Die Geschwindigkeit ändert sich pro Zeiteinheit immer um denselben Betrag",
+            "Bei gleichmäßig beschleunigter Bewegung ändert sich die Geschwindigkeit in gleichen Zeitabständen immer um denselben Betrag - die Beschleunigung ist konstant."),
+        ("Was ist der freie Fall ein Beispiel für?", new[] { "Eine gleichmäßig beschleunigte Bewegung durch die Erdanziehungskraft", "Eine gleichförmige Bewegung mit konstanter Geschwindigkeit", "Eine Bewegung völlig ohne jede Beschleunigung" }, "Eine gleichmäßig beschleunigte Bewegung durch die Erdanziehungskraft",
+            "Beim freien Fall wirkt die Erdanziehungskraft mit annähernd konstanter Fallbeschleunigung, wodurch die Geschwindigkeit gleichmäßig zunimmt."),
+        ("Wie groß ist die Fallbeschleunigung g auf der Erde ungefähr?", new[] { "Etwa 9,81 m/s²", "Etwa 1 m/s²", "Etwa 100 m/s²" }, "Etwa 9,81 m/s²",
+            "Die Fallbeschleunigung auf der Erdoberfläche beträgt näherungsweise 9,81 m/s² und ist für alle fallenden Körper (ohne Luftwiderstand) annähernd gleich groß."),
+        ("Was passiert bei einem waagerechten Wurf mit der horizontalen und vertikalen Bewegung eines Körpers?", new[] { "Beide Bewegungen laufen unabhängig voneinander gleichzeitig ab (Überlagerung)", "Nur die horizontale Bewegung findet überhaupt statt", "Nur die vertikale Bewegung findet überhaupt statt" }, "Beide Bewegungen laufen unabhängig voneinander gleichzeitig ab (Überlagerung)",
+            "Beim waagerechten Wurf überlagern sich eine gleichförmige horizontale Bewegung und eine gleichmäßig beschleunigte vertikale Fallbewegung unabhängig voneinander."),
+        ("Was ist der Unterschied zwischen Momentangeschwindigkeit und Durchschnittsgeschwindigkeit?", new[] { "Momentangeschwindigkeit gilt für einen einzelnen Zeitpunkt, Durchschnittsgeschwindigkeit über ein ganzes Zeitintervall", "Beide Begriffe bedeuten exakt dasselbe", "Durchschnittsgeschwindigkeit gilt nur für einen einzigen Zeitpunkt" }, "Momentangeschwindigkeit gilt für einen einzelnen Zeitpunkt, Durchschnittsgeschwindigkeit über ein ganzes Zeitintervall",
+            "Die Momentangeschwindigkeit beschreibt die Geschwindigkeit in einem bestimmten Augenblick, die Durchschnittsgeschwindigkeit den zurückgelegten Weg geteilt durch die gesamte Zeit eines Abschnitts."),
+        ("Was zeigt die Steigung in einem s(t)-Diagramm (Weg-Zeit-Diagramm)?", new[] { "Die Geschwindigkeit des Körpers zu diesem Zeitpunkt", "Die Beschleunigung des Körpers", "Die zurückgelegte Gesamtstrecke unabhängig von der Zeit" }, "Die Geschwindigkeit des Körpers zu diesem Zeitpunkt",
+            "In einem Weg-Zeit-Diagramm entspricht die Steigung der Kurve an einer Stelle der momentanen Geschwindigkeit des Körpers."),
+        ("Was zeigt die Steigung in einem v(t)-Diagramm (Geschwindigkeit-Zeit-Diagramm)?", new[] { "Die Beschleunigung des Körpers zu diesem Zeitpunkt", "Die zurückgelegte Strecke direkt als Zahl", "Die Momentangeschwindigkeit selbst" }, "Die Beschleunigung des Körpers zu diesem Zeitpunkt",
+            "In einem Geschwindigkeit-Zeit-Diagramm gibt die Steigung der Kurve die Beschleunigung an - eine waagerechte Linie bedeutet konstante Geschwindigkeit (keine Beschleunigung)."),
+        ("Was zeigt die Fläche unter der Kurve in einem v(t)-Diagramm?", new[] { "Den in diesem Zeitraum zurückgelegten Weg", "Die Beschleunigung des Körpers", "Die Masse des bewegten Körpers" }, "Den in diesem Zeitraum zurückgelegten Weg",
+            "Die Fläche unter der Kurve eines Geschwindigkeit-Zeit-Diagramms entspricht dem in diesem Zeitintervall zurückgelegten Weg."),
+        ("Was ist der Reaktionsweg beim Bremsen eines Fahrzeugs?", new[] { "Die Strecke, die das Fahrzeug zurücklegt, bevor die Fahrerin oder der Fahrer überhaupt zu bremsen beginnt", "Die Strecke, die das Fahrzeug erst nach vollständigem Stillstand zurücklegt", "Ein anderes Wort für den gesamten Anhalteweg" }, "Die Strecke, die das Fahrzeug zurücklegt, bevor die Fahrerin oder der Fahrer überhaupt zu bremsen beginnt",
+            "Der Reaktionsweg ist die Strecke, die während der Reaktionszeit (Erkennen der Gefahr bis Bremsbeginn) noch mit unveränderter Geschwindigkeit zurückgelegt wird."),
+        ("Was ist der Bremsweg eines Fahrzeugs?", new[] { "Die Strecke, die das Fahrzeug ab Beginn des Bremsvorgangs bis zum Stillstand zurücklegt", "Die Strecke während der reinen Reaktionszeit", "Ein anderes Wort für die Gesamtgeschwindigkeit" }, "Die Strecke, die das Fahrzeug ab Beginn des Bremsvorgangs bis zum Stillstand zurücklegt",
+            "Der Bremsweg beginnt, sobald tatsächlich gebremst wird, und endet, wenn das Fahrzeug zum Stehen kommt."),
+        ("Wie setzt sich der Anhalteweg eines Fahrzeugs zusammen?", new[] { "Aus der Summe von Reaktionsweg und Bremsweg", "Ausschließlich aus dem Bremsweg allein", "Ausschließlich aus dem Reaktionsweg allein" }, "Aus der Summe von Reaktionsweg und Bremsweg",
+            "Der gesamte Anhalteweg ergibt sich, indem man den während der Reaktionszeit zurückgelegten Reaktionsweg zum eigentlichen Bremsweg addiert."),
+        ("Was passiert mit dem Bremsweg eines Fahrzeugs ungefähr, wenn sich die Geschwindigkeit verdoppelt (bei gleicher Bremsverzögerung)?", new[] { "Der Bremsweg vervierfacht sich näherungsweise", "Der Bremsweg verdoppelt sich exakt proportional", "Der Bremsweg bleibt komplett unverändert" }, "Der Bremsweg vervierfacht sich näherungsweise",
+            "Da der Bremsweg quadratisch von der Geschwindigkeit abhängt, führt eine Verdopplung der Geschwindigkeit näherungsweise zu einer Vervierfachung des Bremswegs."),
+        ("Warum ist die Reaktionszeit beim Autofahren ein wichtiger Sicherheitsfaktor?", new[] { "Während der Reaktionszeit legt das Fahrzeug bereits ungebremst eine Strecke zurück", "Die Reaktionszeit hat keinerlei Einfluss auf den Anhalteweg", "Während der Reaktionszeit steht das Fahrzeug bereits vollständig still" }, "Während der Reaktionszeit legt das Fahrzeug bereits ungebremst eine Strecke zurück",
+            "Bevor überhaupt gebremst wird, legt das Fahrzeug während der Reaktionszeit noch mit ursprünglicher Geschwindigkeit eine relevante Strecke zurück, die den Gesamtanhalteweg vergrößert."),
+        ("Wie lässt sich die zurückgelegte Strecke bei gleichmäßig beschleunigter Bewegung aus einem Zeit-Beschleunigungs-Zusammenhang berechnen (vereinfachtes Prinzip)?", new[] { "Über eine quadratische Beziehung zwischen zurückgelegtem Weg und vergangener Zeit", "Über eine rein lineare Beziehung wie bei der gleichförmigen Bewegung", "Weg und Zeit stehen bei beschleunigter Bewegung in keinerlei Beziehung" }, "Über eine quadratische Beziehung zwischen zurückgelegtem Weg und vergangener Zeit",
+            "Bei gleichmäßig beschleunigter Bewegung (wie beim freien Fall) wächst der zurückgelegte Weg quadratisch mit der Zeit, nicht linear wie bei der gleichförmigen Bewegung."),
+        ("Was bedeutet es, wenn ein v(t)-Diagramm eine horizontale (waagerechte) Linie zeigt?", new[] { "Der Körper bewegt sich mit konstanter Geschwindigkeit (keine Beschleunigung)", "Der Körper wird gleichmäßig immer schneller", "Der Körper befindet sich in völligem Stillstand" }, "Der Körper bewegt sich mit konstanter Geschwindigkeit (keine Beschleunigung)",
+            "Eine waagerechte Linie im Geschwindigkeit-Zeit-Diagramm zeigt an, dass sich die Geschwindigkeit nicht ändert - es liegt also keine Beschleunigung vor."),
+        ("Was bedeutet es, wenn ein v(t)-Diagramm eine Linie mit konstanter, positiver Steigung zeigt?", new[] { "Der Körper wird gleichmäßig beschleunigt (konstante Beschleunigung)", "Der Körper bewegt sich mit konstanter Geschwindigkeit", "Der Körper bewegt sich überhaupt nicht" }, "Der Körper wird gleichmäßig beschleunigt (konstante Beschleunigung)",
+            "Eine Gerade mit konstanter Steigung im v(t)-Diagramm zeigt eine gleichmäßig beschleunigte Bewegung mit konstanter Beschleunigung an."),
+        ("Warum ist der waagerechte Wurf ein gutes Beispiel für die Überlagerung zweier unabhängiger Bewegungen?", new[] { "Die gleichförmige horizontale Bewegung und die beschleunigte vertikale Fallbewegung beeinflussen sich gegenseitig nicht", "Horizontale und vertikale Bewegung sind beim waagerechten Wurf komplett identisch", "Beim waagerechten Wurf findet überhaupt keine horizontale Bewegung statt" }, "Die gleichförmige horizontale Bewegung und die beschleunigte vertikale Fallbewegung beeinflussen sich gegenseitig nicht",
+            "Horizontale (gleichförmige) und vertikale (beschleunigte) Teilbewegung eines waagerechten Wurfs verlaufen physikalisch unabhängig voneinander und lassen sich getrennt berechnen."),
+        ("Was passiert mit der Fallgeschwindigkeit eines Körpers beim freien Fall ohne Luftwiderstand mit der Zeit?", new[] { "Sie nimmt gleichmäßig, linear mit der Zeit zu", "Sie bleibt während des gesamten Falls konstant", "Sie nimmt mit der Zeit immer weiter ab" }, "Sie nimmt gleichmäßig, linear mit der Zeit zu",
+            "Beim freien Fall (ohne Luftwiderstand) nimmt die Geschwindigkeit durch die konstante Fallbeschleunigung linear mit der Zeit zu."),
+        ("Warum fallen eine Feder und ein Stein im Vakuum (ohne Luftwiderstand) gleich schnell?", new[] { "Ohne Luftwiderstand hängt die Fallbeschleunigung nicht von der Masse des Körpers ab", "Schwerere Körper fallen im Vakuum immer automatisch schneller", "Federn fallen im Vakuum grundsätzlich gar nicht" }, "Ohne Luftwiderstand hängt die Fallbeschleunigung nicht von der Masse des Körpers ab",
+            "Ohne den bremsenden Effekt des Luftwiderstands erfahren alle Körper unabhängig von ihrer Masse dieselbe Fallbeschleunigung und fallen deshalb gleich schnell.")
+    };
+
+    private static QuizQuestion Kinematik(Random r)
+    {
+        var f = KinematikListe[r.Next(KinematikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Gleichförmige und beschleunigte Bewegungen (Kinematik)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Bei gleichförmiger Bewegung bleibt die Geschwindigkeit konstant, bei gleichmäßig beschleunigter Bewegung ändert sie sich stetig; der Anhalteweg ist Reaktionsweg plus Bremsweg."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] RadioaktivitaetListe =
+    {
+        ("Was beschreibt das Kern-Hülle-Modell eines Atoms?", new[] { "Ein kleiner, positiv geladener Atomkern ist von einer Hülle aus Elektronen umgeben", "Ein Atom besteht nur aus einer einzigen, homogenen Masse", "Der Atomkern ist größer als die gesamte Elektronenhülle" }, "Ein kleiner, positiv geladener Atomkern ist von einer Hülle aus Elektronen umgeben",
+            "Im Kern-Hülle-Modell konzentriert sich fast die gesamte Masse eines Atoms im winzigen, positiv geladenen Kern, umgeben von einer vergleichsweise großen Elektronenhülle."),
+        ("Was sind Isotope eines chemischen Elements?", new[] { "Atome desselben Elements mit gleicher Protonenzahl, aber unterschiedlicher Neutronenzahl", "Atome völlig unterschiedlicher chemischer Elemente", "Ein anderes Wort für Elektronen" }, "Atome desselben Elements mit gleicher Protonenzahl, aber unterschiedlicher Neutronenzahl",
+            "Isotope eines Elements besitzen dieselbe Anzahl an Protonen (und damit dieselben chemischen Eigenschaften), unterscheiden sich aber in der Anzahl der Neutronen."),
+        ("Was ist Alphastrahlung?", new[] { "Strahlung aus Heliumkernen (2 Protonen, 2 Neutronen)", "Eine reine Form von Licht ohne jede Masse", "Strahlung, die ausschließlich aus Elektronen besteht" }, "Strahlung aus Heliumkernen (2 Protonen, 2 Neutronen)",
+            "Alphastrahlung besteht aus Alphateilchen, die aus jeweils zwei Protonen und zwei Neutronen bestehen - identisch mit einem Heliumkern."),
+        ("Was ist Betastrahlung?", new[] { "Strahlung aus schnellen Elektronen (oder Positronen), die beim radioaktiven Zerfall entstehen", "Strahlung, die ausschließlich aus Heliumkernen besteht", "Eine besonders energiereiche Form elektromagnetischer Strahlung ohne Masse" }, "Strahlung aus schnellen Elektronen (oder Positronen), die beim radioaktiven Zerfall entstehen",
+            "Betastrahlung besteht aus schnellen Elektronen (Beta-Minus-Zerfall) oder Positronen (Beta-Plus-Zerfall), die beim radioaktiven Zerfall aus dem Atomkern ausgesendet werden."),
+        ("Was ist Gammastrahlung?", new[] { "Energiereiche elektromagnetische Strahlung ohne Masse und Ladung", "Strahlung, die ausschließlich aus geladenen Heliumkernen besteht", "Eine Form von Strahlung, die nur aus Elektronen besteht" }, "Energiereiche elektromagnetische Strahlung ohne Masse und Ladung",
+            "Gammastrahlung ist elektromagnetische Strahlung sehr hoher Energie, besitzt im Gegensatz zu Alpha- und Betastrahlung keine Masse und keine elektrische Ladung."),
+        ("Welche der drei Strahlungsarten (Alpha, Beta, Gamma) hat das größte Durchdringungsvermögen?", new[] { "Gammastrahlung", "Alphastrahlung", "Betastrahlung" }, "Gammastrahlung",
+            "Gammastrahlung durchdringt Materie am stärksten und benötigt z.B. dicke Blei- oder Betonschichten zur Abschirmung, während Alphastrahlung schon von Papier gestoppt wird."),
+        ("Was versteht man unter dem Ionisierungsvermögen radioaktiver Strahlung?", new[] { "Die Fähigkeit der Strahlung, Atome oder Moleküle zu ionisieren, also Elektronen aus ihnen herauszuschlagen", "Die Fähigkeit der Strahlung, Materie ausschließlich zu erwärmen", "Ein Maß für die Farbe der Strahlung" }, "Die Fähigkeit der Strahlung, Atome oder Moleküle zu ionisieren, also Elektronen aus ihnen herauszuschlagen",
+            "Ionisierende Strahlung kann Elektronen aus Atomen oder Molekülen herausschlagen, was z.B. biologisches Gewebe schädigen kann."),
+        ("Was ist die Halbwertszeit eines radioaktiven Isotops?", new[] { "Die Zeit, in der die Hälfte der ursprünglich vorhandenen radioaktiven Atomkerne zerfallen ist", "Die Zeit, in der alle radioaktiven Atomkerne vollständig zerfallen sind", "Ein anderes Wort für die Reaktionszeit einer chemischen Reaktion" }, "Die Zeit, in der die Hälfte der ursprünglich vorhandenen radioaktiven Atomkerne zerfallen ist",
+            "Nach einer Halbwertszeit ist statistisch gesehen die Hälfte der ursprünglich vorhandenen radioaktiven Atomkerne einer Probe zerfallen."),
+        ("Was passiert mit der Aktivität einer radioaktiven Probe nach jeweils einer weiteren Halbwertszeit?", new[] { "Sie halbiert sich erneut gegenüber dem vorherigen Wert", "Sie verdoppelt sich jedes Mal", "Sie bleibt exakt konstant" }, "Sie halbiert sich erneut gegenüber dem vorherigen Wert",
+            "Nach jeder weiteren Halbwertszeit sinkt die Aktivität einer radioaktiven Probe erneut auf die Hälfte ihres vorherigen Werts (exponentieller Zerfall)."),
+        ("Was passiert bei einer Kernspaltung?", new[] { "Ein schwerer Atomkern wird in zwei oder mehr leichtere Kerne gespalten, wobei Energie freigesetzt wird", "Zwei leichte Atomkerne verschmelzen zu einem schweren Kern", "Es passiert überhaupt keine Veränderung am Atomkern" }, "Ein schwerer Atomkern wird in zwei oder mehr leichtere Kerne gespalten, wobei Energie freigesetzt wird",
+            "Bei der Kernspaltung, wie sie z.B. in Kernkraftwerken genutzt wird, wird ein schwerer Atomkern (z.B. Uran) in leichtere Kerne gespalten und dabei Energie frei."),
+        ("Was passiert bei einer Kernfusion?", new[] { "Zwei leichte Atomkerne verschmelzen zu einem schwereren Kern, wobei Energie freigesetzt wird", "Ein schwerer Atomkern wird in leichtere Kerne gespalten", "Es findet keinerlei Veränderung am Atomkern statt" }, "Zwei leichte Atomkerne verschmelzen zu einem schwereren Kern, wobei Energie freigesetzt wird",
+            "Bei der Kernfusion, wie sie z.B. in der Sonne abläuft, verschmelzen leichte Atomkerne (z.B. Wasserstoff) zu schwereren Kernen und setzen dabei enorme Energie frei."),
+        ("Welche Schutzmaßnahmen werden typischerweise gegen radioaktive Strahlung eingesetzt?", new[] { "Abstand halten, Abschirmung (z.B. Blei) und möglichst kurze Aufenthaltsdauer", "Es gibt grundsätzlich keine wirksamen Schutzmaßnahmen", "Radioaktive Strahlung erfordert überhaupt keine besonderen Vorsichtsmaßnahmen" }, "Abstand halten, Abschirmung (z.B. Blei) und möglichst kurze Aufenthaltsdauer",
+            "Die drei wichtigsten Schutzprinzipien gegen ionisierende Strahlung sind ausreichend Abstand, geeignete Abschirmung und eine möglichst kurze Expositionszeit."),
+        ("Warum ist die Endlagerung von radioaktivem Abfall gesellschaftlich ein umstrittenes Thema?", new[] { "Manche radioaktiven Stoffe bleiben über sehr lange Zeiträume gefährlich, was hohe Anforderungen an die Sicherheit der Lagerung stellt", "Radioaktiver Abfall verliert seine Gefährlichkeit bereits nach wenigen Minuten", "Endlagerung hat mit gesellschaftlichen Fragen überhaupt nichts zu tun" }, "Manche radioaktiven Stoffe bleiben über sehr lange Zeiträume gefährlich, was hohe Anforderungen an die Sicherheit der Lagerung stellt",
+            "Da manche radioaktiven Isotope extrem lange Halbwertszeiten haben, muss ihre Lagerung über sehr lange Zeiträume sicher vor Umwelteinflüssen und menschlichem Zugriff geschützt sein."),
+        ("Was ist ein Beispiel für eine biologische Wirkung ionisierender Strahlung auf Organismen?", new[] { "Schädigung von Zellen und der DNA, was Krebs auslösen kann", "Ionisierende Strahlung hat auf lebende Organismen überhaupt keine Wirkung", "Ionisierende Strahlung stärkt ausschließlich das Immunsystem" }, "Schädigung von Zellen und der DNA, was Krebs auslösen kann",
+            "Ionisierende Strahlung kann Zellstrukturen und die DNA schädigen, was in höheren Dosen das Risiko für Krebserkrankungen erhöhen kann."),
+        ("Was zeigt eine vollständige Zerfallsgleichung für einen radioaktiven Zerfall?", new[] { "Das Ausgangsisotop, die Art der Strahlung sowie das entstehende Tochterisotop", "Ausschließlich die Farbe der Strahlung", "Nur die Halbwertszeit ohne jede weitere Information" }, "Das Ausgangsisotop, die Art der Strahlung sowie das entstehende Tochterisotop",
+            "Eine vollständige Zerfallsgleichung zeigt das Mutterisotop, die abgegebene Strahlungsart (z.B. Alpha- oder Betateilchen) und das dabei entstehende Tochterisotop."),
+        ("Was passiert mit der Massenzahl eines Atomkerns bei einem Alphazerfall?", new[] { "Sie verringert sich um 4", "Sie bleibt exakt unverändert", "Sie erhöht sich um 4" }, "Sie verringert sich um 4",
+            "Da beim Alphazerfall ein Heliumkern (2 Protonen, 2 Neutronen, Massenzahl 4) abgegeben wird, sinkt die Massenzahl des verbleibenden Kerns um 4."),
+        ("Was passiert mit der Ordnungszahl (Protonenzahl) eines Atomkerns bei einem Betazerfall (Beta-Minus)?", new[] { "Sie erhöht sich um 1, da sich ein Neutron in ein Proton umwandelt", "Sie verringert sich um 1", "Sie bleibt exakt unverändert" }, "Sie erhöht sich um 1, da sich ein Neutron in ein Proton umwandelt",
+            "Beim Beta-Minus-Zerfall wandelt sich im Kern ein Neutron in ein Proton um, wodurch sich die Ordnungszahl (Protonenzahl) um eins erhöht und ein Elektron ausgesandt wird."),
+        ("Warum wird bei Röntgenaufnahmen im medizinischen Bereich versucht, die Strahlendosis so gering wie möglich zu halten?", new[] { "Um das Risiko schädlicher Wirkungen der ionisierenden Strahlung auf den Körper zu minimieren", "Weil Röntgenstrahlung völlig ungefährlich ist und keinerlei Vorsicht erfordert", "Weil eine geringe Dosis automatisch bessere Bildqualität liefert" }, "Um das Risiko schädlicher Wirkungen der ionisierenden Strahlung auf den Körper zu minimieren",
+            "Da Röntgenstrahlung ionisierend wirkt und Gewebe schädigen kann, wird im medizinischen Alltag versucht, die Strahlendosis nach dem Prinzip \"so wenig wie möglich, so viel wie nötig\" zu minimieren."),
+        ("Was nutzt ein Kernkraftwerk zur Stromerzeugung grundlegend?", new[] { "Die bei der Kernspaltung freigesetzte Energie erzeugt Wärme, die letztlich Turbinen antreibt", "Es nutzt ausschließlich die direkte Umwandlung von Licht in Strom", "Kernkraftwerke erzeugen Strom ohne jede Wärmeentwicklung" }, "Die bei der Kernspaltung freigesetzte Energie erzeugt Wärme, die letztlich Turbinen antreibt",
+            "Die Energie aus der Kernspaltung erhitzt Wasser zu Dampf, der wie in anderen Kraftwerken Turbinen und damit Generatoren zur Stromerzeugung antreibt."),
+        ("Warum wird bei der Kernfusion in der Sonne so enorm viel Energie freigesetzt?", new[] { "Ein winziger Teil der verschmelzenden Kernmasse wird gemäß E=mc² in sehr große Energiemengen umgewandelt", "Bei der Fusion wird überhaupt keine Energie freigesetzt", "Die Sonne nutzt zur Energiegewinnung ausschließlich chemische Verbrennung" }, "Ein winziger Teil der verschmelzenden Kernmasse wird gemäß E=mc² in sehr große Energiemengen umgewandelt",
+            "Bei der Kernfusion in der Sonne wird ein kleiner Massendefekt in gewaltige Energiemengen umgewandelt, was nach Einsteins Formel E=mc² auch kleinste Massen in große Energiebeträge übersetzt.")
+    };
+
+    private static QuizQuestion RadioaktivitaetUndKernphysik(Random r)
+    {
+        var f = RadioaktivitaetListe[r.Next(RadioaktivitaetListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Radioaktivität und Kernphysik", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Alpha-, Beta- und Gammastrahlung unterscheiden sich in Zusammensetzung und Durchdringungsvermögen; nach jeder Halbwertszeit halbiert sich die Aktivität einer radioaktiven Probe."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SchwingungenWellenOptikListe =
+    {
+        ("Was ist die Amplitude einer harmonischen Schwingung?", new[] { "Die maximale Auslenkung aus der Ruhelage", "Die Zeit für eine vollständige Schwingung", "Die Anzahl der Schwingungen pro Sekunde" }, "Die maximale Auslenkung aus der Ruhelage",
+            "Die Amplitude gibt an, wie weit sich ein schwingendes System maximal von seiner Ruhelage entfernt."),
+        ("Was ist die Frequenz einer Schwingung?", new[] { "Die Anzahl der Schwingungen pro Sekunde", "Die maximale Auslenkung aus der Ruhelage", "Die gesamte zurückgelegte Strecke eines Pendels" }, "Die Anzahl der Schwingungen pro Sekunde",
+            "Die Frequenz (in Hertz) gibt an, wie viele vollständige Schwingungen pro Sekunde stattfinden."),
+        ("Was ist die Periodendauer einer Schwingung?", new[] { "Die Zeit für eine vollständige Schwingung", "Die maximale Geschwindigkeit während der Schwingung", "Ein anderes Wort für die Amplitude" }, "Die Zeit für eine vollständige Schwingung",
+            "Die Periodendauer ist die Zeit, die ein schwingendes System für eine vollständige Schwingung (Hin- und Rückweg) benötigt."),
+        ("Wie hängen Frequenz und Periodendauer einer Schwingung zusammen?", new[] { "Sie sind zueinander reziprok: Frequenz = 1 / Periodendauer", "Sie sind immer exakt gleich groß", "Sie stehen in keinerlei mathematischem Zusammenhang" }, "Sie sind zueinander reziprok: Frequenz = 1 / Periodendauer",
+            "Frequenz und Periodendauer sind Kehrwerte voneinander: Je kürzer die Periodendauer, desto höher die Frequenz."),
+        ("Was ist Resonanz bei einem schwingungsfähigen System?", new[] { "Eine besonders starke Schwingungsantwort, wenn die Anregungsfrequenz der Eigenfrequenz des Systems entspricht", "Ein Zustand, in dem ein System überhaupt nicht mehr schwingt", "Ein anderes Wort für die Amplitude einer Schwingung" }, "Eine besonders starke Schwingungsantwort, wenn die Anregungsfrequenz der Eigenfrequenz des Systems entspricht",
+            "Resonanz tritt auf, wenn ein System mit einer Frequenz angeregt wird, die seiner Eigenfrequenz entspricht - die Schwingungsamplitude kann dabei stark ansteigen."),
+        ("Was ist Interferenz bei mechanischen Wellen?", new[] { "Die Überlagerung zweier oder mehrerer Wellen, die sich verstärken oder abschwächen können", "Ein anderes Wort für die Reflexion einer Welle", "Ein Vorgang, bei dem Wellen völlig verschwinden" }, "Die Überlagerung zweier oder mehrerer Wellen, die sich verstärken oder abschwächen können",
+            "Bei der Interferenz überlagern sich Wellen, wodurch sich ihre Amplituden je nach Phasenlage verstärken (konstruktive Interferenz) oder abschwächen (destruktive Interferenz) können."),
+        ("Was ist Beugung bei Wellen?", new[] { "Die Ablenkung einer Welle beim Passieren eines Hindernisses oder einer engen Öffnung", "Ein anderes Wort für die Amplitude einer Welle", "Ein Vorgang, der ausschließlich bei Lichtwellen auftritt" }, "Die Ablenkung einer Welle beim Passieren eines Hindernisses oder einer engen Öffnung",
+            "Beugung beschreibt, wie sich Wellen beim Durchqueren von Öffnungen oder um Hindernisse herum ausbreiten und dabei von der geradlinigen Ausbreitung abweichen."),
+        ("Was passiert bei der Reflexion einer Welle an einer Grenzfläche?", new[] { "Die Welle wird zumindest teilweise zurückgeworfen", "Die Welle wird vollständig absorbiert und verschwindet", "Die Welle ändert dabei niemals ihre Richtung" }, "Die Welle wird zumindest teilweise zurückgeworfen",
+            "Trifft eine Welle auf eine Grenzfläche zwischen zwei Medien, wird zumindest ein Teil der Welle reflektiert (zurückgeworfen)."),
+        ("Wie groß ist die Lichtgeschwindigkeit im Vakuum ungefähr?", new[] { "Etwa 300.000 km/s", "Etwa 300 km/s", "Etwa 3.000.000 km/s" }, "Etwa 300.000 km/s",
+            "Die Lichtgeschwindigkeit im Vakuum beträgt etwa 300.000 Kilometer pro Sekunde (genauer: 299.792 km/s) und gilt als Naturkonstante."),
+        ("Was besagt das Reflexionsgesetz beim Auftreffen von Licht auf einen Spiegel?", new[] { "Einfallswinkel und Ausfallswinkel sind zueinander gleich groß", "Der Ausfallswinkel ist immer doppelt so groß wie der Einfallswinkel", "Licht wird an einem Spiegel niemals reflektiert" }, "Einfallswinkel und Ausfallswinkel sind zueinander gleich groß",
+            "Nach dem Reflexionsgesetz gilt: Der Einfallswinkel ist stets gleich dem Ausfallswinkel, jeweils gemessen zum Lot der spiegelnden Fläche."),
+        ("Was beschreibt das Brechungsgesetz beim Übergang von Licht zwischen zwei unterschiedlich dichten Medien?", new[] { "Licht ändert beim Übergang zwischen unterschiedlichen Medien seine Ausbreitungsrichtung", "Licht behält beim Mediumwechsel immer exakt seine ursprüngliche Richtung bei", "Licht kann niemals von einem Medium in ein anderes übertreten" }, "Licht ändert beim Übergang zwischen unterschiedlichen Medien seine Ausbreitungsrichtung",
+            "Beim Übergang von einem optisch dünneren in ein optisch dichteres Medium (oder umgekehrt) wird Licht gebrochen, das heißt, es ändert an der Grenzfläche seine Ausbreitungsrichtung."),
+        ("Was ist Totalreflexion?", new[] { "Ein Effekt, bei dem Licht an einer Grenzfläche vollständig reflektiert wird, statt ins andere Medium überzutreten", "Ein Effekt, bei dem Licht ausschließlich gebrochen, aber niemals reflektiert wird", "Ein anderes Wort für die normale, teilweise Reflexion von Licht" }, "Ein Effekt, bei dem Licht an einer Grenzfläche vollständig reflektiert wird, statt ins andere Medium überzutreten",
+            "Trifft Licht beim Übergang vom optisch dichteren ins dünnere Medium in einem ausreichend flachen Winkel auf die Grenzfläche, wird es vollständig reflektiert (Totalreflexion) - ein Prinzip, das z.B. in Glasfaserkabeln genutzt wird."),
+        ("Was beschreibt die Linsengleichung bei einer Sammellinse?", new[] { "Den mathematischen Zusammenhang zwischen Gegenstandsweite, Bildweite und Brennweite", "Ausschließlich die Farbe des entstehenden Bildes", "Den Zusammenhang zwischen der Masse und dem Gewicht einer Linse" }, "Den mathematischen Zusammenhang zwischen Gegenstandsweite, Bildweite und Brennweite",
+            "Die Linsengleichung verknüpft Gegenstandsweite, Bildweite und Brennweite einer Linse und ermöglicht die Berechnung, wo ein scharfes Bild entsteht."),
+        ("Wie entsteht ein scharfes, reelles Bild bei einer Sammellinse, z.B. in einem Fotoapparat?", new[] { "Lichtstrahlen eines Gegenstands werden von der Linse gebündelt und treffen sich in der Bildebene", "Lichtstrahlen werden von der Linse vollständig absorbiert", "Ein scharfes Bild entsteht unabhängig von der Position der Linse immer automatisch" }, "Lichtstrahlen eines Gegenstands werden von der Linse gebündelt und treffen sich in der Bildebene",
+            "Eine Sammellinse bündelt die von einem Objektpunkt ausgehenden Lichtstrahlen so, dass sie sich in der Bildebene wieder treffen und dort ein scharfes, reelles Bild erzeugen."),
+        ("Wie funktioniert die Bildentstehung im menschlichen Auge grundlegend?", new[] { "Die Augenlinse bündelt einfallendes Licht und erzeugt auf der Netzhaut ein scharfes Bild", "Das Auge benötigt für die Bildentstehung überhaupt keine Linse", "Bilder entstehen im Auge ausschließlich durch Reflexion, nie durch Brechung" }, "Die Augenlinse bündelt einfallendes Licht und erzeugt auf der Netzhaut ein scharfes Bild",
+            "Ähnlich wie bei einer Kamera bündelt die Augenlinse einfallendes Licht, sodass auf der lichtempfindlichen Netzhaut ein scharfes, aber auf dem Kopf stehendes Bild entsteht, das das Gehirn später korrigiert wahrnimmt."),
+        ("Was zeigt das Farbspektrum, wenn weißes Licht durch ein Prisma fällt?", new[] { "Weißes Licht setzt sich aus verschiedenen Farben (Wellenlängen) zusammen, die unterschiedlich stark gebrochen werden", "Weißes Licht besteht aus nur einer einzigen, festen Wellenlänge", "Ein Prisma verändert die Farbe des Lichts überhaupt nicht" }, "Weißes Licht setzt sich aus verschiedenen Farben (Wellenlängen) zusammen, die unterschiedlich stark gebrochen werden",
+            "Da unterschiedliche Wellenlängen (Farben) beim Durchgang durch ein Prisma unterschiedlich stark gebrochen werden, spaltet sich weißes Licht in sein Farbspektrum auf."),
+        ("Wie berechnet man näherungsweise die Periodendauer eines Fadenpendels bei kleinen Auslenkungen?", new[] { "Sie hängt von der Pendellänge und der Fallbeschleunigung ab, nicht aber von der Pendelmasse", "Sie hängt ausschließlich von der Masse des Pendelkörpers ab", "Sie ist bei jedem Fadenpendel exakt identisch, unabhängig von dessen Länge" }, "Sie hängt von der Pendellänge und der Fallbeschleunigung ab, nicht aber von der Pendelmasse",
+            "Die Periodendauer eines Fadenpendels bei kleinen Auslenkungen hängt von der Pendellänge und der Fallbeschleunigung ab, ist aber näherungsweise unabhängig von der Masse des Pendelkörpers."),
+        ("Was passiert mit der Periodendauer eines Fadenpendels, wenn man die Pendellänge deutlich vergrößert?", new[] { "Die Periodendauer wird länger", "Die Periodendauer wird automatisch kürzer", "Die Periodendauer bleibt exakt unverändert" }, "Die Periodendauer wird länger",
+            "Ein längeres Pendel schwingt langsamer, das heißt, seine Periodendauer nimmt mit zunehmender Pendellänge zu."),
+        ("Was ist ein Federschwinger und wovon hängt seine Periodendauer hauptsächlich ab?", new[] { "Eine an einer Feder schwingende Masse, deren Periodendauer von Federhärte und Masse abhängt", "Ein System, das ausschließlich von der Farbe der Feder abhängt", "Ein Federschwinger hat immer exakt dieselbe Periodendauer wie ein Fadenpendel gleicher Länge" }, "Eine an einer Feder schwingende Masse, deren Periodendauer von Federhärte und Masse abhängt",
+            "Bei einem Federschwinger bestimmen die Federkonstante (Härte der Feder) und die schwingende Masse gemeinsam die Periodendauer der Schwingung."),
+        ("Warum kann Resonanz bei Brücken oder Bauwerken technisch gefährlich werden?", new[] { "Wird ein Bauwerk genau mit seiner Eigenfrequenz angeregt, können sich Schwingungen gefährlich stark aufschaukeln", "Resonanz hat auf Bauwerke grundsätzlich überhaupt keine Auswirkung", "Bauwerke besitzen grundsätzlich keine Eigenfrequenz" }, "Wird ein Bauwerk genau mit seiner Eigenfrequenz angeregt, können sich Schwingungen gefährlich stark aufschaukeln",
+            "Trifft eine äußere Anregung (z.B. Wind oder gleichmäßige Schritte) genau die Eigenfrequenz eines Bauwerks, kann sich die Schwingungsamplitude durch Resonanz gefährlich aufschaukeln - deshalb werden Brücken entsprechend konstruiert.")
+    };
+
+    private static QuizQuestion SchwingungenWellenOptik(Random r)
+    {
+        var f = SchwingungenWellenOptikListe[r.Next(SchwingungenWellenOptikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Schwingungen, Wellen und optische Geräte", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Amplitude ist die maximale Auslenkung, Frequenz und Periodendauer sind zueinander reziprok; beim Licht gilt Einfallswinkel = Ausfallswinkel (Reflexion) und die Linsengleichung für Sammellinsen."
         };
     }
 }
