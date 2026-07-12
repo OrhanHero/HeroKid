@@ -80,7 +80,11 @@ public class GermanTurkishScienceGeneratorTests
         var freshPrompt = allPrompts[0];
         var recentlySeen = allPrompts.Skip(1).ToHashSet();
 
-        var result = generator.Generate(GradeLevel.Klasse6, 3, new Random(2), recentlySeen);
+        // Die Rückzugsversuche in ExerciseGeneratorBase.Generate skalieren mit der angeforderten
+        // Fragenzahl (count * 20 Versuche) - bei größeren Themen-Pools (inzwischen 20 Beispiele je
+        // Thema) braucht es also eine entsprechend hohe angeforderte Zahl, damit der eine übrige
+        // frische Prompt unter fast lauter bereits gesehenen Prompts zuverlässig gezogen wird.
+        var result = generator.Generate(GradeLevel.Klasse6, allPrompts.Count, new Random(2), recentlySeen);
 
         Assert.Contains(freshPrompt, result.Select(q => q.Prompt));
     }
