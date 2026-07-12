@@ -12,9 +12,9 @@ ergänzt werden können.
 die Zahl der möglichen Aufgaben pro Thema praktisch unbegrenzt). Der Zielwert für diese Listen ist
 **5 Beispiele pro Thema**: Bei zu kleinen Pools (vorher oft nur 2-4 Beispiele) griff die
 Wiederholungs-Vermeidung in `ExerciseGeneratorBase.Generate` schnell ins Leere, und dasselbe Kind
-sah dieselben Fragen bereits nach 1-2 Tagen wieder. Eine Erweiterungsrunde hat Deutsch, Englisch,
-Türkisch, ITG, Politik und Physik bereits auf diesen Zielwert gebracht; die übrigen Fächer
-(Biologie, Chemie, Geografie, Gewi, Ethik) folgen in weiteren Runden.
+sah dieselben Fragen bereits nach 1-2 Tagen wieder. Alle 11 Fächer mit fester Beispiel-Liste
+(Deutsch, Englisch, Türkisch, ITG, Politik, Physik, Biologie, Chemie, Geografie, Gewi, Ethik) sind
+inzwischen auf diesen Zielwert gebracht.
 
 ## Mathematik (`MathGenerator.cs`)
 
