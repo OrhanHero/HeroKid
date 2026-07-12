@@ -10,6 +10,7 @@ public enum Subject
     Biologie,
     Chemie,
     Physik,
+    Geschichte,
     Gewi,
     Politik,
     Geo,

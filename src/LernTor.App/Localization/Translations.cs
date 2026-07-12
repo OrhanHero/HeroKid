@@ -55,6 +55,7 @@ public static class Translations
             ["Stage_Biologie"] = L("Biologie", "Biyoloji"),
             ["Stage_Chemie"] = L("Chemie", "Kimya"),
             ["Stage_Physik"] = L("Physik", "Fizik"),
+            ["Stage_Geschichte"] = L("Geschichte", "Tarih"),
             ["Stage_Gewi"] = L("Gesellschaftswissenschaften", "Sosyal Bilgiler"),
             ["Stage_Politik"] = L("Politik", "Siyaset Bilgisi"),
             ["Stage_Geo"] = L("Geografie", "Coğrafya"),

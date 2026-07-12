@@ -20,6 +20,7 @@ public static class LearningStageSubjects
         [LearningStage.Biologie] = Subject.Biologie,
         [LearningStage.Chemie] = Subject.Chemie,
         [LearningStage.Physik] = Subject.Physik,
+        [LearningStage.Geschichte] = Subject.Geschichte,
         [LearningStage.Gewi] = Subject.Gewi,
         [LearningStage.Politik] = Subject.Politik,
         [LearningStage.Geo] = Subject.Geo,

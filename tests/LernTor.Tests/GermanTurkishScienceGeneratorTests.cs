@@ -15,6 +15,7 @@ public class GermanTurkishScienceGeneratorTests
         yield return new object[] { new BiologieGenerator() };
         yield return new object[] { new ChemieGenerator() };
         yield return new object[] { new PhysikGenerator() };
+        yield return new object[] { new GeschichteGenerator() };
         yield return new object[] { new GewiGenerator() };
         yield return new object[] { new PolitikGenerator() };
         yield return new object[] { new GeoGenerator() };

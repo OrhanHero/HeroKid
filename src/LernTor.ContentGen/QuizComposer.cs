@@ -20,7 +20,7 @@ public sealed class QuizComposer
         : this(new IExerciseGenerator[]
         {
             new MathGenerator(), new GermanGenerator(), new TurkishGenerator(), new EnglischGenerator(),
-            new BiologieGenerator(), new ChemieGenerator(), new PhysikGenerator(),
+            new BiologieGenerator(), new ChemieGenerator(), new PhysikGenerator(), new GeschichteGenerator(),
             new GewiGenerator(), new PolitikGenerator(), new GeoGenerator(), new EthikGenerator(), new ItgGenerator()
         })
     {

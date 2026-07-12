@@ -21,6 +21,7 @@ public sealed class ProgressGateService
         LearningStage.Biologie,
         LearningStage.Chemie,
         LearningStage.Physik,
+        LearningStage.Geschichte,
         LearningStage.Gewi,
         LearningStage.Politik,
         LearningStage.Geo,

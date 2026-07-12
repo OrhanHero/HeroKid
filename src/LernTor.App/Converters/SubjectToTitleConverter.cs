@@ -18,6 +18,7 @@ public sealed class SubjectToTitleConverter : IValueConverter
             Subject.Biologie => "Stage_Biologie",
             Subject.Chemie => "Stage_Chemie",
             Subject.Physik => "Stage_Physik",
+            Subject.Geschichte => "Stage_Geschichte",
             Subject.Gewi => "Stage_Gewi",
             Subject.Politik => "Stage_Politik",
             Subject.Geo => "Stage_Geo",

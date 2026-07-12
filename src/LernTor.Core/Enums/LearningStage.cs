@@ -18,6 +18,7 @@ public enum LearningStage
     Biologie,
     Chemie,
     Physik,
+    Geschichte,
     Gewi,
     Politik,
     Geo,
