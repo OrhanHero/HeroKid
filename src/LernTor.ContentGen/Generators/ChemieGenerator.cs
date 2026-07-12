@@ -11,7 +11,7 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften, StoffeImAlltag },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Atommodell, ChemischeReaktion, Periodensystem }
         };
 
@@ -239,6 +239,62 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
             Topic = "Metalle und ihre Eigenschaften", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Typische Metalleigenschaften: leiten Strom/Wärme gut, glänzen, sind verformbar (Duktilität) - manche rosten (korrodieren) bei Feuchtigkeit."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StoffeAlltagListe =
+    {
+        ("Zu welcher Stoffgruppe gehört Kohle?", new[] { "Brennstoffe", "Nährstoffe", "Metalle" }, "Brennstoffe",
+            "Kohle wird verbrannt, um Energie zu gewinnen, und zählt daher zu den Brennstoffen."),
+        ("Zu welcher Stoffgruppe gehören Kohlenhydrate, Fette und Eiweiße?", new[] { "Nährstoffe", "Brennstoffe", "Gefahrstoffe" }, "Nährstoffe",
+            "Kohlenhydrate, Fette und Eiweiße liefern dem Körper Energie und Baustoffe - sie sind Nährstoffe."),
+        ("Zu welcher Stoffgruppe gehören Eisen und Aluminium?", new[] { "Metalle", "Kunststoffe", "Brennstoffe" }, "Metalle",
+            "Eisen und Aluminium sind typische Metalle."),
+        ("Zu welcher Stoffgruppe gehört PET (z.B. bei Plastikflaschen)?", new[] { "Kunststoffe", "Metalle", "Nährstoffe" }, "Kunststoffe",
+            "PET ist ein Kunststoff, aus dem u.a. Plastikflaschen hergestellt werden."),
+        ("Was ist ein Gefahrstoff?", new[] { "Ein Stoff, der z.B. giftig, ätzend oder leicht entzündlich ist", "Ein Stoff, der immer ungefährlich ist", "Ein Stoff, der nur in der Küche vorkommt" }, "Ein Stoff, der z.B. giftig, ätzend oder leicht entzündlich ist",
+            "Gefahrstoffe können z.B. giftig, ätzend oder leicht entzündlich sein und werden entsprechend gekennzeichnet."),
+        ("Was bedeutet \"Brennbarkeit\" als Stoffeigenschaft?", new[] { "Wie leicht sich ein Stoff entzünden lässt", "Wie schwer ein Stoff ist", "Wie ein Stoff schmeckt" }, "Wie leicht sich ein Stoff entzünden lässt",
+            "Die Brennbarkeit beschreibt, wie leicht ein Stoff Feuer fängt."),
+        ("Was versteht man unter der \"Schmelztemperatur\" eines Stoffes?", new[] { "Die Temperatur, bei der ein fester Stoff flüssig wird", "Die Temperatur, bei der ein Stoff gefriert", "Die normale Raumtemperatur" }, "Die Temperatur, bei der ein fester Stoff flüssig wird",
+            "Bei der Schmelztemperatur geht ein Stoff vom festen in den flüssigen Zustand über."),
+        ("Woran erkennt man, ob ein Metall magnetisch ist?", new[] { "Es wird von einem Magneten angezogen", "Es leitet keinen Strom", "Es ist immer aus Kunststoff" }, "Es wird von einem Magneten angezogen",
+            "Magnetische Metalle wie Eisen werden von einem Magneten angezogen."),
+        ("Was bedeutet \"Löslichkeit\" eines Stoffes?", new[] { "Ob und wie gut sich ein Stoff in einer Flüssigkeit (z.B. Wasser) auflöst", "Wie schwer ein Stoff ist", "Wie ein Stoff riecht" }, "Ob und wie gut sich ein Stoff in einer Flüssigkeit (z.B. Wasser) auflöst",
+            "Löslichkeit beschreibt, wie gut sich ein Stoff in einer Flüssigkeit auflöst."),
+        ("Welches Metall wird von einem normalen Magneten angezogen?", new[] { "Eisen", "Aluminium", "Gold" }, "Eisen",
+            "Eisen ist magnetisch und wird von einem normalen Magneten angezogen, Aluminium und Gold nicht."),
+        ("Ist Zucker in Wasser gut löslich?", new[] { "Ja, Zucker löst sich gut in Wasser", "Nein, Zucker löst sich nie in Wasser", "Zucker verändert die Farbe von Wasser, löst sich aber nicht" }, "Ja, Zucker löst sich gut in Wasser",
+            "Zucker löst sich gut in Wasser auf und ist danach im Wasser verteilt."),
+        ("Ist Sand in Wasser löslich?", new[] { "Nein, Sand löst sich nicht in Wasser", "Ja, Sand löst sich vollständig in Wasser", "Sand verdampft in Wasser" }, "Nein, Sand löst sich nicht in Wasser",
+            "Sand ist unlöslich in Wasser und kann z.B. durch Filtration abgetrennt werden."),
+        ("Warum werden brennbare Stoffe wie Benzin als Gefahrstoffe gekennzeichnet?", new[] { "Weil sie leicht Feuer fangen und gefährlich sein können", "Weil sie besonders schwer sind", "Weil sie niemals brennen" }, "Weil sie leicht Feuer fangen und gefährlich sein können",
+            "Leicht entzündliche Stoffe wie Benzin werden als Gefahrstoffe gekennzeichnet, um vor Unfällen zu warnen."),
+        ("Was ist ein typisches Beispiel für einen Kunststoff im Alltag?", new[] { "Eine Plastiktüte", "Ein Goldring", "Ein Holzbrett" }, "Eine Plastiktüte",
+            "Plastiktüten bestehen aus Kunststoff, einem künstlich hergestellten Material."),
+        ("Warum sind Metalle wie Kupfer für elektrische Leitungen gut geeignet?", new[] { "Sie leiten elektrischen Strom gut", "Sie leiten keinen Strom", "Sie schmelzen bei Zimmertemperatur" }, "Sie leiten elektrischen Strom gut",
+            "Kupfer leitet elektrischen Strom sehr gut und wird deshalb häufig für Kabel verwendet."),
+        ("Was passiert mit Eis, wenn die Temperatur über 0°C steigt?", new[] { "Es schmilzt zu Wasser", "Es wird härter", "Es verdampft sofort" }, "Es schmilzt zu Wasser",
+            "Bei Temperaturen über 0°C schmilzt Eis und wird zu flüssigem Wasser."),
+        ("Welche Stoffeigenschaft prüft man, wenn man Öl und Wasser mischt?", new[] { "Ob sich die Stoffe miteinander mischen (Löslichkeit)", "Die Brennbarkeit", "Den Magnetismus" }, "Ob sich die Stoffe miteinander mischen (Löslichkeit)",
+            "Öl und Wasser mischen sich nicht - das zeigt, dass Öl in Wasser unlöslich ist."),
+        ("Warum sollten Gefahrstoffe im Haushalt gekennzeichnet und sicher aufbewahrt werden?", new[] { "Um Unfälle und Vergiftungen zu vermeiden", "Weil es keinen Grund dafür gibt", "Nur aus optischen Gründen" }, "Um Unfälle und Vergiftungen zu vermeiden",
+            "Kennzeichnung und sichere Aufbewahrung von Gefahrstoffen schützen vor Unfällen und Vergiftungen."),
+        ("Was ist ein Beispiel für einen Nährstoff, den unser Körper braucht?", new[] { "Eiweiß (Protein)", "Plastik", "Metall" }, "Eiweiß (Protein)",
+            "Eiweiß (Protein) ist ein wichtiger Nährstoff, den unser Körper zum Aufbau von Zellen benötigt."),
+        ("Warum ist es wichtig, Stoffe nach ihren Eigenschaften zu ordnen (z.B. Brennstoffe, Metalle, Kunststoffe)?", new[] { "Um sie sicher und sinnvoll im Alltag zu nutzen und zu entsorgen", "Das ist völlig unwichtig", "Nur um sie schöner aussehen zu lassen" }, "Um sie sicher und sinnvoll im Alltag zu nutzen und zu entsorgen",
+            "Die Einteilung nach Eigenschaften hilft, Stoffe sicher zu nutzen, zu lagern und richtig zu entsorgen (z.B. Recycling).")
+    };
+
+    private static QuizQuestion StoffeImAlltag(Random r)
+    {
+        var f = StoffeAlltagListe[r.Next(StoffeAlltagListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Stoffe im Alltag", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Stoffgruppen: Brennstoffe (Kohle), Nährstoffe (Eiweiß), Metalle (Eisen), Kunststoffe (PET), Gefahrstoffe (giftig/ätzend/entzündlich)."
         };
     }
 

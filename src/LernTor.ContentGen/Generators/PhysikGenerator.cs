@@ -11,7 +11,7 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik },
             [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion }
         };
 
@@ -182,6 +182,174 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Topic = "Magnetismus", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Nur Eisen, Nickel und Kobalt werden von Magneten angezogen; gleiche Pole stoßen sich ab, ungleiche ziehen sich an."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MessenSinneListe =
+    {
+        ("Was misst ein Thermometer?", new[] { "Die Temperatur", "Das Gewicht", "Die Länge" }, "Die Temperatur",
+            "Ein Thermometer misst die Temperatur, meist in Grad Celsius."),
+        ("Was misst eine Waage?", new[] { "Das Gewicht/die Masse", "Die Temperatur", "Die Zeit" }, "Das Gewicht/die Masse",
+            "Eine Waage misst das Gewicht bzw. die Masse eines Gegenstands."),
+        ("In welcher Einheit wird die Temperatur meist angegeben?", new[] { "Grad Celsius (°C)", "Kilogramm (kg)", "Liter (l)" }, "Grad Celsius (°C)",
+            "Temperatur wird im Alltag meist in Grad Celsius angegeben."),
+        ("In welcher Einheit wird eine Flüssigkeitsmenge oft angegeben?", new[] { "Liter (l)", "Kilogramm (kg)", "Meter (m)" }, "Liter (l)",
+            "Flüssigkeitsmengen werden meist in Litern angegeben."),
+        ("In welcher Einheit wird das Gewicht oft angegeben?", new[] { "Kilogramm (kg)", "Grad Celsius (°C)", "Liter (l)" }, "Kilogramm (kg)",
+            "Das Gewicht bzw. die Masse wird meist in Kilogramm angegeben."),
+        ("Was ist der Unterschied zwischen subjektivem Empfinden und objektivem Messen der Temperatur?", new[] { "Empfinden ist persönlich unterschiedlich, ein Thermometer zeigt einen genauen Messwert", "Beides ist immer exakt gleich", "Nur das Empfinden ist wissenschaftlich genau" }, "Empfinden ist persönlich unterschiedlich, ein Thermometer zeigt einen genauen Messwert",
+            "Das Temperaturempfinden ist subjektiv und kann von Person zu Person unterschiedlich sein, ein Thermometer liefert einen objektiven Messwert."),
+        ("Warum kann sich Wasser mit derselben Temperatur für zwei Personen unterschiedlich warm anfühlen?", new[] { "Weil das Temperaturempfinden subjektiv ist", "Weil die Temperatur sich ständig ändert", "Weil Wasser nie eine feste Temperatur hat" }, "Weil das Temperaturempfinden subjektiv ist",
+            "Das persönliche Wärmeempfinden ist subjektiv, auch wenn die tatsächliche Temperatur objektiv gleich ist."),
+        ("Welches Sinnesorgan nutzen wir zum Sehen?", new[] { "Die Augen", "Die Ohren", "Die Nase" }, "Die Augen",
+            "Mit den Augen nehmen wir visuelle Reize wahr."),
+        ("Welches Sinnesorgan nutzen wir zum Hören?", new[] { "Die Ohren", "Die Augen", "Die Zunge" }, "Die Ohren",
+            "Mit den Ohren nehmen wir akustische Reize (Geräusche) wahr."),
+        ("Welches Sinnesorgan nutzen wir zum Riechen?", new[] { "Die Nase", "Die Haut", "Die Ohren" }, "Die Nase",
+            "Mit der Nase nehmen wir Gerüche wahr."),
+        ("Welches Sinnesorgan nutzen wir zum Schmecken?", new[] { "Die Zunge", "Die Nase", "Die Augen" }, "Die Zunge",
+            "Mit der Zunge nehmen wir Geschmacksreize wahr."),
+        ("Welches Sinnesorgan nutzen wir zum Fühlen (Tasten)?", new[] { "Die Haut", "Die Augen", "Die Zunge" }, "Die Haut",
+            "Mit der Haut nehmen wir Berührung, Druck und Temperatur wahr."),
+        ("Warum sind Messgeräte wie Thermometer oder Waagen wichtig?", new[] { "Sie liefern genaue, überprüfbare Werte statt nur persönlicher Einschätzungen", "Sie sind überflüssig, da Sinne immer genau genug sind", "Sie funktionieren nur bei bestimmten Personen" }, "Sie liefern genaue, überprüfbare Werte statt nur persönlicher Einschätzungen",
+            "Messgeräte liefern objektive, überprüfbare Werte, während Sinneswahrnehmung subjektiv und ungenau sein kann."),
+        ("Wie liest man ein Flüssigkeitsthermometer richtig ab?", new[] { "Auf Augenhöhe, an der Oberkante der Flüssigkeitssäule", "Von oben herabschauend", "Die Zahl spielt keine Rolle" }, "Auf Augenhöhe, an der Oberkante der Flüssigkeitssäule",
+            "Ein Flüssigkeitsthermometer liest man auf Augenhöhe an der Oberkante der Flüssigkeitssäule ab, um Ablesefehler zu vermeiden."),
+        ("Was zeigt eine Küchenwaage typischerweise an?", new[] { "Das Gewicht von Zutaten in Gramm oder Kilogramm", "Die Temperatur des Ofens", "Die Kochzeit" }, "Das Gewicht von Zutaten in Gramm oder Kilogramm",
+            "Eine Küchenwaage zeigt das Gewicht von Zutaten an, meist in Gramm oder Kilogramm."),
+        ("Warum ist eine einheitliche Maßeinheit (z.B. Meter, Kilogramm) wichtig?", new[] { "Damit Messwerte überall vergleichbar sind", "Damit jeder eine eigene Einheit erfinden kann", "Einheiten sind nicht wichtig" }, "Damit Messwerte überall vergleichbar sind",
+            "Einheitliche Maßeinheiten sorgen dafür, dass Messwerte überall verstanden und verglichen werden können."),
+        ("Was passiert mit der Quecksilber- oder Alkoholsäule in einem Thermometer bei steigender Temperatur?", new[] { "Sie dehnt sich aus und steigt", "Sie schrumpft", "Sie bleibt immer gleich" }, "Sie dehnt sich aus und steigt",
+            "Bei steigender Temperatur dehnt sich die Flüssigkeit im Thermometer aus und steigt in der Röhre."),
+        ("Was unterscheidet ein digitales Thermometer von einem klassischen Flüssigkeitsthermometer?", new[] { "Es zeigt die Temperatur als Zahl auf einem Display an", "Es misst überhaupt keine Temperatur", "Es funktioniert nur unter Wasser" }, "Es zeigt die Temperatur als Zahl auf einem Display an",
+            "Digitale Thermometer zeigen den gemessenen Wert direkt als Zahl auf einem Display an."),
+        ("Warum kann man sich bei der Einschätzung von Gewicht allein mit der Hand leicht täuschen?", new[] { "Weil das Gefühl für Gewicht subjektiv und ungenau ist", "Weil die Hand immer exakt genau wiegt", "Weil Gewicht sich ständig verändert" }, "Weil das Gefühl für Gewicht subjektiv und ungenau ist",
+            "Das Gewichtsgefühl mit der Hand ist subjektiv - eine Waage liefert einen genauen, objektiven Wert."),
+        ("Was ist ein Vorteil des genauen Messens gegenüber dem bloßen Schätzen im Alltag?", new[] { "Genauere, verlässlichere und vergleichbare Ergebnisse", "Schätzen ist immer genauer als Messen", "Es gibt keinen Unterschied" }, "Genauere, verlässlichere und vergleichbare Ergebnisse",
+            "Genaues Messen liefert verlässlichere und vergleichbare Ergebnisse als bloßes Schätzen.")
+    };
+
+    private static QuizQuestion MessenUndSinne(Random r)
+    {
+        var f = MessenSinneListe[r.Next(MessenSinneListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Von den Sinnen zum Messen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Thermometer misst Temperatur (°C), Waage misst Gewicht (kg). Sinneswahrnehmung ist subjektiv, Messgeräte liefern objektive Werte."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] OptikWeltraumListe =
+    {
+        ("Was befindet sich im Zentrum unseres Sonnensystems?", new[] { "Die Sonne", "Die Erde", "Der Mond" }, "Die Sonne",
+            "Die Sonne steht im Zentrum unseres Sonnensystems, alle Planeten kreisen um sie."),
+        ("Wie viele Planeten hat unser Sonnensystem (nach aktueller Definition)?", new[] { "8", "9", "12" }, "8",
+            "Nach der aktuellen Definition (seit 2006) hat unser Sonnensystem 8 Planeten, Pluto zählt seitdem als Zwergplanet."),
+        ("Wie entstehen die Jahreszeiten auf der Erde?", new[] { "Durch die geneigte Erdachse und den Umlauf der Erde um die Sonne", "Durch den Mond", "Durch das Wetter allein" }, "Durch die geneigte Erdachse und den Umlauf der Erde um die Sonne",
+            "Die geneigte Erdachse sorgt beim Umlauf um die Sonne dafür, dass Nord- und Südhalbkugel wechselnd mehr oder weniger Sonnenlicht erhalten."),
+        ("Was ist eine Sonnenfinsternis?", new[] { "Der Mond schiebt sich zwischen Erde und Sonne", "Die Erde schiebt sich zwischen Sonne und Mond", "Die Sonne verschwindet für immer" }, "Der Mond schiebt sich zwischen Erde und Sonne",
+            "Bei einer Sonnenfinsternis schiebt sich der Mond zwischen Erde und Sonne und verdeckt sie teilweise oder ganz."),
+        ("Was ist eine Mondfinsternis?", new[] { "Die Erde schiebt sich zwischen Sonne und Mond", "Der Mond schiebt sich zwischen Erde und Sonne", "Der Mond verschwindet für immer" }, "Die Erde schiebt sich zwischen Sonne und Mond",
+            "Bei einer Mondfinsternis schiebt sich die Erde zwischen Sonne und Mond, wodurch der Mond im Erdschatten liegt."),
+        ("Wofür nutzt man eine Lupe?", new[] { "Um kleine Dinge vergrößert zu sehen", "Um weit entfernte Dinge näher zu sehen", "Um im Dunkeln zu sehen" }, "Um kleine Dinge vergrößert zu sehen",
+            "Eine Lupe vergrößert kleine, nahe Dinge."),
+        ("Wofür nutzt man ein Fernglas?", new[] { "Um weit entfernte Dinge näher/größer zu sehen", "Um sehr kleine Dinge zu vergrößern", "Um Temperaturen zu messen" }, "Um weit entfernte Dinge näher/größer zu sehen",
+            "Ein Fernglas holt weit entfernte Objekte optisch näher heran."),
+        ("Wofür nutzt man ein Mikroskop?", new[] { "Um sehr kleine Dinge (z.B. Zellen) stark vergrößert zu sehen", "Um weit entfernte Sterne zu sehen", "Um Gewicht zu messen" }, "Um sehr kleine Dinge (z.B. Zellen) stark vergrößert zu sehen",
+            "Ein Mikroskop vergrößert sehr kleine Dinge wie Zellen so stark, dass sie sichtbar werden."),
+        ("Was ist ein Schatten?", new[] { "Ein dunkler Bereich, der entsteht, wenn Licht von einem Gegenstand blockiert wird", "Ein besonders heller Lichtstrahl", "Eine Art Spiegel" }, "Ein dunkler Bereich, der entsteht, wenn Licht von einem Gegenstand blockiert wird",
+            "Ein Schatten entsteht, wenn ein Gegenstand Licht blockiert und dahinter ein dunkler Bereich bleibt."),
+        ("Was passiert mit Licht, wenn es auf eine glatte, glänzende Oberfläche trifft?", new[] { "Es wird reflektiert (zurückgeworfen)", "Es verschwindet komplett", "Es wird immer absorbiert" }, "Es wird reflektiert (zurückgeworfen)",
+            "Glatte, glänzende Oberflächen reflektieren Licht, wie z.B. ein Spiegel."),
+        ("Was ist ein Kristall (im Mikrokosmos betrachtet)?", new[] { "Ein Stoff mit regelmäßig angeordneten kleinsten Teilchen", "Eine Flüssigkeit ohne feste Form", "Ein Gas" }, "Ein Stoff mit regelmäßig angeordneten kleinsten Teilchen",
+            "In einem Kristall sind die kleinsten Teilchen des Stoffes regelmäßig und geordnet angeordnet."),
+        ("Was kann man mit einem Mikroskop bei Pflanzen betrachten?", new[] { "Pflanzenzellen", "Ganze Planeten", "Sterne" }, "Pflanzenzellen",
+            "Mit einem Mikroskop lassen sich einzelne Pflanzenzellen sichtbar machen."),
+        ("Wie lange braucht der Mond ungefähr, um einmal um die Erde zu kreisen?", new[] { "Etwa einen Monat", "Etwa einen Tag", "Etwa ein Jahr" }, "Etwa einen Monat",
+            "Der Mond umkreist die Erde einmal in etwa einem Monat (ca. 27-29 Tagen)."),
+        ("Wie lange braucht die Erde, um einmal um die Sonne zu kreisen?", new[] { "Etwa ein Jahr", "Etwa einen Monat", "Etwa einen Tag" }, "Etwa ein Jahr",
+            "Die Erde umkreist die Sonne einmal in etwa einem Jahr (365 Tagen)."),
+        ("Warum sehen wir den Mond manchmal als Sichel und manchmal als volle Scheibe?", new[] { "Wegen der unterschiedlichen Mondphasen, je nach Stellung zur Sonne", "Weil sich der Mond ständig verformt", "Weil der Mond manchmal verschwindet" }, "Wegen der unterschiedlichen Mondphasen, je nach Stellung zur Sonne",
+            "Je nachdem, wie Sonne, Erde und Mond zueinander stehen, sehen wir unterschiedlich viel der beleuchteten Mondseite - das sind die Mondphasen."),
+        ("Was unterscheidet den Makrokosmos vom Mikrokosmos?", new[] { "Der Makrokosmos umfasst sehr Großes (z.B. das Weltall), der Mikrokosmos sehr Kleines (z.B. Zellen)", "Beide Begriffe bedeuten dasselbe", "Mikrokosmos beschreibt nur das Weltall" }, "Der Makrokosmos umfasst sehr Großes (z.B. das Weltall), der Mikrokosmos sehr Kleines (z.B. Zellen)",
+            "Makrokosmos bezeichnet die Welt des sehr Großen (z.B. Weltall), Mikrokosmos die Welt des sehr Kleinen (z.B. Zellen, Kristalle)."),
+        ("Warum kann man mit bloßem Auge keine einzelnen Zellen erkennen?", new[] { "Weil sie viel zu klein sind", "Weil Zellen unsichtbar sind, auch mit Mikroskop", "Weil Zellen sich zu schnell bewegen" }, "Weil sie viel zu klein sind",
+            "Zellen sind so klein, dass man sie ohne Vergrößerung (z.B. durch ein Mikroskop) nicht erkennen kann."),
+        ("Was passiert, wenn Licht auf einen Spiegel trifft?", new[] { "Es wird fast vollständig reflektiert", "Es wird komplett absorbiert", "Es verschwindet" }, "Es wird fast vollständig reflektiert",
+            "Ein Spiegel reflektiert einfallendes Licht fast vollständig."),
+        ("Warum wird ein Fernglas oft von zwei kleinen Fernrohren (Doppelfernrohr) gebildet?", new[] { "Damit man mit beiden Augen gleichzeitig und räumlich sehen kann", "Damit es schwerer wird", "Das hat keinen besonderen Grund" }, "Damit man mit beiden Augen gleichzeitig und räumlich sehen kann",
+            "Zwei Fernrohre ermöglichen räumliches (beidäugiges) Sehen, wie man es auch ohne Hilfsmittel gewohnt ist."),
+        ("Was zeigt uns die Betrachtung des Sonnensystems über unseren Platz im Weltall?", new[] { "Die Erde ist einer von mehreren Planeten, die die Sonne umkreisen", "Die Erde ist das Zentrum des gesamten Universums", "Die Erde ist der einzige Himmelskörper im Weltall" }, "Die Erde ist einer von mehreren Planeten, die die Sonne umkreisen",
+            "Die Erde ist einer von acht Planeten, die die Sonne umkreisen - nicht das Zentrum des Universums.")
+    };
+
+    private static QuizQuestion OptikUndWeltraum(Random r)
+    {
+        var f = OptikWeltraumListe[r.Next(OptikWeltraumListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Welt des Großen – Welt des Kleinen (Optik und Weltraum)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Lupe vergrößert Kleines aus der Nähe, Fernglas holt Entferntes heran, Mikroskop zeigt Zellen. Die Erde umkreist die Sonne, der Mond die Erde."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] BewegungBionikListe =
+    {
+        ("Was bedeutet \"Bionik\"?", new[] { "Die Übertragung von Vorbildern aus der Natur auf Technik", "Ein anderes Wort für Biologie", "Eine Art von Chemie" }, "Die Übertragung von Vorbildern aus der Natur auf Technik",
+            "Bionik überträgt Prinzipien und Vorbilder aus der Natur auf technische Erfindungen."),
+        ("Welches Vorbild aus der Natur inspirierte den Bau von Flugzeugen?", new[] { "Der Vogelflug", "Das Schwimmen von Fischen", "Das Laufen von Tieren" }, "Der Vogelflug",
+            "Der Vogelflug diente als Vorbild für die Entwicklung von Flugzeugen und Tragflächen."),
+        ("Was hilft Fischen, sich besonders schnell und mühelos durchs Wasser zu bewegen?", new[] { "Ihre stromlinienförmige Körperform", "Ihre eckige Körperform", "Ihr Fell" }, "Ihre stromlinienförmige Körperform",
+            "Die stromlinienförmige Körperform verringert den Wasserwiderstand beim Schwimmen."),
+        ("Was versteht man unter \"Stromlinienform\"?", new[] { "Eine besonders windschlüpfrige, den Widerstand verringernde Form", "Eine besonders eckige, raue Form", "Eine Form nur bei Vögeln" }, "Eine besonders windschlüpfrige, den Widerstand verringernde Form",
+            "Eine stromlinienförmige Form verringert den Luft- oder Wasserwiderstand bei Bewegung."),
+        ("Wie beeinflusst Reibung die Geschwindigkeit eines bewegten Körpers?", new[] { "Reibung bremst die Bewegung", "Reibung beschleunigt die Bewegung immer", "Reibung hat keinerlei Einfluss" }, "Reibung bremst die Bewegung",
+            "Reibung wirkt einer Bewegung entgegen und bremst sie ab."),
+        ("Warum sind Autos und Flugzeuge oft stromlinienförmig gebaut?", new[] { "Um den Luftwiderstand zu verringern und Energie zu sparen", "Um mehr Luftwiderstand zu erzeugen", "Aus rein ästhetischen Gründen ohne technischen Nutzen" }, "Um den Luftwiderstand zu verringern und Energie zu sparen",
+            "Eine stromlinienförmige Bauweise verringert den Luftwiderstand und spart dadurch Energie."),
+        ("Welche Bewegungsart nutzen Vögel hauptsächlich?", new[] { "Fliegen", "Schwimmen", "Kriechen" }, "Fliegen",
+            "Vögel bewegen sich hauptsächlich fliegend fort."),
+        ("Welche Bewegungsart nutzen Fische hauptsächlich?", new[] { "Schwimmen", "Fliegen", "Springen" }, "Schwimmen",
+            "Fische bewegen sich hauptsächlich schwimmend fort."),
+        ("Was haben Flugzeugtragflächen und Vogelflügel gemeinsam?", new[] { "Beide erzeugen Auftrieb durch ihre besondere Form", "Beide haben Federn", "Beide funktionieren völlig unterschiedlich, ohne jede Gemeinsamkeit" }, "Beide erzeugen Auftrieb durch ihre besondere Form",
+            "Sowohl Vogelflügel als auch Flugzeugtragflächen sind so geformt, dass sie Auftrieb erzeugen."),
+        ("Was bedeutet \"Auftrieb\" beim Fliegen?", new[] { "Die Kraft, die einen Körper in der Luft nach oben trägt", "Die Kraft, die einen Körper nach unten zieht", "Ein anderes Wort für Reibung" }, "Die Kraft, die einen Körper in der Luft nach oben trägt",
+            "Auftrieb ist die Kraft, die einen Körper in der Luft (oder im Wasser) nach oben trägt."),
+        ("Warum haben viele schnell schwimmende Tiere (z.B. Delfine) eine glatte Haut?", new[] { "Um den Wasserwiderstand beim Schwimmen zu verringern", "Um mehr Widerstand zu erzeugen", "Aus rein optischen Gründen" }, "Um den Wasserwiderstand beim Schwimmen zu verringern",
+            "Eine glatte Haut verringert den Wasserwiderstand und ermöglicht schnelleres Schwimmen."),
+        ("Was ist ein Beispiel für Bionik im Alltag?", new[] { "Der Klettverschluss, inspiriert von Kletten-Pflanzensamen", "Ein normaler Reißverschluss ohne Vorbild", "Ein Radiergummi" }, "Der Klettverschluss, inspiriert von Kletten-Pflanzensamen",
+            "Der Klettverschluss wurde nach dem Vorbild von Klettensamen entwickelt, die sich an Fell und Kleidung festhaken."),
+        ("Wie bewegen sich die meisten Landtiere fort?", new[] { "Durch Laufen mit Beinen", "Durch Fliegen", "Durch Schwimmen mit Flossen" }, "Durch Laufen mit Beinen",
+            "Die meisten Landtiere bewegen sich laufend mit Beinen fort."),
+        ("Warum ist die Fortbewegung im Wasser für viele Tiere anstrengender als an Land?", new[] { "Wasser hat einen höheren Widerstand als Luft", "Wasser hat keinerlei Widerstand", "Luft hat einen höheren Widerstand als Wasser" }, "Wasser hat einen höheren Widerstand als Luft",
+            "Wasser ist dichter als Luft und setzt der Bewegung deshalb einen größeren Widerstand entgegen."),
+        ("Was passiert mit der Geschwindigkeit eines Radfahrers durch Gegenwind?", new[] { "Sie wird durch den erhöhten Luftwiderstand verringert", "Sie wird automatisch erhöht", "Gegenwind hat keinen Einfluss" }, "Sie wird durch den erhöhten Luftwiderstand verringert",
+            "Gegenwind erhöht den Luftwiderstand und verringert dadurch die Geschwindigkeit."),
+        ("Wie hilft eine gebückte Haltung Radfahrenden bei hohen Geschwindigkeiten?", new[] { "Sie verringert den Luftwiderstand", "Sie erhöht den Luftwiderstand", "Sie hat keinerlei Effekt" }, "Sie verringert den Luftwiderstand",
+            "Eine gebückte, stromlinienförmigere Haltung verringert den Luftwiderstand."),
+        ("Was zeigt der Vergleich zwischen Vogelflug und Flugzeug in der Bionik?", new[] { "Wie Technik von natürlichen Vorbildern lernen kann", "Dass Natur und Technik nichts gemeinsam haben", "Dass Vögel wie Flugzeuge aus Metall bestehen" }, "Wie Technik von natürlichen Vorbildern lernen kann",
+            "Der Vergleich zeigt, wie technische Erfindungen von natürlichen Vorbildern lernen und sie nachahmen können."),
+        ("Warum sind haifischhaut-inspirierte Schwimmanzüge für den Leistungssport entwickelt worden?", new[] { "Um den Wasserwiderstand für Schwimmer zu verringern", "Um Schwimmer langsamer zu machen", "Nur aus modischen Gründen" }, "Um den Wasserwiderstand für Schwimmer zu verringern",
+            "Die Struktur der Haifischhaut diente als Vorbild, um den Wasserwiderstand von Schwimmanzügen zu verringern."),
+        ("Was versteht man unter Reibungskraft?", new[] { "Eine Kraft, die einer Bewegung entgegenwirkt", "Eine Kraft, die eine Bewegung immer beschleunigt", "Eine Kraft, die nur im Wasser existiert" }, "Eine Kraft, die einer Bewegung entgegenwirkt",
+            "Reibungskraft wirkt einer Bewegung entgegen und bremst sie."),
+        ("Warum ist die Erforschung der Natur für Erfinder und Ingenieure oft hilfreich (Bionik)?", new[] { "Die Natur hat über Jahrmillionen effiziente Lösungen für Bewegung und Form entwickelt", "Die Natur bietet keinerlei nützliche Vorbilder", "Nur Zufall führt zu technischen Erfindungen" }, "Die Natur hat über Jahrmillionen effiziente Lösungen für Bewegung und Form entwickelt",
+            "Die Natur hat durch Evolution über Jahrmillionen sehr effiziente Lösungen entwickelt, von denen Technik lernen kann.")
+    };
+
+    private static QuizQuestion BewegungUndBionik(Random r)
+    {
+        var f = BewegungBionikListe[r.Next(BewegungBionikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Bewegung zu Wasser, zu Lande und in der Luft (Bionik)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Bionik überträgt Vorbilder aus der Natur auf Technik. Stromlinienform und glatte Oberflächen verringern den Widerstand bei Bewegung."
         };
     }
 

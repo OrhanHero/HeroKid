@@ -11,7 +11,7 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem }
         };
 
@@ -164,6 +164,62 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Topic = "Wirbeltierklassen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Fische atmen mit Kiemen, Amphibien leben in Wasser und Land, Säugetiere säugen ihre Jungen mit Milch."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] PubertaetListe =
+    {
+        ("Was passiert im Körper während der Pubertät?", new[] { "Hormone verändern Körper und Gefühle", "Es passiert überhaupt nichts", "Nur die Haarfarbe verändert sich" },
+            "Hormone verändern Körper und Gefühle", "In der Pubertät steuern Hormone einen Wachstumsschub sowie viele körperliche und seelische Veränderungen."),
+        ("Warum kommt es in der Pubertät häufig zu einem Wachstumsschub?", new[] { "Hormone regen das Knochen- und Muskelwachstum an", "Der Körper hört auf zu wachsen", "Es liegt nur an der Ernährung" },
+            "Hormone regen das Knochen- und Muskelwachstum an", "Wachstumshormone und Geschlechtshormone sorgen in der Pubertät oft für einen schnellen Anstieg der Körpergröße."),
+        ("Warum verändert sich bei manchen Jugendlichen in der Pubertät die Stimme?", new[] { "Der Kehlkopf wächst und die Stimmbänder verändern sich", "Die Zunge wird kürzer", "Die Ohren verändern sich" },
+            "Der Kehlkopf wächst und die Stimmbänder verändern sich", "Besonders bei Jungen wächst der Kehlkopf stärker, wodurch die Stimme tiefer wird (Stimmbruch)."),
+        ("Warum wird Körperhygiene in der Pubertät besonders wichtig?", new[] { "Schweiß- und Talgdrüsen werden aktiver", "Der Körper braucht plötzlich kein Wasser mehr", "Hygiene spielt keine Rolle mehr" },
+            "Schweiß- und Talgdrüsen werden aktiver", "Hormonelle Veränderungen aktivieren Schweiß- und Talgdrüsen stärker, weshalb regelmäßiges Waschen wichtiger wird."),
+        ("Was ist eine mögliche Ursache für Hautunreinheiten (z.B. Pickel) in der Pubertät?", new[] { "Vermehrte Talgproduktion durch Hormone", "Zu viel Schlaf", "Zu häufiges Zähneputzen" },
+            "Vermehrte Talgproduktion durch Hormone", "Hormonelle Umstellungen können die Talgdrüsen der Haut aktiver machen, was zu Unreinheiten führen kann."),
+        ("Warum schwanken die Gefühle bei vielen Jugendlichen in der Pubertät stärker als vorher?", new[] { "Hormone beeinflussen auch die Stimmung", "Das hat nichts mit dem Körper zu tun", "Nur schlechte Laune ist normal" },
+            "Hormone beeinflussen auch die Stimmung", "Die hormonellen Veränderungen der Pubertät wirken sich auch auf Stimmung und Gefühlsleben aus - Stimmungsschwankungen sind normal."),
+        ("Wie unterschiedlich kann der Zeitpunkt sein, an dem die Pubertät bei verschiedenen Jugendlichen beginnt?", new[] { "Der Beginn kann von Person zu Person deutlich variieren", "Die Pubertät beginnt bei allen exakt am gleichen Tag", "Die Pubertät beginnt immer erst mit 18 Jahren" },
+            "Der Beginn kann von Person zu Person deutlich variieren", "Der Zeitpunkt und das Tempo der pubertären Entwicklung sind individuell sehr unterschiedlich - das ist völlig normal."),
+        ("Was ist bei körperlichen Veränderungen in der Pubertät bei Klassenkameraden wichtig?", new[] { "Respekt, da jeder Körper sich anders und unterschiedlich schnell verändert", "Andere wegen ihres Körpers auszulachen", "Alle sollen sich exakt gleich entwickeln" },
+            "Respekt, da jeder Körper sich anders und unterschiedlich schnell verändert", "Da sich Körper unterschiedlich schnell verändern, ist gegenseitiger Respekt und Rücksichtnahme besonders wichtig."),
+        ("An wen können sich Jugendliche wenden, wenn sie Fragen oder Sorgen zur Pubertät haben?", new[] { "An eine Vertrauensperson, z.B. Eltern, Ärztin/Arzt oder Beratungsstelle", "An niemanden, man muss alles allein herausfinden", "Nur an gleichaltrige Fremde im Internet" },
+            "An eine Vertrauensperson, z.B. Eltern, Ärztin/Arzt oder Beratungsstelle", "Vertrauenspersonen wie Eltern, Ärztinnen/Ärzte oder Beratungsstellen können bei Fragen zur Pubertät gut weiterhelfen."),
+        ("Was bedeutet \"körperliche Selbstbestimmung\"?", new[] { "Jeder Mensch entscheidet selbst über seinen eigenen Körper", "Andere Menschen dürfen über meinen Körper bestimmen", "Nur Erwachsene haben ein Recht auf ihren eigenen Körper" },
+            "Jeder Mensch entscheidet selbst über seinen eigenen Körper", "Körperliche Selbstbestimmung bedeutet, dass niemand ohne Zustimmung über den Körper einer anderen Person verfügen darf."),
+        ("Wodurch wird bei einem Menschen eine Schwangerschaft ausgelöst?", new[] { "Durch die Befruchtung einer Eizelle durch eine Samenzelle", "Durch besonders langes Schlafen", "Durch das Essen bestimmter Lebensmittel" },
+            "Durch die Befruchtung einer Eizelle durch eine Samenzelle", "Eine Schwangerschaft beginnt, wenn eine Samenzelle eine Eizelle befruchtet und sich die befruchtete Eizelle in der Gebärmutter einnistet."),
+        ("Wo wächst ein ungeborenes Kind während der Schwangerschaft heran?", new[] { "In der Gebärmutter", "Im Magen", "In der Lunge" },
+            "In der Gebärmutter", "Das ungeborene Kind entwickelt sich in der Gebärmutter der Mutter, geschützt und mit Nährstoffen versorgt."),
+        ("Wie lange dauert eine menschliche Schwangerschaft ungefähr?", new[] { "Etwa neun Monate", "Etwa ein Monat", "Etwa drei Jahre" },
+            "Etwa neun Monate", "Eine menschliche Schwangerschaft dauert im Durchschnitt etwa 40 Wochen, also rund neun Monate."),
+        ("Was ist eine Regelblutung (Menstruation)?", new[] { "Die monatliche Abstoßung der Gebärmutterschleimhaut, wenn keine Befruchtung stattfand", "Eine seltene Krankheit", "Ein Zeichen, dass etwas nicht stimmt" },
+            "Die monatliche Abstoßung der Gebärmutterschleimhaut, wenn keine Befruchtung stattfand", "Findet keine Befruchtung statt, wird die aufgebaute Gebärmutterschleimhaut monatlich abgestoßen - das ist die Menstruation, ein normaler Vorgang."),
+        ("Warum produziert der Körper von Jungen in der Pubertät vermehrt Samenzellen?", new[] { "Die Hoden beginnen mit der Produktion, gesteuert durch Hormone", "Weil sie mehr Sport treiben", "Weil sie älter aussehen wollen" },
+            "Die Hoden beginnen mit der Produktion, gesteuert durch Hormone", "Mit Beginn der Pubertät regen Hormone die Hoden dazu an, Samenzellen zu bilden."),
+        ("Was bezeichnet man ganz allgemein als Verhütung (Empfängnisverhütung)?", new[] { "Maßnahmen, die eine Schwangerschaft verhindern sollen", "Maßnahmen, die eine Schwangerschaft garantieren", "Ein anderes Wort für Pubertät" },
+            "Maßnahmen, die eine Schwangerschaft verhindern sollen", "Verhütungsmittel wie z.B. Kondome sollen verhindern, dass eine Eizelle befruchtet wird oder sich einnistet."),
+        ("Warum gilt das Kondom auch als Schutz vor sexuell übertragbaren Krankheiten?", new[] { "Es verhindert den direkten Kontakt von Körperflüssigkeiten", "Es hat damit nichts zu tun", "Es wirkt nur gegen Erkältungen" },
+            "Es verhindert den direkten Kontakt von Körperflüssigkeiten", "Kondome verhindern sowohl eine Schwangerschaft als auch die Übertragung mancher Krankheitserreger über Körperflüssigkeiten."),
+        ("Wie sehen heute viele verschiedene Familienmodelle in Deutschland aus?", new[] { "Es gibt z.B. Kleinfamilien, Patchworkfamilien, Alleinerziehende oder gleichgeschlechtliche Elternpaare", "Es gibt nur ein einziges richtiges Familienmodell", "Familien bestehen immer aus genau vier Personen" },
+            "Es gibt z.B. Kleinfamilien, Patchworkfamilien, Alleinerziehende oder gleichgeschlechtliche Elternpaare", "In einer modernen Gesellschaft gibt es viele unterschiedliche, gleichwertige Familienformen, die respektiert werden sollten."),
+        ("Was ist bei der Geburt eines Kindes normalerweise der erste Schritt?", new[] { "Wehen kündigen die Geburt an, dann verlässt das Kind die Gebärmutter über den Geburtskanal", "Das Kind wird sofort operiert", "Die Mutter schläft während der gesamten Geburt" },
+            "Wehen kündigen die Geburt an, dann verlässt das Kind die Gebärmutter über den Geburtskanal", "Regelmäßige Wehen leiten die Geburt ein, durch die das Kind über den Geburtskanal zur Welt kommt (bei einem Kaiserschnitt operativ)."),
+        ("Warum ist es wichtig zu wissen, dass jeder Mensch sich in der Pubertät in seinem eigenen Tempo entwickelt?", new[] { "Damit niemand sich wegen früherer oder späterer Entwicklung schämen oder unter Druck fühlen muss", "Damit alle möglichst schnell erwachsen wirken", "Damit man andere mit ihrer Entwicklung vergleichen und bewerten kann" },
+            "Damit niemand sich wegen früherer oder späterer Entwicklung schämen oder unter Druck fühlen muss", "Unterschiedliche Entwicklungstempi sind normal - Wissen darüber hilft, Scham oder Vergleichsdruck abzubauen und respektvoll miteinander umzugehen.")
+    };
+
+    private static QuizQuestion PubertaetUndEntwicklung(Random r)
+    {
+        var f = PubertaetListe[r.Next(PubertaetListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Pubertät und Entwicklung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Hormone steuern Wachstum, Stimme, Haut und Gefühle - der Zeitpunkt der Pubertät ist bei jedem Menschen unterschiedlich."
         };
     }
 
