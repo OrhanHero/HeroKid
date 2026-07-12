@@ -119,6 +119,14 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    wurden, dann gelten sie als gelernt und verschwinden. News-Fragen sind ausgenommen (deren
    Tagesartikel gibt es später nicht mehr). Siehe `ReviewQuestionRepository`/`ReviewQuestionEntity`;
    die neue Tabelle legt der automatische Schema-Abgleich selbst an.
+   **Dauerhafter Ausschluss richtig beantworteter Aufgaben**: einmal richtig beantwortet (egal ob im
+   Übungsteil oder im Abschlussquiz), taucht der exakte Fragetext für dieses Profil nie wieder auf -
+   unabhängig vom 21-Tage-Fenster der reinen Frische-Bevorzugung. Deshalb halten alle Fächer mit
+   festem Themen-Pool inzwischen 20 kuratierte Beispiele je Thema vor (siehe
+   [docs/CURRICULUM.md](docs/CURRICULUM.md)) statt nur 5 - sonst wäre der Pool schnell erschöpft.
+   Ist ein Themen-Pool tatsächlich komplett gemeistert, greift die Aufgabenauswahl als Rückfall auf
+   Wiederholungen zurück, statt weniger Aufgaben als angefordert zu liefern. Siehe
+   `MasteredPromptRepository`/`MasteredPromptEntity`.
    **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:

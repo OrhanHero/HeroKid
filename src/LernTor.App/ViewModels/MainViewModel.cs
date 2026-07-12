@@ -29,6 +29,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
+    private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
@@ -70,6 +71,7 @@ public sealed partial class MainViewModel : ObservableObject
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
         ReviewQuestionRepository reviewRepo,
+        MasteredPromptRepository masteredPromptRepo,
         ArchivedArticleRepository archiveRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
@@ -88,6 +90,7 @@ public sealed partial class MainViewModel : ObservableObject
         _profileRepo = profileRepo;
         _customQuestionRepo = customQuestionRepo;
         _reviewRepo = reviewRepo;
+        _masteredPromptRepo = masteredPromptRepo;
         _archiveRepo = archiveRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
@@ -310,11 +313,29 @@ public sealed partial class MainViewModel : ObservableObject
     /// wirken), aber mit konzentriert vielen Fragen zu den schwachen Fächern.</summary>
     private const int RetryQuizTargetQuestions = 15;
 
+    /// <summary>
+    /// Vereint zwei unabhängige Ausschlussgründe für die Aufgabenauswahl: das 21-Tage-Fenster
+    /// kürzlich gestellter Fragen (bevorzugt Frische bei den fest hinterlegten Themen-Pools) und
+    /// die dauerhaft gemeisterten Prompts (siehe MasteredPromptRepository - einmal richtig
+    /// beantwortete Aufgaben tauchen für dieses Profil nie wieder auf). Beide landen im selben
+    /// Ausschluss-Set, weil ExerciseGeneratorBase.Generate ohnehin nur "meide diese Prompts, wenn
+    /// möglich" kennt, keinen Unterschied zwischen den beiden Gründen macht.
+    /// </summary>
+    private async Task<IReadOnlySet<string>> BuildExcludedPromptsAsync()
+    {
+        var recentlySeen = await _activityLogRepo.GetRecentPromptsAsync(CurrentProfile!.Id, RecentPromptsWindow);
+        var mastered = await _masteredPromptRepo.GetMasteredPromptsAsync(CurrentProfile!.Id);
+
+        var excluded = new HashSet<string>(recentlySeen);
+        excluded.UnionWith(mastered);
+        return excluded;
+    }
+
     private async Task<ExerciseViewModel> BuildExerciseViewModelAsync(Subject subject)
     {
         var grade = CurrentProfile!.GradeLevel;
-        var recentlySeen = await _activityLogRepo.GetRecentPromptsAsync(CurrentProfile!.Id, RecentPromptsWindow);
-        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, recentlySeen);
+        var excludedPrompts = await BuildExcludedPromptsAsync();
+        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, excludedPrompts);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
 
         // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST
@@ -337,6 +358,8 @@ public sealed partial class MainViewModel : ObservableObject
         await _activityLogRepo.LogAnswerAsync(CurrentProfile!.Id, outcome, question.Topic, question.Prompt);
         // Fehler-Kartei pflegen: falsch → aufnehmen/zurücksetzen, richtig → Streak hoch, bei 2 gelernt.
         await _reviewRepo.RecordOutcomeAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
+        // Richtig beantwortet → dauerhaft ausschließen, damit dieser Prompt nie wieder vorkommt.
+        await _masteredPromptRepo.RecordIfCorrectAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
     }
 
     private async void OnExerciseSubjectCompleted(Subject subject)
@@ -352,7 +375,7 @@ public sealed partial class MainViewModel : ObservableObject
         var grade = CurrentProfile!.GradeLevel;
         var disabledSubjects = Settings.DisabledSubjects;
         var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
-        var recentlySeen = await _activityLogRepo.GetRecentPromptsAsync(CurrentProfile!.Id, RecentPromptsWindow);
+        var excludedPrompts = await BuildExcludedPromptsAsync();
         IEnumerable<QuizQuestion> questions;
 
         if (relevantSubjects is not null)
@@ -363,11 +386,11 @@ public sealed partial class MainViewModel : ObservableObject
             // die Anzahl aktiver Fächer an (siehe ComposeFinalQuiz).
             var perWeakSubjectCount = Math.Max(2, RetryQuizTargetQuestions * 2 / 3 / relevantSubjects.Count);
             var retryQuestions = _quizComposer.ComposeRetryExercises(
-                relevantSubjects, grade, _random, countPerSubject: perWeakSubjectCount, recentlySeenPrompts: recentlySeen);
+                relevantSubjects, grade, _random, countPerSubject: perWeakSubjectCount, recentlySeenPrompts: excludedPrompts);
 
             var topUpTarget = Math.Max(RetryQuizTargetQuestions - retryQuestions.Count, 1);
             var topUpQuestions = _quizComposer.ComposeFinalQuiz(
-                grade, _random, disabledSubjects, targetTotalQuestions: topUpTarget, recentlySeenPrompts: recentlySeen);
+                grade, _random, disabledSubjects, targetTotalQuestions: topUpTarget, recentlySeenPrompts: excludedPrompts);
 
             questions = retryQuestions.Concat(topUpQuestions);
         }
@@ -375,7 +398,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             questions = _quizComposer.ComposeFinalQuiz(
                 grade, _random, disabledSubjects,
-                targetTotalQuestions: InitialQuizTargetQuestions, recentlySeenPrompts: recentlySeen);
+                targetTotalQuestions: InitialQuizTargetQuestions, recentlySeenPrompts: excludedPrompts);
         }
 
         // Eigene (von den Eltern eingetragene) Aufgaben ergänzen additiv - unabhängig vom
@@ -385,7 +408,14 @@ public sealed partial class MainViewModel : ObservableObject
 
         var finalQuestions = questions.Concat(customQuestions).OrderBy(_ => _random.Next()).ToList();
 
-        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted, _homeworkChat);
+        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted, OnFinalQuizQuestionAnswered, _homeworkChat);
+    }
+
+    private async void OnFinalQuizQuestionAnswered(QuizQuestion question, QuestionOutcome outcome)
+    {
+        // Richtig beantwortet → dauerhaft ausschließen, damit dieser Prompt nie wieder vorkommt -
+        // auch wenn er nur im Abschlussquiz und nie in einer Übung drankam.
+        await _masteredPromptRepo.RecordIfCorrectAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
     }
 
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)

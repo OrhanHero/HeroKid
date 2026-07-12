@@ -9,6 +9,7 @@ public sealed partial class FinalQuizViewModel : ObservableObject
 {
     private readonly IReadOnlyList<QuizQuestion> _questions;
     private readonly Action<IReadOnlyList<QuestionOutcome>> _onCompleted;
+    private readonly Action<QuizQuestion, QuestionOutcome> _onQuestionAnswered;
     private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly List<QuestionOutcome> _outcomes = new();
 
@@ -28,10 +29,12 @@ public sealed partial class FinalQuizViewModel : ObservableObject
     public FinalQuizViewModel(
         IReadOnlyList<QuizQuestion> questions,
         Action<IReadOnlyList<QuestionOutcome>> onCompleted,
+        Action<QuizQuestion, QuestionOutcome> onQuestionAnswered,
         IHomeworkHelpChatService homeworkChat)
     {
         _questions = questions;
         _onCompleted = onCompleted;
+        _onQuestionAnswered = onQuestionAnswered;
         _homeworkChat = homeworkChat;
     }
 
@@ -57,7 +60,9 @@ public sealed partial class FinalQuizViewModel : ObservableObject
 
     private void OnAnswered(QuestionAnswerViewModel answered)
     {
-        _outcomes.Add(answered.ToOutcome());
+        var outcome = answered.ToOutcome();
+        _outcomes.Add(outcome);
+        _onQuestionAnswered(answered.Question, outcome);
     }
 
     [RelayCommand]

@@ -12,6 +12,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<StudentProfileEntity> Profiles => Set<StudentProfileEntity>();
     public DbSet<CustomQuestionEntity> CustomQuestions => Set<CustomQuestionEntity>();
     public DbSet<ReviewQuestionEntity> ReviewQuestions => Set<ReviewQuestionEntity>();
+    public DbSet<MasteredPromptEntity> MasteredPrompts => Set<MasteredPromptEntity>();
     public DbSet<ArchivedArticleEntity> ArchivedArticles => Set<ArchivedArticleEntity>();
     public DbSet<RewardEntity> Rewards => Set<RewardEntity>();
     public DbSet<RewardRedemptionEntity> RewardRedemptions => Set<RewardRedemptionEntity>();
@@ -65,6 +66,12 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(a => a.Id);
             e.HasIndex(a => a.ArchivedDate);
+        });
+
+        modelBuilder.Entity<MasteredPromptEntity>(e =>
+        {
+            e.HasKey(m => m.Id);
+            e.HasIndex(m => new { m.ProfileId, m.Prompt }).IsUnique();
         });
 
         modelBuilder.Entity<RewardEntity>(e =>
