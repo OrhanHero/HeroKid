@@ -11,8 +11,16 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { SimplePresentVsProgressive, IrregularPlurals, QuestionWords },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { SimplePastVsPresentPerfect, FirstConditional, PassiveVoice }
+            [GradeLevel.Klasse6] = new List<TopicFactory>
+            {
+                SimplePresentVsProgressive, IrregularPlurals, QuestionWords,
+                AlltagUndFamilie, SchuleUndGesellschaft, KulturUndTraditionen, NaturUndUmwelt
+            },
+            [GradeLevel.Klasse9] = new List<TopicFactory>
+            {
+                SimplePastVsPresentPerfect, FirstConditional, PassiveVoice,
+                IdentitaetUndZukunft, GesellschaftUndMedien, UmweltUndNachhaltigkeit
+            }
         };
 
     private static readonly (string Satz, string Loesung, string Regel)[] PresentListe =
@@ -128,6 +136,150 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
         };
     }
 
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AlltagListe =
+    {
+        ("Wie sagt man auf Englisch \"meine Schwester\"?", new[] { "my sister", "my brother", "my mother" }, "my sister", "\"my sister\" bedeutet \"meine Schwester\"."),
+        ("Wie sagt man auf Englisch \"Ich habe ein Hobby\"?", new[] { "I have a hobby", "I has a hobby", "I having a hobby" }, "I have a hobby", "Bei \"I\" wird das Verb \"have\" ohne -s verwendet."),
+        ("Wie sagt man auf Englisch \"Taschengeld\"?", new[] { "pocket money", "hand money", "pocket coin" }, "pocket money", "\"pocket money\" ist die englische Bezeichnung für Taschengeld."),
+        ("Was bedeutet \"to go shopping\" auf Deutsch?", new[] { "einkaufen gehen", "spazieren gehen", "schlafen gehen" }, "einkaufen gehen", "\"to go shopping\" bedeutet \"einkaufen gehen\"."),
+        ("Wie sagt man auf Englisch \"mein Zimmer\"?", new[] { "my room", "my house", "my school" }, "my room", "\"my room\" bedeutet \"mein Zimmer\"."),
+        ("Was bedeutet \"the living room\" auf Deutsch?", new[] { "das Wohnzimmer", "das Schlafzimmer", "die Küche" }, "das Wohnzimmer", "\"the living room\" ist das Wohnzimmer."),
+        ("Wie sagt man auf Englisch \"Ich wohne in Berlin\"?", new[] { "I live in Berlin", "I lives in Berlin", "I living in Berlin" }, "I live in Berlin", "Bei \"I\" nutzt man \"live\" ohne -s."),
+        ("Was bedeutet \"to get dressed\" auf Deutsch?", new[] { "sich anziehen", "sich hinsetzen", "aufstehen" }, "sich anziehen", "\"to get dressed\" bedeutet \"sich anziehen\"."),
+        ("Wie sagt man auf Englisch \"Verabredung\" (mit Freunden)?", new[] { "meeting up", "meeting down", "meeting away" }, "meeting up", "\"meeting up\" bedeutet \"sich verabreden/treffen\"."),
+        ("Was bedeutet \"neighbourhood\" auf Deutsch?", new[] { "Nachbarschaft", "Nachbar", "Nachtisch" }, "Nachbarschaft", "\"neighbourhood\" bedeutet \"Nachbarschaft\"."),
+        ("Wie sagt man auf Englisch \"zu Fuß zur Schule gehen\"?", new[] { "walk to school", "run to school", "drive to school" }, "walk to school", "\"walk to school\" bedeutet \"zu Fuß zur Schule gehen\"."),
+        ("Was bedeutet \"means of transport\" auf Deutsch?", new[] { "Verkehrsmittel", "Verkehrsschild", "Fahrschein" }, "Verkehrsmittel", "\"means of transport\" bedeutet \"Verkehrsmittel\"."),
+        ("Wie sagt man auf Englisch \"meine Interessen\"?", new[] { "my interests", "my interest", "my interested" }, "my interests", "Im Plural heißt es \"my interests\"."),
+        ("Was bedeutet \"to have breakfast\" auf Deutsch?", new[] { "frühstücken", "zu Mittag essen", "zu Abend essen" }, "frühstücken", "\"to have breakfast\" bedeutet \"frühstücken\"."),
+        ("Wie sagt man auf Englisch \"Kleidung\"?", new[] { "clothes", "cloth", "clothing shop" }, "clothes", "\"clothes\" ist das allgemeine englische Wort für Kleidung."),
+        ("Was bedeutet \"to celebrate\" auf Deutsch?", new[] { "feiern", "kochen", "putzen" }, "feiern", "\"to celebrate\" bedeutet \"feiern\"."),
+        ("Wie sagt man auf Englisch \"Tagesablauf\"?", new[] { "daily routine", "daily rule", "day school" }, "daily routine", "\"daily routine\" bedeutet \"Tagesablauf\"."),
+        ("Was bedeutet \"household chores\" auf Deutsch?", new[] { "Hausarbeiten", "Hausaufgaben", "Haustiere" }, "Hausarbeiten", "\"household chores\" bedeutet \"Hausarbeiten\"."),
+        ("Wie sagt man auf Englisch \"Einkaufen gehen\"?", new[] { "go shopping", "go swimming", "go running" }, "go shopping", "\"go shopping\" bedeutet \"einkaufen gehen\"."),
+        ("Was bedeutet \"personality\" auf Deutsch?", new[] { "Persönlichkeit", "Person", "Personal" }, "Persönlichkeit", "\"personality\" bedeutet \"Persönlichkeit\".")
+    };
+
+    private static QuizQuestion AlltagUndFamilie(Random r)
+    {
+        var f = AlltagListe[r.Next(AlltagListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Individuum und Lebenswelt: Alltag und Familie", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Familie, Wohnen und Alltag: my sister, my room, daily routine, pocket money."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SchuleListe =
+    {
+        ("Wie sagt man auf Englisch \"Unterrichtsfach\"?", new[] { "school subject", "school building", "school bag" }, "school subject", "\"school subject\" bedeutet \"Unterrichtsfach\"."),
+        ("Was bedeutet \"classroom\" auf Deutsch?", new[] { "Klassenzimmer", "Klassenlehrer", "Klassenarbeit" }, "Klassenzimmer", "\"classroom\" bedeutet \"Klassenzimmer\"."),
+        ("Wie sagt man auf Englisch \"Hausaufgaben machen\"?", new[] { "do homework", "make homework", "write homework" }, "do homework", "Im Englischen sagt man \"do homework\", nicht \"make homework\"."),
+        ("Was bedeutet \"timetable\" auf Deutsch?", new[] { "Stundenplan", "Zeitzone", "Kalender" }, "Stundenplan", "\"timetable\" bedeutet \"Stundenplan\"."),
+        ("Wie sagt man auf Englisch \"Nationalität\"?", new[] { "nationality", "nation", "national" }, "nationality", "\"nationality\" bedeutet \"Nationalität\"."),
+        ("Was bedeutet \"rules\" auf Deutsch?", new[] { "Regeln", "Regale", "Regeln brechen" }, "Regeln", "\"rules\" bedeutet \"Regeln\"."),
+        ("Wie sagt man auf Englisch \"Klassenkamerad\"?", new[] { "classmate", "class friend", "school buddy" }, "classmate", "\"classmate\" bedeutet \"Klassenkamerad/in\"."),
+        ("Was bedeutet \"break time\" auf Deutsch?", new[] { "Pause", "Unterricht", "Ferien" }, "Pause", "\"break time\" bedeutet \"Pause\"."),
+        ("Wie sagt man auf Englisch \"Schulbus\"?", new[] { "school bus", "school car", "school train" }, "school bus", "\"school bus\" bedeutet \"Schulbus\"."),
+        ("Was bedeutet \"to raise your hand\" auf Deutsch?", new[] { "sich melden (die Hand heben)", "aufstehen", "sich hinsetzen" }, "sich melden (die Hand heben)", "\"to raise your hand\" bedeutet \"sich melden\"."),
+        ("Wie sagt man auf Englisch \"Arbeitsmaterial\"?", new[] { "school supplies", "school food", "school clothes" }, "school supplies", "\"school supplies\" bedeutet \"Arbeitsmaterial/Schulsachen\"."),
+        ("Was bedeutet \"to attend school\" auf Deutsch?", new[] { "eine Schule besuchen", "eine Schule bauen", "eine Schule schließen" }, "eine Schule besuchen", "\"to attend school\" bedeutet \"eine Schule besuchen\"."),
+        ("Wie sagt man auf Englisch \"Land/Sprache\"?", new[] { "country/language", "city/dialect", "world/accent" }, "country/language", "\"country\" bedeutet Land, \"language\" bedeutet Sprache."),
+        ("Was bedeutet \"to get along with someone\" auf Deutsch?", new[] { "gut mit jemandem auskommen", "jemanden ignorieren", "sich mit jemandem streiten" }, "gut mit jemandem auskommen", "\"to get along with someone\" bedeutet \"gut mit jemandem auskommen\"."),
+        ("Wie sagt man auf Englisch \"Regeln befolgen\"?", new[] { "follow the rules", "break the rules", "write the rules" }, "follow the rules", "\"follow the rules\" bedeutet \"Regeln befolgen\"."),
+        ("Was bedeutet \"headteacher\" auf Deutsch?", new[] { "Schulleiter/in", "Klassenlehrer/in", "Hausmeister/in" }, "Schulleiter/in", "\"headteacher\" bedeutet \"Schulleiter/in\"."),
+        ("Wie sagt man auf Englisch \"im Klassenraum\"?", new[] { "in the classroom", "at the classroom", "on the classroom" }, "in the classroom", "Im Englischen nutzt man die Präposition \"in\" für \"im Klassenraum\"."),
+        ("Was bedeutet \"to behave well\" auf Deutsch?", new[] { "sich gut benehmen", "sich schlecht benehmen", "sich verstecken" }, "sich gut benehmen", "\"to behave well\" bedeutet \"sich gut benehmen\"."),
+        ("Wie sagt man auf Englisch \"das Schulsystem\"?", new[] { "the school system", "the school building", "the school year" }, "the school system", "\"the school system\" bedeutet \"das Schulsystem\"."),
+        ("Was bedeutet \"multicultural\" auf Deutsch?", new[] { "multikulturell", "mehrsprachig", "internationale Küche" }, "multikulturell", "\"multicultural\" bedeutet \"multikulturell\".")
+    };
+
+    private static QuizQuestion SchuleUndGesellschaft(Random r)
+    {
+        var f = SchuleListe[r.Next(SchuleListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Gesellschaft: Schule und Zusammenleben", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Schule und Zusammenleben: classroom, timetable, school subject, follow the rules."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KulturListe =
+    {
+        ("In welcher Stadt steht der Big Ben?", new[] { "London", "New York", "Sydney" }, "London", "Der Big Ben steht in London, am britischen Parlament."),
+        ("In welcher Stadt steht die Freiheitsstatue (Statue of Liberty)?", new[] { "New York", "London", "Los Angeles" }, "New York", "Die Freiheitsstatue steht im Hafen von New York."),
+        ("Welches Fest feiern viele Menschen in den USA im November mit Truthahn?", new[] { "Thanksgiving", "Halloween", "Christmas" }, "Thanksgiving", "Thanksgiving wird in den USA im November mit einem Truthahn-Essen gefeiert."),
+        ("Wie heißt das bekannte Riesenrad in London?", new[] { "The London Eye", "The Big Wheel", "The London Circle" }, "The London Eye", "\"The London Eye\" ist das berühmte Riesenrad an der Themse in London."),
+        ("Welches Fest wird am 31. Oktober mit Kürbissen und Kostümen gefeiert?", new[] { "Halloween", "Thanksgiving", "Easter" }, "Halloween", "Halloween wird am 31. Oktober mit Kürbissen und Kostümen gefeiert."),
+        ("Wie heißt die Königsfamilie-Residenz in London?", new[] { "Buckingham Palace", "Windsor Castle Street", "London Tower House" }, "Buckingham Palace", "Der Buckingham Palace ist die Residenz der britischen Königsfamilie in London."),
+        ("Welche Sprache spricht man hauptsächlich in England?", new[] { "English", "German", "French" }, "English", "In England spricht man hauptsächlich Englisch."),
+        ("Wie nennt man das amerikanische Unabhängigkeitsfest am 4. Juli?", new[] { "Independence Day", "Thanksgiving", "Labour Day" }, "Independence Day", "Der 4. Juli ist der amerikanische Unabhängigkeitstag (Independence Day)."),
+        ("Welches berühmte Bauwerk aus Stein steht in Südengland (Wiltshire)?", new[] { "Stonehenge", "Big Ben", "Tower Bridge" }, "Stonehenge", "Stonehenge ist eine berühmte prähistorische Steinformation in Südengland."),
+        ("Wie heißt die berühmte Brücke über die Themse in London?", new[] { "Tower Bridge", "Golden Gate Bridge", "Brooklyn Bridge" }, "Tower Bridge", "Die Tower Bridge überspannt die Themse in London."),
+        ("In welchem Land liegt Hollywood?", new[] { "USA", "England", "Australien" }, "USA", "Hollywood liegt in Los Angeles, USA."),
+        ("Welches Fahrzeug ist typisch für London (rot, zweistöckig)?", new[] { "double-decker bus", "yellow taxi", "tram" }, "double-decker bus", "Die roten, zweistöckigen Busse (double-decker buses) sind typisch für London."),
+        ("Wie heißt der bekannte Brauch in englischsprachigen Ländern im Dezember?", new[] { "Christmas", "Thanksgiving", "Halloween" }, "Christmas", "Weihnachten (Christmas) wird im Dezember gefeiert."),
+        ("Welches Sportereignis ist in England (Wimbledon) besonders bekannt?", new[] { "Tennis", "Baseball", "Eishockey" }, "Tennis", "Wimbledon ist eines der bekanntesten Tennisturniere der Welt."),
+        ("Was ist \"fish and chips\"?", new[] { "Ein typisch britisches Gericht aus Fisch und Pommes", "Ein amerikanisches Dessert", "Ein englisches Frühstücksgetränk" }, "Ein typisch britisches Gericht aus Fisch und Pommes", "\"Fish and chips\" ist ein typisch britisches Gericht aus frittiertem Fisch und Pommes."),
+        ("Welche berühmte Uhr befindet sich am britischen Parlament?", new[] { "Big Ben", "The London Eye", "Tower Bridge" }, "Big Ben", "Big Ben ist der Name der berühmten Turmuhr am britischen Parlament."),
+        ("Wie heißt der amerikanische Nationalfeiertag zu Ehren der Arbeit im September?", new[] { "Labor Day", "Independence Day", "Memorial Day" }, "Labor Day", "Labor Day wird in den USA im September zu Ehren der Arbeit gefeiert."),
+        ("In welcher amerikanischen Stadt liegt der Central Park?", new[] { "New York", "Los Angeles", "Chicago" }, "New York", "Der Central Park liegt mitten in New York City."),
+        ("Wie nennt man die traditionelle britische Zeremonie mit Wachen vor dem Buckingham Palace?", new[] { "Changing of the Guard", "Royal Wedding", "Queen's Speech" }, "Changing of the Guard", "\"Changing of the Guard\" ist die traditionelle Wachablösung vor dem Buckingham Palace."),
+        ("Welches Fest feiert man in englischsprachigen Ländern im Frühling mit bemalten Eiern?", new[] { "Easter", "Halloween", "Thanksgiving" }, "Easter", "Ostern (Easter) wird im Frühling u.a. mit bemalten Eiern gefeiert.")
+    };
+
+    private static QuizQuestion KulturUndTraditionen(Random r)
+    {
+        var f = KulturListe[r.Next(KulturListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Kultur und historischer Hintergrund", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Bekannte Orte und Feste: London (Big Ben, Tower Bridge), USA (Thanksgiving, Independence Day, Halloween)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NaturUmweltListe =
+    {
+        ("Wie sagt man auf Englisch \"Umweltschutz\"?", new[] { "environmental protection", "environment building", "nature shop" }, "environmental protection", "\"environmental protection\" bedeutet \"Umweltschutz\"."),
+        ("Was bedeutet \"weather\" auf Deutsch?", new[] { "Wetter", "Klima", "Jahreszeit" }, "Wetter", "\"weather\" bedeutet \"Wetter\"."),
+        ("Wie sagt man auf Englisch \"Mülltrennung\"?", new[] { "waste separation", "waste collection only", "waste burning" }, "waste separation", "\"waste separation\" bedeutet \"Mülltrennung\"."),
+        ("Was bedeutet \"countryside\" auf Deutsch?", new[] { "das Land/die ländliche Gegend", "die Stadt", "das Meer" }, "das Land/die ländliche Gegend", "\"countryside\" bedeutet \"das Land/die ländliche Gegend\"."),
+        ("Wie sagt man auf Englisch \"wilde Tiere\"?", new[] { "wild animals", "farm animals", "pet animals" }, "wild animals", "\"wild animals\" bedeutet \"wilde Tiere\"."),
+        ("Was bedeutet \"to recycle\" auf Deutsch?", new[] { "recyceln/wiederverwerten", "wegwerfen", "verschmutzen" }, "recyceln/wiederverwerten", "\"to recycle\" bedeutet \"recyceln/wiederverwerten\"."),
+        ("Wie sagt man auf Englisch \"Regenwald\"?", new[] { "rainforest", "rain field", "wet forest" }, "rainforest", "\"rainforest\" bedeutet \"Regenwald\"."),
+        ("Was bedeutet \"pollution\" auf Deutsch?", new[] { "Verschmutzung", "Sauberkeit", "Frischluft" }, "Verschmutzung", "\"pollution\" bedeutet \"Verschmutzung\"."),
+        ("Wie sagt man auf Englisch \"die Natur schützen\"?", new[] { "protect nature", "destroy nature", "ignore nature" }, "protect nature", "\"protect nature\" bedeutet \"die Natur schützen\"."),
+        ("Was bedeutet \"plant\" (als Verb) auf Deutsch?", new[] { "pflanzen", "ernten", "gießen" }, "pflanzen", "\"plant\" als Verb bedeutet \"pflanzen\"."),
+        ("Wie sagt man auf Englisch \"Klima\"?", new[] { "climate", "weather forecast", "temperature only" }, "climate", "\"climate\" bedeutet \"Klima\"."),
+        ("Was bedeutet \"endangered species\" auf Deutsch?", new[] { "bedrohte Tierart", "häufige Tierart", "Haustierart" }, "bedrohte Tierart", "\"endangered species\" bedeutet \"bedrohte Tierart\"."),
+        ("Wie sagt man auf Englisch \"erneuerbare Energie\"?", new[] { "renewable energy", "fossil energy", "no energy" }, "renewable energy", "\"renewable energy\" bedeutet \"erneuerbare Energie\"."),
+        ("Was bedeutet \"to save water\" auf Deutsch?", new[] { "Wasser sparen", "Wasser verschwenden", "Wasser verschmutzen" }, "Wasser sparen", "\"to save water\" bedeutet \"Wasser sparen\"."),
+        ("Wie sagt man auf Englisch \"Baum pflanzen\"?", new[] { "plant a tree", "cut a tree", "climb a tree" }, "plant a tree", "\"plant a tree\" bedeutet \"einen Baum pflanzen\"."),
+        ("Was bedeutet \"natural habitat\" auf Deutsch?", new[] { "natürlicher Lebensraum", "Zoo", "Wohnhaus" }, "natürlicher Lebensraum", "\"natural habitat\" bedeutet \"natürlicher Lebensraum\"."),
+        ("Wie sagt man auf Englisch \"Ozean\"?", new[] { "ocean", "lake", "river" }, "ocean", "\"ocean\" bedeutet \"Ozean\"."),
+        ("Was bedeutet \"drought\" auf Deutsch?", new[] { "Dürre/Trockenheit", "Überschwemmung", "Schneesturm" }, "Dürre/Trockenheit", "\"drought\" bedeutet \"Dürre/Trockenheit\"."),
+        ("Wie sagt man auf Englisch \"Plastikmüll\"?", new[] { "plastic waste", "plastic food", "plastic tree" }, "plastic waste", "\"plastic waste\" bedeutet \"Plastikmüll\"."),
+        ("Was bedeutet \"to reduce\" (im Umweltkontext) auf Deutsch?", new[] { "verringern/reduzieren", "vergrößern", "verdoppeln" }, "verringern/reduzieren", "\"to reduce\" bedeutet \"verringern/reduzieren\".")
+    };
+
+    private static QuizQuestion NaturUndUmwelt(Random r)
+    {
+        var f = NaturUmweltListe[r.Next(NaturUmweltListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Natur und Umwelt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Umwelt-Wortschatz: pollution, recycle, protect nature, renewable energy, endangered species."
+        };
+    }
+
     private static readonly (string Satz, string Loesung, string Regel)[] PastPerfectListe =
     {
         ("I ___ (visit) London last year.", "visited", "Eine abgeschlossene Handlung mit genauer Zeitangabe in der Vergangenheit (\"last year\") steht im Simple Past."),
@@ -237,6 +389,114 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { p.Passiv },
             Explanation = $"Passiv-Form: \"{p.Passiv}\". Bildung: Objekt des Aktivsatzes wird zum Subjekt, Verb als \"be\" + Partizip II.",
             HelpHint = "Passive Voice: Objekt des Aktivsatzes wird zum Subjekt, Verb = Form von \"to be\" + Partizip II (3. Form), der Handelnde steht optional mit \"by\"."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] IdentitaetListe =
+    {
+        ("Wie sagt man auf Englisch \"Zukunftspläne\"?", new[] { "future plans", "past plans", "present plans" }, "future plans", "\"future plans\" bedeutet \"Zukunftspläne\"."),
+        ("Was bedeutet \"role model\" auf Deutsch?", new[] { "Vorbild", "Rollenspiel", "Schauspieler" }, "Vorbild", "\"role model\" bedeutet \"Vorbild\"."),
+        ("Wie sagt man auf Englisch \"Sucht/Abhängigkeit\"?", new[] { "addiction", "attraction", "attention" }, "addiction", "\"addiction\" bedeutet \"Sucht/Abhängigkeit\"."),
+        ("Was bedeutet \"to pursue a career\" auf Deutsch?", new[] { "eine Karriere verfolgen/anstreben", "eine Karriere beenden", "eine Karriere ablehnen" }, "eine Karriere verfolgen/anstreben", "\"to pursue a career\" bedeutet \"eine Karriere verfolgen/anstreben\"."),
+        ("Wie sagt man auf Englisch \"Migration\"?", new[] { "migration", "vacation", "population" }, "migration", "\"migration\" bedeutet \"Migration\"."),
+        ("Was bedeutet \"identity\" auf Deutsch?", new[] { "Identität", "Ideologie", "Idee" }, "Identität", "\"identity\" bedeutet \"Identität\"."),
+        ("Wie sagt man auf Englisch \"Hoffnungen und Träume\"?", new[] { "hopes and dreams", "fears and doubts", "rules and laws" }, "hopes and dreams", "\"hopes and dreams\" bedeutet \"Hoffnungen und Träume\"."),
+        ("Was bedeutet \"to overcome a challenge\" auf Deutsch?", new[] { "eine Herausforderung meistern", "eine Herausforderung vermeiden", "eine Herausforderung ignorieren" }, "eine Herausforderung meistern", "\"to overcome a challenge\" bedeutet \"eine Herausforderung meistern\"."),
+        ("Wie sagt man auf Englisch \"Lebensentwurf\"?", new[] { "life plan", "life story", "life span" }, "life plan", "\"life plan\" bedeutet \"Lebensentwurf\"."),
+        ("Was bedeutet \"peer pressure\" auf Deutsch?", new[] { "Gruppenzwang", "Elterndruck", "Schuldruck" }, "Gruppenzwang", "\"peer pressure\" bedeutet \"Gruppenzwang\"."),
+        ("Wie sagt man auf Englisch \"Suchtprävention\"?", new[] { "addiction prevention", "addiction promotion", "addiction cure only" }, "addiction prevention", "\"addiction prevention\" bedeutet \"Suchtprävention\"."),
+        ("Was bedeutet \"self-confidence\" auf Deutsch?", new[] { "Selbstvertrauen", "Selbstzweifel", "Selbstkontrolle" }, "Selbstvertrauen", "\"self-confidence\" bedeutet \"Selbstvertrauen\"."),
+        ("Wie sagt man auf Englisch \"Generationenkonflikt\"?", new[] { "generation gap", "generation game", "generation growth" }, "generation gap", "\"generation gap\" bedeutet \"Generationenkonflikt\"."),
+        ("Was bedeutet \"to set a goal\" auf Deutsch?", new[] { "sich ein Ziel setzen", "ein Ziel vergessen", "ein Ziel ablehnen" }, "sich ein Ziel setzen", "\"to set a goal\" bedeutet \"sich ein Ziel setzen\"."),
+        ("Wie sagt man auf Englisch \"Vorurteil\"?", new[] { "prejudice", "preference", "president" }, "prejudice", "\"prejudice\" bedeutet \"Vorurteil\"."),
+        ("Was bedeutet \"to struggle with something\" auf Deutsch?", new[] { "mit etwas kämpfen/Schwierigkeiten haben", "etwas problemlos schaffen", "etwas ignorieren" }, "mit etwas kämpfen/Schwierigkeiten haben", "\"to struggle with something\" bedeutet \"mit etwas kämpfen/Schwierigkeiten haben\"."),
+        ("Wie sagt man auf Englisch \"Herkunft\"?", new[] { "background/origin", "future", "destination" }, "background/origin", "\"background/origin\" bedeutet \"Herkunft\"."),
+        ("Was bedeutet \"to belong somewhere\" auf Deutsch?", new[] { "irgendwo dazugehören", "irgendwo fremd sein", "irgendwohin reisen" }, "irgendwo dazugehören", "\"to belong somewhere\" bedeutet \"irgendwo dazugehören\"."),
+        ("Wie sagt man auf Englisch \"berühmte Persönlichkeit\"?", new[] { "celebrity/famous person", "unknown stranger", "ordinary citizen" }, "celebrity/famous person", "\"celebrity/famous person\" bedeutet \"berühmte Persönlichkeit\"."),
+        ("Was bedeutet \"to make a decision\" auf Deutsch?", new[] { "eine Entscheidung treffen", "eine Entscheidung vergessen", "eine Entscheidung ablehnen" }, "eine Entscheidung treffen", "\"to make a decision\" bedeutet \"eine Entscheidung treffen\".")
+    };
+
+    private static QuizQuestion IdentitaetUndZukunft(Random r)
+    {
+        var f = IdentitaetListe[r.Next(IdentitaetListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Identität, Lebensentwürfe und Zukunft", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Identität und Zukunft: future plans, role model, addiction, peer pressure, self-confidence."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GesellschaftMedienListe =
+    {
+        ("Wie sagt man auf Englisch \"Cybermobbing\"?", new[] { "cyberbullying", "cybersecurity", "cyberspace" }, "cyberbullying", "\"cyberbullying\" bedeutet \"Cybermobbing\"."),
+        ("Was bedeutet \"stereotype\" auf Deutsch?", new[] { "Klischee/Stereotyp", "Statistik", "Strategie" }, "Klischee/Stereotyp", "\"stereotype\" bedeutet \"Klischee/Stereotyp\"."),
+        ("Wie sagt man auf Englisch \"kulturelle Vielfalt\"?", new[] { "cultural diversity", "cultural unity", "cultural history" }, "cultural diversity", "\"cultural diversity\" bedeutet \"kulturelle Vielfalt\"."),
+        ("Was bedeutet \"to discriminate against someone\" auf Deutsch?", new[] { "jemanden diskriminieren", "jemanden loben", "jemanden unterstützen" }, "jemanden diskriminieren", "\"to discriminate against someone\" bedeutet \"jemanden diskriminieren\"."),
+        ("Wie sagt man auf Englisch \"soziale Medien\"?", new[] { "social media", "social class", "social work" }, "social media", "\"social media\" bedeutet \"soziale Medien\"."),
+        ("Was bedeutet \"to spread rumours\" auf Deutsch?", new[] { "Gerüchte verbreiten", "Gerüchte widerlegen", "Gerüchte erfinden ohne sie zu teilen" }, "Gerüchte verbreiten", "\"to spread rumours\" bedeutet \"Gerüchte verbreiten\"."),
+        ("Wie sagt man auf Englisch \"Meinungsfreiheit\"?", new[] { "freedom of speech", "freedom of movement", "freedom of choice" }, "freedom of speech", "\"freedom of speech\" bedeutet \"Meinungsfreiheit\"."),
+        ("Was bedeutet \"to be biased\" auf Deutsch?", new[] { "voreingenommen sein", "neutral sein", "unwissend sein" }, "voreingenommen sein", "\"to be biased\" bedeutet \"voreingenommen sein\"."),
+        ("Wie sagt man auf Englisch \"Vielfalt und Toleranz\"?", new[] { "diversity and tolerance", "uniformity and rejection", "similarity and doubt" }, "diversity and tolerance", "\"diversity and tolerance\" bedeutet \"Vielfalt und Toleranz\"."),
+        ("Was bedeutet \"fake news\" auf Deutsch?", new[] { "Falschmeldungen/erfundene Nachrichten", "aktuelle Nachrichten", "geprüfte Nachrichten" }, "Falschmeldungen/erfundene Nachrichten", "\"fake news\" bedeutet \"Falschmeldungen/erfundene Nachrichten\"."),
+        ("Wie sagt man auf Englisch \"Regeln des Zusammenlebens\"?", new[] { "rules of coexistence", "rules of sports", "rules of grammar" }, "rules of coexistence", "\"rules of coexistence\" bedeutet \"Regeln des Zusammenlebens\"."),
+        ("Was bedeutet \"to respect differences\" auf Deutsch?", new[] { "Unterschiede respektieren", "Unterschiede ignorieren", "Unterschiede bekämpfen" }, "Unterschiede respektieren", "\"to respect differences\" bedeutet \"Unterschiede respektieren\"."),
+        ("Wie sagt man auf Englisch \"Vorurteile abbauen\"?", new[] { "break down prejudice", "build up prejudice", "hide prejudice" }, "break down prejudice", "\"break down prejudice\" bedeutet \"Vorurteile abbauen\"."),
+        ("Was bedeutet \"a multicultural society\" auf Deutsch?", new[] { "eine multikulturelle Gesellschaft", "eine einsprachige Gesellschaft", "eine isolierte Gesellschaft" }, "eine multikulturelle Gesellschaft", "\"a multicultural society\" bedeutet \"eine multikulturelle Gesellschaft\"."),
+        ("Wie sagt man auf Englisch \"sich in jemanden hineinversetzen\"?", new[] { "put yourself in someone's shoes", "put someone in a box", "put someone on hold" }, "put yourself in someone's shoes", "\"put yourself in someone's shoes\" bedeutet \"sich in jemanden hineinversetzen\"."),
+        ("Was bedeutet \"online privacy\" auf Deutsch?", new[] { "Privatsphäre im Internet", "Öffentlichkeit im Internet", "Werbung im Internet" }, "Privatsphäre im Internet", "\"online privacy\" bedeutet \"Privatsphäre im Internet\"."),
+        ("Wie sagt man auf Englisch \"Nachrichtenquelle prüfen\"?", new[] { "check a news source", "ignore a news source", "invent a news source" }, "check a news source", "\"check a news source\" bedeutet \"eine Nachrichtenquelle prüfen\"."),
+        ("Was bedeutet \"to bully someone\" auf Deutsch?", new[] { "jemanden mobben/schikanieren", "jemandem helfen", "jemanden loben" }, "jemanden mobben/schikanieren", "\"to bully someone\" bedeutet \"jemanden mobben/schikanieren\"."),
+        ("Wie sagt man auf Englisch \"unterschiedliche Perspektiven\"?", new[] { "different perspectives", "same perspective", "no perspective" }, "different perspectives", "\"different perspectives\" bedeutet \"unterschiedliche Perspektiven\"."),
+        ("Was bedeutet \"to raise awareness\" auf Deutsch?", new[] { "das Bewusstsein schärfen/aufmerksam machen", "etwas verschweigen", "etwas verbieten" }, "das Bewusstsein schärfen/aufmerksam machen", "\"to raise awareness\" bedeutet \"das Bewusstsein schärfen/aufmerksam machen\".")
+    };
+
+    private static QuizQuestion GesellschaftUndMedien(Random r)
+    {
+        var f = GesellschaftMedienListe[r.Next(GesellschaftMedienListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Gesellschaft, Medien und Vielfalt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Gesellschaft und Medien: cyberbullying, stereotype, fake news, cultural diversity, freedom of speech."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] UmweltNachhaltigkeitListe =
+    {
+        ("Wie sagt man auf Englisch \"CO2-Fußabdruck\"?", new[] { "carbon footprint", "carbon dioxide only", "footprint size" }, "carbon footprint", "\"carbon footprint\" bedeutet \"CO2-Fußabdruck\"."),
+        ("Was bedeutet \"global warming\" auf Deutsch?", new[] { "globale Erwärmung", "globale Abkühlung", "globaler Handel" }, "globale Erwärmung", "\"global warming\" bedeutet \"globale Erwärmung\"."),
+        ("Wie sagt man auf Englisch \"nachhaltig\"?", new[] { "sustainable", "unstable", "unavailable" }, "sustainable", "\"sustainable\" bedeutet \"nachhaltig\"."),
+        ("Was bedeutet \"greenhouse gases\" auf Deutsch?", new[] { "Treibhausgase", "Frischluft", "Sauerstoff" }, "Treibhausgase", "\"greenhouse gases\" bedeutet \"Treibhausgase\"."),
+        ("Wie sagt man auf Englisch \"fossile Brennstoffe\"?", new[] { "fossil fuels", "renewable fuels", "clean fuels" }, "fossil fuels", "\"fossil fuels\" bedeutet \"fossile Brennstoffe\"."),
+        ("Was bedeutet \"to reduce emissions\" auf Deutsch?", new[] { "Emissionen verringern", "Emissionen erhöhen", "Emissionen ignorieren" }, "Emissionen verringern", "\"to reduce emissions\" bedeutet \"Emissionen verringern\"."),
+        ("Wie sagt man auf Englisch \"erneuerbare Energien\"?", new[] { "renewable energy sources", "non-renewable energy sources", "no energy sources" }, "renewable energy sources", "\"renewable energy sources\" bedeutet \"erneuerbare Energien\"."),
+        ("Was bedeutet \"plastic pollution\" auf Deutsch?", new[] { "Plastikverschmutzung", "Plastikherstellung nur", "Plastikrecycling" }, "Plastikverschmutzung", "\"plastic pollution\" bedeutet \"Plastikverschmutzung\"."),
+        ("Wie sagt man auf Englisch \"Klimawandel bekämpfen\"?", new[] { "fight climate change", "ignore climate change", "cause climate change" }, "fight climate change", "\"fight climate change\" bedeutet \"den Klimawandel bekämpfen\"."),
+        ("Was bedeutet \"to conserve resources\" auf Deutsch?", new[] { "Ressourcen schonen", "Ressourcen verschwenden", "Ressourcen verkaufen" }, "Ressourcen schonen", "\"to conserve resources\" bedeutet \"Ressourcen schonen\"."),
+        ("Wie sagt man auf Englisch \"ökologischer Fußabdruck\"?", new[] { "ecological footprint", "economic footprint", "physical footprint" }, "ecological footprint", "\"ecological footprint\" bedeutet \"ökologischer Fußabdruck\"."),
+        ("Was bedeutet \"environmental awareness\" auf Deutsch?", new[] { "Umweltbewusstsein", "Umweltverschmutzung", "Umweltzerstörung" }, "Umweltbewusstsein", "\"environmental awareness\" bedeutet \"Umweltbewusstsein\"."),
+        ("Wie sagt man auf Englisch \"Meeresspiegelanstieg\"?", new[] { "rising sea levels", "falling sea levels", "sea level only" }, "rising sea levels", "\"rising sea levels\" bedeutet \"Meeresspiegelanstieg\"."),
+        ("Was bedeutet \"to go vegan/vegetarian\" auf Deutsch?", new[] { "vegan/vegetarisch leben", "nur Fleisch essen", "nichts essen" }, "vegan/vegetarisch leben", "\"to go vegan/vegetarian\" bedeutet \"vegan/vegetarisch leben\"."),
+        ("Wie sagt man auf Englisch \"Naturkatastrophe\"?", new[] { "natural disaster", "natural beauty", "natural resource only" }, "natural disaster", "\"natural disaster\" bedeutet \"Naturkatastrophe\"."),
+        ("Was bedeutet \"to protect the environment\" auf Deutsch?", new[] { "die Umwelt schützen", "die Umwelt zerstören", "die Umwelt ignorieren" }, "die Umwelt schützen", "\"to protect the environment\" bedeutet \"die Umwelt schützen\"."),
+        ("Wie sagt man auf Englisch \"Umweltverschmutzung verursachen\"?", new[] { "cause pollution", "prevent pollution", "measure pollution only" }, "cause pollution", "\"cause pollution\" bedeutet \"Umweltverschmutzung verursachen\"."),
+        ("Was bedeutet \"clean energy\" auf Deutsch?", new[] { "saubere Energie", "schmutzige Energie", "teure Energie" }, "saubere Energie", "\"clean energy\" bedeutet \"saubere Energie\"."),
+        ("Wie sagt man auf Englisch \"nachhaltiger Konsum\"?", new[] { "sustainable consumption", "excessive consumption", "no consumption" }, "sustainable consumption", "\"sustainable consumption\" bedeutet \"nachhaltiger Konsum\"."),
+        ("Was bedeutet \"to take action against climate change\" auf Deutsch?", new[] { "gegen den Klimawandel aktiv werden", "den Klimawandel ignorieren", "den Klimawandel leugnen" }, "gegen den Klimawandel aktiv werden", "\"to take action against climate change\" bedeutet \"gegen den Klimawandel aktiv werden\".")
+    };
+
+    private static QuizQuestion UmweltUndNachhaltigkeit(Random r)
+    {
+        var f = UmweltNachhaltigkeitListe[r.Next(UmweltNachhaltigkeitListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Umwelt und Nachhaltigkeit", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Umwelt und Nachhaltigkeit: carbon footprint, global warming, renewable energy, sustainable."
         };
     }
 }
