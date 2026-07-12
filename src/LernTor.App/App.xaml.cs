@@ -169,7 +169,11 @@ public partial class App : Application
         using (var scope = _host.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<LernTorDbContext>();
+            // Frische Installation: EnsureCreated legt das komplette Schema an. Bestehende DB:
+            // EnsureCreated tut nichts - der SchemaUpdater ergänzt dann fehlende Tabellen/Spalten,
+            // damit Profile & Fortschritte App-Updates überleben (kein DB-Löschen mehr nötig).
             await db.Database.EnsureCreatedAsync();
+            SqliteSchemaUpdater.Update(db);
         }
 
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();

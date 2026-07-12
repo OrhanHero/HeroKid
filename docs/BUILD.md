@@ -66,20 +66,23 @@ Das fertige Setup landet in `dist\LernTor-Setup-1.0.0.exe`. Der Installer:
 .\src\LernTor.Installer\install-autostart.ps1 -Action uninstall -ExePath "C:\Pfad\zu\LernTor.exe"
 ```
 
-## 6. Datenbankschema wurde erweitert (Profile)
+## 6. Datenbankschema-Updates: automatisch, kein DB-Löschen mehr nötig
 
-Falls du LernTor schon vorher getestet hast, existiert bereits eine `lerntor.db` unter
-`%LOCALAPPDATA%\LernTor\`. Mehrere Features haben seither neue Tabellen/Spalten hinzugefügt oder
-entfernt (Profile, eigene Aufgaben, die entfernte `DailyTimeLimitMinutes`-Spalte, die zwischenzeitlichen
-NotebookLM-/Anbieter-Auswahl-Felder - inzwischen wieder entfernt, LernTor ist komplett lokal ohne
-Cloud-Anbindung -, `LocalLlmModelPath`, `AvatarEmoji` an den Profilen für die neue
-Profil-Dashboard-Optik, `LocalLlmModelKey` für die KI-Modell-Auswahl im Eltern-Bereich, zuletzt
-`TotalStars` an den Profilen und `EarnedStarsToday` am Tages-Fortschritt für das
-Belohnungs-Sterne-System, zuletzt die neue Tabelle `SavedArticles` für gemerkte News-Artikel
-(🔖 Lesezeichen/Offline-Lesen)); da die App `EnsureCreated` statt echter EF-Core-Migrationen nutzt,
-wird eine bereits vorhandene Datenbank NICHT automatisch aktualisiert. Bitte vor dem nächsten Start
-diese Datei löschen (Fortschritt geht dabei verloren, das ist in dieser Entwicklungsphase unkritisch)
-- die App legt beim nächsten Start automatisch eine neue Datenbank inkl. der beiden Beispielprofile an.
+Seit dem automatischen Schema-Abgleich (`LernTor.Data.SqliteSchemaUpdater`, läuft bei jedem
+App-Start nach `EnsureCreated`) werden **additive** Schema-Änderungen - neue Tabellen, neue
+Spalten, neue Indizes - automatisch auf eine bestehende `lerntor.db` angewendet. Profile, Sterne
+und Fortschritte überleben App-Updates; das früher hier beschriebene manuelle Löschen der
+Datenbank entfällt. Angewendete Schema-Updates werden im Fehlerprotokoll
+(`%LOCALAPPDATA%\LernTor\logs`) vermerkt.
+
+Nur in zwei seltenen Fällen ist weiterhin ein manuelles Löschen von
+`%LOCALAPPDATA%\LernTor\lerntor.db` nötig (die App legt danach automatisch eine frische
+Datenbank inkl. der beiden Beispielprofile an):
+
+- eine Spalte wurde **entfernt oder umbenannt** und die tote Alt-Spalte stört tatsächlich
+  (normalerweise bleibt sie einfach harmlos stehen), oder
+- vorhandene **Werte müssen umgedeutet** werden - z.B. wenn ein numerisch gespeichertes Enum
+  umsortiert wurde (deshalb gilt weiterhin die Regel: Enums als Strings persistieren).
 
 ## 7. Erststart / Eltern-Passwort
 

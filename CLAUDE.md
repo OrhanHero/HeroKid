@@ -45,9 +45,13 @@ iscc src\LernTor.Installer\setup.iss
 ```
 
 Local SQLite DB lives at `%LOCALAPPDATA%\LernTor\lerntor.db`. The app uses EF Core's
-`EnsureCreated()`, **not** real migrations — schema changes (new columns/tables, or `Subject`/
-`LearningStage` enum reshuffles) are not applied to an existing DB file. Delete it manually after
-such a change; the app reseeds default profiles on next launch.
+`EnsureCreated()` plus `SqliteSchemaUpdater.Update()` on startup — **additive** schema changes
+(new tables, new columns, new indexes) are applied automatically to an existing DB, derived at
+runtime from `GenerateCreateScript()` (real EF migrations would need the `dotnet ef` tooling on
+every schema change, which this SDK-less dev environment cannot run). Deleting the DB manually is
+only needed for the rare non-additive change: removed/renamed columns, or reinterpreting existing
+values (e.g. reordering an enum that was persisted numerically — persist enums as strings to
+avoid this, see `JsonOptions.Default`).
 
 ## Architecture
 

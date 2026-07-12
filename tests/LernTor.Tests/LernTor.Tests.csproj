@@ -21,6 +21,8 @@
     <ProjectReference Include="..\..\src\LernTor.Core\LernTor.Core.csproj" />
     <ProjectReference Include="..\..\src\LernTor.ContentGen\LernTor.ContentGen.csproj" />
     <ProjectReference Include="..\..\src\LernTor.News\LernTor.News.csproj" />
+    <!-- Für die Schema-Abgleich-Tests (SqliteSchemaUpdater) gegen echte SQLite-Temp-Dateien. -->
+    <ProjectReference Include="..\..\src\LernTor.Data\LernTor.Data.csproj" />
   </ItemGroup>
 
 </Project>
