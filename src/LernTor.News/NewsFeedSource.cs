@@ -52,6 +52,17 @@ public static class CuratedNewsFeeds
         // alltagsrelevant; der NewsCategoryClassifier sortiert die Artikel in die KI-Rubrik.
         new NewsFeedSource("heise online", "https://www.heise.de/rss/heise-atom.xml",
             NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Deutschland),
+
+        // Spiele-Rubrik: echte Gaming-Nachrichten statt nur zufälliger Spiele-Treffer aus
+        // allgemeinen Quellen (siehe NewsCategoryClassifier).
+        new NewsFeedSource("GameStar", "https://www.gamestar.de/rss/gaming.rss",
+            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Spiele),
+
+        // Finanzen-Rubrik: echte Wirtschafts-/Finanznachrichten statt nur zufälliger Treffer aus
+        // allgemeinen Quellen; ergänzt (verdrängt nicht) das eingebaute rotierende
+        // Finanzwissen-Erklärstück in FinanceKnowledgeArticles.
+        new NewsFeedSource("finanzen.net", "https://www.finanzen.net/rss/news",
+            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Finanzen),
     };
 
     /// <summary>Schlüsselwörter zur Priorisierung von Artikeln nach den gewünschten Regionen/Themen.</summary>

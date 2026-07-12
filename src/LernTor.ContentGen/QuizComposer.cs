@@ -5,8 +5,11 @@ using LernTor.Core.Models;
 namespace LernTor.ContentGen;
 
 /// <summary>
-/// Stellt das gemischte Abschlussquiz aus allen aktiven Fachbereichen zusammen (Ziel: 20-25 Fragen)
-/// und kann gezielt schwache Bereiche für eine Wiederholung nachliefern.
+/// Stellt das gemischte Abschlussquiz aus allen aktiven Fachbereichen zusammen (Ziel beim ersten
+/// Versuch: 20 Fragen, bei einer Wiederholung nach nicht bestandenem Quiz: 15 Fragen - die genaue
+/// Zielzahl gibt der Aufrufer über den Parameter <c>targetTotalQuestions</c> vor, siehe
+/// <c>MainViewModel.BuildFinalQuizViewModelAsync</c>) und kann gezielt schwache Bereiche für eine
+/// Wiederholung nachliefern.
 /// </summary>
 public sealed class QuizComposer
 {

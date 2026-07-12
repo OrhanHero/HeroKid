@@ -25,6 +25,10 @@ public sealed class RssNewsService
     /// nicht hart ausgefiltert, aber in der Rangliste deutlich nach unten gestuft (siehe
     /// CuratedNewsFeeds.SensitiveKeywords), damit harmlosere Artikel bevorzugt ausgewählt werden.
     /// Fehlerhafte/nicht erreichbare Feeds werden übersprungen statt die ganze Ladung abzubrechen.
+    /// Zusätzlich zu den <paramref name="targetCount"/> ausgewählten Artikeln kommen bis zu zwei
+    /// garantierte Extra-Artikel dazu (zählen nicht gegen das Ziel-Kontingent): eine echte
+    /// GameStar-Meldung für die Spiele-Rubrik (falls der Feed heute etwas liefert) und das
+    /// rotierende Finanzwissen-Erklärstück - macht standardmäßig bis zu 10 Artikel am Tag.
     /// </summary>
     /// <param name="childAge">Alter des aktiven Kind-Profils für den automatischen Altersfilter:
     /// bis einschließlich 9 Jahren werden Artikel mit verstörenden Schlüsselwörtern KOMPLETT
@@ -96,6 +100,23 @@ public sealed class RssNewsService
         foreach (var (item, source) in ranked)
         {
             articles.Add(BuildArticle(item, source));
+        }
+
+        // Spiele-Rubrik: zusätzlich zum normalen Ziel-Kontingent mindestens eine echte
+        // GameStar-Meldung garantieren (bewusst zusätzlich zu targetCount, analog zum
+        // Finanzwissen-Erklärstück unten) - sonst hinge die Rubrik rein vom Zufall ab, ob ein
+        // anderer Feed gerade ein Spiele-Schlüsselwort trifft. Ein bereits im Ranking gezogener
+        // Spiele-Artikel zählt nicht doppelt.
+        var extraSpieleArticle = deduplicated
+            .Except(ranked)
+            .Where(x => x.Source.DefaultCategory == NewsCategory.Spiele)
+            .OrderBy(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
+            .ThenByDescending(x => x.Item.PublishDate)
+            .FirstOrDefault();
+
+        if (extraSpieleArticle.Item is not null)
+        {
+            articles.Add(BuildArticle(extraSpieleArticle.Item, extraSpieleArticle.Source));
         }
 
         // Finanzen-Rubrik: täglich EIN rotierendes "Finanzwissen"-Erklärstück anhängen (kuratiert,

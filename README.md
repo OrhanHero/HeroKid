@@ -64,8 +64,11 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    aufbereitet (sprachliches Vorbild: logo!/Checker-Sendungen). **Rubriken**: 🐻 Berlin (wichtigste
    regionale Rubrik, garantierte Plätze), 🇩🇪 Deutschland, 🌍 Welt, 🇹🇷 Türkei (täglich garantierte
    Plätze; seriöse Quellen: Anadolu Ajansı, TRT Haber, DW Türkçe – bewusst keine Boulevardquellen),
-   🤖 KI & Technik, 🎮 Spiele, 💰 Finanzen, ⛅ Wetter. Themen-Rubriken werden per
-   Schlüsselwort-Klassifikation quer über alle Quellen erkannt (`NewsCategoryClassifier`).
+   🤖 KI & Technik, 🎮 Spiele (dediziert: GameStar), 💰 Finanzen (dediziert: finanzen.net), ⛅ Wetter.
+   Themen-Rubriken werden zusätzlich per Schlüsselwort-Klassifikation quer über alle Quellen erkannt
+   (`NewsCategoryClassifier`) - eine Minecraft-Meldung von tagesschau.de landet trotzdem in 🎮 Spiele.
+   Spiele (GameStar) bekommt zusätzlich zum normalen Tages-Kontingent einen garantierten Extra-Artikel
+   (analog zum rotierenden Finanzwissen-Erklärstück) - macht standardmäßig bis zu 10 Artikel am Tag.
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
    (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes
    `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und EINE Verständnisfrage, die
@@ -118,10 +121,12 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:
    dort bestraft sich Raten von selbst (unter 50 % bleibt der PC gesperrt).
-5. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl passt sich automatisch an, wie
-   viele Fächer aktiv sind), ≥50% richtig → PC wird freigeschaltet. Bei Nichtbestehen werden gezielt mehr
-   Fragen aus den schwachen Fächern gestellt. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder
-   Anzeige neu gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
+5. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl je Fach passt sich automatisch
+   an, wie viele Fächer aktiv sind), Ziel **20 Fragen** beim ersten Versuch, ≥50% richtig → PC wird
+   freigeschaltet. Bei Nichtbestehen ein kürzeres Wiederholungsquiz mit Ziel **15 Fragen**: schwache
+   Fächer bekommen konzentriert Fragen (mind. 2 je Fach), der Rest füllt ein allgemeines Mini-Quiz über
+   alle aktiven Fächer auf. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder Anzeige neu
+   gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
 
 Fortschritt wird laufend in einer lokalen SQLite-Datenbank gespeichert (`%LOCALAPPDATA%\LernTor\lerntor.db`),
 ein Absturz oder Neustart verliert also keinen Fortschritt.
@@ -289,7 +294,8 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
   durch Rückfragen und Denkanstöße zu helfen - erst wenn das Kind es mehrfach probiert hat oder
   ausdrücklich danach fragt, soll die KI die Lösung erklären.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
-  KI-/Technik-Quelle (heise online) und einer Herabstufung (nicht Ausfilterung) von Artikeln mit
+  KI-/Technik-Quelle (heise online), einer dedizierten Spiele-Quelle (GameStar) und einer dedizierten
+  Finanzen-Quelle (finanzen.net), sowie einer Herabstufung (nicht Ausfilterung) von Artikeln mit
   verstörenden Themen (Krieg, Gewaltverbrechen, ...) über `SensitiveKeywords`. RSS-URLs von
   Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare Feeds werden übersprungen, sollten aber
   gelegentlich geprüft werden. Inzwischen auf einem echten Windows-Rechner getestet und bestätigt
