@@ -70,16 +70,33 @@ LernTor.Installer                          — Inno Setup script + PowerShell au
 
 ### Content generators (`LernTor.ContentGen/Generators`)
 
-Every subject (Mathematik, Deutsch, Türkisch, Englisch, Biologie, Chemie, Physik, Gewi, Politik,
-Geo, Ethik, Itg) is one `ExerciseGeneratorBase` subclass. Each exposes a
-`TopicsByGrade: IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>>` — a topic is just a
-`Random -> QuizQuestion` delegate, usually backed by a small fixed array of example
-question/answer/explanation tuples (Math is the exception: it generates fresh numbers instead of
-picking from a fixed pool). `ExerciseGeneratorBase.Generate()` handles de-duplication itself: it
-retries on a colliding `Prompt` text (bounded attempts) before falling back to allowing repeats if
-a topic's pool is smaller than the requested count. Adding a new topic to an existing subject only
-requires a new private method + an entry in `TopicsByGrade` — no changes needed anywhere else
-(`QuizComposer`, ViewModels, tests) since they all iterate generically.
+Every subject in the `Subject` enum (`LernTor.Core.Enums.Subject` — currently 14 curriculum
+subjects plus `News`, which has no generator) is one `ExerciseGeneratorBase` subclass. Each exposes
+a `TopicsByGrade: IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>>` — a topic is just a
+`Random -> QuizQuestion` delegate, backed by a curated fixed array of ~20
+question/answer/explanation tuples per topic (Math is the exception: it generates fresh numbers
+instead of picking from a fixed pool; ~20 is the target pool size everywhere else so a profile
+doesn't exhaust a topic quickly once "never repeat a correctly-answered prompt" — see below —
+kicks in). `ExerciseGeneratorBase.Generate()` handles de-duplication itself: it retries on a
+colliding `Prompt` text (bounded attempts) before falling back to allowing repeats if a topic's
+pool is smaller than the requested count. Adding a new topic to an existing subject only requires a
+new private method + an entry in `TopicsByGrade` — no changes needed anywhere else (`QuizComposer`,
+ViewModels, tests) since they all iterate generically. Adding a whole new *subject* additionally
+touches `Subject`/`LearningStage` enums, `LearningStageSubjects.Map`,
+`ProgressGateService.SequentialOrder`, the default generator list in `QuizComposer()`,
+`SubjectToTitleConverter`, `ParentSettingsViewModel`'s toggle list, and DE/TR `Translations` — see
+any `Add <Subject> as a new subject` commit for the exact file list.
+
+Since curated pools are finite, three repositories in `LernTor.Data` cooperate to keep questions
+feeling fresh across sessions, all funneled into the `recentlySeenPrompts` parameter threaded
+through `ExerciseGeneratorBase.Generate()`/`QuizComposer`: `ActivityLogRepository.GetRecentPromptsAsync`
+supplies a rolling freshness window of recently-asked prompts; `MasteredPromptRepository` tracks
+prompts a profile has *ever* answered correctly and excludes them permanently (falls back to
+allowing repeats only once a topic's entire pool is mastered); `ReviewQuestionRepository` is the
+"Fehler-Kartei" — prompts answered *incorrectly* are snapshotted (not regenerated, since generated
+questions aren't reproducible the next day) and resurface first on later days, marked 🔁, until
+answered correctly twice in a row. `MainViewModel` (App) is what assembles and combines these three
+sources before calling into `ContentGen`.
 
 `QuizComposer.ComposeFinalQuiz` builds the final quiz dynamically: it excludes generators for
 subjects in the caller-supplied `disabledSubjects` set, then divides `targetTotalQuestions` (default
@@ -116,6 +133,18 @@ Localization (`LernTor.App.Localization.LocalizationService`) is a hand-rolled s
 string indexer over `Translations.Map` (DE/TR), bound in XAML via
 `{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Some_Key]}`. Switching
 `CurrentLanguage` raises `PropertyChanged("Item[]")` so every indexer binding re-evaluates.
+
+### Local LLM (`LernTor.ContentGen/Llm`, `/HomeworkChat`, `/TeacherImport`)
+
+LernTor's only AI is a locally-loaded GGUF model via [LLamaSharp](https://github.com/SciSharp/LLamaSharp)
+(CPU-only backend, no cloud calls anywhere) — `LocalLlmModelHost` loads it once and keeps it in
+memory. Two unrelated features share this one host: `LocalLlmQuestionSuggester` (turns
+teacher-uploaded PDF/Word documents, extracted via `PdfPigTextExtractor`/`OpenXmlWordTextExtractor`,
+into draft `CustomQuestion`s a parent must approve) and `LocalLlmHomeworkHelpChatService` (the
+kid-facing "🤖 KI fragen" chat in `QuestionCard.xaml`, shared by News/Exercise/FinalQuiz). Model
+files are chosen from `LocalLlmModelCatalog` and auto-downloaded to `%LOCALAPPDATA%\LernTor\models\`
+on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpClient`'s default
+100s timeout previously aborted multi-GB downloads mid-stream — a real bug, not hypothetical).
 
 ## Hard-won gotchas (don't reintroduce these)
 
