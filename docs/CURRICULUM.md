@@ -232,3 +232,321 @@ Simplifizierungen dieser App gegenüber dem vollständigen RLP):
 Dieser Abgleich verbessert die Abdeckung gezielt, ist aber weiterhin keine vollständige 1:1-Analyse
 aller RLP-Themenfelder für alle zehn Jahrgangsstufen - die App konzentriert sich bewusst auf Klasse 6
 und 9.
+
+## Vollständiger Content-Plan-Abgleich nach Profil (Emirhan / Batuhan)
+
+Quelle: internes Word-Dokument "LernTor Native - vollständiger und lückenloser Rahmenlehrplan
+Berlin" mit den kompletten Themenfeldern für die zwei realen Ziel-Profile dieser App:
+
+- **Emirhan** (geb. 09.05.2014, 6. Klasse, Niveaustufe D) → entspricht `GradeLevel.Klasse6`
+- **Batuhan** (geb. 16.08.2011, 9. Klasse, Niveaustufe G) → entspricht `GradeLevel.Klasse9`
+
+Der Haken-Status je Themenfeld wurde **nicht aus dem Gedächtnis geschätzt**, sondern direkt aus dem
+aktuellen Code abgeleitet: für jedes Fach wurde die `TopicsByGrade`-Liste des jeweiligen Generators
+in `src/LernTor.ContentGen/Generators/*.cs` mit dem passenden `GradeLevel` gegen die Themenfelder des
+Dokuments abgeglichen. `- [x]` heißt: es existiert ein Topic (echte Beispielaufgaben inkl.
+Erklärung/HelpHint), das dieses Themenfeld inhaltlich abdeckt. `- [ ]` heißt: (noch) kein
+entsprechendes Topic vorhanden - unabhängig davon, ob das Fach selbst schon existiert oder nicht.
+Bei Fächern, die es in der App noch gar nicht gibt (Kunst, Musik, Sport, WAT, Naturwissenschaften
+WP 7-10), sind entsprechend alle Themenfelder offen.
+
+### Emirhan (Klasse 6, Niveaustufe D)
+
+#### Deutsch (`GermanGenerator.cs`)
+
+- [x] Vertiefung von Lese-/Schreibstrategien sowie sicheres Anwenden von Rechtschreibregeln (→ `GrossKleinschreibung`, `AdjektivSteigerung`)
+- [x] Literarische Texte: Balladen sowie Kinder- und Jugendbücher (→ `Balladen`)
+- [x] Sach- und Gebrauchstexte: Interviews, Zeitungsartikel, Grafiken auswerten (→ `SachtexteAuswerten`)
+- [x] Texte in anderer medialer Form: Infosendungen, TV-Serien, Wikis, E-Mails (→ `MedialeTexte`)
+- [x] Schreibformen: Schreibplan, formelle Briefe, Erzählungen, Berichte, Lesetagebücher, Parallelgedichte (→ `Schreibformen`)
+- [x] Gesprächsformen/Redebeiträge: Diskussionen, Interviews, Präsentationen (→ `Gespraechsformen`)
+- [x] Struktur und Wirkung von Sprache: Wortarten, Satzarten, Wortbildung (→ `Wortarten`, `Satzarten`, `Wortbildung`)
+
+#### Mathematik (`MathGenerator.cs`)
+
+- [x] 2.1 Zahlen und Operationen (Bruch-/Dezimalrechnung) (→ `BruchAddition`, `BruchMultiplikation`, `BruchDezimalUmwandlung`)
+- [x] 2.2 Größen und Messen (Flächeninhalt/Volumen, Rechtecke/Quader) (→ `RechteckFlaeche`, `QuaderVolumen`)
+- [x] 2.3 Raum und Form (Kongruenzabbildungen) (→ `Kongruenzabbildungen`)
+- [x] 2.4 Gleichungen und Funktionen (Terme, proportionale Zuordnungen) (→ `ProportionaleZuordnung`)
+- [x] 2.5 Daten und Zufall (Kombinatorik, relative Häufigkeit) (→ `Kombinatorik`, `WahrscheinlichkeitWuerfel`)
+
+#### Englisch (`EnglischGenerator.cs`)
+
+- [x] Themenfeld 1: Individuum und Lebenswelt (→ `AlltagUndFamilie`)
+- [x] Themenfeld 2: Gesellschaft und öffentliches Leben (→ `SchuleUndGesellschaft`)
+- [x] Themenfeld 3: Kultur und historischer Hintergrund (→ `KulturUndTraditionen`)
+- [x] Themenfeld 4: Natur und Umwelt (→ `NaturUndUmwelt`)
+
+#### Türkisch (`TurkishGenerator.cs`)
+
+- [x] Themenfeld 1: Individuum und Lebenswelt (→ `AileVeGunlukYasam`)
+- [x] Themenfeld 2: Gesellschaft und öffentliches Leben (→ `OkulVeToplum`)
+- [x] Themenfeld 3: Kultur und historischer Hintergrund (→ `TurkiyeKulturu`)
+- [x] Themenfeld 4: Natur und Umwelt (→ `DogaVeCevre`)
+
+#### Naturwissenschaften 5/6 (kein eigenes Fach - verteilt auf Physik/Chemie/Biologie)
+
+- [x] 3.1 Von den Sinnen zum Messen (→ Physik: `MessenUndSinne`)
+- [x] 3.2 Stoffe im Alltag (→ Chemie: `StoffeImAlltag`)
+- [ ] 3.3 Die Sonne als Energiequelle (Wasserkreislauf, Treibhauseffekt-Modell)
+- [x] 3.4 Welt des Großen – Welt des Kleinen (→ Physik: `OptikUndWeltraum`)
+- [ ] 3.5 Pflanzen – Tiere – Lebensräume (Winterschlaf, Frühblüher, Verbreitungsstrategien)
+- [x] 3.6 Bewegung zu Wasser, zu Lande und in der Luft (Bionik) (→ Physik: `BewegungUndBionik`)
+- [ ] 3.7 Körper und Gesundheit (Ernährungspyramide, Suchtprävention explizit)
+- [x] 3.8 Sexualerziehung (→ Biologie: `PubertaetUndEntwicklung`)
+- [x] 3.9 Technik (einfacher Stromkreis, Leiter/Nichtleiter) (→ Physik: `Stromkreis`)
+
+#### Gesellschaftswissenschaften 5/6 / Gewi (`GewiGenerator.cs`)
+
+- [x] 3.1 Ernährung – wie werden Menschen satt? (→ `Ernaehrung`)
+- [x] 3.2 Wasser – nur Natur oder in Menschenhand? (→ `WasserAlsRessource`)
+- [x] 3.3 Stadt und städtische Vielfalt (→ `StadtUndVielfalt`)
+- [x] 3.4 Europa – grenzenlos? (→ `EuropaGrenzenlos`)
+- [x] 3.5 Tourismus und Mobilität (→ `TourismusUndMobilitaet`)
+- [x] 3.6 Demokratie und Mitbestimmung (→ `DemokratieUndMitbestimmung`)
+
+#### Biologie (`BiologieGenerator.cs`)
+
+- [ ] 3.1 Die Zelle – kleinste Funktionseinheit des Lebendigen
+- [ ] 3.2 Lebensräume und ihre Bewohner (Nahrungsketten)
+- [x] 3.3 Stoffwechsel des Menschen (→ `MenschlicheOrgane`)
+- [x] 3.4 Sexualität, Fortpflanzung und Entwicklung (→ `PubertaetUndEntwicklung`)
+
+#### Chemie (`ChemieGenerator.cs`)
+
+- [x] 3.1 Faszination Chemie – Feuer, Schall und Rauch (→ `Verbrennung`)
+- [ ] 3.2 Das Periodensystem der Elemente – Übersicht und Werkzeug (Klasse-6-Niveau)
+- [ ] 3.3 Gase – zwischen lebensnotwendig und gefährlich
+- [ ] 3.4 Wasser – eine Verbindung
+- [ ] 3.5 Salze – Gegensätze ziehen sich an
+- [x] 3.6 Metalle – Schätze der Erde (→ `MetalleEigenschaften`)
+
+#### Physik (`PhysikGenerator.cs`)
+
+- [ ] 3.1 Thermisches Verhalten von Körpern (Wärmeausdehnung)
+- [ ] 3.2 Wechselwirkung und Kraft
+- [ ] 3.3 Mechanische Energie und Arbeit
+- [ ] 3.4 Thermische Energie und Wärme
+
+#### Geschichte (`GeschichteGenerator.cs`)
+
+- [x] 3.1 Basismodule 7/8: Epochenüberblick (Mittelalter, Frühe Neuzeit, Revolutionen) (→ `Epochenueberblick`)
+- [x] 3.2 Armut und Reichtum / Migrationen (→ `ArmutUndReichtumMigration`)
+- [x] 3.3 Wahlmodule: z.B. Juden, Christen und Muslime (→ `JudenChristenMuslime`)
+
+#### Geografie (`GeoGenerator.cs`)
+
+- [ ] 3.1 Leben in Risikoräumen (Naturgefahren)
+- [ ] 3.2 Migration und Bevölkerung (Flucht, Landflucht)
+- [ ] 3.3 Vielfalt der Erde (tropischer Regenwald)
+- [ ] 3.4 Armut und Reichtum (Klasse-6-Niveau)
+
+#### Politische Bildung (`PolitikGenerator.cs`)
+
+- [ ] 3.1 Armut und Reichtum (Klasse-6-Niveau)
+- [ ] 3.2 Leben in einer globalisierten Welt
+- [ ] 3.3 Migration und Bevölkerung
+- [ ] 3.4 Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte)
+
+#### Ethik (`EthikGenerator.cs`)
+
+- [ ] 3.1 Wer bin ich? – Identität und Rolle
+- [ ] 3.2 Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau)
+- [ ] 3.3 Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau)
+- [x] 3.4 Was ist der Mensch? – Mensch und Gemeinschaft (Toleranz, Konflikte) (→ `Freundschaft`)
+
+#### Kunst - *Fach existiert noch nicht in der App*
+
+- [ ] 14.1 Inhaltsbereich: Kunstwerke (Konzepte 5/6)
+- [ ] 14.2 Inhaltsbereich: Material, Körper und Raum
+- [ ] 14.3 Inhaltsbereich: Medien
+- [ ] 14.4 Inhaltsbereich: Individuelle Erfahrungen (Alltag und Lebenswelt)
+- [ ] 14.5 Inhaltsbereich: Verfahren und Werkzeuge (Gestaltungspraxis)
+
+#### Musik - *Fach existiert noch nicht in der App*
+
+- [ ] Themenfeld 1: Grundlagen der Musik
+- [ ] Themenfeld 2: Form und Gestaltung
+- [ ] Themenfeld 3: Gattungen und Genres
+- [ ] Themenfeld 4: Wirkung und Funktion
+- [ ] Themenfeld 5: Musik im kulturellen Kontext
+
+#### Sport - *Fach existiert noch nicht in der App*
+
+- [ ] 16.1 Bewegungsfeld 1: Laufen, Springen, Werfen, Stoßen (Leichtathletik)
+- [ ] 16.2 Bewegungsfeld 2: Spielen (Kleine Spiele & Sportspiele)
+- [ ] 16.3 Bewegungsfeld 3: Bewegen an Geräten (Turnen & Parkour)
+- [ ] 16.4 Optionales Bewegungsfeld: Kämpfen nach Regeln
+
+#### ITG (`ItgGenerator.cs`)
+
+- [ ] Themenfeld: Standardsoftware
+- [x] Themenfeld: Informatiksysteme (Datenschutz-Grundlagen, sichere Passwörter) (→ `Datenschutz`, `SicherePasswoerter`)
+- [x] Themenfeld: Leben in und mit vernetzten Systemen (Urheberrecht) (→ `Urheberrecht`)
+
+### Batuhan (Klasse 9, Niveaustufe G)
+
+#### Deutsch (`GermanGenerator.cs`)
+
+- [x] 1.1 Literarische Texte erschließen (Analyse & Interpretation) (→ `DramaAufbau`, `Figurencharakterisierung`)
+- [x] 1.2 Sach- und Gebrauchstexte auswerten (→ `Quellenkritik`)
+- [x] 1.3 Texte in unterschiedlicher medialer Form (Filmanalyse) (→ `Filmanalyse`)
+- [x] 1.4 Texte verfassen (Schreibformen & Argumentation) (→ `Textsorten`, `RedeUndBewerbung`)
+- [x] 1.5 Gesprächsformen und Rhetorik (Mündlichkeit) (→ `RedeUndBewerbung`)
+- [x] 1.6 Sprachwissen und Grammatik (Sprachbewusstheit) (→ `Satzbau`, `Wortbedeutung9`, `Konjunktionen`, `AktivPassiv`, `Kommasetzung`, `DassOderDas`)
+
+#### Mathematik (`MathGenerator.cs`)
+
+- [x] 1. Zahlen und Operationen (reelle Zahlen, Potenzgesetze) (→ `Potenzgesetze`)
+- [x] 2. Größen und Messen (Trigonometrie, Körperberechnungen) (→ `Trigonometrie`, `PyramideKegelKugelVolumen`)
+- [x] 3. Raum und Form (Satz des Thales/Pythagoras) (→ `SatzDesThales`, `SatzDesPythagoras`)
+- [x] 4. Gleichungen und Funktionen (LGS, quadratische/Exponentialfunktionen) (→ `LinearesGleichungssystem`, `QuadratischeFunktionMerkmale`, `Exponentialfunktion`)
+- [ ] 5. Daten und Zufall (Stochastik: mehrstufige Wahrscheinlichkeiten, Baumdiagramme)
+- [x] 6. Wahlpflichtmodul A: Wachstumsprozesse (→ `Exponentialfunktion`)
+- [ ] 7. Wahlpflichtmodul B: Darstellende Geometrie (Zweitafelprojektion)
+
+#### Englisch (`EnglischGenerator.cs`)
+
+- [x] 3.1 Persönlichkeit, Identität und Zukunft (→ `IdentitaetUndZukunft`)
+- [ ] 3.2 Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz)
+- [x] 3.3 Gesellschaftliches Zusammenleben und Medien (→ `GesellschaftUndMedien`)
+- [ ] 3.4 Schule, Ausbildung und Arbeitswelt (Bewerbung)
+- [ ] 3.5 Kultur und historischer Hintergrund (Klasse-9-Niveau)
+- [x] 3.6 Natur, Umwelt und Ökologie (→ `UmweltUndNachhaltigkeit`)
+
+#### Türkisch (`TurkishGenerator.cs`)
+
+- [x] 4.1 Identität, Lebenswelt und Migration (→ `KimlikVeGelecek`)
+- [ ] 4.2 Alltag, Konsum und türkische Kultur
+- [ ] 4.3 Gesellschaft und öffentliches Leben (Klasse-9-Niveau)
+- [ ] 4.4 Schule, Ausbildung und Berufswelt
+- [x] 4.5 Traditionen und historischer Hintergrund (→ `TarihVeGelenekler`)
+- [x] 4.6 Natur, Umwelt und Regionen der Türkei (→ `TurkiyeCografyasi`)
+
+#### Biologie (`BiologieGenerator.cs`)
+
+- [x] 5.1 Gesundheit und Krankheit (Infektionsbiologie & Immunologie) (→ `Immunsystem`)
+- [x] 5.2 Bau und Funktion des Nervensystems (Neurobiologie) (→ `Nervensystem`)
+- [x] 5.3 Sucht und Suchtprävention (→ `SuchtUndSuchtpraevention`)
+- [x] 5.4 Zelluläre Grundlagen der Vererbung (Mitose/Meiose) (→ `Humangenetik`)
+- [x] 5.5 Vererbung beim Menschen (Humangenetik & Genmutationen) (→ `Humangenetik`)
+- [x] 5.6 Evolution – Theorien und Stammesgeschichte (→ `Evolution`)
+
+#### Chemie (`ChemieGenerator.cs`)
+
+- [x] 6.1 Klare Verhältnisse – Quantitative Betrachtungen (Stöchiometrie) (→ `Stoechiometrie`)
+- [x] 6.2 Säuren und Laugen – echt ätzend (→ `SaeureBaseVertieft`)
+- [x] 6.3 Kohlenwasserstoffe – vom Campinggas zum Superbenzin (→ `Kohlenwasserstoffe`)
+- [x] 6.4 Alkohole – vom Holzgeist zum Glycerin (→ `Alkohole`)
+- [x] 6.5 Organische Säuren – Salatsauce, Entkalker & Co (→ `OrganischeSaeuren`)
+- [x] 6.6 Ester – Vielfalt der Produkte aus Alkoholen und Säuren (→ `Ester`)
+
+#### Physik (`PhysikGenerator.cs`)
+
+- [x] 7.1 Gleichförmige und beschleunigte Bewegungen (Kinematik) (→ `Kinematik`)
+- [x] 7.2 Kraft und Beschleunigung (Dynamik) (→ `NewtonscheGesetze`)
+- [x] 7.3 Magnetfelder und elektromagnetische Induktion (→ `MagnetfelderInduktion`)
+- [x] 7.4 Radioaktivität und Kernphysik (→ `RadioaktivitaetUndKernphysik`)
+- [x] 7.5 Energieumwandlungen in Natur und Technik (→ `Energieerhaltung`)
+- [x] 7.6 Schwingungen, Wellen und Optische Geräte (→ `SchwingungenWellenOptik`)
+
+#### Geschichte (`GeschichteGenerator.cs`)
+
+- [x] 8.1 Basismodul 1: Demokratie und Diktatur (→ `DemokratieUndDiktatur`)
+- [x] 8.2 Basismodul 2: Der Kalte Krieg und die geteilte Welt (→ `KalterKrieg`)
+- [x] 8.3 Verbundmodul 1: Konflikte und Konfliktlösungen (Nahost-Fallanalyse) (→ `KonflikteUndKonfliktloesungen`)
+- [x] 8.4 Verbundmodul 2: Europa in der Welt (globalhistorischer Vergleich) (→ `EuropaInDerWelt`)
+- [x] 8.5 Wahlmodul-Fokus A: Völkermorde und Massengewalt (→ `VoelkermordeUndMassengewalt`)
+- [x] 8.6 Wahlmodul-Fokus B: Die Welt nach dem Kalten Krieg (1989-1991) (→ `WeltNachDemKaltenKrieg`)
+- [ ] 8.7 (Bonus) Wahlmodul-Fokus C: Feindbilder und Propaganda
+
+#### Geografie (`GeoGenerator.cs`)
+
+- [ ] 9.1 Umgang mit Ressourcen: Energie und Rohstoffe
+- [ ] 9.2 Umgang mit Ressourcen: Landwirtschaft und Boden
+- [x] 9.3 Das Klimasystem und der Klimawandel (→ `Klimawandel`)
+- [ ] 9.4 Klimaschutz: Internationale Konflikte und Lösungen
+- [ ] 9.5 Wirtschaftliche Verflechtungen und Globalisierung
+- [ ] 9.6 Europa in der Welt (Verbundmodul)
+
+#### Politische Bildung (`PolitikGenerator.cs`)
+
+- [x] 10.1 Demokratie in Deutschland: Prinzipien und Institutionen (→ `Gewaltenteilung`, `BundestagBundesrat`)
+- [ ] 10.2 Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen
+- [ ] 10.3 Konflikte und Konfliktlösungen: internationale Akteure
+- [ ] 10.4 Friedenssicherung und Entwicklungspolitik
+- [x] 10.5 Soziale Marktwirtschaft im Spannungsfeld (→ `SozialeMarktwirtschaft`)
+- [ ] 10.6 Europa in der Welt: Die Europäische Union
+
+#### Ethik (`EthikGenerator.cs`)
+
+- [ ] 11.1 Wer bin ich? – Identität und Rolle (Kant/Autonomie, Gender)
+- [x] 11.2 Wie frei bin ich? – Freiheit und Verantwortung (→ `Verantwortung`)
+- [x] 11.3 Was ist gerecht? – Recht und Gerechtigkeit (→ `RechtUndGerechtigkeit`)
+- [ ] 11.4 Was ist der Mensch? – Mensch und Gemeinschaft (Hobbes/Rousseau)
+- [ ] 11.5 Was soll ich tun? – Handeln und Moral (Dilemmata, Pflichtethik/Utilitarismus)
+- [ ] 11.6 Worauf kann ich vertrauen? – Wissen und Glauben
+
+#### Kunst - *Fach existiert noch nicht in der App*
+
+- [ ] 12.1 Kunst als Intervention und Mahnung
+- [ ] 12.2 Medienkunst und Bildhaftes Gestalten
+- [ ] 12.3 Architektur, Raum und Design
+- [ ] 12.4 Materialästhetik und Transformation
+- [ ] 12.5 Inszenierung und Kuration
+- [ ] 12.6 Kulturelle Identität und Vielfalt
+
+#### Musik - *Fach existiert noch nicht in der App*
+
+- [ ] 13.1 Grundlagen der Musik: Harmonielehre und Partiturlesen
+- [ ] 13.2 Form und Gestaltung: Komposition und Satzweisen
+- [ ] 13.3 Medien und digitale Produktion
+- [ ] 13.4 Gattungen und Genres der Musikgeschichte
+- [ ] 13.5 Wirkung und Funktion: Filmmusik und Programmmusik
+- [ ] 13.6 Musik im kulturellen und gesellschaftlichen Kontext
+
+#### Sport - *Fach existiert noch nicht in der App*
+
+- [ ] 14.1 Laufen, Springen, Werfen (Leichtathletik & Biomechanik)
+- [ ] 14.2 Spielen (Sportspiele & Taktik)
+- [ ] 14.3 Bewegen an Geräten (Turnen & Parkour)
+- [ ] 14.4 Kämpfen nach Regeln (Zweikampf & Fair Play)
+- [ ] 14.5 Bewegungsfolgen gestalten (Tanz, Akrobatik, Rhythmus)
+- [ ] 14.6 Trainingsmethodik und Fitness
+
+#### ITG (`ItgGenerator.cs`)
+
+- [ ] Themenfeld: Standardsoftware
+- [ ] Themenfeld: Informatiksysteme
+- [x] Themenfeld: Leben in und mit vernetzten Systemen (Cybermobbing, Fake News) (→ `Cybermobbing`, `FakeNewsErkennen`)
+
+#### Wirtschaft-Arbeit-Technik (WAT) - *Fach existiert noch nicht in der App*
+
+- [ ] 16.1 Ernährung und Konsum aus regionaler und globaler Sicht (P9)
+- [ ] 16.2 Unternehmerisches Handeln (P10)
+- [ ] 16.3 Berufs- und Lebenswegplanung: Erkunden und Entscheiden (P11)
+- [ ] 16.4 Gestaltung komplexer Projekte und Technikbewertung (P12)
+- [ ] 16.5 Computergesteuerte Fertigung und Automatisierung (Wahlpflicht WP5)
+- [ ] 16.6 Mobilität und Energieversorgung der Zukunft (Wahlpflicht WP7)
+
+#### Naturwissenschaften (WP 7-10) - *Fach existiert noch nicht in der App*
+
+- [ ] 17.1 Klima im Wandel
+- [ ] 17.2 Energieversorgung der Menschheit
+- [ ] 17.3 Kondensate zum Essen und Verpacken (Polymerchemie)
+- [ ] 17.4 Nahrung für die Welt
+- [ ] 17.5 Information und Kommunikation (Neurobiologie/Informatik)
+- [ ] 17.6 Bauen, Wohnen und Bionik
+
+### Übergreifende Themen (Basiscurricula, gemeinsam für beide Profile)
+
+Die folgenden Punkte sind laut Rahmenlehrplan **fächerübergreifende Bildungsziele** (Teil B), keine
+eigenständigen Quiz-Fächer - sie werden hier nur zur Vollständigkeit dokumentiert und absichtlich
+**nicht** als Haken-Liste geführt, da sie sich nicht 1:1 in einzelne Quizfragen-Topics übersetzen
+lassen: Sprach- und Medienbildung, Demokratiebildung, Nachhaltige Entwicklung, Kulturelle/
+Interkulturelle Bildung, Inklusion und Vielfalt, Gesundheitsförderung, Berufs- und
+Studienorientierung, Europabildung, Gewaltprävention, Gleichstellung/Gender Mainstreaming,
+Mobilitätsbildung/Verkehrserziehung, Sexualerziehung, Verbraucherbildung. In der Praxis fließen
+einzelne dieser Aspekte bereits implizit in bestehende Topics ein (z.B. Verbraucherbildung in
+Gewi/`Ernaehrung`, Sexualerziehung in Biologie/`PubertaetUndEntwicklung`, Gewaltprävention in
+Ethik/`Freundschaft`).
