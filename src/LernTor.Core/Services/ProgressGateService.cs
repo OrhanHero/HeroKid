@@ -26,6 +26,7 @@ public sealed class ProgressGateService
         LearningStage.Politik,
         LearningStage.Geo,
         LearningStage.Ethik,
+        LearningStage.Kunst,
         LearningStage.Itg,
         LearningStage.Abschlussquiz,
         LearningStage.Freigeschaltet

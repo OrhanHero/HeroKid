@@ -15,5 +15,6 @@ public enum Subject
     Politik,
     Geo,
     Ethik,
+    Kunst,
     Itg
 }

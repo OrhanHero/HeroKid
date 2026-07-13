@@ -60,6 +60,7 @@ public static class Translations
             ["Stage_Politik"] = L("Politik", "Siyaset Bilgisi"),
             ["Stage_Geo"] = L("Geografie", "Coğrafya"),
             ["Stage_Ethik"] = L("Ethik", "Etik"),
+            ["Stage_Kunst"] = L("Kunst", "Sanat"),
             ["Stage_Itg"] = L("Medienbildung (ITG)", "Medya Bilgisi (ITG)"),
             ["Stage_Abschlussquiz"] = L("Abschlussquiz", "Bitiş Sınavı"),
 
