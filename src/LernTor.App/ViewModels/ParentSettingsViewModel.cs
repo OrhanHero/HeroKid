@@ -46,6 +46,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         (Subject.Geo, "Stage_Geo"),
         (Subject.Ethik, "Stage_Ethik"),
         (Subject.Kunst, "Stage_Kunst"),
+        (Subject.Musik, "Stage_Musik"),
         (Subject.Itg, "Stage_Itg"),
     };
 

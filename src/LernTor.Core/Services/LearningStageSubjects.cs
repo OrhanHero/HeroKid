@@ -26,6 +26,7 @@ public static class LearningStageSubjects
         [LearningStage.Geo] = Subject.Geo,
         [LearningStage.Ethik] = Subject.Ethik,
         [LearningStage.Kunst] = Subject.Kunst,
+        [LearningStage.Musik] = Subject.Musik,
         [LearningStage.Itg] = Subject.Itg,
     };
 

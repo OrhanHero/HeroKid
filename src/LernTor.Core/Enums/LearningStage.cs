@@ -24,6 +24,7 @@ public enum LearningStage
     Geo,
     Ethik,
     Kunst,
+    Musik,
     Itg,
     Abschlussquiz,
     Freigeschaltet

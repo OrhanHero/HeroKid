@@ -22,7 +22,7 @@ public sealed class QuizComposer
             new MathGenerator(), new GermanGenerator(), new TurkishGenerator(), new EnglischGenerator(),
             new BiologieGenerator(), new ChemieGenerator(), new PhysikGenerator(), new GeschichteGenerator(),
             new GewiGenerator(), new PolitikGenerator(), new GeoGenerator(), new EthikGenerator(), new KunstGenerator(),
-            new ItgGenerator()
+            new MusikGenerator(), new ItgGenerator()
         })
     {
     }

@@ -21,6 +21,7 @@ public class GermanTurkishScienceGeneratorTests
         yield return new object[] { new GeoGenerator() };
         yield return new object[] { new EthikGenerator() };
         yield return new object[] { new KunstGenerator() };
+        yield return new object[] { new MusikGenerator() };
         yield return new object[] { new ItgGenerator() };
     }
 

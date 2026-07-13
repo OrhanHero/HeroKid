@@ -24,6 +24,7 @@ public sealed class SubjectToTitleConverter : IValueConverter
             Subject.Geo => "Stage_Geo",
             Subject.Ethik => "Stage_Ethik",
             Subject.Kunst => "Stage_Kunst",
+            Subject.Musik => "Stage_Musik",
             Subject.Itg => "Stage_Itg",
             Subject.News => "Stage_News",
             _ => string.Empty
