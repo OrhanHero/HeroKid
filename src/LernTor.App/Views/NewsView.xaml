@@ -1,0 +1,220 @@
+<UserControl x:Class="LernTor.App.Views.NewsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="32,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Wetter-Widget (Berlin, Open-Meteo): nur sichtbar, wenn der Abruf geklappt hat.
+                 Oberer Abstand, damit es nicht am Profilnamen des Kiosk-Fensters klebt. -->
+            <Border Grid.Column="1" Style="{StaticResource CardBorder}" Padding="16" VerticalAlignment="Top"
+                    MaxWidth="300" Margin="0,28,0,0"
+                    Visibility="{Binding HasWeather, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_WeatherTitle]}"
+                               FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,2">
+                        <TextBlock Text="{Binding WeatherTempDisplay}" FontSize="26" FontWeight="Bold" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding WeatherRangeDisplay}" FontSize="14"
+                                   Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding WeatherDescription}" FontSize="14" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding WeatherTip}" FontSize="13" TextWrapping="Wrap" Margin="0,4,0,0"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+            <TextBlock Style="{StaticResource HeadlineText}" Foreground="{StaticResource NewsBrush}">
+                <Run Text="📰 " />
+                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_News], Mode=OneWay}" />
+            </TextBlock>
+            <Rectangle Style="{StaticResource HeaderAccentBar}" Fill="{StaticResource NewsBrush}" />
+            <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
+                <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
+                <Run Text=" / " />
+                <Run Text="{Binding TotalArticles, Mode=OneWay}" />
+            </TextBlock>
+            <!-- Ein Kreis-Marker je Artikel: grün mit ✓ = Fragen beantwortet (auch aus einer früheren
+                 Session heute), lila = aktueller Artikel, grau = noch offen. Ersetzt die frühere
+                 anonyme ProgressBar - das Kind sieht genau, WELCHE Artikel geschafft sind. -->
+            <ItemsControl ItemsSource="{Binding ArticleMarkers}" Margin="0,12,0,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Klickbarer Marker: springt direkt zum jeweiligen Artikel (Sprung-Navigation). -->
+                        <Button Cursor="Hand" Background="Transparent" BorderThickness="0" Padding="0"
+                                Command="{Binding DataContext.JumpToArticleCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Button.Template>
+                        <Border Width="30" Height="30" CornerRadius="15" Margin="0,0,6,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{StaticResource ProgressTrackBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding IsDone, Converter={StaticResource InverseBoolToVis}}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                    <Setter Property="Foreground" Value="White" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="✓" FontSize="14" FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding IsDone, Converter={StaticResource BoolToVis}}" />
+                            </Grid>
+                        </Border>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="820" Margin="32,0">
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,20"
+                        Visibility="{Binding CurrentArticle, Converter={StaticResource NullToVis}}">
+                    <StackPanel>
+                        <Image Source="{Binding CurrentArticle.ImageUrl}" MaxHeight="220" Stretch="Uniform"
+                               Visibility="{Binding CurrentArticle.ImageUrl, Converter={StaticResource NullToVis}}"
+                               Margin="0,0,0,16" />
+                        <TextBlock Text="{Binding CurrentArticle.Title}" Style="{StaticResource HeadlineText}" FontSize="26" />
+                        <TextBlock Text="{Binding CurrentArticle.SourceName}" Style="{StaticResource SubtitleText}" Margin="0,4,0,10" />
+
+                        <!-- Info-Chips: Rubrik (Emoji + Name), Lesedauer, Schwierigkeitsgrad -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
+                                <TextBlock FontSize="13" FontWeight="SemiBold">
+                                    <Run Text="{Binding CurrentArticle.CategoryEmoji, Mode=OneWay}" />
+                                    <Run Text="{Binding CurrentArticle.Category, Converter={StaticResource NewsCategoryToTitle}, Mode=OneWay}" />
+                                </TextBlock>
+                            </Border>
+                            <Border Background="{StaticResource TileMintBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
+                                <TextBlock FontSize="13" FontWeight="SemiBold">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                            <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[News_ReadingMinutes]" />
+                                            <Binding Path="CurrentArticle.ReadingMinutes" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Border>
+                            <Border Background="{StaticResource TileSandBrush}" CornerRadius="12" Padding="10,4">
+                                <TextBlock FontSize="13" FontWeight="SemiBold"
+                                           Text="{Binding CurrentArticle.Difficulty, Converter={StaticResource NewsDifficultyToTitle}, Mode=OneWay}" />
+                            </Border>
+                            <!-- 📍-Bezirks-Chip (nur wenn ein Berliner Bezirk erkannt wurde) -->
+                            <Border Background="{StaticResource TileRoseBrush}" CornerRadius="12" Padding="10,4" Margin="8,0,0,0"
+                                    Visibility="{Binding CurrentArticle.BerlinDistrict, Converter={StaticResource NullToVis}}">
+                                <TextBlock FontSize="13" FontWeight="SemiBold">
+                                    <Run Text="📍 " /><Run Text="{Binding CurrentArticle.BerlinDistrict, Mode=OneWay}" />
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding CurrentArticle.SimplifiedSummary}" Style="{StaticResource BodyText}" />
+
+                        <!-- Schwierige Wörter, sofort erklärt (KidTermGlossary) -->
+                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="14" Padding="16" Margin="0,12,0,0"
+                                Visibility="{Binding HasExplainedTerms, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_ExplainedTerms]}"
+                                           FontWeight="Bold" FontSize="15" Margin="0,0,0,6" />
+                                <ItemsControl ItemsSource="{Binding CurrentArticle.ExplainedTerms}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextWrapping="Wrap" FontSize="15" Margin="0,2,0,2">
+                                                <Run Text="{Binding Term, Mode=OneWay}" FontWeight="Bold" />
+                                                <Run Text=" – " />
+                                                <Run Text="{Binding Explanation, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_AnswerQuestions]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,12"
+                           Visibility="{Binding CurrentArticle, Converter={StaticResource NullToVis}}" />
+
+                <ItemsControl ItemsSource="{Binding CurrentQuestions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:QuestionCard Margin="0,0,0,16" HorizontalAlignment="Stretch" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,32">
+            <!-- Mindest-Lesezeit-Countdown (siehe NewsViewModel): sichtbar, solange die Zeit läuft. -->
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,8" FontSize="15"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Visibility="{Binding ShowLockCountdown, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Exercise_MinTimeCountdown]" />
+                        <Binding Path="LockSecondsRemaining" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- "Weiter" führt zum nächsten OFFENEN Artikel (Marker-Navigation); der Abschluss-
+                     Button erscheint erst, wenn wirklich alle Artikel beantwortet sind. Beide erst
+                     nach Antwort UND abgelaufener Mindest-Lesezeit klickbar. -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_NextArticle]}"
+                        Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                        IsEnabled="{Binding CanGoNext}"
+                        Visibility="{Binding AllArticlesCompleted, Converter={StaticResource InverseBoolToVis}}"
+                        Command="{Binding NextArticleCommand}" />
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_FinishSection]}"
+                        Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                        IsEnabled="{Binding CanGoNext}"
+                        Visibility="{Binding AllArticlesCompleted, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding FinishSectionCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

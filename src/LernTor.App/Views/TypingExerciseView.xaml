@@ -1,0 +1,131 @@
+<UserControl x:Class="LernTor.App.Views.TypingExerciseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:vm="clr-namespace:LernTor.App.ViewModels">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="1200">
+                <!-- Header -->
+                <TextBlock Text="⌨️" FontSize="60" HorizontalAlignment="Center" Margin="0,0,0,12" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Title]}"
+                           Style="{StaticResource HeadlineText}" FontSize="34" TextAlignment="Center" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Instruction]}"
+                           Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,20" />
+
+                <!-- Lesson Info -->
+                <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                    <TextBlock Text="{Binding Lesson.Title}" FontWeight="Bold" FontSize="16" TextAlignment="Center" TextWrapping="Wrap" />
+                </Border>
+
+                <!-- Timer + Fortschritt -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <TextBlock Text="{Binding Elapsed, StringFormat='{}{0:mm\\:ss}'}" FontSize="36" FontWeight="Bold"
+                               Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text=" / " FontSize="24" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_TimeRemainingHint]}"
+                               Style="{StaticResource SubtitleText}" VerticalAlignment="Center" />
+
+                    <TextBlock Text=" | " FontSize="20" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="16,0" />
+                    <TextBlock Text="{Binding ProgressText}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Fortschrittsbalken -->
+                <ProgressBar Value="{Binding ProgressPercent}" Maximum="1" Height="10" Margin="0,0,0,20"
+                             Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource CardBrush}" />
+
+                <!-- Prompt-Karte -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Instruction}" Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,0,0,16" />
+                        <TextBlock x:Name="TargetTextBlock"
+                                   FontFamily="Consolas, Cascadia Code, monospace"
+                                   FontSize="20" LineHeight="32"
+                                   TextWrapping="Wrap" TextAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Virtuelle Tastatur -->
+                <ItemsControl ItemsSource="{Binding Keys}" Margin="0,0,0,16">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <ItemsControl ItemsSource="{Binding Keys}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding Display}"
+                                                    Style="{StaticResource KeyboardKeyStyle}"
+                                                    Background="{Binding FingerColor}"
+                                                    Width="{Binding Width}"
+                                                    Height="50"
+                                                    Margin="2"
+                                                    IsEnabled="False">
+                                                <Button.ToolTip>
+                                                    <TextBlock Text="{Binding FingerName}" FontSize="10" Foreground="White" />
+                                                </Button.ToolTip>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Eingabefeld -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="6" Padding="10,4"
+                                HorizontalAlignment="Center" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_YourText]}"
+                                       FontWeight="Bold" FontSize="12" />
+                        </Border>
+                        <TextBox x:Name="InputBox"
+                                 Text="{Binding CurrentInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="False" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                 MinHeight="120" FontSize="18"
+                                 SpellCheck.IsEnabled="True" Language="de-DE"
+                                 TextChanged="InputBox_TextChanged"
+                                 PreviewKeyDown="InputBox_PreviewKeyDown" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,4,0">
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,16,0">
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Words]}" />
+                                <Run Text="{Binding WordCount}" FontWeight="Bold" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}">
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Chars]}" />
+                                <Run Text="{Binding CharCount}" FontWeight="Bold" />
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Timer + Weiter -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,16,0,0">
+                    <TextBlock Text="{Binding RemainingTimeDisplay}" FontSize="40" FontWeight="Bold"
+                               HorizontalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"
+                               Visibility="{Binding IsCompleted, Converter={StaticResource InverseBoolToVis}}" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_TimeRemainingHint]}"
+                               Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,4,0,20"
+                               Visibility="{Binding IsCompleted, Converter={StaticResource InverseBoolToVis}}" />
+
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Continue]}"
+                            Style="{StaticResource RoundedButton}" FontSize="22" Padding="34,14"
+                            HorizontalAlignment="Center"
+                            IsEnabled="{Binding IsPassed}"
+                            Command="{Binding ContinueCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

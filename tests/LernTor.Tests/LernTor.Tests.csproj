@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>LernTor.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LernTor.Core\LernTor.Core.csproj" />
+    <ProjectReference Include="..\..\src\LernTor.ContentGen\LernTor.ContentGen.csproj" />
+    <ProjectReference Include="..\..\src\LernTor.News\LernTor.News.csproj" />
+    <!-- Für die Schema-Abgleich-Tests (SqliteSchemaUpdater) gegen echte SQLite-Temp-Dateien. -->
+    <ProjectReference Include="..\..\src\LernTor.Data\LernTor.Data.csproj" />
+  </ItemGroup>
+
+</Project>

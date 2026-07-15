@@ -1,0 +1,62 @@
+<UserControl x:Class="LernTor.App.Views.FinalQuizView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+
+        <!-- Intro-Bildschirm -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700"
+                    Visibility="{Binding HasStarted, Converter={StaticResource InverseBoolToVis}}">
+            <TextBlock Text="🏁" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20" />
+            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Quiz_Title]}"
+                       Style="{StaticResource HeadlineText}" FontSize="40" TextAlignment="Center" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Quiz_Intro]}"
+                       Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,20,0,40" />
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Quiz_StartButton]}"
+                    Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
+                    HorizontalAlignment="Center" Command="{Binding StartCommand}" />
+        </StackPanel>
+
+        <!-- Quiz-Ablauf -->
+        <Grid Visibility="{Binding HasStarted, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="32,24">
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Quiz_Title]}"
+                           Style="{StaticResource HeadlineText}" />
+                <Rectangle Style="{StaticResource HeaderAccentBar}" />
+                <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
+                    <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
+                    <Run Text=" / " />
+                    <Run Text="{Binding TotalQuestions, Mode=OneWay}" />
+                </TextBlock>
+                <ProgressBar Style="{StaticResource ChildProgressBar}" Margin="0,12,0,0"
+                             Minimum="0" Maximum="{Binding TotalQuestions}" Value="{Binding DisplayIndex, Mode=OneWay}" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel HorizontalAlignment="Center" Margin="32,0">
+                    <controls:QuestionCard DataContext="{Binding CurrentQuestion}" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,32">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_NextQuestion]}"
+                        Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                        Visibility="{Binding IsLastQuestion, Converter={StaticResource InverseBoolToVis}}"
+                        IsEnabled="{Binding CurrentQuestion.IsSubmitted}"
+                        Command="{Binding NextCommand}" />
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Quiz_SubmitFinal]}"
+                        Style="{StaticResource RoundedButton}" FontSize="22" Padding="32,16"
+                        Visibility="{Binding IsLastQuestion, Converter={StaticResource BoolToVis}}"
+                        IsEnabled="{Binding CurrentQuestion.IsSubmitted}"
+                        Command="{Binding NextCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

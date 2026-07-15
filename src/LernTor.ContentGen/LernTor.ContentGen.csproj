@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>LernTor.ContentGen</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LernTor.Core\LernTor.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Für TeacherImport: PDF-/Word-Textextraktion (reine .NET-Bibliotheken, keine Windows-Abhängigkeit).
+         Versionen gegen die echte nuget.org-Versionshistorie geprüft
+         (api.nuget.org/v3-flatcontainer/.../index.json) - siehe README, Abschnitt "Automatisches
+         Einlesen von Lehrer-Unterlagen". UglyToad.PdfPig hat auf nuget.org aktuell nur Vorabversionen
+         (keine ohne Suffix "-alpha"/"-custom"), daher hier bewusst auf die ältere, alpha-gekennzeichnete
+         0.1.9 gepinnt statt auf die deutlich neuere 1.7.0-custom-5, deren API-Form unklar ist. -->
+    <PackageReference Include="UglyToad.PdfPig" Version="0.1.9-alpha001-patch1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
+    <!-- Einzige KI-Anbindung in LernTor, komplett lokal (kein Cloud-Konto, keine Kosten, Daten
+         verlassen nie den PC): LLamaSharp lädt eine GGUF-Modelldatei direkt im App-Prozess. Version
+         gegen die echte nuget.org-Versionshistorie geprüft. LLamaSharp.Backend.Cpu liefert die nativen
+         llama.cpp-Binaries (kein GPU-Backend, um keine CUDA-Abhängigkeit ins Kiosk-Setup zu bringen). -->
+    <PackageReference Include="LLamaSharp" Version="0.27.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,155 @@
+<UserControl x:Class="LernTor.App.Controls.QuestionCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:LernTor.App.ViewModels"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance vm:QuestionAnswerViewModel}"
+             mc:Ignorable="d">
+    <Border Style="{StaticResource CardBorder}" MaxWidth="820">
+        <StackPanel>
+            <Image Source="{Binding Question.ImageUrl}"
+                   MaxHeight="180"
+                   Visibility="{Binding Question.ImageUrl, Converter={StaticResource NullToVis}}"
+                   Stretch="Uniform"
+                   Margin="0,0,0,16" />
+
+            <TextBlock Text="{Binding Question.Prompt}" Style="{StaticResource HeadlineText}" FontSize="24" Margin="0,0,0,20" />
+
+            <!-- Tipp/Hilfe: Formel- bzw. Vorgehens-Hinweis, verrät nicht die konkrete Lösung -->
+            <StackPanel Visibility="{Binding HasHelpHint, Converter={StaticResource BoolToVis}}" Margin="0,0,0,16">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_ShowHint]}"
+                        Style="{StaticResource OptionButton}" HorizontalAlignment="Left"
+                        Command="{Binding ToggleHelpHintCommand}" />
+                <Border Visibility="{Binding IsHelpHintVisible, Converter={StaticResource BoolToVis}}"
+                        Background="{StaticResource AccentBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0">
+                    <TextBlock Text="{Binding Question.HelpHint}" TextWrapping="Wrap" Style="{StaticResource BodyText}" />
+                </Border>
+            </StackPanel>
+
+            <!-- KI-Lernchat: Kinder können hier wie mit einem Taschenrechner zu jeder Aufgabe nachfragen,
+                 in jeder Ansicht (News/Übungen/Abschlussquiz), da QuestionCard überall verwendet wird -->
+            <StackPanel Margin="0,0,0,16">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AskAi]}"
+                        Style="{StaticResource OptionButton}" HorizontalAlignment="Left"
+                        Command="{Binding ToggleChatCommand}" />
+
+                <Border Visibility="{Binding IsChatOpen, Converter={StaticResource BoolToVis}}"
+                        Style="{StaticResource CardBorder}" Padding="12" Margin="0,8,0,0">
+                    <StackPanel>
+                        <ScrollViewer x:Name="ChatScrollViewer" MaxHeight="260" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding ChatMessages}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="8" Padding="10,6" Margin="0,4" MaxWidth="560">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                                    <Setter Property="HorizontalAlignment" Value="Left" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Role}" Value="Kind">
+                                                            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                            <Setter Property="HorizontalAlignment" Value="Right" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Style="{StaticResource BodyText}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AiThinking]}"
+                                   Visibility="{Binding IsChatLoading, Converter={StaticResource BoolToVis}}"
+                                   Style="{StaticResource BodyText}" FontStyle="Italic" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding ChatErrorMessage}" Foreground="{StaticResource ErrorBrush}"
+                                   TextWrapping="Wrap" Margin="0,4,0,0"
+                                   Visibility="{Binding ChatErrorMessage, Converter={StaticResource EmptyStringToVis}}" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBox Width="360" Padding="8"
+                                     Text="{Binding ChatInputText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding IsChatLoading, Converter={StaticResource InverseBool}}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding SendChatMessageCommand}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_SendChat]}"
+                                    Style="{StaticResource RoundedButton}" Margin="8,0,0,0"
+                                    Command="{Binding SendChatMessageCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Taschenrechner-Rechenhilfe bei offenen Mathematik-Aufgaben -->
+            <controls:CalculatorControl Visibility="{Binding ShowCalculator, Converter={StaticResource BoolToVis}}"
+                                         InsertRequested="Calculator_InsertRequested" Margin="0,0,0,16" />
+
+            <!-- Multiple Choice / Wahr-Falsch: Buttons pro Option -->
+            <ItemsControl ItemsSource="{Binding DisplayOptions}" Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}"
+                                Style="{StaticResource OptionButton}"
+                                HorizontalAlignment="Stretch"
+                                Command="{Binding DataContext.SelectOptionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="{Binding}"
+                                IsEnabled="{Binding DataContext.IsSubmitted, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBool}}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Offene Frage: Textfeld + Prüfen-Button -->
+            <StackPanel Visibility="{Binding IsOpenText, Converter={StaticResource BoolToVis}}">
+                <TextBox x:Name="AnswerTextBox"
+                         Text="{Binding GivenAnswerText, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="20" Padding="14" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="2"
+                         IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding SubmitOpenTextCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <!-- Türkische Sonderzeichen, die es auf einer deutschen Tastatur nicht gibt -->
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                            Visibility="{Binding ShowTurkishCharacterHelper, Converter={StaticResource BoolToVis}}">
+                    <Button Content="ç" Tag="ç" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="ğ" Tag="ğ" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="ı" Tag="ı" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="İ" Tag="İ" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8" Margin="0,0,6,0"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                    <Button Content="ş" Tag="ş" Click="TurkishCharacterButton_Click" Style="{StaticResource OptionButton}" Padding="16,8"
+                            IsEnabled="{Binding IsSubmitted, Converter={StaticResource InverseBool}}" />
+                </StackPanel>
+
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_SubmitAnswer]}"
+                        Style="{StaticResource RoundedButton}"
+                        HorizontalAlignment="Left"
+                        Margin="0,14,0,0"
+                        Command="{Binding SubmitOpenTextCommand}" />
+            </StackPanel>
+
+            <!-- Feedback nach Beantwortung -->
+            <StackPanel Visibility="{Binding IsSubmitted, Converter={StaticResource BoolToVis}}" Margin="0,20,0,0">
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Correct]}"
+                           Visibility="{Binding IsCorrect, Converter={StaticResource BoolToVis}}"
+                           Foreground="{StaticResource SuccessBrush}" FontWeight="Bold" FontSize="20" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Incorrect]}"
+                           Visibility="{Binding IsCorrect, Converter={StaticResource InverseBoolToVis}}"
+                           Foreground="{StaticResource ErrorBrush}" FontWeight="Bold" FontSize="20" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Explanation]}"
+                           Style="{StaticResource SubtitleText}" Margin="0,12,0,4" FontWeight="Bold" />
+                <TextBlock Text="{Binding Question.Explanation}" Style="{StaticResource BodyText}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

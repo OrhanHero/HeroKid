@@ -1,0 +1,117 @@
+<UserControl x:Class="LernTor.App.Views.ResultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             Loaded="ResultView_Loaded">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
+
+            <TextBlock x:Name="CelebrationIcon" Text="🎉🏆🎉" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"
+                       RenderTransformOrigin="0.5,0.5"
+                       Visibility="{Binding Passed, Converter={StaticResource BoolToVis}}">
+                <TextBlock.RenderTransform>
+                    <ScaleTransform x:Name="CelebrationScale" ScaleX="0.2" ScaleY="0.2" />
+                </TextBlock.RenderTransform>
+                <TextBlock.Triggers>
+                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="CelebrationScale" Storyboard.TargetProperty="ScaleX"
+                                                 To="1" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.6" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="CelebrationScale" Storyboard.TargetProperty="ScaleY"
+                                                 To="1" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.6" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </TextBlock.Triggers>
+            </TextBlock>
+
+            <TextBlock Text="💪" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"
+                       Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}" />
+
+            <TextBlock Style="{StaticResource HeadlineText}" FontSize="38" TextAlignment="Center" HorizontalAlignment="Center"
+                       Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_PassedTitle]}"
+                       Visibility="{Binding Passed, Converter={StaticResource BoolToVis}}" />
+            <TextBlock Style="{StaticResource HeadlineText}" FontSize="38" TextAlignment="Center" HorizontalAlignment="Center"
+                       Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_FailedTitle]}"
+                       Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}" />
+
+            <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,16,0,8"
+                       Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_PassedText]}"
+                       Visibility="{Binding Passed, Converter={StaticResource BoolToVis}}" />
+            <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,16,0,8"
+                       Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_FailedText]}"
+                       Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}" />
+
+            <TextBlock Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,8,0,8" FontWeight="Bold"
+                       Visibility="{Binding Result, Converter={StaticResource NullToVis}}">
+                <Run Text="{Binding CorrectCount, Mode=OneWay}" />
+                <Run Text=" / " />
+                <Run Text="{Binding TotalQuestions, Mode=OneWay}" />
+            </TextBlock>
+
+            <!-- Belohnungs-Sterne: heute verdient + Gesamtstand (Gamification) -->
+            <Border Background="{StaticResource TileSandBrush}" CornerRadius="14" Padding="18,10"
+                    HorizontalAlignment="Center" Margin="0,8,0,16"
+                    Visibility="{Binding HasStarsToShow, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding StarsSummary}" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
+            </Border>
+
+            <!-- 🎁 Belohnungen (von den Eltern gepflegt, mit Sternen einlösbar): erreichbare zeigen
+                 Kosten + Einlösen-Button, für die anderen steht der Fortschritt ("12 / 20 ⭐"). -->
+            <Border Style="{StaticResource CardBorder}" Padding="20" MaxWidth="520" Margin="0,0,0,24"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding HasRewards, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Rewards_Title]}"
+                               FontWeight="Bold" FontSize="17" Margin="0,0,0,10" HorizontalAlignment="Center" />
+                    <ItemsControl ItemsSource="{Binding Rewards}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Display}" FontSize="15"
+                                               VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0" />
+                                    <TextBlock Grid.Column="1" Text="{Binding CostDisplay}" FontSize="14" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="0,0,12,0"
+                                               Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <Button Grid.Column="2" Style="{StaticResource TabPillButton}" FontSize="13"
+                                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Rewards_Redeem]}"
+                                            IsEnabled="{Binding CanRedeem}"
+                                            Command="{Binding DataContext.RedeemRewardCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_UnlockButton]}"
+                    Style="{StaticResource RoundedButton}" FontSize="24" Padding="36,16" HorizontalAlignment="Center"
+                    Visibility="{Binding Passed, Converter={StaticResource BoolToVis}}"
+                    Command="{Binding ConfirmUnlockCommand}" />
+
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_RetryButton]}"
+                    Style="{StaticResource RoundedButton}" FontSize="24" Padding="36,16" HorizontalAlignment="Center"
+                    Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}"
+                    Command="{Binding RetryWeakSubjectsCommand}" />
+        </StackPanel>
+
+        <!-- Konfetti-Ebene (nur bei bestandenem Quiz, einmalig - siehe Code-behind). Liegt über dem
+             Inhalt, fängt aber keine Klicks ab. -->
+        <Canvas x:Name="ConfettiCanvas" IsHitTestVisible="False" ClipToBounds="True" />
+    </Grid>
+</UserControl>

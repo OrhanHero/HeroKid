@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+publish/
+dist/
+*.user
+*.suo
+
+## Rider/VS
+.vs/
+.idea/
+*.userosscache
+*.sln.docstates
+
+## OS
+.DS_Store
+Thumbs.db

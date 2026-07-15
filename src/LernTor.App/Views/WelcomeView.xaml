@@ -1,0 +1,31 @@
+<UserControl x:Class="LernTor.App.Views.WelcomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Language_Switch]}"
+                Style="{StaticResource RoundedButton}"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="24"
+                Command="{Binding ToggleLanguageCommand}" />
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
+            <TextBlock Text="🎓" FontSize="90" HorizontalAlignment="Center" Margin="0,0,0,20" />
+            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,8">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Greeting]" />
+                        <Binding Path="ProfileName" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Title]}"
+                       Style="{StaticResource HeadlineText}" FontSize="44" TextAlignment="Center" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Subtitle]}"
+                       Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,20,0,40" HorizontalAlignment="Center" />
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
+                    Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
+                    HorizontalAlignment="Center"
+                    Command="{Binding ContinueCommand}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

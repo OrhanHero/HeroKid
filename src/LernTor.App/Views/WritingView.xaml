@@ -1,0 +1,105 @@
+<UserControl x:Class="LernTor.App.Views.WritingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="1000">
+                <TextBlock Text="✍️" FontSize="60" HorizontalAlignment="Center" Margin="0,0,0,12" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Title]}"
+                           Style="{StaticResource HeadlineText}" FontSize="34" TextAlignment="Center" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Instruction]}"
+                           Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,20" />
+
+                <!-- Sprach-Tabs: DE / TR / EN für den Prompt-Text -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_TabDe]}"
+                            Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="De">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="De" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_TabTr]}"
+                            Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="Tr">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="Tr" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_TabEn]}"
+                            Style="{StaticResource TabPillButton}"
+                            Command="{Binding SelectTabCommand}" CommandParameter="En">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="En" />
+                                <Binding Path="SelectedTab" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                </StackPanel>
+
+                <!-- Prompt-Karte -->
+                <Border Style="{StaticResource CardBorder}">
+                    <StackPanel>
+                        <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="6" Padding="10,3"
+                                HorizontalAlignment="Center" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding Prompt.Title}" FontWeight="Bold" FontSize="12" />
+                        </Border>
+                        <TextBlock Text="{Binding CurrentPromptText}" Style="{StaticResource BodyText}" FontSize="18"
+                                   TextWrapping="Wrap" LineHeight="28" Margin="0,0,0,20" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Schreibbereich -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,20,0,0">
+                    <StackPanel>
+                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="6" Padding="10,3"
+                                HorizontalAlignment="Center" Margin="0,0,0,8">
+                            <TextBlock Text="✍️ Dein Text" FontWeight="Bold" FontSize="12" />
+                        </Border>
+                        <TextBox Text="{Binding WrittenText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 MinHeight="250"
+                                 AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                 SpellCheck.IsEnabled="True" Language="de-DE" />
+
+                        <!-- Wort-/Zeichenzähler -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,4,0">
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,16,0">
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Words]}" />
+                                <Run Text="{Binding WordCount}" FontWeight="Bold" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}">
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Chars]}" />
+                                <Run Text="{Binding CharCount}" FontWeight="Bold" />
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Timer + Weiter-Button -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,28,0,0">
+                    <TextBlock Text="{Binding RemainingTimeDisplay}" FontSize="40" FontWeight="Bold"
+                               HorizontalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"
+                               Visibility="{Binding CanContinue, Converter={StaticResource InverseBoolToVis}}" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_TimeRemainingHint]}"
+                               Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,4,0,20"
+                               Visibility="{Binding CanContinue, Converter={StaticResource InverseBoolToVis}}" />
+
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Continue]}"
+                            Style="{StaticResource RoundedButton}" FontSize="22" Padding="34,14"
+                            HorizontalAlignment="Center"
+                            IsEnabled="{Binding CanContinue}"
+                            Command="{Binding ContinueCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
