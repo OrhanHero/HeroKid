@@ -80,12 +80,6 @@ public static class CuratedNewsFeeds
         new NewsFeedSource("Steam News", "https://store.steampowered.com/feeds/news.xml",
             NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Spiele),
 
-        // Finanzen-Rubrik: echte Wirtschafts-/Finanznachrichten statt nur zufälliger Treffer aus
-        // allgemeinen Quellen; ergänzt (verdrängt nicht) das eingebaute rotierende
-        // Finanzwissen-Erklärstück in FinanceKnowledgeArticles.
-        new NewsFeedSource("finanzen.net", "https://www.finanzen.net/rss/news",
-            NewsRegionFocus.Deutschland, IsGerman: true, NewsCategory.Finanzen),
-
         // Bundesregierung: offizielle, seriöse Quelle für "was macht eigentlich die Regierung" -
         // kompakt für kurze Meldungen, Pressemitteilungen für ausführlichere Themen.
         new NewsFeedSource("Bundesregierung kompakt", "https://www.bundesregierung.de/service/rss/breg-de/1151242/feed.xml",

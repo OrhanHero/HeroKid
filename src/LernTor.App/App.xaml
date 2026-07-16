@@ -24,6 +24,9 @@
             <conv:BoolToResultEmojiConverter x:Key="BoolToResultEmojiConverter" />
             <conv:BoolToResultTitleConverter x:Key="BoolToResultTitleConverter" />
             <conv:TimeSpanToStringConverter x:Key="TimeSpanToString" />
+            <conv:TypingLessonTypeToTitleConverter x:Key="TypingLessonTypeToTitleConverter" />
+            <conv:LocalizedInstructionConverter x:Key="LocalizedInstructionConverter" />
+            <conv:BoolToSuccessBrushConverter x:Key="BoolToSuccessBrushConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

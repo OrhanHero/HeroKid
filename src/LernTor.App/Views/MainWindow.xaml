@@ -37,6 +37,15 @@
         <DataTemplate DataType="{x:Type vm:ResultViewModel}">
             <views:ResultView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TypingDashboardViewModel}">
+            <views:TypingDashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TypingExerciseViewModel}">
+            <views:TypingExerciseView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TypingLessonCompleteViewModel}">
+            <views:TypingLessonCompleteView />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>

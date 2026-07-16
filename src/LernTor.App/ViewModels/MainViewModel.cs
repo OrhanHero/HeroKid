@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LernTor.App.Localization;
@@ -22,6 +23,8 @@ namespace LernTor.App.ViewModels;
 /// </summary>
 public sealed partial class MainViewModel : ObservableObject
 {
+    private const int NewsTargetCount = 31;
+
     private readonly ProgressGateService _gate;
     private readonly ScoringService _scoring;
     private readonly ProgressRepository _progressRepo;
@@ -261,11 +264,74 @@ public sealed partial class MainViewModel : ObservableObject
     {
         var vm = new TypingDashboardViewModel(CurrentProfile!.Id, _typingProgressRepo, _typingService, lessonId =>
         {
-            // Navigiere zur Übung - für MVP: Dashboard zeigt nächsten Schritt
-            // In der echten App würde hier auf ExerciseViewModel gewechselt
-        });
+            _ = NavigateToTypingExerciseAsync(lessonId);
+        }, () => _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen)));
         await vm.InitializeAsync();
         return vm;
+    }
+
+    private async Task NavigateToTypingExerciseAsync(string lessonId)
+    {
+        var lesson = TypingContentProvider.GetLessonById(lessonId);
+        if (lesson == null) return;
+
+        var exerciseVm = new TypingExerciseViewModel(
+            lesson,
+            _typingService,
+            _typingProgressRepo,
+            CurrentProfile!.Id,
+            lessonId => OnTypingLessonCompleted(lessonId)
+        );
+        CurrentViewModel = exerciseVm;
+    }
+
+    private async void OnTypingLessonCompleted(string? lessonId)
+    {
+        // If null, stay on dashboard (next lesson is loaded there via InitializeAsync)
+        if (lessonId == null)
+        {
+            var dashboardVm = await BuildTypingDashboardViewModelAsync();
+            CurrentViewModel = dashboardVm;
+        }
+        else
+        {
+            // Show completion screen
+            var lesson = TypingContentProvider.GetLessonById(lessonId);
+            if (lesson != null)
+            {
+                var progress = await _typingProgressRepo.GetProgressAsync(CurrentProfile!.Id);
+                progress.TryGetValue(lessonId, out var lessonProgress);
+                var result = new TypingResult
+                {
+                    Accuracy = lessonProgress?.BestAccuracy ?? 0,
+                    Wpm = lessonProgress?.BestWpm ?? 0,
+                    CorrectCharacters = lessonProgress?.CorrectCharacters ?? 0,
+                    TotalCharacters = lessonProgress?.TotalCharactersTyped ?? 0,
+                    Passed = lessonProgress?.IsCompleted ?? false,
+                    Elapsed = TimeSpan.Zero
+                };
+                var completeVm = new TypingLessonCompleteViewModel(
+                    lesson,
+                    result,
+                    () =>
+                    {
+                        var completedLessonIds = progress.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet();
+                        var nextLesson = TypingContentProvider.GetNextUnlockedLesson(completedLessonIds);
+                        if (nextLesson != null)
+                        {
+                            _ = NavigateToTypingExerciseAsync(nextLesson.Id);
+                        }
+                        else
+                        {
+                            // All lessons done - go back to dashboard which will show completion
+                            _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen));
+                        }
+                    },
+                    () => _ = NavigateToTypingExerciseAsync(lessonId)
+                );
+                CurrentViewModel = completeVm;
+            }
+        }
     }
 
     private async void OnTypingCompleted()
@@ -279,7 +345,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         // Artikel und Wetter parallel laden - das Wetter-Widget ist Beiwerk und darf den
         // News-Start nicht verzögern; bei Fehlschlag liefert der Dienst null (Widget bleibt weg).
-        var articlesTask = _newsService.LoadCuratedArticlesAsync(targetCount: 20, childAge: CurrentProfile?.Age);
+        var articlesTask = _newsService.LoadCuratedArticlesAsync(targetCount: NewsTargetCount, childAge: CurrentProfile?.Age);
         var weatherTask = _weatherService.LoadBerlinWeatherAsync();
         var articles = await articlesTask;
         var weather = await weatherTask;

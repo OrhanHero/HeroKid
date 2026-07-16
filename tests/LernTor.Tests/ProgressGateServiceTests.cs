@@ -14,7 +14,8 @@ public class ProgressGateServiceTests
     public void GetNextStage_FollowsSequentialOrder()
     {
         Assert.Equal(LearningStage.Vorlesen, _gate.GetNextStage(LearningStage.Willkommen));
-        Assert.Equal(LearningStage.News, _gate.GetNextStage(LearningStage.Vorlesen));
+        Assert.Equal(LearningStage.Tippen, _gate.GetNextStage(LearningStage.Vorlesen));
+        Assert.Equal(LearningStage.News, _gate.GetNextStage(LearningStage.Tippen));
         Assert.Equal(LearningStage.Mathematik, _gate.GetNextStage(LearningStage.News));
         Assert.Equal(LearningStage.Freigeschaltet, _gate.GetNextStage(LearningStage.Abschlussquiz));
         Assert.Equal(LearningStage.Freigeschaltet, _gate.GetNextStage(LearningStage.Freigeschaltet));
@@ -103,9 +104,9 @@ public class ProgressGateServiceTests
     }
 
     [Fact]
-    public void CanEnterStage_AllowsEnteringNewsAfterReadingCompleted()
+    public void CanEnterStage_AllowsEnteringNewsAfterReadingAndTypingCompleted()
     {
-        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.Willkommen, HasCompletedReading = true };
+        var progress = new StudentProgress { ProfileId = "test-profile", CurrentStage = LearningStage.Willkommen, HasCompletedReading = true, HasCompletedTyping = true };
 
         var canSkipToNews = _gate.CanEnterStage(progress, LearningStage.News, new HashSet<Subject>());
 

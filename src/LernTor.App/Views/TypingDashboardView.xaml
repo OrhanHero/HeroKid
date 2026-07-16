@@ -148,7 +148,11 @@
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_AllCompleted]}"
                                    Style="{StaticResource HeadlineText}" FontSize="28" TextAlignment="Center" Margin="0,0,0,8" />
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_AllCompletedMsg]}"
-                                   Style="{StaticResource BodyText}" TextAlignment="Center" TextWrapping="Wrap" />
+                                   Style="{StaticResource BodyText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,18" />
+                        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_ContinueToNews]}"
+                                Style="{StaticResource RoundedButton}" FontSize="18" Padding="24,10"
+                                HorizontalAlignment="Center"
+                                Command="{Binding ContinueToNewsCommand}" />
                     </StackPanel>
                 </Border>
             </StackPanel>

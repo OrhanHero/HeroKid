@@ -1,10 +1,10 @@
 # LernTor
 
 Eine kindersichere Windows-Kiosk-Lern-App: Nach dem Login startet LernTor im Vollbild und
-sperrt den PC, bis das Kind News gelesen, Übungsaufgaben in den freigeschalteten Fächern
-bearbeitet und das Abschlussquiz bestanden hat. Erst dann wird der PC freigegeben. Eltern
-legen im Eltern-Bereich fest, welche der 12 verfügbaren Fächer für den Tag/das Profil
-überhaupt aktiv sind (siehe "Bereiche deaktivieren").
+sperrt den PC, bis das Kind Lesen, den Tipptrainer, News, Übungsaufgaben in den freigeschalteten
+Fächern und das Abschlussquiz durchlaufen hat. Erst dann wird der PC freigegeben. Eltern legen
+im Eltern-Bereich fest, welche der 15 verfügbaren Fächer für den Tag/das Profil überhaupt aktiv
+sind (siehe "Bereiche deaktivieren").
 
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
 am Berliner Rahmenlehrplan, Klasse 6 und 9 (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
@@ -60,18 +60,23 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    (Eine Anbindung an lyrikline.org wurde bewusst nicht umgesetzt: aus dieser Entwicklungsumgebung war
    der Zugriff auf die Seite nicht möglich, und ihre zeitgenössischen Gedichte/Übersetzungen sind
    urheberrechtlich geschützt und dürften ohne Erlaubnis nicht in die App übernommen werden.)
-3. **News für Kinder** (Pflicht) – kuratierte RSS-Artikel, verständlich, neutral und ohne Angstmache
+3. **Tipptrainer** – der 10-Finger-Trainer mit mehreren aufeinander aufbauenden Lektionen, virtueller
+  Tastatur, Live-Feedback zu Eingaben, Genauigkeit und Geschwindigkeit. Nach jeder abgeschlossenen
+  Lektion erscheint der gewohnte Weiter-/Wiederholen-Dialog; ist wirklich alles erledigt, zeigt das
+  Dashboard unten ein Glückwunsch-Panel mit einem Button weiter zu den News. Der Tipptrainer ist eine
+  eigene feste Stage und gehört nicht zum Fachcurriculum.
+4. **News für Kinder** (Pflicht) – kuratierte RSS-Artikel, verständlich, neutral und ohne Angstmache
    aufbereitet (sprachliches Vorbild: logo!/Checker-Sendungen). **Rubriken**: 🐻 Berlin (wichtigste
-   regionale Rubrik, garantierte Plätze), 🇩🇪 Deutschland, 🌍 Welt, 🇹🇷 Türkei (täglich garantierte
-   Plätze; seriöse Quellen: Anadolu Ajansı, TRT Haber, DW Türkçe – bewusst keine Boulevardquellen),
-   🤖 KI & Technik, 🎮 Spiele (dediziert: GameStar), 💰 Finanzen (dediziert: finanzen.net), ⛅ Wetter.
-   Themen-Rubriken werden zusätzlich per Schlüsselwort-Klassifikation quer über alle Quellen erkannt
-   (`NewsCategoryClassifier`) - eine Minecraft-Meldung von tagesschau.de landet trotzdem in 🎮 Spiele.
-   Spiele (GameStar) bekommt zusätzlich zum normalen Tages-Kontingent einen garantierten Extra-Artikel
-   (analog zum rotierenden Finanzwissen-Erklärstück) - macht standardmäßig bis zu 10 Artikel am Tag.
+  regionale Rubrik, garantierte Plätze), 🇩🇪 Deutschland, 🌍 Welt, 🇹🇷 Türkei (täglich garantierte
+  Plätze; seriöse Quellen: Anadolu Ajansı, TRT Haber, DW Türkçe – bewusst keine Boulevardquellen),
+  🤖 KI & Technik, 🎮 Spiele, ⛅ Wetter.
+  Themen-Rubriken werden zusätzlich per Schlüsselwort-Klassifikation quer über alle Quellen erkannt
+  (`NewsCategoryClassifier`) - eine Minecraft-Meldung von tagesschau.de landet trotzdem in 🎮 Spiele.
+  Im News-Teil wird von jedem Feed genau der neueste Artikel übernommen; dadurch bleibt der Block
+  bewusst klein und landet typischerweise bei etwa 22 Artikeln statt bei 71.
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
    (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes
-   `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und EINE Verständnisfrage, die
+  `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und EINE Verständnisfrage, die
    echtes Lesen verlangt: ein Lückentext aus der Zusammenfassung mit ausgeblendetem Schlüsselwort
    (frühere Fragetypen wurden auf Nutzerwunsch entfernt: die „Nenne ein wichtiges Wort aus der
    Überschrift"-Frage war ohne Lesen lösbar, und eine zusätzliche Rubrik-Frage erwies sich als
@@ -107,7 +112,7 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Fehlerprotokoll vermerkt). (Eine frühere Lesezeichen-/Suchfunktion im News-Teil wurde auf
    Nutzerwunsch wieder entfernt - im geführten Pflicht-Ablauf brachte sie keinen Mehrwert und
    verschob das Layout.)
-4. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
+5. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.
    Bei offenen Mathematik-Aufgaben steht ein Taschenrechner zur Verfügung; Aufgaben mit hinterlegtem
@@ -132,7 +137,7 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:
    dort bestraft sich Raten von selbst (unter 50 % beim ersten Versuch gibt es eine Wiederholung,
    siehe unten).
-5. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl je Fach passt sich automatisch
+6. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl je Fach passt sich automatisch
    an, wie viele Fächer aktiv sind), Nachrichten-Verständnisfragen zählen NICHT mit (die werden nur im
    News-Bereich selbst gestellt). Erster Versuch am Tag: exakt **20 Fragen**, ≥50% richtig → PC wird
    freigeschaltet. Bei Nichtbestehen ein kürzeres Wiederholungsquiz mit exakt **15 Fragen**: schwache
@@ -187,7 +192,7 @@ deshalb bewusst nicht umgesetzt.
   Abschlussquiz - nur echte Abschlüsse zählen, von Eltern deaktivierte (übersprungene) Fächer geben
   keine Sterne. Heute verdiente Sterne und der Gesamtstand erscheinen auf dem Abschluss-Bildschirm;
   der über alle Tage gesammelte Gesamtstand (⭐) steht auf der Profil-Kachel.
-- **Etappen-Leiste**: oben im Kiosk-Fenster zeigen vier Chips (Lesen → News → Fächer x/y → Quiz)
+- **Etappen-Leiste**: oben im Kiosk-Fenster zeigen fünf Chips (Lesen → Tippen → News → Fächer x/y → Quiz)
   jederzeit, wo das Kind in der heutigen Session steht - erledigt = grün mit Häkchen, aktuell = lila.
 - **Konfettiregen**: beim bestandenen Abschlussquiz fällt einmalig Konfetti in den App-Farben über
   den Ergebnis-Bildschirm (einmalige Animation, keine Dauerschleife - keine bleibende CPU-Last im
@@ -333,3 +338,8 @@ dotnet run --project src/LernTor.App
 ```
 
 Vollständige Build-/Installationsanleitung: [docs/BUILD.md](docs/BUILD.md).
+
+Weitere technische Details:
+
+- Tipptrainer und die behobenen WPF-Binding-Fallen: [docs/TIPPTRAINER.md](docs/TIPPTRAINER.md)
+- Fach- und Stage-System: [docs/FAECHER-SYSTEM.md](docs/FAECHER-SYSTEM.md)

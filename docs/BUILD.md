@@ -96,3 +96,9 @@ Passwort fest (mind. 4 Zeichen, wird als PBKDF2-Hash gespeichert, nie im Klartex
 - Der Lernfortschritt liegt in `%LOCALAPPDATA%\LernTor\lerntor.db` (SQLite) und wird beim
   Deinstallieren mit entfernt (siehe `[UninstallDelete]` in `setup.iss`). Zum manuellen Zurücksetzen
   einfach diese Datei löschen, während LernTor nicht läuft.
+
+## Verwandte Dokumentation
+
+- [README.md](../README.md) als Einstieg und Gesamtüberblick
+- [TIPPTRAINER.md](TIPPTRAINER.md) für den Typing-Flow und die behobenen WPF-Binding-Fallen
+- [FAECHER-SYSTEM.md](FAECHER-SYSTEM.md) für Stage-Reihenfolge und Fachzuordnung

@@ -17,18 +17,21 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
     private readonly TypingProgressRepository _progressRepo;
     private readonly TypingExerciseService _service;
     private readonly Action<string> _onLessonSelected;
+    private readonly Action _onContinueToNews;
     private readonly string _profileId;
 
     public TypingDashboardViewModel(
         string profileId,
         TypingProgressRepository progressRepo,
         TypingExerciseService service,
-        Action<string> onLessonSelected)
+        Action<string> onLessonSelected,
+        Action onContinueToNews)
     {
         _profileId = profileId;
         _progressRepo = progressRepo;
         _service = service;
         _onLessonSelected = onLessonSelected;
+        _onContinueToNews = onContinueToNews;
         Lessons = [];
     }
 
@@ -56,10 +59,26 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
         var progress = await _progressRepo.GetProgressAsync(_profileId);
         var lessonVMs = new List<TypingLessonViewModel>();
 
-        foreach (var lesson in TypingContentProvider.GetAllLessons().OrderBy(l => (int)l.LessonType).ThenBy(l => l.Id))
+        var allLessons = TypingContentProvider.GetAllLessons().OrderBy(l => (int)l.LessonType).ThenBy(l => l.Id).ToList();
+        var completedLessonIds = progress.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet();
+
+        for (int i = 0; i < allLessons.Count; i++)
         {
+            var lesson = allLessons[i];
             progress.TryGetValue(lesson.Id, out var p);
-            lessonVMs.Add(new TypingLessonViewModel(lesson, p));
+            var vm = new TypingLessonViewModel(lesson, p);
+
+            // Unlocked if: first lesson, or previous lesson is completed
+            bool isFirstLesson = i == 0;
+            bool prevCompleted = false;
+            if (i > 0)
+            {
+                var prevLesson = allLessons[i - 1];
+                prevCompleted = completedLessonIds.Contains(prevLesson.Id);
+            }
+            vm.SetUnlocked(isFirstLesson || prevCompleted);
+
+            lessonVMs.Add(vm);
         }
 
         Lessons = lessonVMs;
@@ -75,6 +94,12 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
     private void StartLesson(string lessonId)
     {
         _onLessonSelected(lessonId);
+    }
+
+    [RelayCommand]
+    private void ContinueToNews()
+    {
+        _onContinueToNews();
     }
 }
 
@@ -121,4 +146,8 @@ public sealed partial class TypingLessonViewModel : ObservableObject
     public string StatusText => IsCompleted ? "✅ Abgeschlossen" : "🔒 Gesperrt";
     public string AccuracyDisplay => BestAccuracy > 0 ? $"{BestAccuracy:P0}" : "–";
     public string WpmDisplay => BestWpm > 0 ? $"{BestWpm:F0} WPM" : "–";
+
+    public bool IsUnlocked { get; private set; }
+
+    public void SetUnlocked(bool unlocked) => IsUnlocked = unlocked;
 }

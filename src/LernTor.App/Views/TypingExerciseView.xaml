@@ -31,7 +31,7 @@
                 </StackPanel>
 
                 <!-- Fortschrittsbalken -->
-                <ProgressBar Value="{Binding ProgressPercent}" Maximum="1" Height="10" Margin="0,0,0,20"
+                <ProgressBar Value="{Binding ProgressPercent, Mode=OneWay}" Maximum="1" Height="10" Margin="0,0,0,20"
                              Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource CardBrush}" />
 
                 <!-- Prompt-Karte -->
@@ -99,11 +99,11 @@
                                  PreviewKeyDown="InputBox_PreviewKeyDown" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,4,0">
                             <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,16,0">
-                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Words]}" />
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Words], Mode=OneWay}" />
                                 <Run Text="{Binding WordCount}" FontWeight="Bold" />
                             </TextBlock>
                             <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}">
-                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Chars]}" />
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Chars], Mode=OneWay}" />
                                 <Run Text="{Binding CharCount}" FontWeight="Bold" />
                             </TextBlock>
                         </StackPanel>

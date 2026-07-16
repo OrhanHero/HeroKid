@@ -7,14 +7,16 @@ Architektur (ein `TopicFactory`-Delegate pro Thema in `ExerciseGeneratorBase`) i
 gebaut, dass weitere Themen einfach als zusätzliche private Methode + Eintrag in `TopicsByGrade`
 ergänzt werden können.
 
+Der Tipptrainer ist eine eigene Lernstufe vor den News und gehört nicht zum Fachcurriculum.
+
 **Poolgröße je Thema**: Jedes Thema wird von einer festen Liste kuratierter Beispiele bedient
 (außer Mathematik, das echte Zahlenwerte würfelt statt aus einer festen Liste zu ziehen - dort ist
 die Zahl der möglichen Aufgaben pro Thema praktisch unbegrenzt). Der Zielwert für diese Listen ist
 **20 Beispiele pro Thema**: Bei zu kleinen Pools (ursprünglich nur 2-4, später 5 Beispiele) griff die
 Wiederholungs-Vermeidung in `ExerciseGeneratorBase.Generate` schnell ins Leere, und dasselbe Kind
-sah dieselben Fragen bereits nach 1-2 Tagen wieder. Alle 13 Fächer mit fester Beispiel-Liste
-(Deutsch, Englisch, Türkisch, ITG, Politik, Physik, Biologie, Chemie, Geografie, Gewi, Ethik, Kunst, Musik) sind
-inzwischen auf diesen Zielwert gebracht.
+sah dieselben Fragen bereits nach 1-2 Tagen wieder. Alle 14 Fächer mit fester Beispiel-Liste
+(Deutsch, Englisch, Türkisch, ITG, Politik, Physik, Biologie, Chemie, Geografie, Gewi, Ethik, Kunst,
+Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## Mathematik (`MathGenerator.cs`)
 

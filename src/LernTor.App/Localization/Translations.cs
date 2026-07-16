@@ -339,6 +339,15 @@ public static class Translations
             ["Steps_Subjects"] = L("Fächer", "Dersler"),
             ["Steps_Quiz"] = L("Quiz", "Sınav"),
 
+            // Typing Lesson Types
+            ["TypingLesson_Grundreihe"] = L("Grundreihe", "Temel sıra"),
+            ["TypingLesson_Oberreihe"] = L("Oberreihe", "Üst sıra"),
+            ["TypingLesson_Unterreihe"] = L("Unterreihe", "Alt sıra"),
+            ["TypingLesson_Zahlenreihe"] = L("Zahlenreihe", "Sayı sıra"),
+            ["TypingLesson_WoerterSilben"] = L("Wörter & Silben", "Kelimeler & Heceler"),
+            ["TypingLesson_Saetze"] = L("Sätze", "Cümleler"),
+            ["TypingLesson_Abschluss"] = L("Abschluss", "Bitiş"),
+
             ["Result_StarsSummary"] = L(
                 "⭐ Heute verdient: +{0} Sterne · Insgesamt: {1}",
                 "⭐ Bugün kazanılan: +{0} yıldız · Toplam: {1}"),

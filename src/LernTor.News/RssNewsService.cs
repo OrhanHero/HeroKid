@@ -1,12 +1,23 @@
 using System.Net.Http;
 using System.ServiceModel.Syndication;
+using System.Globalization;
 using System.Xml;
+using System.Xml.Linq;
 using LernTor.Core.Models;
 
 namespace LernTor.News;
 
 public sealed class RssNewsService
 {
+    private static readonly XmlReaderSettings FeedReaderSettings = new()
+    {
+        IgnoreWhitespace = true,
+        DtdProcessing = DtdProcessing.Parse,
+        XmlResolver = null
+    };
+
+    private const string DefaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
+
     private readonly HttpClient _httpClient;
     private readonly ITextSimplifier _simplifier;
     private readonly IComprehensionQuestionGenerator _questionGenerator;
@@ -19,16 +30,10 @@ public sealed class RssNewsService
     }
 
     /// <summary>
-    /// Lädt Artikel aus allen kuratierten Feeds, priorisiert Berlin/Deutschland/Istanbul/Samsun/Ünye
-    /// (sowie KI-/Digitalthemen) und liefert die besten <paramref name="targetCount"/> kindgerecht
-    /// aufbereiteten Artikel. Artikel mit verstörenden Themen (Krieg, Gewaltverbrechen, ...) werden
-    /// nicht hart ausgefiltert, aber in der Rangliste deutlich nach unten gestuft (siehe
-    /// CuratedNewsFeeds.SensitiveKeywords), damit harmlosere Artikel bevorzugt ausgewählt werden.
+    /// Lädt aus jedem kuratierten Feed genau den neuesten Artikel und bereitet ihn kindgerecht auf.
     /// Fehlerhafte/nicht erreichbare Feeds werden übersprungen statt die ganze Ladung abzubrechen.
-    /// Zusätzlich zu den <paramref name="targetCount"/> ausgewählten Artikeln kommen bis zu zwei
-    /// garantierte Extra-Artikel dazu (zählen nicht gegen das Ziel-Kontingent): eine echte
-    /// GameStar-Meldung für die Spiele-Rubrik (falls der Feed heute etwas liefert) und das
-    /// rotierende Finanzwissen-Erklärstück - macht standardmäßig bis zu 10 Artikel am Tag.
+    /// Das Ergebnis ist dadurch bewusst klein und stabil: pro Feed eine News, keine Quoten-, Extra-
+    /// oder Zusatzsammlungen mehr.
     /// </summary>
     /// <param name="childAge">Alter des aktiven Kind-Profils für den automatischen Altersfilter:
     /// bis einschließlich 9 Jahren werden Artikel mit verstörenden Schlüsselwörtern KOMPLETT
@@ -37,14 +42,19 @@ public sealed class RssNewsService
     /// Artikel übrig blieben. null = kein Alter bekannt, Standardverhalten.</param>
     public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, int? childAge = null, CancellationToken cancellationToken = default)
     {
-        var allRawItems = new List<(SyndicationItem Item, NewsFeedSource Source)>();
+        var articles = new List<NewsArticle>();
 
         foreach (var source in CuratedNewsFeeds.All)
         {
             try
             {
                 var items = await FetchFeedAsync(source, cancellationToken);
-                allRawItems.AddRange(items.Select(i => (i, source)));
+
+                var latestItem = SelectLatestItem(items, childAge);
+                if (latestItem is not null)
+                {
+                    articles.Add(BuildArticle(latestItem, source));
+                }
             }
             catch (Exception ex)
             {
@@ -56,98 +66,20 @@ public sealed class RssNewsService
             }
         }
 
-        // Verschiedene Feeds (oder URL-Varianten desselben Anbieters) liefern gelegentlich exakt
-        // dieselbe Meldung - ohne Deduplizierung nach Titel würde derselbe Artikel doppelt
-        // hintereinander im News-Bereich auftauchen.
-        var deduplicated = allRawItems
-            .GroupBy(x => NormalizeTitleForDeduplication(x.Item.Title?.Text))
-            .Select(group => group.First())
-            .ToList();
-
-        // Altersfilter (siehe Parameter-Doku): für die Jüngsten harte Filterung statt Herabstufung.
-        if (childAge is <= 9)
-        {
-            deduplicated = deduplicated
-                .Where(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text) == 0)
-                .ToList();
-        }
-
-        // Berlin-Lokalnachrichten sind die wichtigste regionale Rubrik und sollen nicht zufällig
-        // untergehen, nur weil sie im allgemeinen Ranking knapp nicht vorne landen - deshalb wird
-        // zuerst ein garantiertes Kontingent an aktuellen Berlin-Artikeln reserviert. Danach ein
-        // kleineres Türkei-Kontingent ("täglich jugendgerechte Nachrichten aus der Türkei"),
-        // erst dann füllt die übliche Prioritäts-Rangliste die restlichen Plätze auf.
-        var minBerlinSlots = Math.Max(2, targetCount / 3);
-        var berlinArticles = TakeQuota(deduplicated, NewsRegionFocus.Berlin, minBerlinSlots);
-
-        var minTurkeySlots = Math.Min(2, Math.Max(0, targetCount - berlinArticles.Count));
-        var turkeyArticles = TakeQuota(deduplicated, NewsRegionFocus.Tuerkei, minTurkeySlots);
-
-        var reserved = berlinArticles.Concat(turkeyArticles).ToList();
-        var remainingSlots = Math.Max(0, targetCount - reserved.Count);
-        var rankedRemaining = deduplicated
-            .Except(reserved)
-            .OrderByDescending(x =>
-                CountPriorityMatches(x.Item.Title?.Text, x.Item.Summary?.Text) -
-                CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
-            .ThenByDescending(x => x.Item.PublishDate)
-            .Take(remainingSlots)
-            .ToList();
-
-        var ranked = reserved.Concat(rankedRemaining).ToList();
-
-        var articles = new List<NewsArticle>();
-        foreach (var (item, source) in ranked)
-        {
-            articles.Add(BuildArticle(item, source));
-        }
-
-        // Spiele-Rubrik: zusätzlich zum normalen Ziel-Kontingent mindestens eine echte
-        // GameStar-Meldung garantieren (bewusst zusätzlich zu targetCount, analog zum
-        // Finanzwissen-Erklärstück unten) - sonst hinge die Rubrik rein vom Zufall ab, ob ein
-        // anderer Feed gerade ein Spiele-Schlüsselwort trifft. Ein bereits im Ranking gezogener
-        // Spiele-Artikel zählt nicht doppelt.
-        var extraSpieleArticle = deduplicated
-            .Except(ranked)
-            .Where(x => x.Source.DefaultCategory == NewsCategory.Spiele)
-            .OrderBy(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
-            .ThenByDescending(x => x.Item.PublishDate)
-            .FirstOrDefault();
-
-        if (extraSpieleArticle.Item is not null)
-        {
-            articles.Add(BuildArticle(extraSpieleArticle.Item, extraSpieleArticle.Source));
-        }
-
-        // Finanzen-Rubrik: täglich EIN rotierendes "Finanzwissen"-Erklärstück anhängen (kuratiert,
-        // handgeschriebene Fragen - siehe FinanceKnowledgeArticles). Bewusst zusätzlich zum
-        // targetCount: das Stück kommt aus keinem Feed und soll keinen Tagesartikel verdrängen.
-        articles.Add(FinanceKnowledgeArticles.GetForDate(DateOnly.FromDateTime(DateTime.Today)));
-
         return articles;
     }
 
-    /// <summary>Reserviert bis zu <paramref name="slots"/> möglichst unverstörende, aktuelle
-    /// Artikel einer Region (für die garantierten Berlin-/Türkei-Kontingente).</summary>
-    private static List<(SyndicationItem Item, NewsFeedSource Source)> TakeQuota(
-        IEnumerable<(SyndicationItem Item, NewsFeedSource Source)> items,
-        NewsRegionFocus region,
-        int slots) =>
-        items
-            .Where(x => x.Source.RegionFocus == region)
-            .OrderBy(x => CountSensitiveMatches(x.Item.Title?.Text, x.Item.Summary?.Text))
-            .ThenByDescending(x => x.Item.PublishDate)
-            .Take(slots)
-            .ToList();
-
-    private static string NormalizeTitleForDeduplication(string? title) =>
-        (title ?? string.Empty).Trim().ToLowerInvariant();
-
-    private static int CountPriorityMatches(string? title, string? summary)
+    private static SyndicationItem? SelectLatestItem(IReadOnlyList<SyndicationItem> items, int? childAge)
     {
-        var text = $"{title} {summary}";
-        return CuratedNewsFeeds.PriorityKeywords.Count(keyword =>
-            text.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        var ordered = items.OrderByDescending(item => item.PublishDate).ToList();
+        if (childAge is <= 9)
+        {
+            ordered = ordered
+                .Where(item => CountSensitiveMatches(item.Title?.Text, item.Summary?.Text) == 0)
+                .ToList();
+        }
+
+        return ordered.FirstOrDefault();
     }
 
     private static int CountSensitiveMatches(string? title, string? summary)
@@ -159,10 +91,149 @@ public sealed class RssNewsService
 
     private async Task<IReadOnlyList<SyndicationItem>> FetchFeedAsync(NewsFeedSource source, CancellationToken cancellationToken)
     {
-        await using var stream = await _httpClient.GetStreamAsync(source.RssUrl, cancellationToken);
-        using var reader = XmlReader.Create(stream);
-        var feed = SyndicationFeed.Load(reader);
-        return feed?.Items.ToList() ?? new List<SyndicationItem>();
+        using var request = CreateFeedRequest(source.RssUrl);
+        using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        using var buffer = new MemoryStream();
+        await stream.CopyToAsync(buffer, cancellationToken);
+        return ParseFeedContent(buffer.ToArray());
+    }
+
+    internal static HttpRequestMessage CreateFeedRequest(string rssUrl)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, rssUrl);
+        request.Headers.UserAgent.ParseAdd(DefaultUserAgent);
+        request.Headers.Accept.ParseAdd("application/rss+xml");
+        request.Headers.Accept.ParseAdd("application/atom+xml");
+        request.Headers.Accept.ParseAdd("application/xml");
+        request.Headers.Accept.ParseAdd("text/xml");
+
+        return request;
+    }
+
+    internal static IReadOnlyList<SyndicationItem> ParseFeedContent(byte[] content)
+    {
+        using var standardStream = new MemoryStream(content, writable: false);
+        using var reader = XmlReader.Create(standardStream, FeedReaderSettings);
+
+        try
+        {
+            var feed = SyndicationFeed.Load(reader);
+            var items = feed?.Items.ToList() ?? [];
+            if (items.Count > 0)
+            {
+                return items;
+            }
+        }
+        catch (XmlException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+
+        try
+        {
+            using var rdfStream = new MemoryStream(content, writable: false);
+            var document = XDocument.Load(rdfStream, LoadOptions.None);
+            var root = document.Root;
+            if (root is not null && IsRdfFeed(root))
+            {
+                return ParseRdfDocument(document);
+            }
+        }
+        catch (XmlException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+
+        return [];
+    }
+
+    internal static IReadOnlyList<SyndicationItem> ParseRdfFallback(Stream stream)
+    {
+        var document = XDocument.Load(stream, LoadOptions.None);
+        return ParseRdfDocument(document);
+    }
+
+    private static bool IsRdfFeed(XElement root) =>
+        root.Name.LocalName.Equals("RDF", StringComparison.OrdinalIgnoreCase) ||
+        root.Name.NamespaceName.Equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#", StringComparison.OrdinalIgnoreCase);
+
+    private static IReadOnlyList<SyndicationItem> ParseRdfDocument(XDocument document)
+    {
+        var items = new List<SyndicationItem>();
+        var root = document.Root;
+        if (root is null)
+        {
+            return items;
+        }
+
+        foreach (var itemElement in root.Elements().Where(e => e.Name.LocalName.Equals("item", StringComparison.OrdinalIgnoreCase)))
+        {
+            var item = new SyndicationItem();
+            var title = GetElementValue(itemElement, "title");
+            var link = GetElementValue(itemElement, "link");
+            var description = GetElementValue(itemElement, "description", "encoded", "content");
+            var guid = GetElementValue(itemElement, "guid", "id");
+            var pubDate = GetElementValue(itemElement, "pubDate", "date", "created");
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                item.Title = new TextSyndicationContent(title);
+            }
+
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                item.Summary = new TextSyndicationContent(description);
+                item.Content = new TextSyndicationContent(description);
+            }
+
+            if (Uri.TryCreate(link, UriKind.Absolute, out var linkUri))
+            {
+                item.Links.Add(SyndicationLink.CreateAlternateLink(linkUri));
+            }
+
+            if (!string.IsNullOrWhiteSpace(guid))
+            {
+                item.Id = guid;
+            }
+            else if (!string.IsNullOrWhiteSpace(link))
+            {
+                item.Id = link;
+            }
+            else if (!string.IsNullOrWhiteSpace(title))
+            {
+                item.Id = title;
+            }
+
+            if (DateTimeOffset.TryParse(pubDate, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeUniversal, out var publishedAt))
+            {
+                item.PublishDate = publishedAt;
+            }
+
+            items.Add(item);
+        }
+
+        return items;
+    }
+
+    private static string GetElementValue(XElement itemElement, params string[] localNames)
+    {
+        foreach (var localName in localNames)
+        {
+            var matchedElement = itemElement.Elements().FirstOrDefault(e => e.Name.LocalName.Equals(localName, StringComparison.OrdinalIgnoreCase));
+            if (matchedElement is not null && !string.IsNullOrWhiteSpace(matchedElement.Value))
+            {
+                return matchedElement.Value.Trim();
+            }
+        }
+
+        return string.Empty;
     }
 
     private NewsArticle BuildArticle(SyndicationItem item, NewsFeedSource source)
