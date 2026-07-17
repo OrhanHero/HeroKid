@@ -11,7 +11,7 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften, StoffeImAlltag },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften, StoffeImAlltag, PeriodensystemGrundlagen, Gase, Wasser, Salze },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Atommodell, ChemischeReaktion, Periodensystem, Stoechiometrie, SaeureBaseVertieft, Kohlenwasserstoffe, Alkohole, OrganischeSaeuren, Ester }
         };
 
@@ -799,6 +799,230 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
             Topic = "Ester – Vielfalt der Produkte aus Alkoholen und Säuren", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Ester entstehen aus Säure + Alkohol unter Wasserabspaltung (Veresterung), Hydrolyse ist die Rückreaktion; Fette sind Ester aus Glycerin und Fettsäuren, Verseifung ergibt Seife."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] PseGrundlagenListe =
+    {
+        ("Was ist ein chemisches Element, einfach erklärt?", new[] { "Ein Grundstoff, der sich nicht in einfachere Stoffe zerlegen lässt", "Eine Mischung aus mehreren verschiedenen Stoffen", "Ein anderes Wort für chemische Reaktion" }, "Ein Grundstoff, der sich nicht in einfachere Stoffe zerlegen lässt",
+            "Ein chemisches Element besteht immer nur aus einer einzigen Atomsorte und lässt sich chemisch nicht weiter zerlegen."),
+        ("Wozu dient das Periodensystem der Elemente?", new[] { "Es ordnet alle bekannten chemischen Elemente übersichtlich in einer Tabelle", "Es zeigt nur die Namen der Chemiker, die Elemente entdeckt haben", "Es listet ausschließlich giftige Stoffe auf" }, "Es ordnet alle bekannten chemischen Elemente übersichtlich in einer Tabelle",
+            "Das Periodensystem ist eine geordnete Übersichtstabelle, in der jedes chemische Element seinen festen Platz hat."),
+        ("Welches chemische Symbol steht für Sauerstoff?", new[] { "O", "S", "Su" }, "O",
+            "Sauerstoff wird im Periodensystem mit dem Symbol \"O\" (vom lateinischen \"Oxygenium\") abgekürzt."),
+        ("Welches chemische Symbol steht für Wasserstoff?", new[] { "H", "W", "Wa" }, "H",
+            "Wasserstoff trägt das Symbol \"H\" (vom lateinischen \"Hydrogenium\")."),
+        ("Welches chemische Symbol steht für Eisen?", new[] { "Fe", "Ei", "E" }, "Fe",
+            "Eisen wird mit \"Fe\" abgekürzt, abgeleitet vom lateinischen Wort \"Ferrum\"."),
+        ("Welches chemische Symbol steht für Gold?", new[] { "Au", "Go", "G" }, "Au",
+            "Gold trägt das Symbol \"Au\", vom lateinischen \"Aurum\"."),
+        ("Welches chemische Symbol steht für Kohlenstoff?", new[] { "C", "K", "Ko" }, "C",
+            "Kohlenstoff wird im Periodensystem mit \"C\" abgekürzt (vom lateinischen \"Carboneum\")."),
+        ("Was zeigt das chemische Symbol eines Elements meist an?", new[] { "Eine kurze, international einheitliche Abkürzung für den Elementnamen", "Die Farbe, die das Element immer hat", "Wie gefährlich ein Element ist" }, "Eine kurze, international einheitliche Abkürzung für den Elementnamen",
+            "Chemische Symbole wie \"O\" oder \"Fe\" sind weltweit einheitlich und werden unabhängig von der jeweiligen Landessprache verwendet."),
+        ("In welche zwei großen Stoffgruppen lassen sich die Elemente im Periodensystem grob einteilen?", new[] { "Metalle und Nichtmetalle", "Flüssigkeiten und Feststoffe", "Gifte und Nahrungsmittel" }, "Metalle und Nichtmetalle",
+            "Die Elemente des Periodensystems lassen sich grob in Metalle (z.B. Eisen) und Nichtmetalle (z.B. Sauerstoff) einteilen."),
+        ("Welches der folgenden Elemente ist ein Metall?", new[] { "Eisen", "Sauerstoff", "Kohlenstoff" }, "Eisen",
+            "Eisen ist ein typisches Metall: glänzend, verformbar und ein guter Leiter für Strom und Wärme."),
+        ("Welches der folgenden Elemente ist ein Nichtmetall?", new[] { "Sauerstoff", "Eisen", "Gold" }, "Sauerstoff",
+            "Sauerstoff ist bei Zimmertemperatur ein farbloses Gas und zählt zu den Nichtmetallen."),
+        ("Warum ist es praktisch, dass alle bekannten Elemente in einer einzigen Tabelle stehen?", new[] { "Man findet Informationen zu jedem Element schnell an einem festen Platz", "Damit spart man sich das Auswendiglernen komplett", "Damit müssen Chemikerinnen und Chemiker keine Experimente mehr machen" }, "Man findet Informationen zu jedem Element schnell an einem festen Platz",
+            "Das Periodensystem dient als Nachschlagewerk: Jedes Element hat einen festen Platz, an dem man wichtige Grundinformationen findet."),
+        ("Wie viele verschiedene chemische Elemente sind heute ungefähr bekannt?", new[] { "Etwas mehr als 100", "Etwa 20", "Über 10.000" }, "Etwas mehr als 100",
+            "Bisher sind etwas mehr als 100 verschiedene chemische Elemente bekannt und im Periodensystem eingetragen."),
+        ("Welches Element atmen Menschen zum Leben aus der Luft ein?", new[] { "Sauerstoff", "Kohlenstoff", "Eisen" }, "Sauerstoff",
+            "Sauerstoff wird beim Atmen aufgenommen und ist für die Energiegewinnung im Körper lebensnotwendig."),
+        ("Welches Gas macht den größten Anteil unserer Atemluft aus?", new[] { "Stickstoff", "Sauerstoff", "Kohlenstoffdioxid" }, "Stickstoff",
+            "Rund 78% der Luft, die wir atmen, bestehen aus Stickstoff - nur etwa 21% sind Sauerstoff."),
+        ("Ist Kohlenstoff (C) ein Metall oder ein Nichtmetall?", new[] { "Ein Nichtmetall", "Ein Metall", "Weder noch, es ist eine Mischung" }, "Ein Nichtmetall",
+            "Kohlenstoff zählt zu den Nichtmetallen, obwohl er z.B. als Diamant sehr hart sein kann."),
+        ("Woran erkennt man im Periodensystem grob, ob ein Element eher ein Metall ist?", new[] { "Es steht meist im linken oder mittleren Bereich der Tabelle", "Es steht immer ganz oben rechts", "Metalle sind alphabetisch sortiert" }, "Es steht meist im linken oder mittleren Bereich der Tabelle",
+            "Die meisten Metalle befinden sich im linken und mittleren Bereich des Periodensystems, die meisten Nichtmetalle eher rechts."),
+        ("Welches Edelmetall mit dem Symbol \"Au\" wird oft für Schmuck verwendet?", new[] { "Gold", "Silber", "Eisen" }, "Gold",
+            "Gold trägt das Symbol \"Au\" und wird wegen seines Glanzes und seiner Beständigkeit häufig für Schmuck genutzt."),
+        ("Was haben alle Atome desselben Elements, z.B. alle Sauerstoff-Atome, gemeinsam?", new[] { "Sie gehören zur selben Atomsorte mit denselben Grundeigenschaften", "Sie haben zufällig völlig unterschiedliche Eigenschaften", "Sie kommen nur einmal auf der ganzen Erde vor" }, "Sie gehören zur selben Atomsorte mit denselben Grundeigenschaften",
+            "Alle Atome eines Elements sind vom selben Grundtyp und zeigen deshalb dieselben charakteristischen chemischen Eigenschaften."),
+        ("Was ist ein Beispiel für ein Element, das bei Zimmertemperatur ein Gas ist?", new[] { "Sauerstoff", "Eisen", "Gold" }, "Sauerstoff",
+            "Sauerstoff liegt bei normaler Zimmertemperatur gasförmig vor, anders als feste Metalle wie Eisen oder Gold.")
+    };
+
+    private static QuizQuestion PeriodensystemGrundlagen(Random r)
+    {
+        var f = PseGrundlagenListe[r.Next(PseGrundlagenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Das Periodensystem der Elemente – Übersicht und Werkzeug", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Das Periodensystem ordnet alle Elemente in einer Tabelle - jedes hat ein eigenes Symbol (z.B. O, H, Fe) und ist entweder Metall oder Nichtmetall."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GaseListe =
+    {
+        ("Welches Gas macht den größten Teil unserer Atemluft aus?", new[] { "Stickstoff", "Sauerstoff", "Kohlenstoffdioxid" }, "Stickstoff",
+            "Etwa 78% der Luft bestehen aus Stickstoff, nur rund 21% sind Sauerstoff."),
+        ("Welches Gas brauchen Menschen und Tiere zum Atmen?", new[] { "Sauerstoff", "Stickstoff", "Kohlenstoffmonoxid" }, "Sauerstoff",
+            "Der Körper braucht Sauerstoff, um aus Nahrung Energie zu gewinnen - deshalb muss er ständig eingeatmet werden."),
+        ("Welches Gas atmen wir beim Ausatmen vermehrt wieder aus?", new[] { "Kohlenstoffdioxid (CO₂)", "Sauerstoff", "Helium" }, "Kohlenstoffdioxid (CO₂)",
+            "Beim Stoffwechsel entsteht CO₂ als Abfallprodukt, das der Körper über die Ausatmung loswird."),
+        ("Warum ist Kohlenstoffmonoxid (CO) besonders gefährlich?", new[] { "Es ist farb- und geruchlos und kann unbemerkt zum Ersticken führen", "Es riecht sehr stark nach faulen Eiern", "Es ist ungefährlich und überall harmlos" }, "Es ist farb- und geruchlos und kann unbemerkt zum Ersticken führen",
+            "Da man CO weder sehen noch riechen kann, bemerken Menschen die Vergiftung oft zu spät - deshalb sind CO-Melder wichtig."),
+        ("Was passiert mit einem Gas normalerweise, wenn man es erhitzt?", new[] { "Es dehnt sich aus (das Volumen wird größer)", "Es wird automatisch zu einer Flüssigkeit", "Es verschwindet spurlos" }, "Es dehnt sich aus (das Volumen wird größer)",
+            "Wird ein Gas erwärmt, bewegen sich seine Teilchen schneller und beanspruchen mehr Raum - es dehnt sich aus."),
+        ("Was passiert mit einem Gas, wenn man es abkühlt?", new[] { "Es zieht sich zusammen (das Volumen wird kleiner)", "Es dehnt sich weiter aus", "Es wird sofort zu einem Feststoff" }, "Es zieht sich zusammen (das Volumen wird kleiner)",
+            "Beim Abkühlen bewegen sich die Gasteilchen langsamer, wodurch das Gas ein kleineres Volumen einnimmt."),
+        ("Hat ein Gas eine feste, eigene Form?", new[] { "Nein, es füllt jeden verfügbaren Raum vollständig aus", "Ja, jedes Gas hat eine feste Form wie ein Feststoff", "Nur bei sehr niedrigen Temperaturen" }, "Nein, es füllt jeden verfügbaren Raum vollständig aus",
+            "Anders als Feststoffe haben Gase keine eigene Form - sie verteilen sich in jedem Behälter oder Raum, den sie füllen können."),
+        ("Welches Gas wird oft zum Füllen von Luftballons benutzt, damit sie nach oben steigen?", new[] { "Helium", "Sauerstoff", "Kohlenstoffdioxid" }, "Helium",
+            "Helium ist leichter als normale Luft, weshalb damit gefüllte Ballons nach oben aufsteigen."),
+        ("Wofür wird Erdgas hauptsächlich genutzt?", new[] { "Als Brennstoff zum Heizen und Kochen", "Nur zum Aufblasen von Reifen", "Ausschließlich in der Medizin" }, "Als Brennstoff zum Heizen und Kochen",
+            "Erdgas wird verbrannt, um Wärme zum Heizen von Wohnungen oder zum Kochen zu erzeugen."),
+        ("Welches Gas entsteht bei fast jeder Verbrennung, z.B. von Holz oder Benzin?", new[] { "Kohlenstoffdioxid (CO₂)", "Helium", "Wasserstoff" }, "Kohlenstoffdioxid (CO₂)",
+            "Bei Verbrennungsvorgängen verbindet sich der Kohlenstoff des brennenden Stoffs mit Sauerstoff zu CO₂."),
+        ("Warum gilt Kohlenstoffdioxid (CO₂) als sogenanntes \"Treibhausgas\"?", new[] { "Es trägt zur Erwärmung der Erdatmosphäre bei", "Es kühlt die Erdatmosphäre stark ab", "Es hat gar keinen Einfluss auf das Klima" }, "Es trägt zur Erwärmung der Erdatmosphäre bei",
+            "CO₂ hält Wärme in der Atmosphäre zurück - je mehr davon in der Luft ist, desto stärker heizt sich die Erde auf."),
+        ("Welche Eigenschaft haben Edelgase wie Helium oder Neon typischerweise?", new[] { "Sie reagieren kaum mit anderen Stoffen", "Sie reagieren extrem heftig mit fast allem", "Sie sind bei Zimmertemperatur immer flüssig" }, "Sie reagieren kaum mit anderen Stoffen",
+            "Edelgase gelten als besonders reaktionsträge - sie gehen fast keine chemischen Verbindungen mit anderen Stoffen ein."),
+        ("Warum kann man ausströmendes Erdgas riechen, obwohl es eigentlich geruchlos ist?", new[] { "Es wird absichtlich mit einem übelriechenden Stoff versetzt, damit man Lecks bemerkt", "Erdgas riecht von Natur aus immer stark", "Der Geruch entsteht zufällig beim Transport" }, "Es wird absichtlich mit einem übelriechenden Stoff versetzt, damit man Lecks bemerkt",
+            "Damit Menschen ein Gasleck sofort bemerken, wird dem geruchlosen Erdgas gezielt ein auffälliger Warngeruch beigemischt."),
+        ("Warum ist es gefährlich, in einem geschlossenen Raum einen Kohlegrill zu betreiben?", new[] { "Es kann sich giftiges, geruchloses Kohlenstoffmonoxid ansammeln", "Der Rauch färbt nur die Wände", "Es besteht keinerlei Gefahr" }, "Es kann sich giftiges, geruchloses Kohlenstoffmonoxid ansammeln",
+            "Ohne ausreichend Sauerstoff entsteht bei der Verbrennung gefährliches Kohlenstoffmonoxid, das sich in geschlossenen Räumen gefährlich ansammeln kann."),
+        ("Wozu dient ein CO-Melder in einer Wohnung?", new[] { "Er warnt frühzeitig vor gefährlichem, unsichtbarem Kohlenstoffmonoxid", "Er misst nur die Raumtemperatur", "Er zeigt die Luftfeuchtigkeit an" }, "Er warnt frühzeitig vor gefährlichem, unsichtbarem Kohlenstoffmonoxid",
+            "Ein CO-Melder erkennt das unsichtbare, geruchlose Gas Kohlenstoffmonoxid und warnt rechtzeitig, bevor es gefährlich wird."),
+        ("Wie unterscheidet sich das Volumen eines Gases von dem einer Flüssigkeit in einem offenen Gefäß?", new[] { "Gase haben kein festes Volumen und breiten sich aus, Flüssigkeiten behalten ihr Volumen", "Beide verhalten sich in jeder Hinsicht komplett gleich", "Flüssigkeiten breiten sich immer stärker aus als Gase" }, "Gase haben kein festes Volumen und breiten sich aus, Flüssigkeiten behalten ihr Volumen",
+            "Ein Gas verteilt sich in jedem verfügbaren Raum, während eine Flüssigkeit ihr Volumen unabhängig vom Gefäß beibehält."),
+        ("Warum steigt heiße Luft, z.B. in einem Heißluftballon, nach oben?", new[] { "Erwärmte Luft dehnt sich aus und wird dadurch leichter als die kühlere Umgebungsluft", "Heiße Luft ist immer schwerer als kalte Luft", "Luft verändert sich beim Erwärmen überhaupt nicht" }, "Erwärmte Luft dehnt sich aus und wird dadurch leichter als die kühlere Umgebungsluft",
+            "Da erwärmte Luft sich ausdehnt und leichter wird, steigt sie in der kühleren Umgebungsluft nach oben auf."),
+        ("Was ist die Ozonschicht und warum ist sie wichtig?", new[] { "Eine Gasschicht hoch in der Atmosphäre, die vor gefährlicher UV-Strahlung schützt", "Ein Gas, das ausschließlich in Fabriken vorkommt", "Eine Schicht, die die Erde vor Regen schützt" }, "Eine Gasschicht hoch in der Atmosphäre, die vor gefährlicher UV-Strahlung schützt",
+            "Die Ozonschicht in der oberen Atmosphäre filtert einen Großteil der schädlichen UV-Strahlung der Sonne heraus."),
+        ("Warum sollte man beim Umgang mit Gasflaschen (z.B. für einen Gasgrill) besonders vorsichtig sein?", new[] { "Viele Gase sind brennbar oder stehen unter hohem Druck", "Gasflaschen sind grundsätzlich völlig ungefährlich", "Gasflaschen enthalten nur harmlose Luft" }, "Viele Gase sind brennbar oder stehen unter hohem Druck",
+            "Gase in Druckflaschen können bei unsachgemäßem Umgang austreten, sich entzünden oder die Flasche gefährlich werden lassen."),
+        ("Warum erlischt eine brennende Kerze, wenn man ein geschlossenes Glas darüberstülpt?", new[] { "Der Sauerstoff im Glas wird verbraucht und es kommt kein Nachschub mehr", "Das Glas kühlt die Flamme sofort auf 0°C ab", "Glas zieht die Flamme magnetisch an" }, "Der Sauerstoff im Glas wird verbraucht und es kommt kein Nachschub mehr",
+            "Eine Flamme braucht ständig Sauerstoff - ist der im abgeschlossenen Glas verbraucht, kann die Verbrennung nicht weitergehen und die Kerze erlischt.")
+    };
+
+    private static QuizQuestion Gase(Random r)
+    {
+        var f = GaseListe[r.Next(GaseListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Gase – zwischen lebensnotwendig und gefährlich", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Sauerstoff zum Atmen lebensnotwendig, Kohlenstoffmonoxid unsichtbar gefährlich; Gase haben kein festes Volumen und dehnen sich beim Erwärmen aus."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WasserListe =
+    {
+        ("Aus welchen zwei Elementen besteht ein Wassermolekül?", new[] { "Wasserstoff und Sauerstoff", "Sauerstoff und Kohlenstoff", "Stickstoff und Wasserstoff" }, "Wasserstoff und Sauerstoff",
+            "Ein Wassermolekül besteht aus zwei Wasserstoff-Atomen und einem Sauerstoff-Atom - deshalb die Formel H₂O."),
+        ("Wie lautet die chemische Formel für Wasser?", new[] { "H₂O", "CO₂", "O₂" }, "H₂O",
+            "H₂O zeigt: zwei Wasserstoff-Atome (H) sind mit einem Sauerstoff-Atom (O) verbunden."),
+        ("In welchen drei Zuständen (Aggregatzuständen) kann Wasser vorkommen?", new[] { "Fest (Eis), flüssig (Wasser), gasförmig (Wasserdampf)", "Nur flüssig und gasförmig", "Nur fest und gasförmig" }, "Fest (Eis), flüssig (Wasser), gasförmig (Wasserdampf)",
+            "Wasser kann je nach Temperatur als Eis, als flüssiges Wasser oder als Wasserdampf vorliegen."),
+        ("Wie nennt man den Übergang von flüssigem Wasser zu Wasserdampf?", new[] { "Verdunsten (Verdampfen)", "Kondensieren", "Gefrieren" }, "Verdunsten (Verdampfen)",
+            "Beim Verdunsten bzw. Verdampfen wird aus flüssigem Wasser gasförmiger Wasserdampf."),
+        ("Wie nennt man den Übergang von Wasserdampf zurück zu flüssigem Wasser?", new[] { "Kondensieren", "Verdunsten", "Sublimieren" }, "Kondensieren",
+            "Beim Kondensieren wird aus gasförmigem Wasserdampf wieder flüssiges Wasser, z.B. an einem kalten Fenster."),
+        ("Was passiert beim Wasserkreislauf, nachdem Wasser aus Meeren und Seen verdunstet ist?", new[] { "Es steigt als Dampf auf, kondensiert zu Wolken und fällt als Niederschlag zurück", "Es verschwindet für immer aus der Atmosphäre", "Es wird sofort zu Eis" }, "Es steigt als Dampf auf, kondensiert zu Wolken und fällt als Niederschlag zurück",
+            "Der Wasserkreislauf beschreibt, wie Wasser verdunstet, in der Atmosphäre zu Wolken kondensiert und als Regen wieder zur Erde fällt."),
+        ("Warum schwimmt Eis auf flüssigem Wasser?", new[] { "Eis ist leichter (weniger dicht) als flüssiges Wasser", "Eis ist immer schwerer als Wasser", "Eis und Wasser haben exakt dieselbe Dichte" }, "Eis ist leichter (weniger dicht) als flüssiges Wasser",
+            "Wasser dehnt sich beim Gefrieren aus und wird dadurch leichter (weniger dicht) - deshalb schwimmt Eis obenauf."),
+        ("Bei welcher Temperatur gefriert reines Wasser bei normalem Luftdruck?", new[] { "0°C", "10°C", "-10°C" }, "0°C",
+            "Reines Wasser gefriert bei normalem Luftdruck genau bei 0°C zu Eis."),
+        ("Bei welcher Temperatur kocht reines Wasser bei normalem Luftdruck?", new[] { "100°C", "50°C", "212°C" }, "100°C",
+            "Bei normalem Luftdruck beginnt reines Wasser bei 100°C zu kochen und in Dampf überzugehen."),
+        ("Warum wird Wasser oft als \"universelles Lösungsmittel\" bezeichnet?", new[] { "Weil sich sehr viele verschiedene Stoffe darin lösen lassen", "Weil Wasser sich in keinem anderen Stoff lösen lässt", "Weil Wasser niemals mit anderen Stoffen reagiert" }, "Weil sich sehr viele verschiedene Stoffe darin lösen lassen",
+            "Wasser kann eine besonders große Vielfalt an Stoffen - z.B. Salze und Zucker - in sich auflösen."),
+        ("Was passiert, wenn man Salz in Wasser gibt?", new[] { "Das Salz löst sich auf und verteilt sich unsichtbar im Wasser", "Das Salz schwimmt immer unverändert oben", "Das Wasser verwandelt sich in Salz" }, "Das Salz löst sich auf und verteilt sich unsichtbar im Wasser",
+            "Beim Auflösen zerfällt das Salz in winzige, unsichtbare Teilchen, die sich gleichmäßig im Wasser verteilen."),
+        ("Warum ist sauberes Trinkwasser für Menschen lebensnotwendig?", new[] { "Der Körper besteht zu einem großen Teil aus Wasser und braucht es für alle Körperfunktionen", "Wasser wird vom Körper überhaupt nicht benötigt", "Nur Pflanzen brauchen Wasser, Menschen nicht" }, "Der Körper besteht zu einem großen Teil aus Wasser und braucht es für alle Körperfunktionen",
+            "Der menschliche Körper besteht zu einem großen Teil aus Wasser, das für Verdauung, Blutkreislauf und viele weitere Funktionen nötig ist."),
+        ("Was bedeutet der Begriff \"hartes Wasser\"?", new[] { "Wasser mit einem hohen Gehalt an gelösten Mineralien wie Kalk", "Wasser, das komplett gefroren ist", "Wasser, das besonders sauber und mineralfrei ist" }, "Wasser mit einem hohen Gehalt an gelösten Mineralien wie Kalk",
+            "\"Hartes\" Wasser enthält besonders viele gelöste Mineralstoffe, vor allem Kalk, was z.B. Kalkablagerungen im Wasserkocher verursacht."),
+        ("Wie wird verschmutztes Wasser meist gereinigt, bevor es als Trinkwasser genutzt wird?", new[] { "Durch Filtern und Aufbereiten in einem Wasserwerk", "Es wird einfach kurz umgerührt", "Gar nicht, jedes Wasser ist automatisch sauber" }, "Durch Filtern und Aufbereiten in einem Wasserwerk",
+            "In Wasserwerken wird Wasser durch verschiedene Filter- und Reinigungsschritte von Schadstoffen befreit, bevor es als Trinkwasser genutzt wird."),
+        ("Warum ist Wasser eine chemische Verbindung und kein reines Element?", new[] { "Weil es aus zwei verschiedenen Elementen (Wasserstoff und Sauerstoff) chemisch verbunden ist", "Weil es aus nur einer einzigen Atomsorte besteht", "Weil man es nicht in andere Stoffe zerlegen kann" }, "Weil es aus zwei verschiedenen Elementen (Wasserstoff und Sauerstoff) chemisch verbunden ist",
+            "Eine Verbindung entsteht, wenn sich zwei oder mehr Elemente chemisch verbinden - bei Wasser sind das Wasserstoff und Sauerstoff."),
+        ("Wie viel Prozent der Erdoberfläche sind ungefähr mit Wasser bedeckt?", new[] { "Etwa 70%", "Etwa 20%", "Fast 100%" }, "Etwa 70%",
+            "Ungefähr 70% der Erdoberfläche sind von Wasser (vor allem Ozeane) bedeckt."),
+        ("Wie viel von diesem Wasser auf der Erde ist ungefähr trinkbares Süßwasser?", new[] { "Nur ein kleiner Teil (rund 3%)", "Etwa die Hälfte", "Fast das gesamte Wasser" }, "Nur ein kleiner Teil (rund 3%)",
+            "Der weitaus größte Teil des Wassers auf der Erde ist salziges Meerwasser - nur ein kleiner Anteil ist Süßwasser."),
+        ("Was kann passieren, wenn Wasser durch bestimmtes Gestein fließt?", new[] { "Es kann Mineralien aus dem Gestein lösen und mit sich tragen", "Wasser verändert sich beim Fließen durch Gestein niemals", "Es verwandelt sich automatisch in Salzwasser" }, "Es kann Mineralien aus dem Gestein lösen und mit sich tragen",
+            "Fließt Wasser durch mineralhaltiges Gestein, kann es Mineralstoffe herauslösen und aufnehmen - so entsteht z.B. mineralreiches Quellwasser."),
+        ("Warum sollte man mit sauberem Trinkwasser sparsam umgehen?", new[] { "Sauberes Süßwasser ist begrenzt und in vielen Weltregionen knapp", "Wasser ist unbegrenzt und kann nie knapp werden", "Trinkwasser wird künstlich in Fabriken hergestellt" }, "Sauberes Süßwasser ist begrenzt und in vielen Weltregionen knapp",
+            "Obwohl die Erde viel Wasser hat, ist sauberes, trinkbares Süßwasser begrenzt und in vielen Regionen der Welt ein knappes Gut."),
+        ("Was ist Regen chemisch betrachtet?", new[] { "Kondensiertes Wasser, das aus Wolken als Niederschlag zur Erde fällt", "Ein völlig anderer Stoff als Wasserdampf", "Reiner Wasserstoff ohne Sauerstoff" }, "Kondensiertes Wasser, das aus Wolken als Niederschlag zur Erde fällt",
+            "Regen entsteht, wenn in Wolken kondensierter Wasserdampf zu Tropfen wird, die schwer genug sind, um als Niederschlag zu fallen.")
+    };
+
+    private static QuizQuestion Wasser(Random r)
+    {
+        var f = WasserListe[r.Next(WasserListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wasser – eine Verbindung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wasser (H₂O) besteht aus Wasserstoff und Sauerstoff, kommt fest/flüssig/gasförmig vor und ist ein universelles Lösungsmittel - Eis schwimmt, weil es leichter als flüssiges Wasser ist."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SalzeListe =
+    {
+        ("Wie heißt das bekannteste Salz, das wir zum Würzen von Essen benutzen?", new[] { "Kochsalz (Natriumchlorid)", "Kalk", "Traubenzucker" }, "Kochsalz (Natriumchlorid)",
+            "Kochsalz, chemisch Natriumchlorid, ist das im Alltag am häufigsten genutzte Salz."),
+        ("Wie lautet die chemische Bezeichnung für Kochsalz?", new[] { "Natriumchlorid", "Kaliumoxid", "Kalziumkarbonat" }, "Natriumchlorid",
+            "Kochsalz besteht chemisch aus Natrium und Chlor und heißt deshalb Natriumchlorid (NaCl)."),
+        ("Woher stammt das Kochsalz, das im Haushalt verwendet wird, meist ursprünglich?", new[] { "Aus Salzbergwerken oder durch Verdunsten von Meerwasser", "Es wird ausschließlich künstlich im Labor hergestellt", "Es wächst wie eine Pflanze aus dem Boden" }, "Aus Salzbergwerken oder durch Verdunsten von Meerwasser",
+            "Salz wird entweder aus unterirdischen Salzlagerstätten abgebaut oder durch Verdunsten von Meerwasser in Salinen gewonnen."),
+        ("Was passiert, wenn man Kochsalz in Wasser auflöst?", new[] { "Es löst sich in winzige, geladene Teilchen (Ionen) auf und verteilt sich unsichtbar im Wasser", "Es bleibt immer als sichtbarer Klumpen am Boden liegen", "Es verwandelt sich chemisch in reines Wasser" }, "Es löst sich in winzige, geladene Teilchen (Ionen) auf und verteilt sich unsichtbar im Wasser",
+            "Beim Auflösen zerfällt Kochsalz in seine geladenen Bestandteile (Ionen), die sich gleichmäßig im Wasser verteilen."),
+        ("Warum sagt man bei Salzen manchmal \"Gegensätze ziehen sich an\"?", new[] { "Weil sie aus positiv und negativ geladenen Teilchen bestehen, die sich gegenseitig anziehen", "Weil Salze immer aus zwei Metallen bestehen", "Weil sich in Salzen niemals irgendwelche Ladungen befinden" }, "Weil sie aus positiv und negativ geladenen Teilchen bestehen, die sich gegenseitig anziehen",
+            "Salze bestehen aus positiv geladenen und negativ geladenen Teilchen (Ionen), die sich wegen ihrer entgegengesetzten Ladung gegenseitig anziehen."),
+        ("Wie sieht die geordnete Struktur von Salzkristallen typischerweise aus?", new[] { "Regelmäßig und geometrisch, z.B. würfelförmig bei Kochsalz", "Völlig unregelmäßig und chaotisch", "Immer rund wie eine Kugel" }, "Regelmäßig und geometrisch, z.B. würfelförmig bei Kochsalz",
+            "Die geladenen Teilchen ordnen sich in Salzen sehr regelmäßig an - bei Kochsalz entstehen dadurch typische Würfelformen."),
+        ("Wofür wird Salz im Winter auf Straßen und Gehwegen gestreut?", new[] { "Um das Gefrieren von Wasser zu verhindern und Eis zu schmelzen", "Um den Boden zu düngen", "Um die Straße bunter aussehen zu lassen" }, "Um das Gefrieren von Wasser zu verhindern und Eis zu schmelzen",
+            "Streusalz senkt den Gefrierpunkt von Wasser, sodass Eis und Schnee schneller schmelzen und die Wege weniger rutschig werden."),
+        ("Wie wurde Salz früher genutzt, um Lebensmittel länger haltbar zu machen?", new[] { "Durch Einsalzen (Pökeln), was Bakterien am Wachstum hindert", "Durch Erhitzen des Salzes auf über 1000°C", "Salz wurde dafür nie genutzt" }, "Durch Einsalzen (Pökeln), was Bakterien am Wachstum hindert",
+            "Salz entzieht Lebensmitteln Wasser und erschwert es Bakterien, sich zu vermehren - deshalb hielten gepökelte Lebensmittel früher länger."),
+        ("Welches bekannte Mineral, das ebenfalls ein Salz ist, kommt z.B. in Kalkstein vor?", new[] { "Kalziumkarbonat (Kalk)", "Natriumchlorid", "Reines Gold" }, "Kalziumkarbonat (Kalk)",
+            "Kalkstein besteht größtenteils aus Kalziumkarbonat, einem in der Natur sehr häufigen Salz."),
+        ("Wie können manche Salze in der Natur entstehen, wenn ein See oder Meeresarm komplett austrocknet?", new[] { "Die zuvor gelösten Salze bleiben als feste Kristalle zurück", "Sie verschwinden für immer spurlos", "Sie verwandeln sich in Süßwasser" }, "Die zuvor gelösten Salze bleiben als feste Kristalle zurück",
+            "Verdunstet das Wasser eines salzigen Sees vollständig, bleiben die zuvor gelösten Salze als feste Kristallschicht zurück."),
+        ("Wie schmeckt Kochsalz typischerweise?", new[] { "Salzig", "Süß", "Bitter" }, "Salzig",
+            "Der typische salzige Geschmack ist das Erkennungsmerkmal von Kochsalz beim Würzen von Speisen."),
+        ("Was entsteht chemisch (vereinfacht), wenn eine Säure und eine Lauge miteinander reagieren?", new[] { "Ein Salz und Wasser (Neutralisation)", "Nur ein neues Gas", "Reiner Sauerstoff" }, "Ein Salz und Wasser (Neutralisation)",
+            "Bei der Neutralisation reagieren Säure und Lauge miteinander und es entstehen ein Salz sowie Wasser."),
+        ("Warum ist Meerwasser salzig?", new[] { "Es enthält viele über lange Zeit im Wasser gelöste Salze, vor allem Kochsalz", "Fische geben ständig Salz ins Wasser ab", "Salz wird künstlich ins Meer gegeben" }, "Es enthält viele über lange Zeit im Wasser gelöste Salze, vor allem Kochsalz",
+            "Über Millionen von Jahren haben Flüsse Mineralien und Salze ins Meer gespült, wo sie sich angereichert haben."),
+        ("Was passiert mit Salzkristallen, wenn man sie stark genug erhitzt?", new[] { "Sie schmelzen und werden flüssig", "Sie verschwinden spurlos", "Sie werden zu Gas, ohne vorher flüssig zu werden" }, "Sie schmelzen und werden flüssig",
+            "Bei ausreichend hoher Temperatur schmelzen auch Salze, ähnlich wie Eis beim Erwärmen flüssig wird."),
+        ("Warum sollte man nicht zu viel Salz mit dem Essen zu sich nehmen?", new[] { "Zu viel Salz kann auf Dauer der Gesundheit, z.B. dem Blutdruck, schaden", "Salz ist in jeder Menge völlig gesund", "Salz hat keinerlei Wirkung auf den Körper" }, "Zu viel Salz kann auf Dauer der Gesundheit, z.B. dem Blutdruck, schaden",
+            "Ein dauerhaft zu hoher Salzkonsum kann den Blutdruck erhöhen und langfristig der Gesundheit schaden."),
+        ("Was unterscheidet einen Salzkristall grundsätzlich von einem Metall wie Eisen?", new[] { "Salze bestehen aus geladenen Teilchen (Ionen), Metalle aus Metallatomen", "Beide bestehen aus exakt denselben Teilchen", "Salze leiten immer besser Strom als Metalle" }, "Salze bestehen aus geladenen Teilchen (Ionen), Metalle aus Metallatomen",
+            "Salze sind aus positiv und negativ geladenen Ionen aufgebaut, während Metalle aus Metallatomen mit frei beweglichen Elektronen bestehen."),
+        ("Wozu kann Salz neben dem Würzen von Speisen noch verwendet werden?", new[] { "Z.B. zum Enteisen von Straßen oder zum Haltbarmachen von Lebensmitteln", "Ausschließlich zur Herstellung von Süßigkeiten", "Es hat außer dem Würzen keinerlei weitere Verwendung" }, "Z.B. zum Enteisen von Straßen oder zum Haltbarmachen von Lebensmitteln",
+            "Salz wird vielseitig genutzt: als Gewürz, als Streusalz gegen Glätte und traditionell zum Haltbarmachen von Lebensmitteln."),
+        ("Was passiert, wenn Salzwasser vollständig verdunstet, z.B. in einer flachen Schale?", new[] { "Das gelöste Salz bleibt als fester, sichtbarer Rückstand zurück", "Das Salz verdunstet zusammen mit dem Wasser vollständig", "Es entsteht reines Trinkwasser ohne jeden Rückstand" }, "Das gelöste Salz bleibt als fester, sichtbarer Rückstand zurück",
+            "Nur das Wasser verdunstet - das darin gelöste Salz kann nicht mitverdunsten und bleibt als fester Rückstand zurück."),
+        ("Wie nennt man den Vorgang, bei dem sich Salz beim Verdunsten von Wasser zu geordneten Kristallen zusammenlagert?", new[] { "Kristallisation", "Destillation", "Sublimation" }, "Kristallisation",
+            "Bei der Kristallisation lagern sich die gelösten Salzteilchen beim Verdunsten des Wassers zu einer geordneten Kristallstruktur zusammen."),
+        ("Welches zweite Element ist neben Natrium im Kochsalz (NaCl) enthalten?", new[] { "Chlor", "Sauerstoff", "Kohlenstoff" }, "Chlor",
+            "Kochsalz besteht aus Natrium und Chlor, die chemisch fest zu Natriumchlorid verbunden sind.")
+    };
+
+    private static QuizQuestion Salze(Random r)
+    {
+        var f = SalzeListe[r.Next(SalzeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Salze – Gegensätze ziehen sich an", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Salze wie Kochsalz bestehen aus entgegengesetzt geladenen Teilchen (Ionen), die sich anziehen; sie lösen sich in Wasser auf und bilden beim Verdunsten wieder Kristalle."
         };
     }
 }

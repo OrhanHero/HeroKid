@@ -92,10 +92,10 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Säuren und Laugen | Periodensystem |
 | Metalle und ihre Eigenschaften | Klare Verhältnisse – Stöchiometrie |
 | Stoffe im Alltag | Säuren und Laugen – echt ätzend |
-| | Kohlenwasserstoffe – vom Campinggas zum Superbenzin |
-| | Alkohole – vom Holzgeist zum Glycerin |
-| | Organische Säuren – Salatsauce, Entkalker & Co |
-| | Ester – Vielfalt der Produkte aus Alkoholen und Säuren |
+| Das Periodensystem der Elemente – Übersicht und Werkzeug | Kohlenwasserstoffe – vom Campinggas zum Superbenzin |
+| Gase – zwischen lebensnotwendig und gefährlich | Alkohole – vom Holzgeist zum Glycerin |
+| Wasser – eine Verbindung | Organische Säuren – Salatsauce, Entkalker & Co |
+| Salze – Gegensätze ziehen sich an | Ester – Vielfalt der Produkte aus Alkoholen und Säuren |
 
 Organische Chemie (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester) ist entgegen einer
 früheren Design-Notiz in dieser Datei **inzwischen doch implementiert** (Klasse 9) - die Notiz war
@@ -434,10 +434,10 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 #### Chemie (`ChemieGenerator.cs`)
 
 - [x] 3.1 Faszination Chemie – Feuer, Schall und Rauch (→ `Verbrennung`)
-- [ ] 3.2 Das Periodensystem der Elemente – Übersicht und Werkzeug (Klasse-6-Niveau)
-- [ ] 3.3 Gase – zwischen lebensnotwendig und gefährlich
-- [ ] 3.4 Wasser – eine Verbindung
-- [ ] 3.5 Salze – Gegensätze ziehen sich an
+- [x] 3.2 Das Periodensystem der Elemente – Übersicht und Werkzeug (Klasse-6-Niveau) (→ `PeriodensystemGrundlagen`)
+- [x] 3.3 Gase – zwischen lebensnotwendig und gefährlich (→ `Gase`)
+- [x] 3.4 Wasser – eine Verbindung (→ `Wasser`)
+- [x] 3.5 Salze – Gegensätze ziehen sich an (→ `Salze`)
 - [x] 3.6 Metalle – Schätze der Erde (→ `MetalleEigenschaften`)
 
 #### Physik (`PhysikGenerator.cs`)
@@ -683,7 +683,7 @@ Ethik/`Freundschaft`).
 | Türkisch | `TurkishGenerator.cs` | 8 | 7 | 15 |
 | Englisch | `EnglischGenerator.cs` | 7 | 6 | 13 |
 | Biologie | `BiologieGenerator.cs` | 6 | 8 | 14 |
-| Chemie | `ChemieGenerator.cs` | 5 | 9 | 14 |
+| Chemie | `ChemieGenerator.cs` | 9 | 9 | 18 |
 | Physik | `PhysikGenerator.cs` | 6 | 7 | 13 |
 | Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
 | Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
@@ -694,7 +694,7 @@ Ethik/`Freundschaft`).
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 204 Topics** (je Topic ~20 kuratierte Fragen → ~4.000 Fragen im Pool; Mathematik generiert
+**Total: 208 Topics** (je Topic ~20 kuratierte Fragen → ~4.150 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
