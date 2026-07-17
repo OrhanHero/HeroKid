@@ -201,6 +201,12 @@ public static class Translations
             ["Parent_SkipUnlock"] = L("Sofort freischalten (überspringen)", "Hemen kilidi aç (atla)"),
             ["Parent_Save"] = L("Speichern", "Kaydet"),
             ["Parent_Close"] = L("Schließen", "Kapat"),
+            ["Parent_Backup_Title"] = L("Sicherung (Backup)", "Yedekleme"),
+            ["Parent_Backup_Intro"] = L(
+                "Alle Profile, Fortschritte, Sterne und Einstellungen als eine Datei sichern - z.B. auf einen USB-Stick. Beim Wiederherstellen wird der aktuelle Stand ersetzt.",
+                "Tüm profilleri, ilerlemeleri, yıldızları ve ayarları tek dosya olarak yedekle - örn. USB belleğe. Geri yüklerken mevcut durum değiştirilir."),
+            ["Parent_Backup_Export"] = L("Sicherung erstellen…", "Yedek oluştur…"),
+            ["Parent_Backup_Import"] = L("Sicherung wiederherstellen…", "Yedeği geri yükle…"),
             ["Parent_DangerZone"] = L("Gefahrenzone", "Tehlikeli bölge"),
             ["Parent_ResetAllData"] = L("Alle Daten zurücksetzen…", "Tüm verileri sıfırla…"),
 

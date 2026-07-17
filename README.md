@@ -223,6 +223,12 @@ deshalb bewusst nicht umgesetzt.
 - **Schwierigkeitsstufen pro Profil** (Presets statt Freitext, kein neuer Build nötig): Tipptrainer-
   Mindestgenauigkeit (25/50/75/85%, Standard 25%), Abschlussquiz-Bestehensschwelle für den 1. Versuch
   (50/75/85%, Standard 50%) und für den 2. Versuch/die Wiederholung (25/50%, Standard 25%).
+- **Sicherung (Backup)**: die komplette Datenbank (Profile, Fortschritte, Sterne, Einstellungen)
+  als eine Datei exportieren - z.B. auf einen USB-Stick - und bei Bedarf wiederherstellen. Der
+  Export nutzt SQLites `VACUUM INTO` (konsistenter Snapshot bei laufender App); der Import ersetzt
+  die aktive Datenbank nach Bestätigung und beendet die App, beim nächsten Start ist der gesicherte
+  Stand aktiv. Auch eine Sicherung aus einer älteren App-Version funktioniert (der automatische
+  Schema-Abgleich ergänzt fehlende Tabellen/Spalten beim Start).
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
 - **Bericht "Stärken & Schwächen"** (pro Profil, umschaltbar 7/30 Tage): Richtig-Quote je Fach als
   Ampel-Balken (grün ≥75 %, gelb, rot <50 %), schwächste Fächer zuerst; dazu Lerntage im Zeitraum

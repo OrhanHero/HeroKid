@@ -833,6 +833,102 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Exportiert eine konsistente Sicherung der kompletten Datenbank (Profile, Fortschritte,
+    /// Sterne, Einstellungen) als einzelne .db-Datei, z.B. auf einen USB-Stick. Die lerntor.db
+    /// ist sonst ein Single Point of Failure - Plattendefekt = Monate Fortschritt weg.
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportBackupAsync()
+    {
+        var dialog = new SaveFileDialog
+        {
+            Filter = "LernTor-Sicherung (*.db)|*.db",
+            FileName = $"lerntor-backup-{DateTime.Now:yyyy-MM-dd}.db",
+            Title = "LernTor-Sicherung speichern"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            await _maintenanceRepo.ExportBackupAsync(dialog.FileName);
+            System.Windows.MessageBox.Show(
+                $"Sicherung gespeichert:\n{dialog.FileName}",
+                "Sicherung erstellt",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            LernTor.Core.Logging.AppLog.Error("Parent", "Backup-Export fehlgeschlagen", ex);
+            System.Windows.MessageBox.Show(
+                $"Sicherung fehlgeschlagen:\n{ex.Message}",
+                "Sicherung erstellen",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// Ersetzt die aktive Datenbank durch eine zuvor exportierte Sicherung. Beendet die App
+    /// danach (wie ResetAllData): der laufende Prozess hätte sonst veraltete Daten im Speicher,
+    /// erst der nächste Start lädt die wiederhergestellten Profile/Fortschritte.
+    /// </summary>
+    [RelayCommand]
+    private void ImportBackup()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "LernTor-Sicherung (*.db)|*.db|Alle Dateien (*.*)|*.*",
+            Title = "LernTor-Sicherung wiederherstellen"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var confirmed = System.Windows.MessageBox.Show(
+            "Die aktuelle Datenbank wird durch die gewählte Sicherung ersetzt.\n\n" +
+            "Alle SEIT der Sicherung entstandenen Fortschritte und Sterne gehen dabei verloren. Fortfahren?",
+            "Sicherung wiederherstellen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning,
+            System.Windows.MessageBoxResult.No);
+
+        if (confirmed != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        try
+        {
+            DatabaseMaintenanceRepository.ImportBackup(dialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            LernTor.Core.Logging.AppLog.Error("Parent", "Backup-Import fehlgeschlagen", ex);
+            System.Windows.MessageBox.Show(
+                $"Wiederherstellung fehlgeschlagen:\n{ex.Message}",
+                "Sicherung wiederherstellen",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+            return;
+        }
+
+        System.Windows.MessageBox.Show(
+            "Wiederhergestellt. LernTor wird jetzt beendet - beim nächsten Start sind die Daten aus der Sicherung aktiv.",
+            "Sicherung wiederhergestellt",
+            System.Windows.MessageBoxButton.OK,
+            System.Windows.MessageBoxImage.Information);
+
+        System.Windows.Application.Current.Shutdown();
+    }
+
+    /// <summary>
     /// Legt eine eigene Aufgabe an (z.B. aktuelle Hausaufgabe der Lehrkraft). Ergänzt die
     /// generierten Aufgaben aus LernTor.ContentGen additiv, ersetzt sie nicht.
     /// </summary>

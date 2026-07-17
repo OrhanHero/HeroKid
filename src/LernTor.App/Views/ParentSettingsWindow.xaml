@@ -573,6 +573,20 @@
                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                          Visibility="{Binding HasErrorLogEntries, Converter={StaticResource BoolToVis}}" />
 
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Backup_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,12,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Backup_Intro]}"
+                           Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Backup_Export]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8" Margin="0,0,12,0"
+                            Command="{Binding ExportBackupCommand}" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Backup_Import]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8"
+                            Background="{StaticResource TextSecondaryBrush}"
+                            Command="{Binding ImportBackupCommand}" />
+                </StackPanel>
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DangerZone]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,12,0,8"
                            Foreground="{StaticResource ErrorBrush}" />
