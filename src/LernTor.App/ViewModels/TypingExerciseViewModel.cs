@@ -94,6 +94,13 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
 
     public double ProgressPercent => TotalChars > 0 ? (double)CurrentPosition / TotalChars : 0.0;
 
+    [RelayCommand]
+    private void Continue()
+    {
+        // Navigation wird über _onLessonCompleted-Callback in SaveAndContinueAsync behandelt.
+        // Dieser Command dient nur dazu, den "Weiter"-Button im XAML zu binden.
+    }
+
     partial void OnCurrentInputChanged(string value)
     {
         if (IsCompleted) return;

@@ -41,7 +41,7 @@ public static class TypingContentProvider
             },
             Difficulty = 1,
             EstimatedDurationSeconds = 60,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.50,
             MinimumCharacters = 20
         },
         new TypingLesson
@@ -249,20 +249,6 @@ public static class TypingContentProvider
             MinimumAccuracy = 0.85,
             MinimumCharacters = 60
         },
-        new TypingLesson
-        {
-            Id = "saetze_2",
-            LessonType = TypingLessonType.Saetze,
-            Title = "Lektion 6b: Sätze mit Zahlen & Zeichen",
-            InstructionDe = "Sätze mit Zahlen und Sonderzeichen. Alles zusammen – du schaffst das!",
-            InstructionTr = "",
-            TargetText = "Heute ist der 12.05.2024. Ich bin 12 Jahre alt. Meine Telefonnummer: 0176-54321.",
-            FingerMapping = BuildFingerMapping("Heute ist der 12.05.2024. Ich bin 12 Jahre alt. Meine Telefonnummer: 0176-54321."),
-            Difficulty = 3,
-            EstimatedDurationSeconds = 90,
-            MinimumAccuracy = 0.85,
-            MinimumCharacters = 60
-        },
         #endregion
     };
 
@@ -274,8 +260,8 @@ public static class TypingContentProvider
         Title = "Lektion 7: Abschluss – Emirhans Text",
         InstructionDe = "Der finale Test! Tippe deinen persönlichen Text fehlerfrei und flüssig.",
         InstructionTr = "",
-        TargetText = "Hallo, mein Name ist Emirhan Kahraman. Ich wurde am 09.05.2014 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 0173 2085640. Mein Vater heißt Orhan Kahraman und meine Mutter heißt Zehra Kahraman. Ich gehe auf die Lemgo-Grundschule und bin in der Klasse 6c. Mein Lieblingsessen ist Nudeln mit Sahnesoße und Schnitzel. In meiner Freizeit spiele ich gerne Fußball und treffe mich mit meinen Freunden. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden. Am Ende der Stunde werde ich mir mein Ergebnis ansehen und mich freuen, wenn ich schneller geworden bin.",
-        FingerMapping = BuildFingerMapping("Hallo, mein Name ist Emirhan Kahraman. Ich wurde am 09.05.2014 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 0173 2085640. Mein Vater heißt Orhan Kahraman und meine Mutter heißt Zehra Kahraman. Ich gehe auf die Lemgo-Grundschule und bin in der Klasse 6c. Mein Lieblingsessen ist Nudeln mit Sahnesoße und Schnitzel. In meiner Freizeit spiele ich gerne Fußball und treffe mich mit meinen Freunden. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden. Am Ende der Stunde werde ich mir mein Ergebnis ansehen und mich freuen, wenn ich schneller geworden bin."),
+        TargetText = "Hallo, mein Name ist Emirhan Kahraman. Ich wurde am 09.05.2014 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 0173 2085640. Ich gehe auf die Lemgo-Grundschule und bin in der Klasse 6c. Mein Lieblingsessen ist Nudeln mit Sahnesoße und Schnitzel. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden.",
+        FingerMapping = BuildFingerMapping("Hallo, mein Name ist Emirhan Kahraman. Ich wurde am 09.05.2014 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 0173 2085640. Ich gehe auf die Lemgo-Grundschule und bin in der Klasse 6c. Mein Lieblingsessen ist Nudeln mit Sahnesoße und Schnitzel. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden."),
         Difficulty = 3,
         EstimatedDurationSeconds = 180,
         MinimumAccuracy = 0.85,
@@ -289,8 +275,8 @@ public static class TypingContentProvider
         Title = "Lektion 7: Abschluss – Batuhans Text",
         InstructionDe = "Der finale Test! Tippe deinen persönlichen Text fehlerfrei und flüssig.",
         InstructionTr = "",
-        TargetText = "Hallo, mein Name ist Batuhan Kahraman. Ich wurde am 16.08.2011 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 01522 8467854. Mein Vater heißt Orhan Kahraman und meine Mutter heißt Zehra Kahraman. Ich gehe auf das Robert-Koch-Gymnasium und bin in der Klasse 9a. Mein Lieblingsessen ist Pommes und Nuggets. In meiner Freizeit spiele ich gerne Fußball und treffe mich mit meinen Freunden. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden. Am Ende der Stunde werde ich mir mein Ergebnis ansehen und mich freuen, wenn ich schneller geworden bin.",
-        FingerMapping = BuildFingerMapping("Hallo, mein Name ist Batuhan Kahraman. Ich wurde am 16.08.2011 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 01522 8467854. Mein Vater heißt Orhan Kahraman und meine Mutter heißt Zehra Kahraman. Ich gehe auf das Robert-Koch-Gymnasium und bin in der Klasse 9a. Mein Lieblingsessen ist Pommes und Nuggets. In meiner Freizeit spiele ich gerne Fußball und treffe mich mit meinen Freunden. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden. Am Ende der Stunde werde ich mir mein Ergebnis ansehen und mich freuen, wenn ich schneller geworden bin."),
+        TargetText = "Hallo, mein Name ist Batuhan Kahraman. Ich wurde am 16.08.2011 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 01522 8467854. Ich gehe auf das Robert-Koch-Gymnasium und bin in der Klasse 9a. Mein Lieblingsessen ist Pommes und Nuggets. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden.",
+        FingerMapping = BuildFingerMapping("Hallo, mein Name ist Batuhan Kahraman. Ich wurde am 16.08.2011 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 01522 8467854. Ich gehe auf das Robert-Koch-Gymnasium und bin in der Klasse 9a. Mein Lieblingsessen ist Pommes und Nuggets. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden."),
         Difficulty = 3,
         EstimatedDurationSeconds = 180,
         MinimumAccuracy = 0.85,
