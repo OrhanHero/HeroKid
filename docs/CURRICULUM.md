@@ -164,10 +164,10 @@ Rahmenlehrplan" weiter unten).
 | Kontinente und Ozeane | Plattentektonik |
 | Klimazonen | Klimawandel |
 | Deutschland: Bundesländer | Verstädterung |
-| | Armut und Reichtum weltweit |
-| | Umgang mit Ressourcen: Energie und Rohstoffe |
-| | Umgang mit Ressourcen: Landwirtschaft und Boden |
-| | Klimaschutz: Internationale Konflikte und Lösungen |
+| Leben in Risikoräumen (Naturgefahren) | Armut und Reichtum weltweit |
+| Migration und Bevölkerung (Flucht, Landflucht) | Umgang mit Ressourcen: Energie und Rohstoffe |
+| Vielfalt der Erde (tropischer Regenwald) | Umgang mit Ressourcen: Landwirtschaft und Boden |
+| Armut und Reichtum (Klasse-6-Niveau) | Klimaschutz: Internationale Konflikte und Lösungen |
 | | Wirtschaftliche Verflechtungen und Globalisierung |
 | | Europa in der Welt (naturräumliche und wirtschaftliche Vielfalt) |
 
@@ -458,10 +458,10 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Geografie (`GeoGenerator.cs`)
 
-- [ ] 3.1 Leben in Risikoräumen (Naturgefahren)
-- [ ] 3.2 Migration und Bevölkerung (Flucht, Landflucht)
-- [ ] 3.3 Vielfalt der Erde (tropischer Regenwald)
-- [ ] 3.4 Armut und Reichtum (Klasse-6-Niveau)
+- [x] 3.1 Leben in Risikoräumen (Naturgefahren) (→ `RisikoraeumeNaturgefahren`)
+- [x] 3.2 Migration und Bevölkerung (Flucht, Landflucht) (→ `MigrationUndBevoelkerung`)
+- [x] 3.3 Vielfalt der Erde (tropischer Regenwald) (→ `TropischerRegenwald`)
+- [x] 3.4 Armut und Reichtum (Klasse-6-Niveau) (→ `ArmutUndReichtumKlasse6`)
 
 #### Politische Bildung (`PolitikGenerator.cs`)
 
@@ -691,13 +691,13 @@ Ethik/`Freundschaft`).
 | Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
 | Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
 | Politik | `PolitikGenerator.cs` | 3 | 8 | 11 |
-| Geografie | `GeoGenerator.cs` | 3 | 9 | 12 |
+| Geografie | `GeoGenerator.cs` | 7 | 9 | 16 |
 | Ethik | `EthikGenerator.cs` | 3 | 10 | 13 |
 | Kunst | `KunstGenerator.cs` | 4 | 6 | 10 |
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 212 Topics** (je Topic ~20 kuratierte Fragen → ~4.200 Fragen im Pool; Mathematik generiert
+**Total: 216 Topics** (je Topic ~20 kuratierte Fragen → ~4.300 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien

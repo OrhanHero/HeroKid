@@ -11,7 +11,7 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Kontinente, Klimazonen, Bundeslaender },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Kontinente, Klimazonen, Bundeslaender, RisikoraeumeNaturgefahren, MigrationUndBevoelkerung, TropischerRegenwald, ArmutUndReichtumKlasse6 },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Plattentektonik, Klimawandel, Verstaedterung, ArmutReichtum, RessourcenEnergie, LandwirtschaftUndBoden, KlimaschutzInternational, WirtschaftlicheVerflechtung, EuropaWirtschaftsraum }
         };
 
@@ -663,6 +663,230 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
             Topic = "Europa in der Welt (naturräumliche und wirtschaftliche Vielfalt)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Europa vereint große naturräumliche Vielfalt und wirtschaftliche/soziale/ökologische Disparitäten zwischen Regionen; grenzübergreifende Zusammenarbeit (Alpenraum, Ostseeraum) hilft bei gemeinsamen Herausforderungen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] RisikoraeumeListe =
+    {
+        ("Was versteht man unter einem \"Risikoraum\" in der Geografie?", new[] { "Ein Gebiet, in dem Naturgefahren wie Erdbeben, Vulkane oder Überschwemmungen besonders häufig auftreten", "Ein Gebiet, das komplett frei von jeglichen Gefahren ist", "Ein Gebiet, das nur auf Landkarten existiert" }, "Ein Gebiet, in dem Naturgefahren wie Erdbeben, Vulkane oder Überschwemmungen besonders häufig auftreten",
+            "Risikoräume sind Regionen, in denen bestimmte Naturgefahren durch die geografische Lage besonders wahrscheinlich sind."),
+        ("Warum leben trotz der Gefahr viele Menschen in der Nähe von Vulkanen?", new[] { "Der Boden dort ist durch Vulkanasche oft sehr fruchtbar", "Vulkane sind für Menschen völlig ungefährlich", "Es gibt dort besonders wenig Naturkatastrophen" }, "Der Boden dort ist durch Vulkanasche oft sehr fruchtbar",
+            "Vulkanasche liefert wertvolle Nährstoffe für den Boden, weshalb Landwirtschaft rund um Vulkane oft sehr ertragreich ist."),
+        ("Was ist ein Tsunami?", new[] { "Eine sehr große Meereswelle, meist ausgelöst durch ein Seebeben", "Ein starker, lang anhaltender Regen", "Ein anderes Wort für Vulkanausbruch" }, "Eine sehr große Meereswelle, meist ausgelöst durch ein Seebeben",
+            "Ein Tsunami entsteht meist durch ein Erdbeben unter dem Meeresboden, das eine riesige, sich ausbreitende Welle erzeugt."),
+        ("Warum sind manche Küstenregionen besonders von Tsunamis bedroht?", new[] { "Sie liegen in der Nähe von Erdbebenzonen unter dem Meer", "Sie liegen besonders weit vom Meer entfernt", "Tsunamis treten nur in Wüstenregionen auf" }, "Sie liegen in der Nähe von Erdbebenzonen unter dem Meer",
+            "Küsten in der Nähe untermeerischer Erdbebenzonen, z.B. am Pazifischen Feuerring, sind besonders tsunamigefährdet."),
+        ("Was ist ein Hurrikan bzw. Taifun?", new[] { "Ein sehr starker tropischer Wirbelsturm mit hohen Windgeschwindigkeiten und Starkregen", "Ein leichter, angenehmer Sommerwind", "Ein anderes Wort für Erdbeben" }, "Ein sehr starker tropischer Wirbelsturm mit hohen Windgeschwindigkeiten und Starkregen",
+            "Hurrikans (Atlantik) und Taifune (Pazifik) sind unterschiedliche Namen für dieselbe Art tropischer Wirbelstürme mit extremen Winden und Regen."),
+        ("Warum bauen Menschen in Erdbebengebieten heute oft speziell gesicherte Gebäude?", new[] { "Damit die Gebäude Erdstöße besser aushalten und weniger einstürzen", "Speziell gesicherte Gebäude sind billiger als normale", "Erdbebensichere Bauweise hat keinerlei praktischen Nutzen" }, "Damit die Gebäude Erdstöße besser aushalten und weniger einstürzen",
+            "Erdbebensichere Konstruktionen federn die Erschütterungen ab und verringern so das Risiko von Einstürzen und Opfern."),
+        ("Was ist ein Deich und wofür wird er gebaut?", new[] { "Ein Schutzwall, der tief liegendes Land vor Überschwemmungen schützt", "Ein anderes Wort für Vulkan", "Eine Art Brücke über einen Fluss" }, "Ein Schutzwall, der tief liegendes Land vor Überschwemmungen schützt",
+            "Deiche halten Hochwasser von Flüssen oder Meeren zurück und schützen dahinterliegendes, tief gelegenes Land."),
+        ("Warum sind flache Küstenregionen besonders von Überschwemmungen bedroht?", new[] { "Sie liegen oft nur wenig über dem Meeresspiegel", "Sie liegen besonders hoch über dem Meeresspiegel", "Flache Küsten sind grundsätzlich sicherer als steile" }, "Sie liegen oft nur wenig über dem Meeresspiegel",
+            "Je geringer der Höhenunterschied zum Meeresspiegel, desto schneller kann ansteigendes Wasser das Land überfluten."),
+        ("Was ist ein Frühwarnsystem im Zusammenhang mit Naturgefahren?", new[] { "Ein System, das Menschen frühzeitig vor Gefahren wie Tsunamis warnt", "Ein System, das Naturkatastrophen komplett verhindert", "Ein anderes Wort für Wettervorhersage im Fernsehen" }, "Ein System, das Menschen frühzeitig vor Gefahren wie Tsunamis warnt",
+            "Frühwarnsysteme erkennen Anzeichen einer Gefahr frühzeitig und geben Warnungen aus, damit Menschen rechtzeitig in Sicherheit gebracht werden können."),
+        ("Warum ist Japan besonders häufig von Erdbeben betroffen?", new[] { "Es liegt an der Grenze mehrerer tektonischer Platten", "Japan liegt mitten in einer sehr stabilen Erdkrustenzone", "Erdbeben in Japan haben nichts mit der geografischen Lage zu tun" }, "Es liegt an der Grenze mehrerer tektonischer Platten",
+            "Japan liegt am sogenannten Pazifischen Feuerring, wo mehrere tektonische Platten aufeinandertreffen - das begünstigt häufige Erdbeben."),
+        ("Was können Menschen tun, um sich in einem Risikoraum besser auf Naturgefahren vorzubereiten?", new[] { "Notfallpläne erstellen, sich informieren und Frühwarnsysteme nutzen", "Am besten überhaupt nichts unternehmen", "Ausschließlich auf Zufall vertrauen" }, "Notfallpläne erstellen, sich informieren und Frühwarnsysteme nutzen",
+            "Gute Vorbereitung - etwa Notfallpläne, Informationskampagnen und funktionierende Frühwarnsysteme - kann Menschenleben retten."),
+        ("Was ist eine Lawine?", new[] { "Eine große Menge Schnee, die sich plötzlich einen Hang hinunterbewegt", "Ein anderes Wort für Erdbeben", "Eine besonders starke Meereswelle" }, "Eine große Menge Schnee, die sich plötzlich einen Hang hinunterbewegt",
+            "Bei einer Lawine löst sich eine instabile Schneemasse und rutscht mit hoher Geschwindigkeit einen Hang hinab."),
+        ("Warum sind Berggebiete im Winter oft von Lawinengefahr betroffen?", new[] { "Instabile Schneemassen können sich an steilen Hängen plötzlich lösen", "In Bergen schneit es grundsätzlich nie", "Lawinen treten ausschließlich im Sommer auf" }, "Instabile Schneemassen können sich an steilen Hängen plötzlich lösen",
+            "Steile Hänge mit viel Schnee sind besonders lawinengefährdet, wenn sich Schneeschichten lösen."),
+        ("Was ist eine Dürre?", new[] { "Eine längere Zeit ohne ausreichend Niederschlag, die zu Wassermangel führt", "Ein plötzlicher, sehr starker Regenschauer", "Ein anderes Wort für Überschwemmung" }, "Eine längere Zeit ohne ausreichend Niederschlag, die zu Wassermangel führt",
+            "Bei einer Dürre bleibt der erwartete Niederschlag über längere Zeit aus, wodurch Böden und Wasserreserven austrocknen."),
+        ("Warum kann eine Dürre für die Landwirtschaft eines Gebiets gefährlich werden?", new[] { "Pflanzen bekommen zu wenig Wasser und Ernten können ausfallen", "Dürren verbessern grundsätzlich die Ernteerträge", "Landwirtschaft ist von Niederschlag völlig unabhängig" }, "Pflanzen bekommen zu wenig Wasser und Ernten können ausfallen",
+            "Ohne ausreichend Wasser können Nutzpflanzen nicht richtig wachsen, was zu Ernteausfällen und Nahrungsmittelknappheit führen kann."),
+        ("Was passiert häufig, wenn in kurzer Zeit sehr viel Regen fällt (Starkregen)?", new[] { "Es kann zu plötzlichen Überschwemmungen (Sturzfluten) kommen", "Der Boden kann das Wasser immer problemlos sofort aufnehmen", "Starkregen hat grundsätzlich keine Auswirkungen" }, "Es kann zu plötzlichen Überschwemmungen (Sturzfluten) kommen",
+            "Fällt in kurzer Zeit sehr viel Regen, kann der Boden das Wasser nicht schnell genug aufnehmen - es kommt zu Sturzfluten."),
+        ("Warum ziehen manche Menschen trotz bekannter Naturgefahren nicht aus Risikogebieten weg?", new[] { "Oft aus wirtschaftlichen Gründen, familiären Bindungen oder weil dort ihre Lebensgrundlage liegt", "Weil ihnen die Gefahr grundsätzlich egal ist", "Weil ein Umzug gesetzlich verboten ist" }, "Oft aus wirtschaftlichen Gründen, familiären Bindungen oder weil dort ihre Lebensgrundlage liegt",
+            "Arbeit, Familie, Besitz und Heimatverbundenheit halten viele Menschen in Risikogebieten, selbst wenn sie sich der Gefahr bewusst sind."),
+        ("Was ist ein Vulkanausbruch?", new[] { "Der Ausbruch von glühender Lava, Gestein und Gasen aus dem Erdinneren", "Ein anderes Wort für Erdbeben", "Ein plötzlicher, sehr starker Sturm" }, "Der Ausbruch von glühender Lava, Gestein und Gasen aus dem Erdinneren",
+            "Bei einem Vulkanausbruch treten geschmolzenes Gestein (Lava), Asche und Gase aus dem Erdinneren an die Oberfläche."),
+        ("Wie helfen Katastrophenschutzorganisationen Menschen in Risikoräumen?", new[] { "Sie planen Evakuierungen, leisten Nothilfe und unterstützen beim Wiederaufbau", "Sie verhindern Naturkatastrophen vollständig", "Sie haben keinerlei praktische Aufgabe" }, "Sie planen Evakuierungen, leisten Nothilfe und unterstützen beim Wiederaufbau",
+            "Katastrophenschutzorganisationen helfen vor, während und nach einer Katastrophe - von Evakuierungsplänen bis zum Wiederaufbau."),
+        ("Was ist ein wichtiger Unterschied zwischen einer Naturgefahr und einer Naturkatastrophe?", new[] { "Eine Naturkatastrophe entsteht erst, wenn eine Naturgefahr Menschen und ihre Lebensgrundlagen tatsächlich schädigt", "Beide Begriffe bedeuten exakt dasselbe", "Eine Naturkatastrophe kann nur auf dem Meer stattfinden" }, "Eine Naturkatastrophe entsteht erst, wenn eine Naturgefahr Menschen und ihre Lebensgrundlagen tatsächlich schädigt",
+            "Eine Naturgefahr wird erst zur Katastrophe, wenn sie tatsächlich Menschen, Siedlungen oder ihre Lebensgrundlagen trifft und schädigt.")
+    };
+
+    private static QuizQuestion RisikoraeumeNaturgefahren(Random r)
+    {
+        var f = RisikoraeumeListe[r.Next(RisikoraeumeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Leben in Risikoräumen (Naturgefahren)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Risikoräume liegen oft an Plattengrenzen (Erdbeben/Vulkane), an Küsten (Tsunami/Sturmflut) oder in Bergregionen (Lawinen) - Frühwarnsysteme und Vorsorge retten Leben."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MigrationBevoelkerungListe =
+    {
+        ("Was bedeutet \"Migration\" allgemein?", new[] { "Der dauerhafte oder längerfristige Wohnortwechsel von Menschen", "Ein anderes Wort für Urlaubsreise", "Der tägliche Weg zur Arbeit oder Schule" }, "Der dauerhafte oder längerfristige Wohnortwechsel von Menschen",
+            "Migration bezeichnet den Umzug von Menschen von einem Ort zu einem anderen für längere Zeit oder dauerhaft."),
+        ("Was ist der Unterschied zwischen Auswanderung (Emigration) und Einwanderung (Immigration)?", new[] { "Emigration ist das Verlassen des Heimatlandes, Immigration das Ankommen in einem neuen Land", "Beide Begriffe bedeuten exakt dasselbe", "Emigration betrifft nur kurze Urlaubsreisen" }, "Emigration ist das Verlassen des Heimatlandes, Immigration das Ankommen in einem neuen Land",
+            "Aus Sicht des Herkunftslands spricht man von Emigration (Auswandern), aus Sicht des Ziellands von Immigration (Einwandern)."),
+        ("Was versteht man unter \"Flucht\" im Unterschied zu freiwilliger Migration?", new[] { "Menschen verlassen ihr Zuhause unfreiwillig, z.B. wegen Krieg, Verfolgung oder Katastrophen", "Flucht bedeutet ausschließlich einen freiwilligen Umzug wegen einer neuen Arbeitsstelle", "Flucht und Migration sind komplett identisch" }, "Menschen verlassen ihr Zuhause unfreiwillig, z.B. wegen Krieg, Verfolgung oder Katastrophen",
+            "Anders als bei freiwilliger Migration haben Geflüchtete meist keine echte Wahl, sondern müssen ihre Heimat aus Not verlassen."),
+        ("Was ist ein häufiger Grund für Flucht aus einem Land?", new[] { "Krieg oder Verfolgung", "Ein schönes Urlaubsangebot", "Zu viel Freizeit im Heimatland" }, "Krieg oder Verfolgung",
+            "Krieg, politische Verfolgung, Gewalt oder Naturkatastrophen zwingen Menschen oft zur Flucht."),
+        ("Was bedeutet \"Landflucht\"?", new[] { "Der Wegzug vieler Menschen vom Land in die Städte", "Der Umzug von der Stadt aufs Land", "Ein anderes Wort für Flucht vor Naturkatastrophen" }, "Der Wegzug vieler Menschen vom Land in die Städte",
+            "Bei der Landflucht verlassen viele Menschen ländliche Regionen und ziehen in Städte, oft auf der Suche nach besseren Chancen."),
+        ("Warum ziehen viele Menschen aus ländlichen Regionen in Städte?", new[] { "Sie erhoffen sich dort bessere Arbeits- und Bildungschancen", "Auf dem Land gibt es grundsätzlich keine Arbeit mehr", "Städte bieten immer ein ruhigeres Leben" }, "Sie erhoffen sich dort bessere Arbeits- und Bildungschancen",
+            "Städte bieten oft mehr Arbeitsplätze, Bildungseinrichtungen und Infrastruktur als ländliche Regionen."),
+        ("Was ist eine mögliche Folge starker Landflucht für die betroffene ländliche Region?", new[] { "Dörfer können veralten und wirtschaftlich schwächer werden", "Die Region wird automatisch reicher", "Landflucht hat keinerlei Auswirkungen auf die Region" }, "Dörfer können veralten und wirtschaftlich schwächer werden",
+            "Ziehen vor allem junge Menschen weg, altert die verbleibende Bevölkerung und die lokale Wirtschaft kann schwächer werden."),
+        ("Was ist eine mögliche Folge von starker Zuwanderung in eine Stadt?", new[] { "Die Stadt wächst schnell und braucht mehr Wohnraum und Infrastruktur", "Die Stadt schrumpft automatisch", "Es entsteht kein zusätzlicher Bedarf an Wohnraum" }, "Die Stadt wächst schnell und braucht mehr Wohnraum und Infrastruktur",
+            "Starkes Bevölkerungswachstum durch Zuwanderung erfordert mehr Wohnungen, Schulen und Verkehrswege."),
+        ("Wer gilt laut den Vereinten Nationen als \"Flüchtling\"?", new[] { "Eine Person, die ihr Land aus begründeter Furcht vor Verfolgung verlassen musste", "Jeder, der für einen Urlaub ins Ausland reist", "Nur Personen, die per Flugzeug reisen" }, "Eine Person, die ihr Land aus begründeter Furcht vor Verfolgung verlassen musste",
+            "Die Genfer Flüchtlingskonvention definiert Flüchtlinge als Menschen mit begründeter Furcht vor Verfolgung, die deshalb ihr Land verlassen mussten."),
+        ("Was ist ein Binnenflüchtling im Unterschied zu einem Flüchtling, der ins Ausland flieht?", new[] { "Jemand, der innerhalb des eigenen Landes vertrieben wurde, ohne die Landesgrenze zu überqueren", "Jemand, der ausschließlich innerhalb der eigenen Stadt umzieht", "Ein anderes Wort für Tourist" }, "Jemand, der innerhalb des eigenen Landes vertrieben wurde, ohne die Landesgrenze zu überqueren",
+            "Binnenflüchtlinge (auch: Binnenvertriebene) bleiben innerhalb der Grenzen ihres Heimatlandes, anders als Flüchtlinge, die ins Ausland fliehen."),
+        ("Welche Organisation der Vereinten Nationen kümmert sich weltweit besonders um Flüchtlinge?", new[] { "UNHCR (Flüchtlingshilfswerk der Vereinten Nationen)", "Die Weltgesundheitsorganisation (WHO)", "Die Welthandelsorganisation (WTO)" }, "UNHCR (Flüchtlingshilfswerk der Vereinten Nationen)",
+            "Das UNHCR setzt sich weltweit für den Schutz und die Unterstützung von Flüchtlingen ein."),
+        ("Was ist ein wichtiger Unterschied zwischen einem Migranten und einem Flüchtling?", new[] { "Migranten ziehen meist freiwillig um, Flüchtlinge werden zur Flucht gezwungen", "Beide Begriffe bedeuten exakt dasselbe", "Migranten reisen ausschließlich per Schiff" }, "Migranten ziehen meist freiwillig um, Flüchtlinge werden zur Flucht gezwungen",
+            "Der zentrale Unterschied liegt in der Freiwilligkeit: Migranten entscheiden sich meist selbst, Flüchtlinge fliehen aus Not."),
+        ("Was können Gründe für freiwillige Migration sein?", new[] { "Zum Beispiel Arbeit, Ausbildung, Familie oder ein besseres Leben", "Ausschließlich Naturkatastrophen", "Ausschließlich Krieg" }, "Zum Beispiel Arbeit, Ausbildung, Familie oder ein besseres Leben",
+            "Freiwillige Migration erfolgt oft aus persönlichen oder wirtschaftlichen Gründen wie einer neuen Arbeitsstelle oder Familienzusammenführung."),
+        ("Was versteht man unter Integration von Zugewanderten?", new[] { "Das Hineinwachsen in die neue Gesellschaft, z.B. durch Sprache, Arbeit und soziale Kontakte", "Die sofortige Rückkehr ins Heimatland", "Das komplette Ablegen der eigenen Herkunftskultur" }, "Das Hineinwachsen in die neue Gesellschaft, z.B. durch Sprache, Arbeit und soziale Kontakte",
+            "Integration beschreibt den Prozess, in dem Zugewanderte Teil der neuen Gesellschaft werden, z.B. über Sprache, Arbeit und soziale Beziehungen."),
+        ("Warum ist Deutschland historisch und aktuell ein Einwanderungsland?", new[] { "Über Jahrzehnte sind viele Menschen aus verschiedenen Gründen nach Deutschland gezogen und geblieben", "Nach Deutschland ist noch nie jemand eingewandert", "Einwanderung nach Deutschland ist erst seit letztem Jahr erlaubt" }, "Über Jahrzehnte sind viele Menschen aus verschiedenen Gründen nach Deutschland gezogen und geblieben",
+            "Von den sogenannten Gastarbeitern bis zu heutigen Fachkräften und Geflüchteten ist Deutschland seit Jahrzehnten Ziel von Einwanderung."),
+        ("Was ist eine Fluchtroute?", new[] { "Der Weg, den Menschen auf der Flucht aus ihrer Heimat in ein sichereres Land nehmen", "Ein touristischer Wanderweg", "Ein anderes Wort für Autobahn" }, "Der Weg, den Menschen auf der Flucht aus ihrer Heimat in ein sichereres Land nehmen",
+            "Fluchtrouten sind die oft langen und beschwerlichen Wege, die Geflüchtete auf der Suche nach Sicherheit zurücklegen."),
+        ("Warum sind Fluchtrouten oft besonders gefährlich?", new[] { "Sie führen häufig durch unsicheres Gelände, über das Meer oder durch von Schleusern kontrollierte Gebiete", "Fluchtrouten sind grundsätzlich völlig gefahrlos", "Sie verlaufen immer über gut ausgebaute Autobahnen" }, "Sie führen häufig durch unsicheres Gelände, über das Meer oder durch von Schleusern kontrollierte Gebiete",
+            "Viele Fluchtrouten sind lebensgefährlich, etwa bei Überfahrten in überfüllten Booten oder durch von Schleppern kontrollierte Gebiete."),
+        ("Was ist ein Asylverfahren?", new[] { "Ein rechtliches Verfahren, in dem geprüft wird, ob eine Person als Flüchtling anerkannt wird", "Ein anderes Wort für Einbürgerungstest", "Eine Art Reisebuchung" }, "Ein rechtliches Verfahren, in dem geprüft wird, ob eine Person als Flüchtling anerkannt wird",
+            "Im Asylverfahren prüfen Behörden, ob eine Person tatsächlich Verfolgung oder Gefahr in ihrer Heimat droht und ihr deshalb Schutz gewährt wird."),
+        ("Was passiert demografisch mit einer Region, aus der viele junge Menschen abwandern?", new[] { "Der Altersdurchschnitt der verbleibenden Bevölkerung steigt", "Der Altersdurchschnitt sinkt automatisch", "Es gibt keinerlei demografische Auswirkungen" }, "Der Altersdurchschnitt der verbleibenden Bevölkerung steigt",
+            "Wandern vor allem jüngere Menschen ab, bleibt tendenziell eine ältere Bevölkerung zurück, wodurch der Altersdurchschnitt steigt."),
+        ("Was sind \"Pull-Faktoren\" bei Migration?", new[] { "Dinge, die Menschen an einem Zielort anziehen, z.B. Arbeit oder Sicherheit", "Dinge, die Menschen von ihrem Herkunftsort abstoßen", "Ein anderes Wort für Fluchtroute" }, "Dinge, die Menschen an einem Zielort anziehen, z.B. Arbeit oder Sicherheit",
+            "Pull-Faktoren sind anziehende Gründe eines Ziellandes, etwa bessere Arbeitschancen, Sicherheit oder Bildung, die Menschen zum Umzug bewegen.")
+    };
+
+    private static QuizQuestion MigrationUndBevoelkerung(Random r)
+    {
+        var f = MigrationBevoelkerungListe[r.Next(MigrationBevoelkerungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Migration und Bevölkerung (Flucht, Landflucht)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Migration ist meist freiwillig (Arbeit/Familie), Flucht unfreiwillig (Krieg/Verfolgung); Landflucht beschreibt den Wegzug vom Land in die Stadt, mit Folgen für beide Seiten."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] RegenwaldListe =
+    {
+        ("Wo liegen die meisten tropischen Regenwälder der Erde?", new[] { "In der Nähe des Äquators", "In der Nähe der Pole", "Ausschließlich in Wüstenregionen" }, "In der Nähe des Äquators",
+            "Das warme, feuchte Klima nahe dem Äquator bietet ideale Bedingungen für tropische Regenwälder."),
+        ("Was ist typisch für das Klima im tropischen Regenwald?", new[] { "Warm und sehr feucht, mit viel Niederschlag das ganze Jahr über", "Kalt und sehr trocken", "Nur im Sommer warm, im Winter eisig" }, "Warm und sehr feucht, mit viel Niederschlag das ganze Jahr über",
+            "Im tropischen Regenwald herrschen ganzjährig hohe Temperaturen und regelmäßig starker Niederschlag."),
+        ("Welcher ist der größte zusammenhängende Regenwald der Erde?", new[] { "Der Amazonas-Regenwald", "Der Schwarzwald", "Der Regenwald der Sahara" }, "Der Amazonas-Regenwald",
+            "Der Amazonas-Regenwald in Südamerika ist der größte tropische Regenwald der Welt."),
+        ("Warum wird der Regenwald manchmal als \"grüne Lunge der Erde\" bezeichnet?", new[] { "Die Pflanzen produzieren durch Fotosynthese große Mengen Sauerstoff", "Regenwälder haben die Form einer Lunge", "Regenwälder verbrauchen ausschließlich Sauerstoff" }, "Die Pflanzen produzieren durch Fotosynthese große Mengen Sauerstoff",
+            "Die riesige Pflanzenmasse der Regenwälder produziert durch Fotosynthese enorme Mengen Sauerstoff und bindet viel CO₂."),
+        ("Was macht den tropischen Regenwald so artenreich?", new[] { "Warmes, feuchtes Klima bietet ideale Lebensbedingungen für sehr viele Arten", "Das raue Klima lässt nur wenige Arten überleben", "Regenwälder sind eigentlich recht artenarm" }, "Warmes, feuchtes Klima bietet ideale Lebensbedingungen für sehr viele Arten",
+            "Die konstante Wärme und Feuchtigkeit ermöglicht eine außergewöhnlich hohe Vielfalt an Pflanzen- und Tierarten."),
+        ("Warum wachsen im Regenwald die Bäume oft besonders hoch?", new[] { "Sie konkurrieren um Sonnenlicht und wachsen deshalb schnell in die Höhe", "Bäume im Regenwald wachsen grundsätzlich nur sehr langsam", "Hohe Bäume brauchen im Regenwald kein Sonnenlicht" }, "Sie konkurrieren um Sonnenlicht und wachsen deshalb schnell in die Höhe",
+            "Im dichten Regenwald konkurrieren die Pflanzen stark um Licht, was viele Bäume dazu treibt, besonders hoch zu wachsen."),
+        ("Was ist ein Grund für die Abholzung von Regenwaldflächen?", new[] { "Um Platz für Landwirtschaft, Viehzucht oder Holzwirtschaft zu schaffen", "Regenwälder werden nie abgeholzt", "Nur um Wanderwege für Touristen anzulegen" }, "Um Platz für Landwirtschaft, Viehzucht oder Holzwirtschaft zu schaffen",
+            "Große Regenwaldflächen werden gerodet, um Platz für Weideflächen, Plantagen oder die Holzgewinnung zu schaffen."),
+        ("Warum ist die Abholzung des Regenwalds ein globales, nicht nur ein lokales Problem?", new[] { "Regenwälder binden viel CO₂ und beeinflussen das weltweite Klima", "Abholzung betrifft ausschließlich das jeweilige Land", "Regenwälder haben keinerlei Einfluss auf das Klima" }, "Regenwälder binden viel CO₂ und beeinflussen das weltweite Klima",
+            "Da Regenwälder große Mengen CO₂ speichern und den globalen Wasserkreislauf beeinflussen, wirkt sich ihre Abholzung weltweit aus."),
+        ("Was passiert mit dem im Regenwald gespeicherten Kohlenstoff, wenn Bäume abgeholzt und verbrannt werden?", new[] { "Er wird als CO₂ in die Atmosphäre freigesetzt", "Er verschwindet spurlos", "Er wandelt sich automatisch in Sauerstoff um" }, "Er wird als CO₂ in die Atmosphäre freigesetzt",
+            "Beim Verbrennen oder Verrotten der Bäume wird der zuvor gebundene Kohlenstoff als CO₂ wieder freigesetzt und verstärkt den Treibhauseffekt."),
+        ("Warum ist der Boden im Regenwald trotz üppiger Pflanzenwelt oft nährstoffarm?", new[] { "Nährstoffe werden vom dichten Pflanzenbewuchs sehr schnell wieder aufgenommen", "Regenwaldböden enthalten grundsätzlich extrem viele Nährstoffe", "Es regnet im Regenwald zu selten für nährstoffreiche Böden" }, "Nährstoffe werden vom dichten Pflanzenbewuchs sehr schnell wieder aufgenommen",
+            "Anders als man vermuten könnte, sind Regenwaldböden oft nährstoffarm, weil Nährstoffe sofort vom dichten Pflanzenwuchs aufgenommen werden."),
+        ("Was passiert häufig mit gerodeten Regenwaldflächen nach einigen Jahren landwirtschaftlicher Nutzung?", new[] { "Der Boden verliert schnell an Fruchtbarkeit und wird unbrauchbar", "Der Boden wird mit der Zeit immer fruchtbarer", "Gerodete Flächen bleiben für immer unverändert fruchtbar" }, "Der Boden verliert schnell an Fruchtbarkeit und wird unbrauchbar",
+            "Ohne den schützenden Pflanzenbewuchs verlieren die nährstoffarmen Böden schnell an Fruchtbarkeit, sodass Flächen oft nach kurzer Zeit aufgegeben werden."),
+        ("Was versteht man unter \"Biodiversität\"?", new[] { "Die Vielfalt an unterschiedlichen Lebewesen und Lebensräumen", "Ein anderes Wort für Regenmenge", "Die Anzahl der Flüsse in einer Region" }, "Die Vielfalt an unterschiedlichen Lebewesen und Lebensräumen",
+            "Biodiversität beschreibt die Vielfalt des Lebens - von einzelnen Arten bis zu ganzen Ökosystemen."),
+        ("Warum gilt der Regenwald als besonders wichtiger Ort für die Biodiversität der Erde?", new[] { "Ein großer Teil aller bekannten Tier- und Pflanzenarten lebt dort", "Im Regenwald leben fast keine unterschiedlichen Arten", "Biodiversität hat mit Regenwäldern nichts zu tun" }, "Ein großer Teil aller bekannten Tier- und Pflanzenarten lebt dort",
+            "Obwohl Regenwälder nur einen kleinen Teil der Erdoberfläche bedecken, beherbergen sie einen enorm hohen Anteil aller bekannten Arten."),
+        ("Was können Länder und Organisationen tun, um Regenwälder zu schützen?", new[] { "Schutzgebiete einrichten, nachhaltige Nutzung fördern und Abholzung eindämmen", "Regenwälder lassen sich grundsätzlich nicht schützen", "Ausschließlich den kompletten Tourismus verbieten" }, "Schutzgebiete einrichten, nachhaltige Nutzung fördern und Abholzung eindämmen",
+            "Naturschutzgebiete, nachhaltige Forstwirtschaft und internationale Abkommen helfen, Regenwälder langfristig zu bewahren."),
+        ("Warum betrifft die Regenwald-Abholzung auch den Wasserkreislauf einer Region?", new[] { "Bäume verdunsten viel Wasser, das für Regenbildung wichtig ist", "Bäume haben keinerlei Einfluss auf den Wasserkreislauf", "Abholzung erhöht automatisch den Niederschlag" }, "Bäume verdunsten viel Wasser, das für Regenbildung wichtig ist",
+            "Regenwaldbäume verdunsten enorme Wassermengen, die zur Wolken- und Regenbildung beitragen - weniger Bäume bedeuten oft weniger Niederschlag."),
+        ("Was ist ein tropisches Vielschichtsystem (Stockwerkbau) im Regenwald?", new[] { "Verschiedene Pflanzen- und Tierschichten vom Boden bis zum Kronendach", "Ein System aus künstlich angelegten Stufen für Touristen", "Ein anderes Wort für Wasserfall" }, "Verschiedene Pflanzen- und Tierschichten vom Boden bis zum Kronendach",
+            "Der Regenwald gliedert sich in mehrere übereinanderliegende Schichten (Boden, Strauch-, Kron- und Überschicht) mit jeweils eigenen Lebensbedingungen."),
+        ("Warum leben die meisten Tiere des Regenwalds eher in den oberen Baumkronen als am Boden?", new[] { "Dort gibt es mehr Licht, Früchte und Nahrung", "Am Boden herrscht ständig zu viel Licht", "In den Baumkronen gibt es überhaupt keine Nahrung" }, "Dort gibt es mehr Licht, Früchte und Nahrung",
+            "Das Kronendach erhält mehr Sonnenlicht und bietet reichlich Früchte und Blätter - deshalb konzentriert sich dort ein Großteil des Tierlebens."),
+        ("Was bedeutet \"nachhaltige Nutzung\" eines Regenwalds?", new[] { "Den Wald so zu nutzen, dass er sich erholen kann und langfristig erhalten bleibt", "Den Wald so schnell wie möglich komplett abzuholzen", "Den Wald überhaupt nicht zu betreten" }, "Den Wald so zu nutzen, dass er sich erholen kann und langfristig erhalten bleibt",
+            "Nachhaltige Nutzung bedeutet, Ressourcen so zu entnehmen, dass sich der Wald erholen kann und auch künftigen Generationen erhalten bleibt."),
+        ("Was ist ein Epiphyt, wie er häufig im Regenwald vorkommt?", new[] { "Eine Pflanze, die auf einer anderen Pflanze wächst, ohne ihr zu schaden", "Ein Fleisch fressendes Raubtier des Regenwalds", "Ein anderes Wort für Regenwaldboden" }, "Eine Pflanze, die auf einer anderen Pflanze wächst, ohne ihr zu schaden",
+            "Epiphyten wie viele Orchideen wachsen auf Ästen anderer Bäume, um näher ans Licht zu kommen, ohne ihrem Wirt zu schaden."),
+        ("Warum ist traditionelles Wissen indigener Völker über Regenwaldpflanzen für die Forschung wertvoll?", new[] { "Es kann helfen, neue Heilpflanzen und Wirkstoffe für Medikamente zu entdecken", "Indigenes Wissen hat mit moderner Forschung nichts zu tun", "Es dient ausschließlich touristischen Zwecken" }, "Es kann helfen, neue Heilpflanzen und Wirkstoffe für Medikamente zu entdecken",
+            "Indigene Völker kennen oft seit Generationen die heilende Wirkung bestimmter Pflanzen, was der modernen Medizinforschung wertvolle Hinweise liefern kann.")
+    };
+
+    private static QuizQuestion TropischerRegenwald(Random r)
+    {
+        var f = RegenwaldListe[r.Next(RegenwaldListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Vielfalt der Erde (tropischer Regenwald)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Regenwälder sind warm, feucht, extrem artenreich und binden viel CO₂ - trotz üppiger Pflanzenwelt sind ihre Böden oft nährstoffarm, was Abholzung besonders folgenreich macht."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArmutReichtumK6Listen =
+    {
+        ("Was bedeutet \"Armut\" ganz allgemein?", new[] { "Ein Mangel an Geld, Nahrung, Bildung oder anderen Grundbedürfnissen", "Ein Überfluss an Geld und Besitz", "Ein anderes Wort für Reichtum" }, "Ein Mangel an Geld, Nahrung, Bildung oder anderen Grundbedürfnissen",
+            "Armut bedeutet, dass grundlegende Bedürfnisse wie Nahrung, Wohnung oder Bildung nicht ausreichend gedeckt werden können."),
+        ("Was bedeutet \"Reichtum\" im Gegensatz dazu?", new[] { "Ein Überfluss an Geld oder Besitz, mit dem viele Bedürfnisse leicht erfüllt werden können", "Ein Mangel an grundlegenden Dingen", "Ein anderes Wort für Armut" }, "Ein Überfluss an Geld oder Besitz, mit dem viele Bedürfnisse leicht erfüllt werden können",
+            "Reichtum bedeutet, deutlich mehr Geld oder Besitz zu haben, als für die Grundbedürfnisse nötig wäre."),
+        ("Was ist ein Beispiel für ein Grundbedürfnis, das armen Menschen oft fehlt?", new[] { "Sauberes Trinkwasser, ausreichend Nahrung oder eine feste Unterkunft", "Ein zweites Auto", "Ein Urlaub im Ausland" }, "Sauberes Trinkwasser, ausreichend Nahrung oder eine feste Unterkunft",
+            "Grundbedürfnisse wie sauberes Wasser, genug Nahrung und eine feste Unterkunft sind für arme Menschen oft nicht selbstverständlich."),
+        ("Warum ist Bildung wichtig, um Armut langfristig zu verringern?", new[] { "Bildung eröffnet bessere Chancen auf gut bezahlte Arbeit", "Bildung hat keinerlei Einfluss auf spätere Chancen", "Bildung macht Menschen automatisch reich" }, "Bildung eröffnet bessere Chancen auf gut bezahlte Arbeit",
+            "Gute Bildung verbessert die Chancen auf qualifizierte, besser bezahlte Arbeit und kann so helfen, Armut zu durchbrechen."),
+        ("Was ist ein Unterschied zwischen absoluter und relativer Armut, vereinfacht?", new[] { "Absolute Armut bedeutet, Grundbedürfnisse nicht decken zu können; relative Armut bedeutet, deutlich weniger zu haben als der Durchschnitt", "Beide Begriffe bedeuten exakt dasselbe", "Relative Armut betrifft nur reiche Länder, absolute nur arme Länder" }, "Absolute Armut bedeutet, Grundbedürfnisse nicht decken zu können; relative Armut bedeutet, deutlich weniger zu haben als der Durchschnitt",
+            "Absolute Armut bezieht sich auf das nackte Überleben, relative Armut vergleicht den eigenen Lebensstandard mit dem der übrigen Gesellschaft."),
+        ("Warum gibt es auch in reichen Ländern wie Deutschland arme Menschen?", new[] { "Nicht alle Menschen haben gleich guten Zugang zu Arbeit, Bildung oder Unterstützung", "In reichen Ländern gibt es per Definition keine armen Menschen", "Armut existiert ausschließlich in Entwicklungsländern" }, "Nicht alle Menschen haben gleich guten Zugang zu Arbeit, Bildung oder Unterstützung",
+            "Selbst in wohlhabenden Ländern gibt es Menschen, die aus verschiedenen Gründen keinen ausreichenden Zugang zu Einkommen oder Unterstützung haben."),
+        ("Was können Staaten tun, um Armut in ihrem Land zu verringern?", new[] { "Zum Beispiel Sozialleistungen, kostenlose Bildung und Gesundheitsversorgung bereitstellen", "Armut lässt sich durch staatliches Handeln grundsätzlich nicht beeinflussen", "Ausschließlich die Steuern für alle senken" }, "Zum Beispiel Sozialleistungen, kostenlose Bildung und Gesundheitsversorgung bereitstellen",
+            "Sozialstaatliche Maßnahmen wie Unterstützungsleistungen, kostenlose Bildung und Gesundheitsversorgung können Armut verringern."),
+        ("Was ist ein Beispiel für eine internationale Organisation, die gegen weltweite Armut arbeitet?", new[] { "Die Vereinten Nationen (UN) bzw. Organisationen wie UNICEF", "Die Internationale Fußball-Föderation (FIFA)", "Eine private Fluggesellschaft" }, "Die Vereinten Nationen (UN) bzw. Organisationen wie UNICEF",
+            "Organisationen wie die UN oder UNICEF setzen sich weltweit für die Bekämpfung von Armut, besonders bei Kindern, ein."),
+        ("Warum sind Kinder in armen Familien oft besonders benachteiligt?", new[] { "Ihnen fehlt oft der Zugang zu guter Bildung, Gesundheitsversorgung und ausreichender Ernährung", "Arme Kinder haben grundsätzlich bessere Chancen als andere Kinder", "Armut hat auf Kinder keinerlei Auswirkung" }, "Ihnen fehlt oft der Zugang zu guter Bildung, Gesundheitsversorgung und ausreichender Ernährung",
+            "Fehlende Ressourcen erschweren Kindern aus armen Familien oft den Zugang zu Bildung, Gesundheit und ausreichender Ernährung."),
+        ("Was versteht man unter \"Entwicklungsländern\" im Vergleich zu \"Industrieländern\", vereinfacht?", new[] { "Entwicklungsländer haben oft eine schwächere Wirtschaft und weniger ausgebaute Infrastruktur", "Entwicklungsländer sind grundsätzlich reicher als Industrieländer", "Beide Begriffe bedeuten exakt dasselbe" }, "Entwicklungsländer haben oft eine schwächere Wirtschaft und weniger ausgebaute Infrastruktur",
+            "Entwicklungsländer haben im Vergleich zu Industrieländern oft eine schwächere Wirtschaftskraft und geringer ausgebaute Infrastruktur."),
+        ("Was ist \"Spendengeld\" und wie kann es gegen Armut helfen?", new[] { "Freiwillig gegebenes Geld, das z.B. für Nahrung, Bildung oder medizinische Hilfe verwendet wird", "Ein anderes Wort für Steuern", "Geld, das nur für Werbung genutzt wird" }, "Freiwillig gegebenes Geld, das z.B. für Nahrung, Bildung oder medizinische Hilfe verwendet wird",
+            "Spenden werden häufig für konkrete Hilfsprojekte eingesetzt, z.B. Nahrungsmittelhilfe, Schulbau oder medizinische Versorgung."),
+        ("Was ist \"Entwicklungshilfe\"?", new[] { "Unterstützung reicherer Länder oder Organisationen für ärmere Länder", "Ein anderes Wort für Kriegsführung", "Hilfe, die nur innerhalb eines einzelnen Landes stattfindet" }, "Unterstützung reicherer Länder oder Organisationen für ärmere Länder",
+            "Entwicklungshilfe umfasst finanzielle, materielle oder fachliche Unterstützung wohlhabenderer Länder für ärmere Länder."),
+        ("Warum ist der Zugang zu sauberem Trinkwasser weltweit ungleich verteilt?", new[] { "Manche Regionen haben zu wenig Wasser oder keine ausreichende Infrastruktur zur Wasseraufbereitung", "Sauberes Trinkwasser ist überall auf der Welt gleich gut verfügbar", "Wasserknappheit betrifft ausschließlich reiche Länder" }, "Manche Regionen haben zu wenig Wasser oder keine ausreichende Infrastruktur zur Wasseraufbereitung",
+            "Klimatische Bedingungen und fehlende Infrastruktur führen dazu, dass sauberes Trinkwasser weltweit sehr ungleich verteilt ist."),
+        ("Was ist ein Beispiel für eine Ursache von Armut in einem Land?", new[] { "Zum Beispiel Kriege, Naturkatastrophen, schlechte Regierungsführung oder fehlende Bildung", "Zu viel Regen im ganzen Land", "Zu viele Feiertage im Jahr" }, "Zum Beispiel Kriege, Naturkatastrophen, schlechte Regierungsführung oder fehlende Bildung",
+            "Armut hat meist mehrere Ursachen gleichzeitig, darunter Konflikte, Katastrophen, schlechte politische Führung und mangelnde Bildung."),
+        ("Was kann jede einzelne Person tun, um gegen Armut zu helfen?", new[] { "Zum Beispiel spenden, sich engagieren oder fair gehandelte Produkte kaufen", "Es gibt für einzelne Personen überhaupt keine Möglichkeit zu helfen", "Nur Regierungen können gegen Armut etwas unternehmen" }, "Zum Beispiel spenden, sich engagieren oder fair gehandelte Produkte kaufen",
+            "Auch im Kleinen kann jeder Einzelne durch Spenden, ehrenamtliches Engagement oder bewussten Konsum etwas gegen Armut beitragen."),
+        ("Was bedeutet \"Fairer Handel\" (Fairtrade) im Zusammenhang mit Armut?", new[] { "Produzenten in ärmeren Ländern erhalten einen faireren, höheren Preis für ihre Waren", "Fairer Handel bedeutet, dass alle Waren kostenlos abgegeben werden", "Fairer Handel hat mit Armutsbekämpfung nichts zu tun" }, "Produzenten in ärmeren Ländern erhalten einen faireren, höheren Preis für ihre Waren",
+            "Fairtrade-Produkte garantieren Erzeugern in ärmeren Ländern einen faireren Preis, was ihre Lebensbedingungen verbessern kann."),
+        ("Warum kann eine gute Gesundheitsversorgung helfen, Armut zu verringern?", new[] { "Gesunde Menschen können besser arbeiten und für sich selbst sorgen", "Gesundheitsversorgung hat keinerlei Einfluss auf Armut", "Kranke Menschen verdienen automatisch mehr Geld" }, "Gesunde Menschen können besser arbeiten und für sich selbst sorgen",
+            "Krankheit kann Menschen an der Arbeit hindern - gute Gesundheitsversorgung hilft, arbeitsfähig zu bleiben und für sich selbst zu sorgen."),
+        ("Was versteht man unter dem \"Wohlstandsgefälle\" zwischen verschiedenen Weltregionen?", new[] { "Deutliche Unterschiede im Lebensstandard zwischen reicheren und ärmeren Regionen der Welt", "Alle Weltregionen haben exakt denselben Lebensstandard", "Ein anderes Wort für Klimawandel" }, "Deutliche Unterschiede im Lebensstandard zwischen reicheren und ärmeren Regionen der Welt",
+            "Das Wohlstandsgefälle beschreibt die teils großen Unterschiede im Lebensstandard zwischen verschiedenen Weltregionen."),
+        ("Was ist ein sinnvolles Ziel im Kampf gegen weltweite Armut, das die Vereinten Nationen verfolgen?", new[] { "Die Verringerung extremer Armut weltweit (z.B. im Rahmen der Nachhaltigkeitsziele/SDGs)", "Die Abschaffung sämtlicher Staatsgrenzen", "Die weltweite Einführung einer einzigen Sprache" }, "Die Verringerung extremer Armut weltweit (z.B. im Rahmen der Nachhaltigkeitsziele/SDGs)",
+            "Eines der UN-Nachhaltigkeitsziele (SDGs) ist es, extreme Armut weltweit bis zu einem bestimmten Zieljahr deutlich zu verringern."),
+        ("Warum kommt Kinderarbeit in ärmeren Ländern häufiger vor als in reichen Ländern?", new[] { "Arme Familien sind oft auf das zusätzliche Einkommen der Kinder angewiesen", "Kinder arbeiten grundsätzlich lieber als zur Schule zu gehen", "Kinderarbeit kommt ausschließlich in reichen Ländern vor" }, "Arme Familien sind oft auf das zusätzliche Einkommen der Kinder angewiesen",
+            "Wenn das Familieneinkommen nicht für die Grundbedürfnisse reicht, müssen in manchen armen Regionen auch Kinder mitarbeiten, statt zur Schule zu gehen.")
+    };
+
+    private static QuizQuestion ArmutUndReichtumKlasse6(Random r)
+    {
+        var f = ArmutReichtumK6Listen[r.Next(ArmutReichtumK6Listen.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Armut und Reichtum (Klasse-6-Niveau)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Armut bedeutet fehlenden Zugang zu Grundbedürfnissen wie Wasser, Nahrung und Bildung - Bildung, Gesundheitsversorgung und fairer Handel gehören zu den wichtigsten Hebeln dagegen."
         };
     }
 }
