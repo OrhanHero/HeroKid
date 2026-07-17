@@ -1,0 +1,22 @@
+name: Feed-Healthcheck
+
+# RSS-Endpunkte sterben schleichend (Anbieter strukturieren um), und die App überspringt tote
+# Feeds bewusst geräuschlos - im Kiosk-Betrieb merkt das niemand. Dieser wöchentliche Lauf prüft
+# alle URLs aus NewsFeedSource.cs und wird rot, sobald ein Feed tot ist (siehe scripts/check-feeds.py).
+
+on:
+  schedule:
+    # Montags 06:00 UTC - vor dem ersten Lernen der Woche.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check-feeds:
+    # Reine HTTP-Checks, kein .NET nötig - ubuntu ist der schnellste/billigste Runner.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Feed-URLs aus NewsFeedSource.cs prüfen
+        run: python3 scripts/check-feeds.py
