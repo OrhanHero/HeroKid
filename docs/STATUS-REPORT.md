@@ -43,12 +43,12 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Gewi** | `GewiGenerator.cs` | 9 | 3 | 12 | Klasse 6 komplett (6/6); Klasse 9 auf Kernthemen fokussiert |
 | **Politik** | `PolitikGenerator.cs` | 7 | 8 | 15 | ✅ komplett (beide Stufen 6/6) |
 | **Geografie** | `GeoGenerator.cs` | 7 | 9 | 16 | ✅ komplett (beide Stufen 4/4 bzw. 6/6) |
-| **Ethik** | `EthikGenerator.cs` | 3 | 10 | 13 | Klasse 9 komplett (6/6); Klasse 6: fehlt Identität, Freiheit, Gerechtigkeit |
+| **Ethik** | `EthikGenerator.cs` | 6 | 10 | 16 | ✅ komplett (beide Stufen 6/6) |
 | **Kunst** | `KunstGenerator.cs` | 4 | 6 | 10 | ✅ |
 | **Musik** | `MusikGenerator.cs` | 5 | 6 | 11 | ✅ |
 | **ITG** | `ItgGenerator.cs` | 3 | 3 | 6 | Standardsoftware bewusst weggelassen (nicht quizbar) |
 
-**Gesamt: 220 Topics × ~20 Fragen = ~4.400 Fragen im Pool**
+**Gesamt: 223 Topics × ~20 Fragen = ~4.450 Fragen im Pool**
 
 > Frühere Fassungen dieses Berichts nannten ~124 Topics und listeten Chemie/Politik/Geografie/Ethik
 > Klasse 9 sowie Deutsch-Drama als große Lücken. Die Generatoren wurden seither erweitert, ohne dass
@@ -70,7 +70,6 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 
 | Fach | Fehlende RLP-Themenfelder | Bewertung |
 |------|---------------------------|-----------|
-| **Ethik Klasse 6** | Identität/Rolle, Freiheit/Verantwortung (Kl.6), Gerechtigkeit (Kl.6) | Klasse 9 ist komplett (alle 6 RLP-Themenfelder vorhanden) |
 | **Englisch/Türkisch Klasse 9** | Alltag/Konsum, Bewerbung/Berufswelt, Kultur (Klasse-9-Niveau) | Kernthemen (Identität, Gesellschaft/Medien, Umwelt bzw. Traditionen, Geografie) sind drin |
 | **Türkisch generell** | RLP gliedert in 4 Themenfelder pro Stufe; Generator ist überwiegend grammatikorientiert (Zeiten, Satzglieder, Rechtschreibung) | Funktionell für Quiz nutzbar, mehrere Wortschatz-Themenfelder inzwischen ergänzt, aber nicht 1:1 RLP-abgebildet |
 | **Deutsch** | Literarische Textanalyse: Novelle, Parabel | Drama-Analyse ist inzwischen abgedeckt (`DramaAufbau`, `Figurencharakterisierung`) |
@@ -108,15 +107,14 @@ vollständig - die reale Restlücke liegt bei Klasse 6 und ein paar Klasse-9-Nis
 
 | Fach | Fehlende Topics (RLP) | Aufwand |
 |------|----------------------|---------|
-| Ethik Kl.6 | Identität, Freiheit, Gerechtigkeit (Kl.6-Niveau) | ~3 Topics × 20 = 60 Q |
 | Englisch/Türkisch Kl.9 | Alltag/Konsum, Bewerbung/Berufswelt, Kultur | ~5 Topics × 20 = 100 Q |
 | Deutsch | Novelle, Parabel | ~2 Topics × 20 = 40 Q |
 | Geschichte Kl.9 | Feindbilder/Propaganda (Bonusmodul) | ~1 Topic × 20 = 20 Q |
 
-**Gesamt Content-Lücke: ~220 Fragen** (bei 220 existierenden Topics/~4.400 Fragen = ~5%
-Erweiterungsmöglichkeit). Biologie, Chemie, Physik, Geografie und Politik Klasse 6 sind vollständig
-geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `PhysikGenerator.cs`,
-`GeoGenerator.cs`, `PolitikGenerator.cs`).
+**Gesamt Content-Lücke: ~160 Fragen** (bei 223 existierenden Topics/~4.450 Fragen = ~4%
+Erweiterungsmöglichkeit). Biologie, Chemie, Physik, Geografie, Politik und Ethik Klasse 6 sind
+vollständig geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `PhysikGenerator.cs`,
+`GeoGenerator.cs`, `PolitikGenerator.cs`, `EthikGenerator.cs`).
 
 ---
 
@@ -161,7 +159,7 @@ geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `PhysikGenerato
 ### Sprint 3: Content-Runde 2 (läuft)
 8. ~~Geografie Klasse 6: Risikoräume, Migration/Bevölkerung, Regenwald, Armut (4 Topics)~~ ✅ erledigt (`RisikoraeumeNaturgefahren`, `MigrationUndBevoelkerung`, `TropischerRegenwald`, `ArmutUndReichtumKlasse6` in `GeoGenerator.cs`)
 9. ~~Politik Klasse 6: Armut, Globalisierte Welt, Migration, Rechtsstaat (4 Topics)~~ ✅ erledigt (`ArmutUndReichtumPolitik`, `GlobalisierteWelt`, `MigrationPolitik`, `LebenImRechtsstaat` in `PolitikGenerator.cs`)
-10. Ethik Klasse 6: Identität, Freiheit, Gerechtigkeit (3 Topics)
+10. ~~Ethik Klasse 6: Identität, Freiheit, Gerechtigkeit (3 Topics)~~ ✅ erledigt (`IdentitaetUndRolleKlasse6`, `FreiheitUndVerantwortungKlasse6`, `RechtUndGerechtigkeitKlasse6` in `EthikGenerator.cs`)
 11. Englisch/Türkisch Klasse 9: Alltag/Konsum, Bewerbung (bis zu 4 Topics)
 
 ### Später (nach finaler Version)
@@ -185,9 +183,11 @@ geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `PhysikGenerato
 
 **Abdeckungsgrad RLP:** deutlich höher als frühere Fassungen dieses Berichts annahmen - Chemie,
 Politik, Geografie und Ethik Klasse 9 sind vollständig (6/6 RLP-Themenfelder), ebenso Biologie,
-Chemie, Physik, Geografie und Politik Klasse 6 (4/4, 6/6, 6/6, 4/4 bzw. 6/6). Die verbleibende Lücke
-liegt bei Ethik Klasse 6 sowie ein paar Klasse-9-Nischenthemen (Englisch/Türkisch Alltag/Bewerbung,
-Deutsch Novelle/Parabel) - dazu bewusst ausgeklammerte Bereiche (Sport, WAT, Standardsoftware).
+Chemie, Physik, Geografie, Politik und Ethik Klasse 6 (4/4, 6/6, 6/6, 4/4, 6/6 bzw. 6/6). Alle
+Klasse-6-Grundthemen der Naturwissenschaften und Gesellschaftswissenschaften sind damit vollständig.
+Die verbleibende Lücke liegt nur noch bei ein paar Klasse-9-Nischenthemen (Englisch/Türkisch
+Alltag/Bewerbung, Deutsch Novelle/Parabel) - dazu bewusst ausgeklammerte Bereiche (Sport, WAT,
+Standardsoftware).
 
 **Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)** - bewusst auf die finale Version verschoben. Alles andere ist "Qualität/Content", kein Blocker.
 

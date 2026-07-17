@@ -11,7 +11,7 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { WerteRegeln, Freundschaft, Weltreligionen },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { WerteRegeln, Freundschaft, Weltreligionen, IdentitaetUndRolleKlasse6, FreiheitUndVerantwortungKlasse6, RechtUndGerechtigkeitKlasse6 },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Verantwortung, Meinungsfreiheit, DigitaleEthik, RechtUndGerechtigkeit, IdentitaetUndRolle, FreiheitPhilosophisch, GerechtigkeitstheorienVertieft, MenschUndGemeinschaft, HandelnUndMoral, WissenUndGlauben }
         };
 
@@ -745,6 +745,174 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
             Topic = "Worauf kann ich vertrauen? - Wissen und Glauben", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Realismus: Wirklichkeit ist unabhängig vom Denken. Konstruktivismus: Wissen wird mitgeprägt. Sokrates und Epikur begründen rational, warum man den Tod nicht fürchten muss."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] IdentitaetK6Listen =
+    {
+        ("Was gehört alles zur \"Identität\" eines Menschen?", new[] { "Zum Beispiel sein Name, seine Interessen, seine Familie und seine Gefühle", "Nur das Aussehen eines Menschen", "Ausschließlich der Beruf, den man später ausübt" }, "Zum Beispiel sein Name, seine Interessen, seine Familie und seine Gefühle",
+            "Identität setzt sich aus vielen Bausteinen zusammen: Name, Herkunft, Interessen, Beziehungen und Gefühle machen einen Menschen aus."),
+        ("Warum spielt man im Leben oft mehrere unterschiedliche \"Rollen\"?", new[] { "Man ist z.B. gleichzeitig Kind, Schülerin/Schüler und Freundin/Freund", "Weil man sich ständig komplett neu erfinden muss", "Rollen spielen im Leben eines Menschen keine Rolle" }, "Man ist z.B. gleichzeitig Kind, Schülerin/Schüler und Freundin/Freund",
+            "Je nach Situation und Beziehung nimmt man unterschiedliche Rollen ein, die alle zur eigenen Identität gehören."),
+        ("Was bedeutet es, in der Familie eine bestimmte Rolle zu haben, z.B. als \"großer Bruder\"?", new[] { "Man hat in dieser Beziehung bestimmte Aufgaben, Erwartungen oder Verhaltensweisen", "Diese Rolle hat überhaupt keinen Einfluss auf das eigene Verhalten", "Man muss dieselbe Rolle auch außerhalb der Familie einnehmen" }, "Man hat in dieser Beziehung bestimmte Aufgaben, Erwartungen oder Verhaltensweisen",
+            "Familienrollen bringen oft bestimmte Erwartungen mit sich, z.B. Rücksicht auf jüngere Geschwister zu nehmen."),
+        ("Warum kann sich dieselbe Person in der Schule anders verhalten als zu Hause?", new[] { "Weil unterschiedliche Situationen unterschiedliche Rollen und Erwartungen mit sich bringen", "Weil es sich in Wahrheit um zwei komplett verschiedene Personen handelt", "Menschen verhalten sich in jeder Situation exakt gleich" }, "Weil unterschiedliche Situationen unterschiedliche Rollen und Erwartungen mit sich bringen",
+            "Verschiedene Umgebungen und Beziehungen bringen unterschiedliche Erwartungen mit sich, worauf Menschen ihr Verhalten anpassen."),
+        ("Was macht einen Menschen einzigartig?", new[] { "Die Kombination aus seinen Erfahrungen, Interessen, Gefühlen und seiner Persönlichkeit", "Ausschließlich sein Aussehen", "Nur die Schulnoten, die er bekommt" }, "Die Kombination aus seinen Erfahrungen, Interessen, Gefühlen und seiner Persönlichkeit",
+            "Die individuelle Mischung aus Erlebnissen, Vorlieben, Gefühlen und Charakterzügen macht jeden Menschen einzigartig."),
+        ("Warum ist ein Hobby oft Teil der eigenen Identität?", new[] { "Es ist eine Freizeitbeschäftigung, die einem wichtig ist und einen mit ausmacht", "Hobbys haben mit der eigenen Identität überhaupt nichts zu tun", "Ein Hobby bestimmt vollständig, wer man als Mensch ist" }, "Es ist eine Freizeitbeschäftigung, die einem wichtig ist und einen mit ausmacht",
+            "Hobbys spiegeln oft eigene Interessen und Leidenschaften wider und tragen so zur eigenen Identität bei."),
+        ("Warum ist es normal, dass man in verschiedenen Freundesgruppen unterschiedlich auftritt?", new[] { "Verschiedene Beziehungen bringen verschiedene Seiten der eigenen Persönlichkeit hervor", "Das bedeutet, dass man unehrlich zu einer der Gruppen ist", "Man sollte in jeder Gruppe exakt identisch auftreten" }, "Verschiedene Beziehungen bringen verschiedene Seiten der eigenen Persönlichkeit hervor",
+            "Unterschiedliche Beziehungen können unterschiedliche Facetten der eigenen Persönlichkeit zum Vorschein bringen, ohne unehrlich zu sein."),
+        ("Was bedeutet \"Selbstbild\"?", new[] { "Wie man sich selbst sieht und einschätzt", "Ein Foto von sich selbst", "Wie andere Menschen einen von außen einschätzen" }, "Wie man sich selbst sieht und einschätzt",
+            "Das Selbstbild beschreibt die eigene Wahrnehmung und Einschätzung der eigenen Persönlichkeit."),
+        ("Warum kann das eigene Selbstbild manchmal vom Bild abweichen, das andere von einem haben?", new[] { "Weil man sich selbst anders wahrnimmt als von außen betrachtet wird", "Weil das Selbstbild und die Fremdwahrnehmung immer exakt identisch sind", "Andere Menschen haben grundsätzlich keine eigene Meinung über einen" }, "Weil man sich selbst anders wahrnimmt als von außen betrachtet wird",
+            "Selbst- und Fremdwahrnehmung können sich unterscheiden, weil man sich selbst aus einer anderen Perspektive erlebt als andere einen sehen."),
+        ("Was können Vorbilder für die eigene Identität bedeuten?", new[] { "Sie können beeinflussen, welche Werte und Ziele man sich selbst setzt", "Vorbilder haben keinerlei Einfluss auf die eigene Entwicklung", "Man muss ein Vorbild in jeder Hinsicht exakt kopieren" }, "Sie können beeinflussen, welche Werte und Ziele man sich selbst setzt",
+            "Vorbilder können inspirieren und beeinflussen, welche Werte, Ziele oder Verhaltensweisen man selbst für erstrebenswert hält."),
+        ("Warum ist es wichtig, die eigene Herkunft und Kultur wertzuschätzen?", new[] { "Sie sind oft ein wichtiger Teil der eigenen Identität und Geschichte", "Herkunft und Kultur spielen für die Identität keinerlei Rolle", "Man sollte die eigene Herkunft möglichst verstecken" }, "Sie sind oft ein wichtiger Teil der eigenen Identität und Geschichte",
+            "Herkunft und kulturelle Wurzeln prägen oft Werte, Traditionen und das Selbstverständnis eines Menschen."),
+        ("Was kann passieren, wenn man ständig versucht, jemand anderes zu sein, statt man selbst?", new[] { "Man kann sich unwohl fühlen und seine eigene Identität verlieren", "Man wird dadurch automatisch glücklicher", "Das hat überhaupt keine Auswirkungen auf das eigene Wohlbefinden" }, "Man kann sich unwohl fühlen und seine eigene Identität verlieren",
+            "Sich dauerhaft zu verstellen kann belastend sein und dazu führen, dass man den Kontakt zur eigenen Persönlichkeit verliert."),
+        ("Warum verändert sich die eigene Identität im Laufe des Lebens?", new[] { "Neue Erfahrungen, Interessen und Beziehungen prägen einen ständig weiter", "Die eigene Identität ist ab der Geburt für immer festgelegt", "Identität kann sich ausschließlich im Erwachsenenalter verändern" }, "Neue Erfahrungen, Interessen und Beziehungen prägen einen ständig weiter",
+            "Identität ist kein starres Konzept - neue Erlebnisse und Beziehungen können sie das ganze Leben lang weiterentwickeln."),
+        ("Was ist ein Beispiel für eine soziale Rolle in der Schule?", new[] { "Zum Beispiel die Rolle als Klassensprecherin/Klassensprecher oder als Streitschlichter", "Ausschließlich die Rolle als Hausmeister", "Schulische Rollen existieren grundsätzlich nicht" }, "Zum Beispiel die Rolle als Klassensprecherin/Klassensprecher oder als Streitschlichter",
+            "In der Schule übernehmen Kinder oft besondere Rollen mit eigenen Aufgaben, z.B. als Klassensprecherin oder Streitschlichter."),
+        ("Warum ist Respekt gegenüber der Identität anderer Menschen wichtig?", new[] { "Jeder Mensch hat das Recht, so akzeptiert zu werden, wie er ist", "Respekt gegenüber anderen Identitäten ist unwichtig", "Nur bestimmte Menschen verdienen Respekt für ihre Identität" }, "Jeder Mensch hat das Recht, so akzeptiert zu werden, wie er ist",
+            "Respektvoller Umgang bedeutet, die Individualität und Persönlichkeit anderer Menschen anzuerkennen und zu akzeptieren."),
+        ("Was bedeutet \"Gruppenzugehörigkeit\" für die eigene Identität?", new[] { "Das Gefühl, zu einer bestimmten Gruppe (Familie, Freunde, Verein) dazuzugehören, prägt das Selbstbild mit", "Gruppenzugehörigkeit hat mit der eigenen Identität nichts zu tun", "Man kann immer nur zu genau einer einzigen Gruppe gehören" }, "Das Gefühl, zu einer bestimmten Gruppe (Familie, Freunde, Verein) dazuzugehören, prägt das Selbstbild mit",
+            "Die Zugehörigkeit zu Gruppen wie Familie, Freundeskreis oder Verein trägt zum Gefühl von Zugehörigkeit und zur eigenen Identität bei."),
+        ("Warum sollten sich Jugendliche nicht zu sehr unter Druck setzen lassen, genau wie alle anderen zu sein?", new[] { "Weil die eigene Individualität und Persönlichkeit wertvoll sind", "Weil alle Menschen ohnehin exakt gleich sein sollten", "Individualität ist in der Jugend unerwünscht" }, "Weil die eigene Individualität und Persönlichkeit wertvoll sind",
+            "Die eigenen Besonderheiten und Unterschiede zu anderen sind ein wertvoller Teil der Persönlichkeit, den man nicht verstecken muss."),
+        ("Was kann helfen, die eigenen Stärken und Schwächen besser kennenzulernen?", new[] { "Zum Beispiel Selbstreflexion, Feedback von anderen oder neue Erfahrungen ausprobieren", "Man kann seine Stärken und Schwächen niemals wirklich erkennen", "Nur Schulnoten zeigen die eigenen Stärken und Schwächen" }, "Zum Beispiel Selbstreflexion, Feedback von anderen oder neue Erfahrungen ausprobieren",
+            "Über sich selbst nachzudenken, Rückmeldungen anzunehmen und Neues auszuprobieren hilft, sich selbst besser kennenzulernen."),
+        ("Warum kann ein und derselbe Mensch mehrere Rollen gleichzeitig ausfüllen, ohne dass das ein Widerspruch ist?", new[] { "Verschiedene Lebensbereiche erfordern unterschiedliche Verhaltensweisen, die trotzdem zur selben Person gehören", "Das ist grundsätzlich unmöglich und immer ein Widerspruch", "Man muss sich für genau eine einzige Rolle im Leben entscheiden" }, "Verschiedene Lebensbereiche erfordern unterschiedliche Verhaltensweisen, die trotzdem zur selben Person gehören",
+            "Verschiedene Rollen (Kind, Schülerin, Freund) schließen sich nicht aus, sondern sind gemeinsam Teil derselben, vielschichtigen Persönlichkeit."),
+        ("Was bedeutet es, \"zu sich selbst zu stehen\"?", new[] { "Zu seinen eigenen Werten, Meinungen und Eigenschaften zu stehen, auch wenn andere anders denken", "Sich immer der Meinung der Mehrheit anzupassen", "Niemals die eigene Meinung zu äußern" }, "Zu seinen eigenen Werten, Meinungen und Eigenschaften zu stehen, auch wenn andere anders denken",
+            "Zu sich selbst zu stehen bedeutet, authentisch zu bleiben und für die eigenen Überzeugungen einzustehen, auch bei Gegenwind.")
+    };
+
+    private static QuizQuestion IdentitaetUndRolleKlasse6(Random r)
+    {
+        var f = IdentitaetK6Listen[r.Next(IdentitaetK6Listen.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wer bin ich? – Identität und Rolle", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Identität setzt sich aus vielen Bausteinen zusammen (Familie, Interessen, Gefühle, Herkunft) - verschiedene Rollen in verschiedenen Situationen sind normal und kein Widerspruch."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FreiheitK6Listen =
+    {
+        ("Was bedeutet \"Freiheit\" im Alltag eines Kindes, einfach erklärt?", new[] { "Selbst entscheiden zu können, z.B. bei Hobbys, Meinungen oder Freundschaften", "Alles tun zu dürfen, ohne jemals Konsequenzen zu tragen", "Ausschließlich das zu tun, was andere einem vorschreiben" }, "Selbst entscheiden zu können, z.B. bei Hobbys, Meinungen oder Freundschaften",
+            "Freiheit bedeutet für Kinder oft, in bestimmten Bereichen des eigenen Lebens selbst mitentscheiden zu können."),
+        ("Warum gibt es trotzdem Regeln, die die eigene Freiheit einschränken?", new[] { "Damit das Zusammenleben mit anderen Menschen funktioniert und niemand geschädigt wird", "Regeln existieren nur, um Kindern das Leben schwerer zu machen", "Regeln haben keinerlei sinnvollen Zweck" }, "Damit das Zusammenleben mit anderen Menschen funktioniert und niemand geschädigt wird",
+            "Regeln sichern ein faires und sicheres Zusammenleben, indem sie verhindern, dass die Freiheit Einzelner anderen schadet."),
+        ("Wo endet laut einem bekannten Grundsatz die eigene Freiheit?", new[] { "Dort, wo die Freiheit oder die Rechte anderer beginnen", "Freiheit hat grundsätzlich überhaupt keine Grenzen", "Erst dort, wo die eigenen Wünsche vollständig erfüllt sind" }, "Dort, wo die Freiheit oder die Rechte anderer beginnen",
+            "Ein zentraler ethischer Grundsatz besagt, dass die eigene Freiheit dort endet, wo sie die Freiheit oder Rechte anderer verletzen würde."),
+        ("Was bedeutet \"Verantwortung übernehmen\"?", new[] { "Für die Folgen der eigenen Entscheidungen und Handlungen einzustehen", "Alle Schuld grundsätzlich auf andere abzuwälzen", "Entscheidungen zu treffen, ohne über die Folgen nachzudenken" }, "Für die Folgen der eigenen Entscheidungen und Handlungen einzustehen",
+            "Verantwortung zu übernehmen bedeutet, zu den Konsequenzen des eigenen Handelns zu stehen, egal ob positiv oder negativ."),
+        ("Was ist ein Beispiel dafür, Verantwortung im Alltag zu übernehmen?", new[] { "Zum Beispiel Hausaufgaben selbstständig erledigen oder ein Versprechen einhalten", "Immer darauf zu warten, dass andere die eigenen Aufgaben übernehmen", "Verantwortung zu übernehmen ist im Alltag eines Kindes nicht möglich" }, "Zum Beispiel Hausaufgaben selbstständig erledigen oder ein Versprechen einhalten",
+            "Schon kleine alltägliche Handlungen wie das zuverlässige Erledigen von Aufgaben zeigen Verantwortungsbewusstsein."),
+        ("Warum hängen Freiheit und Verantwortung eng zusammen?", new[] { "Wer frei entscheiden darf, muss auch für die Folgen seiner Entscheidungen einstehen", "Freiheit und Verantwortung haben nichts miteinander zu tun", "Wer Verantwortung übernimmt, verliert automatisch seine Freiheit" }, "Wer frei entscheiden darf, muss auch für die Folgen seiner Entscheidungen einstehen",
+            "Freiheit bringt automatisch Verantwortung mit sich - wer selbst entscheiden darf, trägt auch die Konsequenzen dieser Entscheidungen."),
+        ("Was passiert, wenn jemand seine Freiheit nutzt, um andere zu verletzen oder zu schädigen?", new[] { "Das ist keine akzeptable Nutzung von Freiheit, da sie die Rechte anderer verletzt", "Das ist immer völlig in Ordnung, solange man selbst frei entscheidet", "Freiheit erlaubt grundsätzlich jede Handlung, egal welche Folgen sie hat" }, "Das ist keine akzeptable Nutzung von Freiheit, da sie die Rechte anderer verletzt",
+            "Freiheit endet dort, wo sie anderen schadet - das Schädigen anderer ist keine legitime Ausübung der eigenen Freiheit."),
+        ("Warum dürfen Kinder nicht alles selbst entscheiden, was Erwachsene entscheiden dürfen?", new[] { "Manche Entscheidungen erfordern Erfahrung oder haben besondere Konsequenzen, auf die Kinder vorbereitet werden müssen", "Kinder haben grundsätzlich überhaupt kein Recht auf eigene Entscheidungen", "Erwachsene dürfen in Wahrheit auch nicht mehr entscheiden als Kinder" }, "Manche Entscheidungen erfordern Erfahrung oder haben besondere Konsequenzen, auf die Kinder vorbereitet werden müssen",
+            "Mit zunehmendem Alter und wachsender Erfahrung werden Kindern schrittweise mehr Entscheidungsfreiheiten zugetraut."),
+        ("Was bedeutet es, \"Verantwortung für sein Handeln zu tragen\", wenn man einen Fehler gemacht hat?", new[] { "Den Fehler einzugestehen und, wenn möglich, wiedergutzumachen", "So zu tun, als wäre nichts passiert", "Die Schuld einer anderen Person zuzuschieben" }, "Den Fehler einzugestehen und, wenn möglich, wiedergutzumachen",
+            "Verantwortungsvolles Handeln nach einem Fehler bedeutet, ihn anzuerkennen und - wenn möglich - die Situation wieder in Ordnung zu bringen."),
+        ("Was ist ein Beispiel für eine Regel in der Schule, die persönliche Freiheit einschränkt, aber sinnvoll ist?", new[] { "Zum Beispiel während des Unterrichts nicht laut dazwischenzurufen", "Dass niemand jemals eine eigene Meinung äußern darf", "Dass alle Kinder exakt dieselben Hobbys haben müssen" }, "Zum Beispiel während des Unterrichts nicht laut dazwischenzurufen",
+            "Solche Regeln schränken zwar die spontane Freiheit ein, ermöglichen aber ein geordnetes Lernen für alle."),
+        ("Warum ist es wichtig, auch bei unbeobachteten Entscheidungen verantwortungsvoll zu handeln?", new[] { "Verantwortung bedeutet, auch ohne Kontrolle das Richtige zu tun", "Unbeobachtete Entscheidungen haben grundsätzlich keine Bedeutung", "Nur beobachtetes Verhalten zählt moralisch" }, "Verantwortung bedeutet, auch ohne Kontrolle das Richtige zu tun",
+            "Echte Verantwortung zeigt sich gerade dann, wenn man auch ohne Aufsicht verantwortungsbewusst handelt."),
+        ("Was bedeutet \"Selbstbestimmung\"?", new[] { "Über die eigenen Angelegenheiten möglichst selbst entscheiden zu können", "Dass andere Menschen ausschließlich für einen entscheiden", "Ein anderes Wort für Gehorsam" }, "Über die eigenen Angelegenheiten möglichst selbst entscheiden zu können",
+            "Selbstbestimmung meint das Recht und die Fähigkeit, eigene Entscheidungen über das eigene Leben zu treffen."),
+        ("Warum ist es wichtig, die Konsequenzen der eigenen Entscheidungen vorher zu bedenken?", new[] { "Damit man bewusster und verantwortungsvoller handelt", "Konsequenzen spielen für Entscheidungen keine Rolle", "Man sollte Entscheidungen möglichst spontan ohne jedes Nachdenken treffen" }, "Damit man bewusster und verantwortungsvoller handelt",
+            "Wer die möglichen Folgen bedenkt, trifft bewusstere und verantwortungsvollere Entscheidungen."),
+        ("Was ist ein Unterschied zwischen \"dürfen\" und \"sollen\" bei einer Entscheidung?", new[] { "\"Dürfen\" beschreibt die Erlaubnis, \"sollen\" bezieht sich oft auf eine moralische Erwartung", "Beide Wörter bedeuten in jedem Zusammenhang exakt dasselbe", "\"Sollen\" bedeutet ein striktes gesetzliches Verbot" }, "\"Dürfen\" beschreibt die Erlaubnis, \"sollen\" bezieht sich oft auf eine moralische Erwartung",
+            "\"Dürfen\" zeigt an, was erlaubt ist, während \"sollen\" oft eine moralische oder soziale Erwartung ausdrückt."),
+        ("Was bedeutet Verantwortung gegenüber einem Haustier zu übernehmen?", new[] { "Sich regelmäßig und zuverlässig um seine Bedürfnisse zu kümmern", "Das Haustier möglichst sich selbst zu überlassen", "Verantwortung für Tiere existiert im Ethikunterricht nicht" }, "Sich regelmäßig und zuverlässig um seine Bedürfnisse zu kümmern",
+            "Verantwortung für ein Haustier bedeutet, sich zuverlässig um Futter, Pflege und Bewegung des Tieres zu kümmern."),
+        ("Warum bekommen Kinder mit zunehmendem Alter auch mehr Freiheiten?", new[] { "Weil ihnen mit wachsender Erfahrung auch mehr Verantwortung zugetraut wird", "Weil Regeln mit dem Alter automatisch komplett wegfallen", "Ältere Kinder brauchen grundsätzlich weniger Freiheiten als jüngere" }, "Weil ihnen mit wachsender Erfahrung auch mehr Verantwortung zugetraut wird",
+            "Mit zunehmender Reife und Erfahrung wird Kindern schrittweise mehr Selbstbestimmung und Verantwortung zugetraut."),
+        ("Was passiert, wenn man ein gegebenes Versprechen bewusst bricht?", new[] { "Man verletzt das Vertrauen der anderen Person und übernimmt keine Verantwortung", "Das hat für die Beziehung zu der anderen Person überhaupt keine Folgen", "Versprechen sind grundsätzlich unverbindlich und bedeutungslos" }, "Man verletzt das Vertrauen der anderen Person und übernimmt keine Verantwortung",
+            "Ein gebrochenes Versprechen beschädigt das Vertrauen zwischen Menschen und zeigt einen Mangel an Verantwortungsbewusstsein."),
+        ("Warum ist Verantwortung auch gegenüber der Umwelt ein wichtiges Thema?", new[] { "Weil eigenes Handeln, z.B. Müll oder Energieverbrauch, Auswirkungen auf andere und die Zukunft hat", "Die Umwelt hat mit persönlicher Verantwortung nichts zu tun", "Umweltschutz ist ausschließlich Aufgabe von Regierungen" }, "Weil eigenes Handeln, z.B. Müll oder Energieverbrauch, Auswirkungen auf andere und die Zukunft hat",
+            "Auch alltägliche Entscheidungen wie Mülltrennung oder Energiesparen wirken sich langfristig auf die Umwelt und andere Menschen aus."),
+        ("Warum ist \"Freiheit ohne jede Verantwortung\" in einer Gemeinschaft problematisch?", new[] { "Sie könnte dazu führen, dass Rücksichtslosigkeit anderen schadet", "Verantwortung schränkt Freiheit grundsätzlich völlig unnötig ein", "In einer Gemeinschaft braucht niemand Verantwortung zu übernehmen" }, "Sie könnte dazu führen, dass Rücksichtslosigkeit anderen schadet",
+            "Ohne Verantwortungsbewusstsein könnte die eigene Freiheit rücksichtslos ausgeübt werden und anderen in der Gemeinschaft schaden."),
+        ("Warum ist es eine Form von Freiheit, auch mal \"Nein\" zu Gruppendruck sagen zu können?", new[] { "Freiheit bedeutet auch, eigene Entscheidungen unabhängig vom Druck anderer zu treffen", "Gruppendruck hat mit persönlicher Freiheit überhaupt nichts zu tun", "Man muss sich einer Gruppe immer bedingungslos anpassen" }, "Freiheit bedeutet auch, eigene Entscheidungen unabhängig vom Druck anderer zu treffen",
+            "Wahre Entscheidungsfreiheit zeigt sich gerade darin, auch gegen Gruppendruck zu den eigenen Überzeugungen zu stehen.")
+    };
+
+    private static QuizQuestion FreiheitUndVerantwortungKlasse6(Random r)
+    {
+        var f = FreiheitK6Listen[r.Next(FreiheitK6Listen.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Freiheit endet dort, wo die Rechte anderer beginnen - wer frei entscheiden darf, übernimmt auch Verantwortung für die Folgen dieser Entscheidung."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GerechtigkeitK6Listen =
+    {
+        ("Was bedeutet \"Gerechtigkeit\" im Alltag, einfach erklärt?", new[] { "Menschen fair und angemessen zu behandeln", "Alle Menschen komplett identisch zu behandeln, egal in welcher Situation", "Ein anderes Wort für strenge Bestrafung" }, "Menschen fair und angemessen zu behandeln",
+            "Gerechtigkeit bedeutet, Menschen fair zu behandeln und ihre unterschiedlichen Bedürfnisse angemessen zu berücksichtigen."),
+        ("Was ist der Unterschied zwischen \"gleich behandeln\" und \"gerecht behandeln\"?", new[] { "Gleich behandeln bedeutet, alle gleich zu behandeln; gerecht behandeln berücksichtigt auch unterschiedliche Bedürfnisse", "Beide Begriffe bedeuten in jedem Fall exakt dasselbe", "Gerecht behandeln bedeutet, bestimmte Personen grundlos zu bevorzugen" }, "Gleich behandeln bedeutet, alle gleich zu behandeln; gerecht behandeln berücksichtigt auch unterschiedliche Bedürfnisse",
+            "Gerechtigkeit geht über reine Gleichbehandlung hinaus, indem sie unterschiedliche Ausgangslagen und Bedürfnisse mit einbezieht."),
+        ("Was ist ein Beispiel dafür, dass \"gleich\" nicht automatisch \"gerecht\" bedeutet?", new[] { "Wenn alle Kinder dieselbe Sitzhöhe bekommen, obwohl manche kleiner sind und dadurch schlechter sehen", "Wenn alle Kinder in der Klasse denselben Namen hätten", "Wenn alle Kinder exakt dieselben Hausaufgaben bekommen" }, "Wenn alle Kinder dieselbe Sitzhöhe bekommen, obwohl manche kleiner sind und dadurch schlechter sehen",
+            "Gleiche Behandlung kann trotzdem ungerecht sein, wenn unterschiedliche Voraussetzungen nicht berücksichtigt werden."),
+        ("Warum sollten Regeln in der Klasse für alle gleichermaßen gelten?", new[] { "Damit niemand bevorzugt oder benachteiligt wird", "Damit einzelne Schülerinnen und Schüler bevorzugt werden können", "Regeln sollten je nach Person völlig unterschiedlich gelten" }, "Damit niemand bevorzugt oder benachteiligt wird",
+            "Einheitliche Regeln für alle sorgen für Fairness und verhindern, dass Einzelne willkürlich bevorzugt oder benachteiligt werden."),
+        ("Was bedeutet \"faires Teilen\", z.B. beim Aufteilen von Süßigkeiten unter Freunden?", new[] { "Jeder bekommt einen angemessenen, fairen Anteil", "Eine einzelne Person bekommt automatisch alles", "Es wird überhaupt nichts geteilt" }, "Jeder bekommt einen angemessenen, fairen Anteil",
+            "Faires Teilen bedeutet, dass alle Beteiligten einen angemessenen Anteil erhalten, statt dass eine Person bevorzugt wird."),
+        ("Was ist \"Ungerechtigkeit\"?", new[] { "Wenn jemand unfair, ungleich oder benachteiligend behandelt wird", "Ein anderes Wort für strenge, aber faire Regeln", "Ungerechtigkeit existiert in einer Klassengemeinschaft nicht" }, "Wenn jemand unfair, ungleich oder benachteiligend behandelt wird",
+            "Ungerechtigkeit liegt vor, wenn eine Person ohne triftigen Grund schlechter oder unfair behandelt wird als andere."),
+        ("Warum ist es ungerecht, jemanden wegen seines Aussehens oder seiner Herkunft schlechter zu behandeln?", new[] { "Weil das keine Rolle für den Wert oder die Fähigkeiten einer Person spielt", "Weil Aussehen und Herkunft die wichtigsten Kriterien für Fairness sind", "Das ist in bestimmten Fällen völlig in Ordnung" }, "Weil das keine Rolle für den Wert oder die Fähigkeiten einer Person spielt",
+            "Äußerliche Merkmale oder Herkunft sagen nichts über den Charakter oder die Fähigkeiten eines Menschen aus - eine Benachteiligung deswegen ist ungerecht."),
+        ("Was können Kinder tun, wenn sie eine ungerechte Situation in der Klasse beobachten?", new[] { "Sich z.B. an eine Lehrkraft wenden oder für die betroffene Person einstehen", "Am besten überhaupt nichts unternehmen", "Die Situation noch verschlimmern" }, "Sich z.B. an eine Lehrkraft wenden oder für die betroffene Person einstehen",
+            "Aktiv zu werden, z.B. durch Ansprechen einer Lehrkraft oder Solidarität mit Betroffenen, kann helfen, Ungerechtigkeit entgegenzuwirken."),
+        ("Was bedeutet \"Chancengerechtigkeit\" in der Schule?", new[] { "Alle Schülerinnen und Schüler sollen ähnliche Möglichkeiten haben, gute Leistungen zu erbringen", "Nur besonders begabte Schülerinnen und Schüler sollen gefördert werden", "Chancengerechtigkeit bedeutet, dass alle exakt dieselben Noten bekommen" }, "Alle Schülerinnen und Schüler sollen ähnliche Möglichkeiten haben, gute Leistungen zu erbringen",
+            "Chancengerechtigkeit bedeutet, dass die Ausgangsbedingungen möglichst fair gestaltet werden, damit jede und jeder gute Leistungen erbringen kann."),
+        ("Warum kann eine Strafe als ungerecht empfunden werden, wenn sie nicht zur Tat passt?", new[] { "Weil Gerechtigkeit auch bedeutet, dass eine Konsequenz angemessen zur Handlung sein sollte", "Strafen müssen grundsätzlich immer maximal streng sein", "Die Angemessenheit einer Strafe spielt für Gerechtigkeit keine Rolle" }, "Weil Gerechtigkeit auch bedeutet, dass eine Konsequenz angemessen zur Handlung sein sollte",
+            "Eine gerechte Konsequenz sollte im Verhältnis zur begangenen Handlung stehen, statt willkürlich zu hart oder zu mild zu sein."),
+        ("Was ist \"Empathie\" und warum ist sie wichtig für Gerechtigkeit?", new[] { "Sich in die Lage anderer hineinversetzen zu können, um ihre Bedürfnisse zu verstehen", "Ein anderes Wort für strenge Regeln", "Empathie hat mit Gerechtigkeit nichts zu tun" }, "Sich in die Lage anderer hineinversetzen zu können, um ihre Bedürfnisse zu verstehen",
+            "Empathie hilft dabei, die Bedürfnisse und Perspektiven anderer zu verstehen, was wichtig ist, um gerechte Entscheidungen zu treffen."),
+        ("Was bedeutet \"Regeln gelten für alle\" in einem gerechten Zusammenleben?", new[] { "Auch Lehrkräfte, Eltern oder Anführer müssen sich an dieselben Regeln halten wie alle anderen", "Nur Kinder müssen sich an Regeln halten, Erwachsene nicht", "Regeln gelten grundsätzlich nur für bestimmte, ausgewählte Personen" }, "Auch Lehrkräfte, Eltern oder Anführer müssen sich an dieselben Regeln halten wie alle anderen",
+            "Gerechtigkeit setzt voraus, dass Regeln auch für Menschen mit Autorität gelten und nicht nur für andere durchgesetzt werden."),
+        ("Was ist ein Beispiel für eine gerechte Lösung bei einem Streit zwischen zwei Kindern?", new[] { "Beide Seiten anzuhören und eine für beide faire Lösung zu finden", "Automatisch der lauteren Person recht zu geben", "Den Streit einfach zu ignorieren" }, "Beide Seiten anzuhören und eine für beide faire Lösung zu finden",
+            "Eine gerechte Konfliktlösung berücksichtigt die Sichtweisen beider Seiten, statt vorschnell eine Partei zu bevorzugen."),
+        ("Warum ist es wichtig, bei einer Entscheidung auch die Meinung der Betroffenen anzuhören?", new[] { "Damit die Entscheidung als gerecht und nachvollziehbar empfunden wird", "Die Meinung der Betroffenen ist für eine Entscheidung völlig unwichtig", "Nur Erwachsene dürfen bei Entscheidungen gehört werden" }, "Damit die Entscheidung als gerecht und nachvollziehbar empfunden wird",
+            "Wenn Betroffene gehört werden, steigt die Wahrscheinlichkeit, dass eine Entscheidung als fair und nachvollziehbar akzeptiert wird."),
+        ("Was bedeutet \"Bevorzugung\" als eine Form der Ungerechtigkeit?", new[] { "Wenn jemand ohne triftigen Grund besser behandelt wird als andere", "Wenn alle Menschen exakt gleich behandelt werden", "Ein anderes Wort für Fairness" }, "Wenn jemand ohne triftigen Grund besser behandelt wird als andere",
+            "Bevorzugung ohne sachlichen Grund verletzt das Prinzip der Fairness, da andere dadurch benachteiligt werden."),
+        ("Warum sind manche Situationen mehr eine Frage der Fairness als der reinen Gleichheit?", new[] { "Weil unterschiedliche Ausgangsbedingungen unterschiedliche Unterstützung erfordern können, um fair zu sein", "Weil Fairness und Gleichheit in jedem Fall identisch sind", "Unterschiedliche Ausgangsbedingungen spielen für Fairness keine Rolle" }, "Weil unterschiedliche Ausgangsbedingungen unterschiedliche Unterstützung erfordern können, um fair zu sein",
+            "Manchmal ist es fairer, unterschiedliche Unterstützung zu geben, statt alle exakt gleich zu behandeln, wenn die Startbedingungen verschieden sind."),
+        ("Was ist ein Beispiel dafür, wie man in der Klasse für mehr Gerechtigkeit sorgen kann?", new[] { "Zum Beispiel Ämter/Aufgaben reihum fair verteilen", "Immer dieselbe Person alle Aufgaben übernehmen lassen", "Aufgaben ausschließlich nach Beliebtheit vergeben" }, "Zum Beispiel Ämter/Aufgaben reihum fair verteilen",
+            "Eine faire, reihum wechselnde Verteilung von Klassenämtern sorgt dafür, dass alle Kinder gleichermaßen beteiligt werden."),
+        ("Warum ist Gerechtigkeit eine wichtige Grundlage für ein gutes Zusammenleben?", new[] { "Weil sie Vertrauen und Zusammenhalt in einer Gemeinschaft stärkt", "Gerechtigkeit hat für das Zusammenleben keinerlei Bedeutung", "Zusammenleben funktioniert am besten ganz ohne Gerechtigkeit" }, "Weil sie Vertrauen und Zusammenhalt in einer Gemeinschaft stärkt",
+            "Wo Menschen sich fair behandelt fühlen, entsteht eher Vertrauen und Zusammenhalt innerhalb einer Gemeinschaft."),
+        ("Warum wird Gerechtigkeit oft mit einer Waage als Symbol dargestellt?", new[] { "Sie steht dafür, verschiedene Seiten abzuwägen und zu einem ausgeglichenen, fairen Urteil zu kommen", "Weil Gerechtigkeit ausschließlich mit Geld zu tun hat", "Die Waage hat mit Gerechtigkeit historisch nichts zu tun" }, "Sie steht dafür, verschiedene Seiten abzuwägen und zu einem ausgeglichenen, fairen Urteil zu kommen",
+            "Die Waage symbolisiert das Abwägen unterschiedlicher Perspektiven und Interessen, um zu einer ausgewogenen, gerechten Entscheidung zu kommen."),
+        ("Warum sollten auch Minderheiten in einer Klasse gerecht behandelt werden, selbst wenn die Mehrheit anders entscheidet?", new[] { "Gerechtigkeit bedeutet, dass auch die Interessen von Minderheiten berücksichtigt werden, nicht nur die der Mehrheit", "Nur die Meinung der Mehrheit zählt jemals bei Entscheidungen", "Minderheiten haben grundsätzlich keinerlei Rechte" }, "Gerechtigkeit bedeutet, dass auch die Interessen von Minderheiten berücksichtigt werden, nicht nur die der Mehrheit",
+            "Eine gerechte Gemeinschaft achtet darauf, dass auch die Bedürfnisse und Rechte von Minderheiten nicht einfach übergangen werden.")
+    };
+
+    private static QuizQuestion RechtUndGerechtigkeitKlasse6(Random r)
+    {
+        var f = GerechtigkeitK6Listen[r.Next(GerechtigkeitK6Listen.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Gerechtigkeit ist mehr als reine Gleichbehandlung - sie berücksichtigt unterschiedliche Bedürfnisse (Chancengerechtigkeit) und verlangt, dass Regeln für alle gleichermaßen gelten."
         };
     }
 }

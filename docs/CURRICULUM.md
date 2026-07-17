@@ -179,9 +179,9 @@ Rahmenlehrplan" weiter unten).
 | Werte und Regeln | Verantwortung und Pflicht |
 | Freundschaft und Konflikte | Meinungsfreiheit und Grenzen |
 | Weltreligionen | Digitale Ethik |
-| | Recht und Gerechtigkeit |
-| | Wer bin ich? - Identität und Rolle |
-| | Wie frei bin ich? - Freiheit und Verantwortung |
+| Wer bin ich? – Identität und Rolle | Recht und Gerechtigkeit |
+| Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau) | Wer bin ich? - Identität und Rolle |
+| Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau) | Wie frei bin ich? - Freiheit und Verantwortung |
 | | Was ist gerecht? - Gerechtigkeitstheorien vertieft |
 | | Was ist der Mensch? - Mensch und Gemeinschaft |
 | | Was soll ich tun? - Handeln und Moral |
@@ -473,9 +473,9 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Ethik (`EthikGenerator.cs`)
 
-- [ ] 3.1 Wer bin ich? – Identität und Rolle
-- [ ] 3.2 Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau)
-- [ ] 3.3 Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau)
+- [x] 3.1 Wer bin ich? – Identität und Rolle (→ `IdentitaetUndRolleKlasse6`)
+- [x] 3.2 Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau) (→ `FreiheitUndVerantwortungKlasse6`)
+- [x] 3.3 Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau) (→ `RechtUndGerechtigkeitKlasse6`)
 - [x] 3.4 Was ist der Mensch? – Mensch und Gemeinschaft (Toleranz, Konflikte) (→ `Freundschaft`)
 
 #### Kunst (`KunstGenerator.cs`)
@@ -693,12 +693,12 @@ Ethik/`Freundschaft`).
 | Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
 | Politik | `PolitikGenerator.cs` | 7 | 8 | 15 |
 | Geografie | `GeoGenerator.cs` | 7 | 9 | 16 |
-| Ethik | `EthikGenerator.cs` | 3 | 10 | 13 |
+| Ethik | `EthikGenerator.cs` | 6 | 10 | 16 |
 | Kunst | `KunstGenerator.cs` | 4 | 6 | 10 |
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 220 Topics** (je Topic ~20 kuratierte Fragen → ~4.400 Fragen im Pool; Mathematik generiert
+**Total: 223 Topics** (je Topic ~20 kuratierte Fragen → ~4.450 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
