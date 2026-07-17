@@ -1,16 +1,20 @@
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 using LernTor.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LernTor.Data.Repositories;
 
 /// <summary>
-/// Verwaltet dauerhaft ausgeschlossene Aufgaben (siehe <see cref="MasteredPromptEntity"/>):
-/// einmal richtig beantwortet, taucht der exakte Fragetext für dieses Profil nie wieder auf -
-/// weder in Übungen noch im Abschlussquiz. Ergänzt (statt ersetzt) das bestehende 21-Tage-Fenster
-/// aus <see cref="ActivityLogRepository.GetRecentPromptsAsync"/>, das nur kurzfristige Frische
-/// sicherstellt.
+/// Verwaltet gemeisterte Aufgaben mit Spaced-Repetition-Zeitplan (siehe
+/// <see cref="MasteredPromptEntity"/> und SpacedRepetitionSchedule in Core): einmal richtig
+/// beantwortet, ist der exakte Fragetext für dieses Profil ausgeschlossen, bis er nach 7/30/90
+/// Tagen zur Auffrischung wieder fällig wird - Wissen zerfällt, "für immer gemeistert" gibt es
+/// nicht. Eine falsch beantwortete Auffrischung löscht die Meisterung wieder (die Fehler-Kartei
+/// übernimmt dann, bis die Aufgabe erneut gemeistert ist). Ergänzt (statt ersetzt) das bestehende
+/// 21-Tage-Fenster aus <see cref="ActivityLogRepository.GetRecentPromptsAsync"/>, das nur
+/// kurzfristige Frische sicherstellt.
 /// </summary>
 public sealed class MasteredPromptRepository
 {
@@ -22,46 +26,77 @@ public sealed class MasteredPromptRepository
     }
 
     /// <summary>
-    /// Verbucht eine richtig beantwortete Aufgabe als dauerhaft gemeistert. Falsch beantwortete
-    /// Aufgaben werden ignoriert (die Fehler-Kartei kümmert sich um deren Wiederholung). News-Fragen
-    /// werden wie in der Fehler-Kartei ausgenommen: sie beziehen sich auf Tagesartikel, die exakt so
-    /// ohnehin nicht wiederkehren. Idempotent - ein bereits gemeisterter Prompt wird nicht doppelt
-    /// eingetragen.
+    /// Verbucht das Ergebnis einer beantworteten Aufgabe für den Spaced-Repetition-Zeitplan:
+    /// richtig + noch nicht gemeistert → Stufe 1 (fällig in 7 Tagen); richtig + bereits gemeistert
+    /// (Auffrischung) → Stufe hoch, nächste Fälligkeit nach 30/90 Tagen; falsch + bereits
+    /// gemeistert → Meisterung verfällt (Eintrag wird gelöscht, die Fehler-Kartei kümmert sich um
+    /// die Wiederholung, bis die Aufgabe neu gemeistert wird). News-Fragen werden wie in der
+    /// Fehler-Kartei ausgenommen: sie beziehen sich auf Tagesartikel, die exakt so ohnehin nicht
+    /// wiederkehren.
     /// </summary>
-    public async Task RecordIfCorrectAsync(string profileId, QuizQuestion question, bool wasCorrect, CancellationToken cancellationToken = default)
+    public async Task RecordOutcomeAsync(string profileId, QuizQuestion question, bool wasCorrect, CancellationToken cancellationToken = default)
     {
-        if (!wasCorrect || question.Subject == Subject.News)
+        if (question.Subject == Subject.News)
         {
             return;
         }
 
-        var alreadyMastered = await _db.MasteredPrompts.AnyAsync(
+        var entity = await _db.MasteredPrompts.FirstOrDefaultAsync(
             m => m.ProfileId == profileId && m.Prompt == question.Prompt, cancellationToken);
 
-        if (alreadyMastered)
+        if (!wasCorrect)
         {
+            if (entity is not null)
+            {
+                _db.MasteredPrompts.Remove(entity);
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+
             return;
         }
 
-        _db.MasteredPrompts.Add(new MasteredPromptEntity
+        var now = DateTimeOffset.Now;
+        if (entity is null)
         {
-            ProfileId = profileId,
-            Prompt = question.Prompt,
-            Subject = question.Subject.ToString(),
-            MasteredAt = DateTimeOffset.Now
-        });
+            _db.MasteredPrompts.Add(new MasteredPromptEntity
+            {
+                ProfileId = profileId,
+                Prompt = question.Prompt,
+                Subject = question.Subject.ToString(),
+                MasteredAt = now,
+                ReviewStage = 1,
+                NextDueAt = SpacedRepetitionSchedule.NextDueAt(1, now)
+            });
+        }
+        else
+        {
+            // Auffrischung bestanden (bzw. Alt-Eintrag mit Stufe 0 von vor der Umstellung):
+            // Stufe hoch, nächstes Intervall länger.
+            entity.ReviewStage = Math.Max(entity.ReviewStage, 0) + 1;
+            entity.NextDueAt = SpacedRepetitionSchedule.NextDueAt(entity.ReviewStage, now);
+        }
 
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    /// <summary>Alle Fragetexte, die dieses Profil je richtig beantwortet hat - zum Ausschluss bei
-    /// der Aufgabenauswahl (siehe ExerciseGeneratorBase.Generate).</summary>
+    /// <summary>
+    /// Alle Fragetexte, die für dieses Profil AKTUELL ausgeschlossen sind: gemeistert und noch
+    /// nicht wieder fällig. Fällige Einträge (NextDueAt erreicht oder NULL bei Alt-Einträgen von
+    /// vor der Spaced-Repetition-Umstellung) fehlen bewusst im Ergebnis - sie dürfen zur
+    /// Auffrischung wieder gestellt werden (siehe ExerciseGeneratorBase.Generate).
+    /// </summary>
     public async Task<IReadOnlySet<string>> GetMasteredPromptsAsync(string profileId, CancellationToken cancellationToken = default)
     {
-        return (await _db.MasteredPrompts
+        // Erst laden, dann filtern (in-memory): SQLite/EF Core kann Vergleiche auf
+        // DateTimeOffset-Spalten nicht zuverlässig serverseitig übersetzen.
+        var entities = await _db.MasteredPrompts
             .Where(m => m.ProfileId == profileId)
+            .ToListAsync(cancellationToken);
+
+        var now = DateTimeOffset.Now;
+        return entities
+            .Where(m => m.NextDueAt is not null && m.NextDueAt > now)
             .Select(m => m.Prompt)
-            .ToListAsync(cancellationToken))
             .ToHashSet();
     }
 }

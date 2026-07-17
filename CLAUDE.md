@@ -94,9 +94,11 @@ any `Add <Subject> as a new subject` commit for the exact file list.
 Since curated pools are finite, three repositories in `LernTor.Data` cooperate to keep questions
 feeling fresh across sessions, all funneled into the `recentlySeenPrompts` parameter threaded
 through `ExerciseGeneratorBase.Generate()`/`QuizComposer`: `ActivityLogRepository.GetRecentPromptsAsync`
-supplies a rolling freshness window of recently-asked prompts; `MasteredPromptRepository` tracks
-prompts a profile has *ever* answered correctly and excludes them permanently (falls back to
-allowing repeats only once a topic's entire pool is mastered); `ReviewQuestionRepository` is the
+supplies a rolling freshness window of recently-asked prompts; `MasteredPromptRepository` implements
+spaced repetition (`SpacedRepetitionSchedule` in Core): a correctly answered prompt is excluded
+until it comes due again after growing intervals (stage 1 = 7d, 2 = 30d, 3+ = 90d) — passing a
+due review bumps the stage, failing one deletes the mastery so the Fehler-Kartei takes over
+(legacy rows with `NextDueAt = NULL` count as due); `ReviewQuestionRepository` is the
 "Fehler-Kartei" — prompts answered *incorrectly* are snapshotted (not regenerated, since generated
 questions aren't reproducible the next day) and resurface first on later days, marked 🔁, until
 answered correctly twice in a row. `MainViewModel` (App) is what assembles and combines these three

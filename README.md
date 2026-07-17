@@ -131,14 +131,17 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    wurden, dann gelten sie als gelernt und verschwinden. News-Fragen sind ausgenommen (deren
    Tagesartikel gibt es später nicht mehr). Siehe `ReviewQuestionRepository`/`ReviewQuestionEntity`;
    die neue Tabelle legt der automatische Schema-Abgleich selbst an.
-   **Dauerhafter Ausschluss richtig beantworteter Aufgaben**: einmal richtig beantwortet (egal ob im
-   Übungsteil oder im Abschlussquiz), taucht der exakte Fragetext für dieses Profil nie wieder auf -
-   unabhängig vom 21-Tage-Fenster der reinen Frische-Bevorzugung. Deshalb halten alle Fächer mit
-   festem Themen-Pool inzwischen 20 kuratierte Beispiele je Thema vor (siehe
-   [docs/CURRICULUM.md](docs/CURRICULUM.md)) statt nur 5 - sonst wäre der Pool schnell erschöpft.
-   Ist ein Themen-Pool tatsächlich komplett gemeistert, greift die Aufgabenauswahl als Rückfall auf
+   **Spaced Repetition für richtig beantwortete Aufgaben**: einmal richtig beantwortet (egal ob im
+   Übungsteil oder im Abschlussquiz), pausiert der exakte Fragetext für dieses Profil - aber nicht
+   für immer, denn Wissen zerfällt: nach wachsenden Abständen (Stufe 1 = 7 Tage, Stufe 2 = 30 Tage,
+   ab Stufe 3 alle 90 Tage, vereinfachtes Anki-Prinzip) wird die Aufgabe wieder fällig und kommt
+   zur Auffrischung erneut dran. Besteht das Kind die Auffrischung, steigt die Stufe; scheitert
+   sie, verfällt die Meisterung und die Fehler-Kartei übernimmt, bis die Aufgabe neu gemeistert
+   ist. Nebeneffekt: gemeisterte Aufgaben füllen die endlichen Themen-Pools (20 kuratierte
+   Beispiele je Thema, siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)) über die Zeit wieder auf.
+   Ist ein Themen-Pool aktuell komplett ausgeschlossen, greift die Aufgabenauswahl als Rückfall auf
    Wiederholungen zurück, statt weniger Aufgaben als angefordert zu liefern. Siehe
-   `MasteredPromptRepository`/`MasteredPromptEntity`.
+   `MasteredPromptRepository`/`MasteredPromptEntity`/`SpacedRepetitionSchedule`.
    **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:

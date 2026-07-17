@@ -173,7 +173,7 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 **Die App ist funktionskomplett für den Kern-Zweck:**
 
-> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic, keine Wiederholung bei richtig) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
+> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic; Richtiges pausiert per Spaced Repetition 7/30/90 Tage und kehrt zur Auffrischung zurück) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
 
 **Abdeckungsgrad RLP:** Alle 15 implementierten Fach-Generatoren decken ihre RLP-Themenfelder für
 Klasse 6 und 9 vollständig ab (232 Topics, ~4.640 Fragen im Pool) - inklusive der zuletzt

@@ -433,10 +433,11 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>
     /// Vereint zwei unabhängige Ausschlussgründe für die Aufgabenauswahl: das 21-Tage-Fenster
     /// kürzlich gestellter Fragen (bevorzugt Frische bei den fest hinterlegten Themen-Pools) und
-    /// die dauerhaft gemeisterten Prompts (siehe MasteredPromptRepository - einmal richtig
-    /// beantwortete Aufgaben tauchen für dieses Profil nie wieder auf). Beide landen im selben
-    /// Ausschluss-Set, weil ExerciseGeneratorBase.Generate ohnehin nur "meide diese Prompts, wenn
-    /// möglich" kennt, keinen Unterschied zwischen den beiden Gründen macht.
+    /// die gemeisterten, noch nicht wieder fälligen Prompts (siehe MasteredPromptRepository -
+    /// Spaced Repetition: richtig beantwortete Aufgaben pausieren 7/30/90 Tage und kehren dann
+    /// zur Auffrischung zurück). Beide landen im selben Ausschluss-Set, weil
+    /// ExerciseGeneratorBase.Generate ohnehin nur "meide diese Prompts, wenn möglich" kennt,
+    /// keinen Unterschied zwischen den beiden Gründen macht.
     /// </summary>
     private async Task<IReadOnlySet<string>> BuildExcludedPromptsAsync()
     {
@@ -475,8 +476,9 @@ public sealed partial class MainViewModel : ObservableObject
         await _activityLogRepo.LogAnswerAsync(CurrentProfile!.Id, outcome, question.Topic, question.Prompt);
         // Fehler-Kartei pflegen: falsch → aufnehmen/zurücksetzen, richtig → Streak hoch, bei 2 gelernt.
         await _reviewRepo.RecordOutcomeAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
-        // Richtig beantwortet → dauerhaft ausschließen, damit dieser Prompt nie wieder vorkommt.
-        await _masteredPromptRepo.RecordIfCorrectAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
+        // Spaced Repetition: richtig → gemeistert (pausiert 7/30/90 Tage, kehrt zur Auffrischung
+        // zurück), falsch → Meisterung verfällt und die Fehler-Kartei übernimmt.
+        await _masteredPromptRepo.RecordOutcomeAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
     }
 
     private async void OnExerciseSubjectCompleted(Subject subject)
@@ -530,9 +532,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async void OnFinalQuizQuestionAnswered(QuizQuestion question, QuestionOutcome outcome)
     {
-        // Richtig beantwortet → dauerhaft ausschließen, damit dieser Prompt nie wieder vorkommt -
-        // auch wenn er nur im Abschlussquiz und nie in einer Übung drankam.
-        await _masteredPromptRepo.RecordIfCorrectAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
+        // Spaced Repetition auch fürs Abschlussquiz: richtig → gemeistert (pausiert 7/30/90 Tage),
+        // falsch → Meisterung verfällt - auch wenn der Prompt nur im Quiz und nie in einer Übung drankam.
+        await _masteredPromptRepo.RecordOutcomeAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
     }
 
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)
