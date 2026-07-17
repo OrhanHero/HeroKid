@@ -161,7 +161,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         CurrentViewModel = stage switch
         {
-            LearningStage.Willkommen => new WelcomeViewModel(CurrentProfile!.Name, OnWelcomeContinue, SwitchLanguage),
+            LearningStage.Willkommen => await BuildWelcomeViewModelAsync(),
             LearningStage.Vorlesen => BuildReadingViewModel(),
             LearningStage.Tippen => await BuildTypingDashboardViewModelAsync(),
             LearningStage.News => await BuildNewsViewModelAsync(),
@@ -172,6 +172,23 @@ public sealed partial class MainViewModel : ObservableObject
         };
 
         UpdateSessionSteps();
+    }
+
+    /// <summary>
+    /// Willkommensbildschirm inkl. optionaler 🔥-Lernserie: nur berechnet, wenn Eltern die
+    /// Streak-Anzeige eingeschaltet haben (Standard aus - bewusst kein Streak-Druck), sonst 0
+    /// (WelcomeViewModel blendet die Zeile dann aus).
+    /// </summary>
+    private async Task<WelcomeViewModel> BuildWelcomeViewModelAsync()
+    {
+        var streak = 0;
+        if (Settings.StreaksEnabled)
+        {
+            var learningDays = await _activityLogRepo.GetLearningDaysAsync(CurrentProfile!.Id);
+            streak = StreakCalculator.CurrentStreak(learningDays, DateOnly.FromDateTime(DateTime.Today));
+        }
+
+        return new WelcomeViewModel(CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage);
     }
 
     /// <summary>Baut die fünf Makro-Etappen (Lesen/Tippen/News/Fächer/Quiz) für die Fortschrittsleiste neu auf.</summary>

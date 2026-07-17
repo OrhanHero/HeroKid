@@ -14,6 +14,11 @@ public sealed class AppSettings
 
     public bool HardLockShellReplacementEnabled { get; set; } = false;
 
+    /// <summary>Zeigt dem Kind die 🔥-Lernserie (aufeinanderfolgende Lerntage) auf dem
+    /// Willkommensbildschirm. Standard AUS - bewusste Design-Entscheidung: kein Streak-Druck,
+    /// Eltern schalten es explizit ein (siehe StreakCalculator).</summary>
+    public bool StreaksEnabled { get; set; } = false;
+
     /// <summary>Pfad zu einer lokalen GGUF-Modelldatei für das lokale LLM (Lehrer-Import + KI-Lernchat,
     /// siehe LernTor.ContentGen.Llm.LocalLlmModelHost). Null/leer = das gewählte Katalog-Modell wird
     /// beim ersten Gebrauch automatisch heruntergeladen; gesetzt hat der Pfad Vorrang.</summary>

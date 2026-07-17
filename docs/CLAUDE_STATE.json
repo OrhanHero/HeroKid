@@ -2,6 +2,7 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-17",
   "done": [
+    "Optionale Streaks: StreakCalculator (Core) + AppSettings.StreaksEnabled (Standard aus) + 🔥-Zeile im WelcomeView (ab 2 Tagen) + Eltern-Checkbox; Tests: StreakCalculatorTests",
     "Backup-Export/-Import im Eltern-Bereich (VACUUM INTO / Header-Validierung + ClearAllPools + App-Neustart) — 9748404",
     "Feed-Healthcheck: woechentliche GitHub Action + scripts/check-feeds.py (22 Feeds) — 9267d62; build.yml-Publish an Release-Flags angeglichen — f45f9fb",
     "Mathe offene Eingabe: war bereits umgesetzt, nur STATUS-REPORT war stale (Kongruenz/Thales bleiben bewusst MC)",

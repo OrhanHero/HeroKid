@@ -27,6 +27,7 @@ public static class Translations
             ["Profile_DoneToday"] = L("Heute schon geschafft! 🎉", "Bugün tamamlandı! 🎉"),
 
             ["Welcome_Greeting"] = L("Hallo, {0}!", "Merhaba, {0}!"),
+            ["Welcome_Streak"] = L("🔥 {0} Tage in Folge - stark!", "🔥 {0} gündür üst üste - süper!"),
             ["Welcome_Title"] = L("Willkommen bei LernTor!", "LernTor'a Hoş Geldin!"),
             ["Welcome_Subtitle"] = L(
                 "Bevor du den PC benutzen kannst, lernen wir gemeinsam ein bisschen. Los geht's!",
@@ -201,6 +202,9 @@ public static class Translations
             ["Parent_SkipUnlock"] = L("Sofort freischalten (überspringen)", "Hemen kilidi aç (atla)"),
             ["Parent_Save"] = L("Speichern", "Kaydet"),
             ["Parent_Close"] = L("Schließen", "Kapat"),
+            ["Parent_Streaks_Toggle"] = L(
+                "🔥 Lernserie anzeigen (Tage in Folge, nur Anzeige - kein Druck bei verpassten Tagen)",
+                "🔥 Öğrenme serisini göster (üst üste günler, sadece gösterim - kaçırılan günlerde baskı yok)"),
             ["Parent_Backup_Title"] = L("Sicherung (Backup)", "Yedekleme"),
             ["Parent_Backup_Intro"] = L(
                 "Alle Profile, Fortschritte, Sterne und Einstellungen als eine Datei sichern - z.B. auf einen USB-Stick. Beim Wiederherstellen wird der aktuelle Stand ersetzt.",

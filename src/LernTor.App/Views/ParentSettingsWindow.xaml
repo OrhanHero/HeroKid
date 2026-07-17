@@ -156,6 +156,11 @@
                     </Button>
                 </StackPanel>
 
+                <!-- 🔥-Lernserie: reine Anzeige-Motivation, Standard aus (bewusst kein
+                     Streak-Druck bei verpassten Tagen - keine Strafen, keine Erinnerungen). -->
+                <CheckBox IsChecked="{Binding StreaksEnabled}" Margin="0,4,0,16" FontSize="14"
+                          Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Streaks_Toggle]}" />
+
                 <ListView ItemsSource="{Binding RecentActivity}" MaxHeight="220" FontSize="13">
                     <ListView.View>
                         <GridView>

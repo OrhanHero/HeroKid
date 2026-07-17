@@ -94,7 +94,7 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 |-----------|-------|---------|
 | ✅ **Erledigt** | **Lesestufen-Texte** | 63 Texte (33 literarisch/Allgemeinwissen + 30 Pop-Kultur), inkl. Klassiker-Ergänzung Goethe (Erlkönig), Schiller (Die Bürgschaft) und Fontane (Herr von Ribbeck auf Ribbeck im Havelland). |
 | ✅ **Erledigt** | **Mathe: Offene Eingabe vs. MC** | Alle rechnerischen Topics nutzen `QuestionType.OpenText` (offene Zahleneingabe). Nur `Kongruenzabbildungen` und `Satz des Thales` bleiben bewusst Multiple-Choice: konzeptuelle Fragen mit Satz-Antworten, eine offene Eingabe wäre dort nicht sinnvoll validierbar. |
-| 🟢 **Niedrig** | **Gamification: Streaks** | Bewusst weggelassen (kein Druck bei verpassten Tagen), aber könnte optional ergänzt werden. |
+| ✅ **Erledigt** | **Gamification: Streaks** | Optional umgesetzt: 🔥-Lernserie auf dem Willkommensbildschirm (`StreakCalculator`), Standard AUS und von Eltern einschaltbar. Bewusst reine Anzeige - keine Strafen/Erinnerungen bei verpassten Tagen, ein noch nicht gelernter heutiger Tag bricht die Serie nicht. |
 | 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
 
 ### 3.3 Content-Erweiterung (Nice-to-have)
@@ -164,7 +164,7 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 ### Sprint 4: Polish (1-2 Wochen)
 13. ~~Mathe: Offene Zahleneingabe (neuer Fragetyp)~~ ✅ bereits umgesetzt (alle rechnerischen Topics in `MathGenerator.cs` nutzen `OpenText`; `Kongruenzabbildungen`/`SatzDesThales` bleiben als konzeptuelle Fragen bewusst Multiple-Choice)
 14. ~~Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)~~ ✅ erledigt (`Erlkönig`, `Die Bürgschaft`, `Herr von Ribbeck auf Ribbeck im Havelland` in `ReadingContentProvider.cs`)
-15. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
+15. ~~Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)~~ ✅ erledigt (`AppSettings.StreaksEnabled` + `StreakCalculator`, 🔥-Anzeige im Willkommensbildschirm ab 2 Tagen, Standard aus)
 16. ~~Schwierigkeitsstufen pro Profil im Eltern-Bereich (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte für 1./2. Versuch)~~ ✅ erledigt (`StudentProfile.TypingMinAccuracy`/`QuizFirstAttemptThreshold`/`QuizRetryThreshold`, Presets als `TabPillButton`-Gruppen im Eltern-Bereich - kein neuer Build mehr nötig, um diese Hürden zu ändern)
 
 ---

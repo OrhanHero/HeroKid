@@ -11,9 +11,17 @@ public sealed partial class WelcomeViewModel : ObservableObject
 
     public string ProfileName { get; }
 
-    public WelcomeViewModel(string profileName, Action onContinue, Action<AppLanguage> onSwitchLanguage)
+    /// <summary>Aufeinanderfolgende Lerntage (0 = Anzeige aus, siehe StreakCalculator).
+    /// MainViewModel übergibt 0, wenn Eltern die Streak-Anzeige nicht eingeschaltet haben.</summary>
+    public int CurrentStreak { get; }
+
+    /// <summary>Erst ab 2 Tagen anzeigen - "🔥 1 Tag in Folge" wäre keine Serie.</summary>
+    public bool ShowStreak => CurrentStreak >= 2;
+
+    public WelcomeViewModel(string profileName, int currentStreak, Action onContinue, Action<AppLanguage> onSwitchLanguage)
     {
         ProfileName = profileName;
+        CurrentStreak = currentStreak;
         _onContinue = onContinue;
         _onSwitchLanguage = onSwitchLanguage;
     }

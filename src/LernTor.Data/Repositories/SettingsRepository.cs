@@ -30,6 +30,7 @@ public sealed class SettingsRepository
             DefaultLanguage = Enum.Parse<AppLanguage>(entity.DefaultLanguage),
             DisabledSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.DisabledSubjectsJson, JsonOptions.Default) ?? new(),
             HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled,
+            StreaksEnabled = entity.StreaksEnabled,
             LocalLlmModelPath = entity.LocalLlmModelPath,
             LocalLlmModelKey = entity.LocalLlmModelKey
         };
@@ -49,6 +50,7 @@ public sealed class SettingsRepository
         entity.DefaultLanguage = settings.DefaultLanguage.ToString();
         entity.DisabledSubjectsJson = JsonSerializer.Serialize(settings.DisabledSubjects, JsonOptions.Default);
         entity.HardLockShellReplacementEnabled = settings.HardLockShellReplacementEnabled;
+        entity.StreaksEnabled = settings.StreaksEnabled;
         entity.LocalLlmModelPath = settings.LocalLlmModelPath;
         entity.LocalLlmModelKey = settings.LocalLlmModelKey;
 

@@ -84,6 +84,19 @@ public sealed class ActivityLogRepository
     }
 
     /// <summary>
+    /// Alle Kalendertage (lokale Zeit), an denen dieses Profil mindestens eine Aufgabe beantwortet
+    /// hat - Datengrundlage für die 🔥-Lernserie (siehe StreakCalculator in Core).
+    /// </summary>
+    public async Task<IReadOnlySet<DateOnly>> GetLearningDaysAsync(string profileId, CancellationToken cancellationToken = default)
+    {
+        // Erst laden, dann projizieren (in-memory): SQLite/EF Core kann Datumsfunktionen auf
+        // DateTimeOffset-Spalten nicht zuverlässig serverseitig übersetzen.
+        var entities = await _db.ActivityLog.Where(a => a.ProfileId == profileId).ToListAsync(cancellationToken);
+
+        return entities.Select(a => DateOnly.FromDateTime(a.Timestamp.LocalDateTime)).ToHashSet();
+    }
+
+    /// <summary>
     /// Fragetexte, die diesem Profil innerhalb von <paramref name="window"/> bereits gestellt wurden.
     /// Wird genutzt, um bei der Aufgabenauswahl frische (in letzter Zeit nicht gesehene) Fragen zu
     /// bevorzugen, statt bei den kleinen, fest hinterlegten Themen-Pools ständig dieselben Beispiele

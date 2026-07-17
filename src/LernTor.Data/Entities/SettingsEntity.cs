@@ -9,6 +9,7 @@ public sealed class SettingsEntity
     public string DefaultLanguage { get; set; } = "Deutsch";
     public string DisabledSubjectsJson { get; set; } = "[]";
     public bool HardLockShellReplacementEnabled { get; set; }
+    public bool StreaksEnabled { get; set; }
     public string? LocalLlmModelPath { get; set; }
     public string? LocalLlmModelKey { get; set; }
 }

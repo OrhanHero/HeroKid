@@ -292,6 +292,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         {
             LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
             SelectedLlmModel = LocalLlmModelCatalog.Resolve(_settings.LocalLlmModelKey);
+            StreaksEnabled = _settings.StreaksEnabled;
         }
         finally
         {
@@ -442,6 +443,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         fraction is null ? fallbackPercent : (int)Math.Round(fraction.Value * 100);
 
     // --- Schwierigkeitsstufen pro Profil (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte) ---
+
+    /// <summary>🔥-Lernserie auf dem Willkommensbildschirm anzeigen (global, Standard aus -
+    /// bewusst kein Streak-Druck, siehe StreakCalculator). Direkt in _settings gespiegelt, damit
+    /// JEDER Speicherpfad (Haupt-Speichern wie LLM-Sofort-Speichern) den aktuellen Wert persistiert.</summary>
+    [ObservableProperty]
+    private bool streaksEnabled;
+
+    partial void OnStreaksEnabledChanged(bool value) => _settings.StreaksEnabled = value;
 
     /// <summary>Preset-Werte für die Tipptrainer-Mindestgenauigkeit (siehe TabPillButton-Gruppe im Eltern-Bereich).</summary>
     [ObservableProperty]

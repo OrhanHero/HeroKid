@@ -21,7 +21,17 @@
             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Title]}"
                        Style="{StaticResource HeadlineText}" FontSize="44" TextAlignment="Center" HorizontalAlignment="Center" />
             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Subtitle]}"
-                       Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,20,0,40" HorizontalAlignment="Center" />
+                       Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,20,0,16" HorizontalAlignment="Center" />
+            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center"
+                       Margin="0,0,0,24"
+                       Visibility="{Binding ShowStreak, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Streak]" />
+                        <Binding Path="CurrentStreak" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
                     Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
                     HorizontalAlignment="Center"

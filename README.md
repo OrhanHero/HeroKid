@@ -223,6 +223,11 @@ deshalb bewusst nicht umgesetzt.
 - **Schwierigkeitsstufen pro Profil** (Presets statt Freitext, kein neuer Build nötig): Tipptrainer-
   Mindestgenauigkeit (25/50/75/85%, Standard 25%), Abschlussquiz-Bestehensschwelle für den 1. Versuch
   (50/75/85%, Standard 50%) und für den 2. Versuch/die Wiederholung (25/50%, Standard 25%).
+- **🔥 Lernserie (optional, Standard aus)**: zeigt dem Kind auf dem Willkommensbildschirm die
+  aufeinanderfolgenden Lerntage an (ab 2 Tagen). Bewusst reine Anzeige-Motivation ohne
+  Druckmechanik - keine Strafen oder Erinnerungen bei verpassten Tagen (anders als z.B.
+  Duolingo-Streaks), und ein heute noch nicht gelernter Tag bricht die Serie nicht. Eltern
+  schalten die Anzeige explizit ein.
 - **Sicherung (Backup)**: die komplette Datenbank (Profile, Fortschritte, Sterne, Einstellungen)
   als eine Datei exportieren - z.B. auf einen USB-Stick - und bei Bedarf wiederherstellen. Der
   Export nutzt SQLites `VACUUM INTO` (konsistenter Snapshot bei laufender App); der Import ersetzt
