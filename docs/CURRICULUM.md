@@ -581,30 +581,30 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Geografie (`GeoGenerator.cs`)
 
-- [ ] 9.1 Umgang mit Ressourcen: Energie und Rohstoffe
-- [ ] 9.2 Umgang mit Ressourcen: Landwirtschaft und Boden
+- [x] 9.1 Umgang mit Ressourcen: Energie und Rohstoffe (→ `RessourcenEnergie`)
+- [x] 9.2 Umgang mit Ressourcen: Landwirtschaft und Boden (→ `LandwirtschaftUndBoden`)
 - [x] 9.3 Das Klimasystem und der Klimawandel (→ `Klimawandel`)
-- [ ] 9.4 Klimaschutz: Internationale Konflikte und Lösungen
-- [ ] 9.5 Wirtschaftliche Verflechtungen und Globalisierung
-- [ ] 9.6 Europa in der Welt (Verbundmodul)
+- [x] 9.4 Klimaschutz: Internationale Konflikte und Lösungen (→ `KlimaschutzInternational`)
+- [x] 9.5 Wirtschaftliche Verflechtungen und Globalisierung (→ `WirtschaftlicheVerflechtung`)
+- [x] 9.6 Europa in der Welt (Verbundmodul) (→ `EuropaWirtschaftsraum`)
 
 #### Politische Bildung (`PolitikGenerator.cs`)
 
 - [x] 10.1 Demokratie in Deutschland: Prinzipien und Institutionen (→ `Gewaltenteilung`, `BundestagBundesrat`)
-- [ ] 10.2 Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen
-- [ ] 10.3 Konflikte und Konfliktlösungen: internationale Akteure
-- [ ] 10.4 Friedenssicherung und Entwicklungspolitik
+- [x] 10.2 Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen (→ `WillensbildungUndMedien`)
+- [x] 10.3 Konflikte und Konfliktlösungen: internationale Akteure (→ `KonflikteInternationaleAkteure`)
+- [x] 10.4 Friedenssicherung und Entwicklungspolitik (→ `FriedenssicherungUndEntwicklungspolitik`)
 - [x] 10.5 Soziale Marktwirtschaft im Spannungsfeld (→ `SozialeMarktwirtschaft`)
-- [ ] 10.6 Europa in der Welt: Die Europäische Union
+- [x] 10.6 Europa in der Welt: Die Europäische Union (→ `EuropaeischeUnion`)
 
 #### Ethik (`EthikGenerator.cs`)
 
-- [ ] 11.1 Wer bin ich? – Identität und Rolle (Kant/Autonomie, Gender)
-- [x] 11.2 Wie frei bin ich? – Freiheit und Verantwortung (→ `Verantwortung`)
-- [x] 11.3 Was ist gerecht? – Recht und Gerechtigkeit (→ `RechtUndGerechtigkeit`)
-- [ ] 11.4 Was ist der Mensch? – Mensch und Gemeinschaft (Hobbes/Rousseau)
-- [ ] 11.5 Was soll ich tun? – Handeln und Moral (Dilemmata, Pflichtethik/Utilitarismus)
-- [ ] 11.6 Worauf kann ich vertrauen? – Wissen und Glauben
+- [x] 11.1 Wer bin ich? – Identität und Rolle (Kant/Autonomie, Gender) (→ `IdentitaetUndRolle`)
+- [x] 11.2 Wie frei bin ich? – Freiheit und Verantwortung (→ `Verantwortung`, `FreiheitPhilosophisch`)
+- [x] 11.3 Was ist gerecht? – Recht und Gerechtigkeit (→ `RechtUndGerechtigkeit`, `GerechtigkeitstheorienVertieft`)
+- [x] 11.4 Was ist der Mensch? – Mensch und Gemeinschaft (Hobbes/Rousseau) (→ `MenschUndGemeinschaft`)
+- [x] 11.5 Was soll ich tun? – Handeln und Moral (Dilemmata, Pflichtethik/Utilitarismus) (→ `HandelnUndMoral`)
+- [x] 11.6 Worauf kann ich vertrauen? – Wissen und Glauben (→ `WissenUndGlauben`)
 
 #### Kunst (`KunstGenerator.cs`)
 
