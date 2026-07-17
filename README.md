@@ -236,8 +236,13 @@ deshalb bewusst nicht umgesetzt.
   gelöscht; komplett lokal, keine Telemetrie). Protokolliert wird genau das, was die App dem Kind
   gegenüber bewusst verschluckt: übersprungene News-Feeds **mit Quelle und Grund**, fehlgeschlagene
   Modell-/Piper-Downloads je Spiegel-URL, Wetter-Ausfälle, TTS-Rückfälle (fehlende SAPI-Stimme,
-  Piper-Fehler) sowie unbehandelte Abstürze mit vollem Stacktrace (zusätzlich zur MessageBox, die
-  nach dem Wegklicken verloren wäre). Der Eltern-Bereich zeigt die letzten Zeilen des heutigen
+  Piper-Fehler) sowie unbehandelte Abstürze mit vollem Stacktrace. **Absturzverhalten im
+  Kiosk-Modus**: kein Windows-Fehlerdialog auf dem Kinder-Bildschirm - die App protokolliert still
+  und startet sich automatisch neu, damit ein Absturz die Lernpflicht nicht aushebelt. Ein
+  Crash-Loop-Guard (`CrashRestartGuard`, max. 3 Neustarts in 10 Minuten) verhindert
+  Endlosschleifen; danach greift bewusst das Soft-Lock-Prinzip und der Desktop bleibt erreichbar.
+  Im Dev-Modus (`LERNTOR_SKIP_LOCK=1` oder Debugger) erscheint stattdessen wie bisher eine
+  MessageBox mit dem vollen Fehler. Der Eltern-Bereich zeigt die letzten Zeilen des heutigen
   Protokolls direkt an ("Heute wurden keine Probleme protokolliert 👍", wenn leer) und öffnet den
   Log-Ordner per Button im Explorer. Das Protokollieren selbst wirft nie Exceptions - ein Logger,
   der die App crasht, wäre schlimmer als keiner.

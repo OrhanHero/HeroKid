@@ -2,6 +2,7 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-17",
   "done": [
+    "Crash-Handling: HandleFatalException in App.xaml.cs (+TaskScheduler.UnobservedTaskException); Kiosk = still loggen + Auto-Neustart, CrashRestartGuard (Core, max 3/10min, crash-restarts.txt); Dev = MessageBox — Tests: CrashRestartGuardTests",
     "News-Offline-Cache (FeedCache): Roh-Bytes pro Feed, gzip-JSON, 48h-Fallback in FetchFeedAsync; Stufe 2 (ArchivedArticleRepository, 7 Tage) existierte schon — Tests: FeedCacheTests",
     "RSS-Fixes (RDF/Atom/DTD/User-Agent) + Tests grün",
     "Schwierigkeitsstufen pro Profil (Tippen 25/50/75/85, Quiz 1. 50/75/85, 2. 25/50) — bd79d2c",
@@ -9,9 +10,7 @@
     "Kiosk-Hooks bereits vorhanden: KioskKeyboardHook (WH_KEYBOARD_LL) blockt Win/Alt+Tab/Alt+Esc/Ctrl+Esc/Alt+F4",
     "TODO/FIXME/hardcodierte-Pfad-Scan: 0 Treffer, nichts zu bereinigen"
   ],
-  "open": [
-    "Crash-Handling: + TaskScheduler.UnobservedTaskException; im Kiosk-Modus still loggen + Neustart mit Crash-Loop-Guard statt MessageBox (Dev-Modus behält Dialog)"
-  ],
+  "open": [],
   "rejected": [
     "PublishTrimmed: WPF unterstützt kein Trimming (NETSDK1175, Publish-Fehler) — endgültig",
     "Installer-erzwungener Winlogon-Shell-Ersatz: bewusster Soft-Lock-Ansatz (Absturz => Desktop erreichbar); HardLockShellReplacementEnabled existiert als Opt-in-Setting, Umsetzung nur auf explizite Elternentscheidung, nie per Installer-Default"

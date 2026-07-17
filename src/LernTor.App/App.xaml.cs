@@ -34,36 +34,26 @@ public partial class App : Application
         // Ohne diese Handler stirbt eine WPF-App bei einer unbehandelten Exception beim Start
         // kommentarlos (weißer Bildschirm, dann Prozessende) - genau das soll hiermit sichtbar werden.
         // _isFatallyShuttingDown verhindert, dass währenddessen jeder weitere Layout-/Render-Durchlauf
-        // dieselbe Exception erneut auslöst und ein ganzer Stapel von Dialogen aufpoppt.
+        // dieselbe Exception erneut auslöst und die Fatal-Behandlung mehrfach anläuft.
         DispatcherUnhandledException += (_, args) =>
         {
             args.Handled = true;
-            if (_isFatallyShuttingDown)
-            {
-                return;
-            }
-
-            _isFatallyShuttingDown = true;
-            // Zusätzlich zur MessageBox in die Log-Datei: der Dialog ist nach dem Wegklicken
-            // verloren, die Datei nicht (siehe AppLog / Fehlerprotokoll im Eltern-Bereich).
-            AppLog.Error("App", "Unbehandelter UI-Fehler, App wird beendet", args.Exception);
-            MessageBox.Show(
-                $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.Exception}",
-                "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            HandleFatalException("Unbehandelter UI-Fehler, App wird beendet", args.Exception);
             Shutdown(1);
         };
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
-            if (_isFatallyShuttingDown)
-            {
-                return;
-            }
-
-            _isFatallyShuttingDown = true;
-            AppLog.Error("App", "Unbehandelter Hintergrund-Fehler, App wird beendet", args.ExceptionObject as Exception);
-            MessageBox.Show(
-                $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{args.ExceptionObject}",
-                "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            // Kein Shutdown-Aufruf: der Prozess stirbt hier ohnehin, und Shutdown von einem
+            // fremden Thread aus kann hängen.
+            HandleFatalException("Unbehandelter Hintergrund-Fehler, App wird beendet", args.ExceptionObject as Exception);
+        };
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            // NICHT fatal und KEIN Neustart: unbeobachtete Task-Exceptions tauchen erst bei der
+            // Finalisierung längst gestorbener Tasks auf - nur protokollieren und als beobachtet
+            // markieren, damit sie den Prozess nicht (je nach Runtime-Konfiguration) doch abreißen.
+            AppLog.Error("App", "Unbeobachtete Task-Exception (ignoriert, kein Abbruch)", args.Exception);
+            args.SetObserved();
         };
 
         try
@@ -73,11 +63,61 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            AppLog.Error("App", "Start fehlgeschlagen", ex);
-            MessageBox.Show(
-                $"LernTor konnte nicht gestartet werden:\n\n{ex}",
-                "LernTor - Startfehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            HandleFatalException("Start fehlgeschlagen", ex);
             Shutdown(1);
+        }
+    }
+
+    /// <summary>
+    /// Zentrale Fatal-Behandlung: immer in die Log-Datei (siehe AppLog / Fehlerprotokoll im
+    /// Eltern-Bereich). Im Dev-Modus (LERNTOR_SKIP_LOCK=1 oder Debugger - dieselbe Bedingung, die
+    /// auch die Kiosk-Sperre überspringt) zusätzlich als MessageBox, denn dort will man den Fehler
+    /// SOFORT sehen. Im Kiosk-Modus dagegen KEIN Windows-Dialog auf dem Kinder-Bildschirm: die App
+    /// startet sich still selbst neu, damit ein Absturz die Lernpflicht nicht aushebelt -
+    /// abgesichert durch <see cref="CrashRestartGuard"/> (max. 3 Neustarts in 10 Minuten), danach
+    /// greift bewusst das Soft-Lock-Prinzip: kein weiterer Neustart, Desktop bleibt erreichbar.
+    /// </summary>
+    private void HandleFatalException(string logMessage, Exception? exception)
+    {
+        if (_isFatallyShuttingDown)
+        {
+            return;
+        }
+
+        _isFatallyShuttingDown = true;
+        AppLog.Error("App", logMessage, exception);
+
+        var isDevMode =
+            Environment.GetEnvironmentVariable("LERNTOR_SKIP_LOCK") == "1" ||
+            System.Diagnostics.Debugger.IsAttached;
+
+        if (isDevMode)
+        {
+            MessageBox.Show(
+                $"LernTor ist auf einen unerwarteten Fehler gestoßen und muss beendet werden:\n\n{exception}",
+                "LernTor - Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        if (new CrashRestartGuard().TryRegisterRestart() && Environment.ProcessPath is { } exePath)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(exePath);
+                AppLog.Info("App", "Automatischer Neustart nach Absturz ausgelöst");
+            }
+            catch (Exception restartEx)
+            {
+                AppLog.Error("App", "Automatischer Neustart fehlgeschlagen", restartEx);
+            }
+        }
+        else
+        {
+            AppLog.Error(
+                "App",
+                $"Kein automatischer Neustart (Crash-Schleife: >= {CrashRestartGuard.MaxRestarts} Neustarts " +
+                $"in {CrashRestartGuard.Window.TotalMinutes:0} min, oder Guard-Datei/Prozesspfad nicht verfügbar) " +
+                "- Desktop bleibt erreichbar (Soft-Lock-Prinzip).");
         }
     }
 

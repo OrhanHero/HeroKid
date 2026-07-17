@@ -182,9 +182,14 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   enum members then silently reinterprets old saved data. `LernTor.Data.JsonOptions.Default`
   (a shared `JsonSerializerOptions` with `JsonStringEnumConverter`) is used for anything persisting
   `Subject`/enum collections (`DisabledSubjects`, `CompletedExerciseSubjects`, etc.) for this reason.
-- A global `DispatcherUnhandledException`/`AppDomain.UnhandledException` handler in `App.xaml.cs`
-  shows a `MessageBox` and guards against re-entrancy (a fatal error during shutdown must not spawn
-  a stack of duplicate dialogs) — this is how prior startup crashes were actually diagnosed.
+- Global exception handlers in `App.xaml.cs` (`DispatcherUnhandledException`,
+  `AppDomain.UnhandledException`, `TaskScheduler.UnobservedTaskException`) funnel into one
+  re-entrancy-guarded `HandleFatalException`: dev mode (`LERNTOR_SKIP_LOCK=1`/debugger) shows a
+  `MessageBox` — this is how prior startup crashes were actually diagnosed — while kiosk mode logs
+  silently and auto-restarts, bounded by `CrashRestartGuard` (Core; max 3 restarts per 10 min,
+  persisted in `%LOCALAPPDATA%\LernTor\crash-restarts.txt`) so a crash-on-startup bug degrades to
+  the soft-lock desktop instead of an infinite restart loop. Unobserved task exceptions are
+  logged + `SetObserved()` only — never treated as fatal, never trigger a restart.
 - LLamaSharp's `StatelessExecutor.InferAsync` does not stop on its own when a prompt ends with an
   open turn like `"Assistent:"` — without `InferenceParams.AntiPrompts` stop sequences, it keeps
   completing the text and hallucinates the rest of the conversation (both the child's next messages
