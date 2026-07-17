@@ -109,11 +109,14 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    springen). „Weiter" führt zum nächsten noch offenen Artikel; der Abschluss-Button
    erscheint erst, wenn wirklich ALLE Artikel beantwortet sind. **Automatischer Altersfilter**:
    bis einschließlich 9 Jahren (Profil-Alter) werden Artikel mit verstörenden Schlüsselwörtern
-   komplett ausgefiltert statt nur herabgestuft. **Tages-Archiv & Offline-Rückfall**: die
+   komplett ausgefiltert statt nur herabgestuft. **Tages-Archiv & Offline-Rückfall** (zweistufig):
+   Stufe 1 pro Feed - jeder erfolgreiche Feed-Abruf wird roh gecacht (`FeedCache`, komprimiert in
+   `%LOCALAPPDATA%\LernTor\newscache`); ist ein einzelner Feed nicht erreichbar, wird stattdessen
+   sein letzter Stand verwendet, sofern er jünger als 48h ist. Stufe 2 für den Totalausfall - die
    aufbereiteten Tagesartikel werden automatisch ~7 Tage archiviert (`ArchivedArticleRepository`,
-   inkl. Verständnisfragen); sind morgens alle Feeds unerreichbar, liest das Kind die Artikel des
-   letzten erfolgreichen Tages statt vor einem fast leeren News-Teil zu stehen (im
-   Fehlerprotokoll vermerkt). (Eine frühere Lesezeichen-/Suchfunktion im News-Teil wurde auf
+   inkl. Verständnisfragen); sind morgens alle Feeds (auch per Cache) unerreichbar, liest das Kind
+   die Artikel des letzten erfolgreichen Tages statt vor einem fast leeren News-Teil zu stehen
+   (beides im Fehlerprotokoll vermerkt). (Eine frühere Lesezeichen-/Suchfunktion im News-Teil wurde auf
    Nutzerwunsch wieder entfernt - im geführten Pflicht-Ablauf brachte sie keinen Mehrwert und
    verschob das Layout.)
 5. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,

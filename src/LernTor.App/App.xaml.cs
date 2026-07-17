@@ -115,6 +115,9 @@ public partial class App : Application
                 services.AddSingleton<WeatherService>();
                 services.AddSingleton<ITextSimplifier, RuleBasedTextSimplifier>();
                 services.AddSingleton<IComprehensionQuestionGenerator, HeuristicComprehensionQuestionGenerator>();
+                // Offline-Fallback: liefert bei Netzausfall die Feeds des letzten erfolgreichen
+                // Abrufs (max. 48h alt), damit die News-Stufe den Kiosk-Ablauf nie blockiert.
+                services.AddSingleton<FeedCache>();
                 services.AddSingleton<RssNewsService>();
 
                 services.AddSingleton<QuizComposer>();

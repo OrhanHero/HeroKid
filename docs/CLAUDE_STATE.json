@@ -2,6 +2,7 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-17",
   "done": [
+    "News-Offline-Cache (FeedCache): Roh-Bytes pro Feed, gzip-JSON, 48h-Fallback in FetchFeedAsync; Stufe 2 (ArchivedArticleRepository, 7 Tage) existierte schon — Tests: FeedCacheTests",
     "RSS-Fixes (RDF/Atom/DTD/User-Agent) + Tests grün",
     "Schwierigkeitsstufen pro Profil (Tippen 25/50/75/85, Quiz 1. 50/75/85, 2. 25/50) — bd79d2c",
     "Publish: SingleFile + ReadyToRun + NativeLibsSelfExtract — 2fedff0, CI grün",
@@ -9,7 +10,6 @@
     "TODO/FIXME/hardcodierte-Pfad-Scan: 0 Treffer, nichts zu bereinigen"
   ],
   "open": [
-    "News-Offline-Cache: JSON-Cache in %LOCALAPPDATA%\\LernTor, Fallback 48h bei Netzfehler",
     "Crash-Handling: + TaskScheduler.UnobservedTaskException; im Kiosk-Modus still loggen + Neustart mit Crash-Loop-Guard statt MessageBox (Dev-Modus behält Dialog)"
   ],
   "rejected": [

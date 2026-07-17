@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
 using LernTor.Core.Enums;
+using LernTor.Core.Logging;
 using LernTor.Core.Models;
 
 namespace LernTor.News;
@@ -22,12 +23,18 @@ public sealed class RssNewsService
     private readonly HttpClient _httpClient;
     private readonly ITextSimplifier _simplifier;
     private readonly IComprehensionQuestionGenerator _questionGenerator;
+    private readonly FeedCache _feedCache;
 
-    public RssNewsService(HttpClient httpClient, ITextSimplifier simplifier, IComprehensionQuestionGenerator questionGenerator)
+    public RssNewsService(
+        HttpClient httpClient,
+        ITextSimplifier simplifier,
+        IComprehensionQuestionGenerator questionGenerator,
+        FeedCache? feedCache = null)
     {
         _httpClient = httpClient;
         _simplifier = simplifier;
         _questionGenerator = questionGenerator;
+        _feedCache = feedCache ?? new FeedCache();
     }
 
     /// <summary>
@@ -101,14 +108,35 @@ public sealed class RssNewsService
 
     private async Task<IReadOnlyList<SyndicationItem>> FetchFeedAsync(NewsFeedSource source, CancellationToken cancellationToken)
     {
-        using var request = CreateFeedRequest(source.RssUrl);
-        using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        byte[] content;
+        try
+        {
+            using var request = CreateFeedRequest(source.RssUrl);
+            using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            response.EnsureSuccessStatusCode();
 
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var buffer = new MemoryStream();
-        await stream.CopyToAsync(buffer, cancellationToken);
-        return ParseFeedContent(buffer.ToArray());
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var buffer = new MemoryStream();
+            await stream.CopyToAsync(buffer, cancellationToken);
+            content = buffer.ToArray();
+            _feedCache.Save(source.RssUrl, content);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            // Offline-Fallback (siehe FeedCache): letzter erfolgreicher Abruf, sofern < 48h alt.
+            // OperationCanceledException bleibt ausgenommen - App-Beenden soll nicht heimlich
+            // alte News servieren, sondern wirklich abbrechen.
+            var cached = _feedCache.TryLoad(source.RssUrl);
+            if (cached is null)
+            {
+                throw;
+            }
+
+            AppLog.Warn("News", $"Feed offline, nutze Cache (max. 48h): {source.Name} - {ex.Message}");
+            content = cached;
+        }
+
+        return ParseFeedContent(content);
     }
 
     internal static HttpRequestMessage CreateFeedRequest(string rssUrl)
