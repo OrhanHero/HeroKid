@@ -58,6 +58,44 @@
                 <Run Text="{Binding TotalQuestions, Mode=OneWay}" />
             </TextBlock>
 
+            <!-- Tages-Zusammenfassung: was hat das Kind heute geschafft (Aufgaben, Trefferquote,
+                 optional 🔥-Serie). Nur auf dem Freigeschaltet-Bildschirm (HasDailySummary). -->
+            <Border Style="{StaticResource CardBorder}" Padding="20,14" MaxWidth="560" Margin="0,4,0,12"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding HasDailySummary, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Daily_Title]}"
+                               FontWeight="Bold" FontSize="17" Margin="0,0,0,8" HorizontalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Style="{StaticResource BodyText}" FontSize="16" Margin="0,0,18,0">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                    <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Result_Daily_Answered]" />
+                                    <Binding Path="TodayAnsweredCount" Mode="OneWay" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource BodyText}" FontSize="16" Margin="0,0,18,0">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                    <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Result_Daily_Accuracy]" />
+                                    <Binding Path="TodayCorrectPercent" Mode="OneWay" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource BodyText}" FontSize="16"
+                                   Visibility="{Binding ShowStreak, Converter={StaticResource BoolToVis}}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                    <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Result_Daily_Streak]" />
+                                    <Binding Path="CurrentStreak" Mode="OneWay" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <!-- Belohnungs-Sterne: heute verdient + Gesamtstand (Gamification) -->
             <Border Background="{StaticResource TileSandBrush}" CornerRadius="14" Padding="18,10"
                     HorizontalAlignment="Center" Margin="0,8,0,16"

@@ -367,6 +367,11 @@ public static class Translations
                 "⭐ Heute verdient: +{0} Sterne · Insgesamt: {1}",
                 "⭐ Bugün kazanılan: +{0} yıldız · Toplam: {1}"),
 
+            ["Result_Daily_Title"] = L("Dein Lerntag heute", "Bugünkü öğrenme günün"),
+            ["Result_Daily_Answered"] = L("📚 {0} Aufgaben", "📚 {0} görev"),
+            ["Result_Daily_Accuracy"] = L("✅ {0}% richtig", "✅ %{0} doğru"),
+            ["Result_Daily_Streak"] = L("🔥 {0} Tage in Folge", "🔥 {0} gündür üst üste"),
+
             ["Common_Back"] = L("Zurück", "Geri"),
         };
 

@@ -166,7 +166,7 @@ public sealed partial class MainViewModel : ObservableObject
             LearningStage.Tippen => await BuildTypingDashboardViewModelAsync(),
             LearningStage.News => await BuildNewsViewModelAsync(),
             LearningStage.Abschlussquiz => await BuildFinalQuizViewModelAsync(),
-            LearningStage.Freigeschaltet => BuildResultViewModel(passed: true, result: null),
+            LearningStage.Freigeschaltet => await BuildResultViewModelAsync(passed: true, result: null),
             _ when LearningStageSubjects.TryGetSubject(stage, out var subjectForStage) => await BuildExerciseViewModelAsync(subjectForStage),
             _ => CurrentViewModel
         };
@@ -566,13 +566,41 @@ public sealed partial class MainViewModel : ObservableObject
             _kioskLock.Unlock();
         }
 
-        CurrentViewModel = BuildResultViewModel(Progress.IsUnlocked, result);
+        CurrentViewModel = await BuildResultViewModelAsync(Progress.IsUnlocked, result);
     }
 
-    private ResultViewModel BuildResultViewModel(bool passed, QuizResult? result)
+    /// <summary>
+    /// Ergebnis-/Freigeschaltet-Bildschirm inkl. Tages-Zusammenfassung: heute beantwortete
+    /// Aufgaben + Trefferquote aus dem Aktivitätsprotokoll (seit Mitternacht) und - falls von den
+    /// Eltern eingeschaltet - die 🔥-Lernserie. Der Moment der Freischaltung ist der emotionale
+    /// Höhepunkt des Ablaufs; hier soll das Kind SEHEN, was es heute geschafft hat.
+    /// </summary>
+    private async Task<ResultViewModel> BuildResultViewModelAsync(bool passed, QuizResult? result)
     {
+        var todayAnswered = 0;
+        var todayCorrectPercent = 0;
+        var streak = 0;
+
+        if (CurrentProfile is not null)
+        {
+            var sinceMidnight = DateTime.Now - DateTime.Today;
+            var todayActivity = await _activityLogRepo.GetActivitySinceAsync(CurrentProfile.Id, sinceMidnight);
+            todayAnswered = todayActivity.Count;
+            if (todayAnswered > 0)
+            {
+                todayCorrectPercent = (int)Math.Round(100.0 * todayActivity.Count(a => a.WasCorrect) / todayAnswered);
+            }
+
+            if (Settings.StreaksEnabled)
+            {
+                var learningDays = await _activityLogRepo.GetLearningDaysAsync(CurrentProfile.Id);
+                streak = StreakCalculator.CurrentStreak(learningDays, DateOnly.FromDateTime(DateTime.Today));
+            }
+        }
+
         return new ResultViewModel(
             passed, result, Progress.EarnedStarsToday, CurrentProfile?.TotalStars ?? 0,
+            todayAnswered, todayCorrectPercent, streak,
             OnRetryWeakSubjectsRequested, OnUnlockConfirmed,
             _rewardRepo, CurrentProfile?.Id);
     }

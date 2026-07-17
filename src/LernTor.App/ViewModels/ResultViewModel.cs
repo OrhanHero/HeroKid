@@ -34,6 +34,23 @@ public sealed partial class ResultViewModel : ObservableObject
     /// <summary>Heute verdiente Belohnungs-Sterne (Gamification).</summary>
     public int EarnedStarsToday { get; }
 
+    // --- Tages-Zusammenfassung (siehe MainViewModel.BuildResultViewModelAsync) ---
+
+    /// <summary>Heute beantwortete Aufgaben (Aktivitätsprotokoll seit Mitternacht).</summary>
+    public int TodayAnsweredCount { get; }
+
+    /// <summary>Trefferquote der heute beantworteten Aufgaben in Prozent (gerundet).</summary>
+    public int TodayCorrectPercent { get; }
+
+    /// <summary>🔥-Lernserie; 0 = ausgeblendet (von den Eltern nicht eingeschaltet oder Serie zu kurz).</summary>
+    public int CurrentStreak { get; }
+
+    public bool ShowStreak => CurrentStreak >= 2;
+
+    /// <summary>Nur auf dem Freigeschaltet-Bildschirm - beim Nicht-Bestehen liegt der Fokus auf
+    /// dem erneuten Versuch, nicht auf einer Bilanz.</summary>
+    public bool HasDailySummary => Passed && TodayAnsweredCount > 0;
+
     /// <summary>Gesamtstand - veränderlich, weil das Einlösen einer Belohnung Sterne abzieht.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StarsSummary))]
@@ -55,6 +72,9 @@ public sealed partial class ResultViewModel : ObservableObject
         QuizResult? result,
         int earnedStarsToday,
         int totalStars,
+        int todayAnsweredCount,
+        int todayCorrectPercent,
+        int currentStreak,
         Action onRetryRequested,
         Action onUnlockConfirmed,
         RewardRepository? rewardRepo = null,
@@ -64,6 +84,9 @@ public sealed partial class ResultViewModel : ObservableObject
         Result = result;
         EarnedStarsToday = earnedStarsToday;
         TotalStars = totalStars;
+        TodayAnsweredCount = todayAnsweredCount;
+        TodayCorrectPercent = todayCorrectPercent;
+        CurrentStreak = currentStreak;
         _onRetryRequested = onRetryRequested;
         _onUnlockConfirmed = onUnlockConfirmed;
         _rewardRepo = rewardRepo;

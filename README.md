@@ -209,6 +209,10 @@ deshalb bewusst nicht umgesetzt.
 - **Konfettiregen**: beim bestandenen Abschlussquiz fällt einmalig Konfetti in den App-Farben über
   den Ergebnis-Bildschirm (einmalige Animation, keine Dauerschleife - keine bleibende CPU-Last im
   Kiosk-Betrieb).
+- **Tages-Zusammenfassung**: der Freigeschaltet-Bildschirm zeigt, was das Kind heute geschafft hat -
+  📚 beantwortete Aufgaben, ✅ Trefferquote und (falls eingeschaltet) die 🔥-Lernserie. Der Moment
+  der Freischaltung ist der emotionale Höhepunkt des Ablaufs; hier soll sichtbar werden, WAS
+  erreicht wurde, nicht nur DASS der PC frei ist.
 - **🎁 Belohnungsliste**: Eltern legen im Eltern-Bereich Belohnungen mit Sterne-Kosten an
   (z.B. „30 Minuten extra Spielzeit" für 20 ⭐). Nach dem bestandenen Abschlussquiz sieht das Kind
   die Liste mit Fortschritt („12 / 20 ⭐") und kann erreichbare Belohnungen einlösen (mit
