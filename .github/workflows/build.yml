@@ -31,12 +31,17 @@ jobs:
         run: dotnet test tests/LernTor.Tests/LernTor.Tests.csproj --configuration Release --no-build --verbosity normal
 
       - name: Self-contained Windows-Build veröffentlichen
+        # Identische Flags wie der dokumentierte Release-Build (docs/BUILD.md), damit das
+        # CI-Artefakt wirklich dem entspricht, was auch installiert wird: Single-File +
+        # ReadyToRun (schneller Kaltstart nach dem Autostart-Login).
         run: >
           dotnet publish src/LernTor.App/LernTor.App.csproj
           --configuration Release
           --runtime win-x64
           --self-contained true
-          -p:PublishSingleFile=false
+          -p:PublishSingleFile=true
+          -p:PublishReadyToRun=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
           --output publish/win-x64
 
       - name: Build-Artefakt hochladen
