@@ -43,7 +43,9 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
                 Filmanalyse,
                 RedeUndBewerbung,
                 Satzbau,
-                Wortbedeutung9
+                Wortbedeutung9,
+                Novelle,
+                Parabel
             }
         };
 
@@ -1293,6 +1295,118 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Topic = "Wortbedeutung und Sprachwandel", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Synonyme = gleiche Bedeutung, Antonyme = Gegenteil, Homonyme = gleiche Form, andere Bedeutung. Sprache wandelt sich durch Technik, Gesellschaft und Sprachkontakt."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NovelleListe =
+    {
+        ("Was ist eine Novelle, kurz gefasst?", new[] { "Eine mittellange Erzählung mit einer meist einzigen, zugespitzten Handlung", "Ein sehr langes, mehrbändiges Werk mit vielen Handlungssträngen", "Ein Gedicht mit festem Reimschema" }, "Eine mittellange Erzählung mit einer meist einzigen, zugespitzten Handlung",
+            "Die Novelle ist eine mittellange Erzählform mit einer meist einzigen, klar zugespitzten Handlung."),
+        ("Welchen zentralen Begriff prägte Goethe für das Kernmerkmal einer Novelle?", new[] { "\"Unerhörte Begebenheit\"", "\"Glückliches Ende\"", "\"Endlose Wiederholung\"" }, "\"Unerhörte Begebenheit\"",
+            "Goethe beschrieb die Novelle als Erzählung einer \"unerhörten Begebenheit\" - eines ungewöhnlichen, folgenreichen Ereignisses."),
+        ("Was versteht man unter dem \"Dingsymbol\" in einer Novelle?", new[] { "Einen wiederkehrenden Gegenstand, der eine tiefere Bedeutung trägt", "Den Namen der Hauptfigur", "Den Ort, an dem die Novelle veröffentlicht wurde" }, "Einen wiederkehrenden Gegenstand, der eine tiefere Bedeutung trägt",
+            "Ein Dingsymbol ist ein wiederkehrender, konkreter Gegenstand, der über sich hinausweist und die zentrale Bedeutung symbolisiert."),
+        ("Was ist der \"novellistische Wendepunkt\"?", new[] { "Ein entscheidender Moment, der die Handlung unumkehrbar verändert", "Der allererste Satz der Novelle", "Ein bedeutungsloses Detail der Handlung" }, "Ein entscheidender Moment, der die Handlung unumkehrbar verändert",
+            "Der Wendepunkt markiert den entscheidenden Umschwung, nach dem die Handlung nicht mehr umkehrbar ist."),
+        ("Wie viele Haupthandlungsstränge hat eine Novelle im Unterschied zum Roman meist?", new[] { "In der Regel nur einen einzigen Haupthandlungsstrang", "Immer mindestens fünf parallele Handlungsstränge", "Keinen erkennbaren Handlungsstrang" }, "In der Regel nur einen einzigen Haupthandlungsstrang",
+            "Anders als der oft vielsträngige Roman konzentriert sich die Novelle meist auf einen einzigen Haupthandlungsstrang."),
+        ("Was ist typisch für den Umfang einer Novelle im Vergleich zu Kurzgeschichte und Roman?", new[] { "Sie ist länger als eine Kurzgeschichte, aber kürzer als ein Roman", "Sie ist immer länger als jeder Roman", "Sie ist stets kürzer als jede Kurzgeschichte" }, "Sie ist länger als eine Kurzgeschichte, aber kürzer als ein Roman",
+            "Vom Umfang her liegt die Novelle zwischen der knappen Kurzgeschichte und dem umfangreichen Roman."),
+        ("Welches bekannte Werk von Theodor Storm gilt als klassische deutsche Novelle?", new[] { "\"Der Schimmelreiter\"", "\"Faust\"", "\"Die Buddenbrooks\"" }, "\"Der Schimmelreiter\"",
+            "Theodor Storms \"Der Schimmelreiter\" gilt als eine der bekanntesten deutschen Novellen."),
+        ("Was bedeutet der Begriff \"Rahmenerzählung\" bei manchen Novellen?", new[] { "Eine äußere Erzählsituation, in die die eigentliche Geschichte eingebettet ist", "Ein Bild, das auf dem Buchcover abgedruckt ist", "Ein anderes Wort für den Titel der Novelle" }, "Eine äußere Erzählsituation, in die die eigentliche Geschichte eingebettet ist",
+            "Bei einer Rahmenerzählung wird die eigentliche Binnengeschichte in eine äußere Erzählsituation eingebettet."),
+        ("Was ist ein häufiges Merkmal des Erzählstils einer Novelle?", new[] { "Eine geradlinige, oft zeitlich straffe Handlungsführung ohne viele Nebenstränge", "Zahllose, sich ständig verzweigende Nebenhandlungen", "Ein vollständiger Verzicht auf jede Handlung" }, "Eine geradlinige, oft zeitlich straffe Handlungsführung ohne viele Nebenstränge",
+            "Novellen erzählen meist geradlinig und zeitlich gerafft, ohne sich in vielen Nebenhandlungen zu verlieren."),
+        ("Warum spricht man bei manchen Novellen von einem \"Falkenmotiv\" (nach Boccaccios Falken-Novelle)?", new[] { "Es bezeichnet ein zentrales, sinnbildliches Motiv, das der Novelle ihren Namen geben kann", "Weil in jeder Novelle tatsächlich ein Vogel vorkommen muss", "Weil Falken die einzigen erlaubten Symbole in Novellen sind" }, "Es bezeichnet ein zentrales, sinnbildliches Motiv, das der Novelle ihren Namen geben kann",
+            "Nach Boccaccios berühmter Falken-Novelle wird ein zentrales, namensgebendes Symbolmotiv oft als \"Falkenmotiv\" bezeichnet."),
+        ("Was unterscheidet eine Novelle typischerweise von einem Märchen?", new[] { "Eine Novelle spielt meist in einer realistischen, nicht-märchenhaften Welt", "Eine Novelle spielt immer in einer Fantasiewelt mit Zauberei", "Beide Textsorten sind inhaltlich identisch" }, "Eine Novelle spielt meist in einer realistischen, nicht-märchenhaften Welt",
+            "Anders als das Märchen mit seinen fantastischen Elementen spielt die Novelle meist in einer realistischen Welt."),
+        ("Was ist der Auslöser der Handlung in einer klassischen Novelle meist?", new[] { "Ein einzelnes, oft überraschendes Ereignis", "Eine lange Reihe unzusammenhängender Zufälle", "Es gibt in Novellen grundsätzlich keinen Auslöser" }, "Ein einzelnes, oft überraschendes Ereignis",
+            "Meist löst ein einzelnes, ungewöhnliches Ereignis die gesamte Handlung der Novelle aus."),
+        ("Was passiert am Ende einer klassischen Novelle häufig?", new[] { "Die Konsequenzen des zentralen Ereignisses werden sichtbar, oft mit überraschender Wendung", "Die Handlung wird komplett vergessen und nie aufgelöst", "Es gibt niemals ein erkennbares Ende" }, "Die Konsequenzen des zentralen Ereignisses werden sichtbar, oft mit überraschender Wendung",
+            "Am Ende zeigen sich meist die Folgen des zentralen Ereignisses, oft verbunden mit einer überraschenden Wendung."),
+        ("Welche Textsorte steht vom Umfang her zwischen Kurzgeschichte und Roman?", new[] { "Die Novelle", "Das Gedicht", "Die Fabel" }, "Die Novelle",
+            "Die Novelle nimmt vom Textumfang her eine mittlere Position zwischen Kurzgeschichte und Roman ein."),
+        ("Was zeichnet die Hauptfigur einer Novelle häufig aus?", new[] { "Sie gerät durch ein außergewöhnliches Ereignis in eine existenzielle Krise oder Konfliktsituation", "Sie bleibt während der gesamten Handlung völlig unbeteiligt", "Sie taucht erst im allerletzten Satz auf" }, "Sie gerät durch ein außergewöhnliches Ereignis in eine existenzielle Krise oder Konfliktsituation",
+            "Typisch für die Novelle ist, dass die Hauptfigur durch ein ungewöhnliches Ereignis in eine echte Krise gerät."),
+        ("Was ist ein Beispiel für eine bekannte deutschsprachige Novelle?", new[] { "\"Die Verwandlung\" von Franz Kafka", "\"Harry Potter\" von J.K. Rowling", "\"Romeo und Julia\" von Shakespeare" }, "\"Die Verwandlung\" von Franz Kafka",
+            "Franz Kafkas \"Die Verwandlung\" gilt als eine der bekanntesten Novellen der deutschsprachigen Literatur."),
+        ("Warum eignen sich Novellen gut für die Schule, um Textanalyse zu üben?", new[] { "Sie sind kompakt genug, um sie vollständig zu lesen und intensiv zu analysieren", "Sie sind so lang, dass man sie nie ganz lesen kann", "Sie enthalten grundsätzlich keine analysierbaren Inhalte" }, "Sie sind kompakt genug, um sie vollständig zu lesen und intensiv zu analysieren",
+            "Der überschaubare Umfang der Novelle erlaubt es, den gesamten Text im Unterricht gründlich zu lesen und zu analysieren."),
+        ("Was bedeutet der Ausdruck \"geschlossene Form\" bei einer Novelle?", new[] { "Die Handlung ist klar strukturiert und in sich abgeschlossen, ohne offene Nebenstränge", "Das Buch selbst ist physisch fest zugeklebt", "Die Novelle hat niemals ein Ende" }, "Die Handlung ist klar strukturiert und in sich abgeschlossen, ohne offene Nebenstränge",
+            "Eine geschlossene Form bedeutet, dass die Handlung klar strukturiert ist und ohne lose Enden zu einem Abschluss kommt."),
+        ("Wodurch unterscheidet sich eine Novelle von einer Kurzgeschichte häufig im Handlungsverlauf?", new[] { "Die Novelle hat meist einen klaren Wendepunkt, die Kurzgeschichte oft einen offenen Schluss", "Beide Textsorten haben immer exakt denselben Aufbau", "Nur die Kurzgeschichte darf einen Wendepunkt enthalten" }, "Die Novelle hat meist einen klaren Wendepunkt, die Kurzgeschichte oft einen offenen Schluss",
+            "Während die Novelle meist auf einen klaren Wendepunkt zusteuert, endet die Kurzgeschichte oft bewusst offen."),
+        ("Was ist die Funktion eines Dingsymbols am Ende der Analyse einer Novelle?", new[] { "Es fasst die zentrale Bedeutung/Botschaft der Geschichte bildhaft zusammen", "Es hat für die Interpretation überhaupt keine Bedeutung", "Es ersetzt vollständig die eigentliche Handlung" }, "Es fasst die zentrale Bedeutung/Botschaft der Geschichte bildhaft zusammen",
+            "Das Dingsymbol verdichtet am Ende oft bildhaft die zentrale Aussage oder Botschaft der gesamten Novelle.")
+    };
+
+    private static QuizQuestion Novelle(Random r)
+    {
+        var f = NovelleListe[r.Next(NovelleListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Novelle", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Novelle = mittellange Erzählung mit einer \"unerhörten Begebenheit\" (Goethe), oft mit Dingsymbol und einem klaren novellistischen Wendepunkt - meist nur ein Haupthandlungsstrang."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ParabelListe =
+    {
+        ("Was ist eine Parabel, einfach erklärt?", new[] { "Eine kurze, lehrhafte Erzählung, die eine allgemeine Wahrheit durch ein Gleichnis vermittelt", "Ein sehr langes Werk ohne jede Lehre", "Ein anderes Wort für Zeitungsbericht" }, "Eine kurze, lehrhafte Erzählung, die eine allgemeine Wahrheit durch ein Gleichnis vermittelt",
+            "Eine Parabel vermittelt durch eine kurze, bildhafte Erzählung eine allgemeine Wahrheit oder Lehre."),
+        ("Was unterscheidet eine Parabel von einer Fabel?", new[] { "In einer Parabel treten meist Menschen auf, in einer Fabel meist sprechende Tiere", "Beide Textsorten sind vollkommen identisch", "Nur eine Fabel darf eine Lehre enthalten" }, "In einer Parabel treten meist Menschen auf, in einer Fabel meist sprechende Tiere",
+            "Während in Fabeln meist sprechende Tiere handeln, treten in Parabeln in der Regel Menschen auf."),
+        ("Was ist die \"Bildebene\" einer Parabel?", new[] { "Die konkret erzählte Handlung/Geschichte selbst", "Die übertragene, abstrakte Lehre dahinter", "Der Name des Autors" }, "Die konkret erzählte Handlung/Geschichte selbst",
+            "Die Bildebene ist die konkret erzählte Geschichte, die man zunächst wörtlich liest."),
+        ("Was ist die \"Sachebene\" einer Parabel?", new[] { "Die übertragene, tiefere Bedeutung bzw. Lehre hinter der Geschichte", "Der Ort, an dem die Geschichte spielt", "Die Anzahl der Figuren in der Geschichte" }, "Die übertragene, tiefere Bedeutung bzw. Lehre hinter der Geschichte",
+            "Die Sachebene ist die abstrakte, übertragene Bedeutung, die hinter der konkreten Bildebene steckt."),
+        ("Wozu dient eine Parabel meist?", new[] { "Um eine moralische oder philosophische Botschaft anschaulich zu vermitteln", "Um reine Unterhaltung ohne jede Botschaft zu bieten", "Um ausschließlich historische Fakten aufzulisten" }, "Um eine moralische oder philosophische Botschaft anschaulich zu vermitteln",
+            "Parabeln vermitteln durch eine anschauliche Geschichte eine moralische oder philosophische Botschaft."),
+        ("Aus welchem religiösen Text stammen viele bekannte klassische Parabeln?", new[] { "Aus der Bibel (z.B. das Gleichnis vom verlorenen Sohn)", "Aus modernen Comicheften", "Aus wissenschaftlichen Lexika" }, "Aus der Bibel (z.B. das Gleichnis vom verlorenen Sohn)",
+            "Viele klassische Parabeln, sogenannte Gleichnisse, stammen aus der Bibel, etwa das Gleichnis vom verlorenen Sohn."),
+        ("Welcher berühmte Schriftsteller schrieb die bekannte Parabel \"Vor dem Gesetz\"?", new[] { "Franz Kafka", "Johann Wolfgang von Goethe", "Friedrich Schiller" }, "Franz Kafka",
+            "Franz Kafkas \"Vor dem Gesetz\" ist eine der bekanntesten modernen Parabeln der deutschen Literatur."),
+        ("Was ist das Ziel des Lesers/der Leserin beim Verstehen einer Parabel?", new[] { "Die übertragene Bedeutung (Sachebene) hinter der erzählten Geschichte zu erkennen", "Nur die wörtliche Handlung nachzuerzählen", "Die Geschichte möglichst schnell zu vergessen" }, "Die übertragene Bedeutung (Sachebene) hinter der erzählten Geschichte zu erkennen",
+            "Beim Lesen einer Parabel geht es darum, von der Bildebene auf die dahinterliegende Sachebene zu schließen."),
+        ("Was ist ein typisches Merkmal des Sprachstils einer Parabel?", new[] { "Ein einfacher, oft bildhafter und knapper Erzählstil", "Ein extrem komplizierter, verschachtelter Satzbau", "Ausschließlich Fachsprache aus der Wissenschaft" }, "Ein einfacher, oft bildhafter und knapper Erzählstil",
+            "Parabeln sind meist sprachlich einfach, bildhaft und knapp gehalten, damit ihre Lehre klar hervortritt."),
+        ("Welcher Dramatiker nutzte Parabeln häufig in seinen \"Lehrstücken\"?", new[] { "Bertolt Brecht", "William Shakespeare", "Friedrich Schiller" }, "Bertolt Brecht",
+            "Bertolt Brecht setzte parabelhafte Elemente gezielt in seinen Lehrstücken ein, um moralische Fragen zu verhandeln."),
+        ("Was bedeutet es, wenn man sagt, eine Parabel sei \"mehrdeutig\" in ihrer Aussage?", new[] { "Sie lässt bewusst Raum für unterschiedliche Deutungen der Lehre", "Sie hat eine einzige, absolut eindeutige Bedeutung", "Sie hat überhaupt keine erkennbare Bedeutung" }, "Sie lässt bewusst Raum für unterschiedliche Deutungen der Lehre",
+            "Viele Parabeln sind bewusst offen gehalten und lassen unterschiedliche Interpretationen ihrer Lehre zu."),
+        ("Was ist ein Beispiel für ein bekanntes biblisches Gleichnis (eine Art Parabel)?", new[] { "Das Gleichnis vom verlorenen Sohn", "Die Zehn Gebote", "Das Vaterunser" }, "Das Gleichnis vom verlorenen Sohn",
+            "Das Gleichnis vom verlorenen Sohn ist eines der bekanntesten biblischen Gleichnisse und ein klassisches Beispiel für eine Parabel."),
+        ("Warum sind Parabeln oft zeitlos und in vielen Kulturen verbreitet?", new[] { "Weil sie allgemeine menschliche Erfahrungen und Werte ansprechen", "Weil sie ausschließlich in einer einzigen Kultur bekannt sind", "Weil sie nur für ein bestimmtes Jahrhundert relevant waren" }, "Weil sie allgemeine menschliche Erfahrungen und Werte ansprechen",
+            "Parabeln behandeln oft grundlegende, zeitlose menschliche Fragen und Werte, weshalb sie kulturübergreifend verstanden werden."),
+        ("Was passiert, wenn man eine Parabel nur auf der Bildebene liest, ohne die Sachebene zu erschließen?", new[] { "Man versteht nur die konkrete Geschichte, aber nicht ihre eigentliche Botschaft", "Man versteht dadurch automatisch die gesamte Lehre", "Es gibt dabei keinen Unterschied im Verständnis" }, "Man versteht nur die konkrete Geschichte, aber nicht ihre eigentliche Botschaft",
+            "Wer nur die wörtliche Handlung (Bildebene) liest, ohne die Übertragung auf die Sachebene vorzunehmen, verpasst die eigentliche Botschaft."),
+        ("Was ist ein Unterschied zwischen einer Parabel und einem Märchen?", new[] { "Eine Parabel vermittelt meist eine klare Lehre, ein Märchen erzählt oft eine fantastische Geschichte ohne feste Lehrabsicht", "Beide Textsorten sind in Aufbau und Absicht völlig identisch", "Nur Märchen dürfen eine Moral enthalten" }, "Eine Parabel vermittelt meist eine klare Lehre, ein Märchen erzählt oft eine fantastische Geschichte ohne feste Lehrabsicht",
+            "Während die Parabel gezielt eine Lehre vermitteln will, steht beim Märchen oft die fantastische Erzählung selbst im Vordergrund."),
+        ("Was ist typisch für die Figuren in einer Parabel?", new[] { "Sie sind oft nicht individuell ausgestaltet, sondern stehen beispielhaft für bestimmte Haltungen", "Sie sind immer extrem detailliert und einzigartig ausgearbeitet", "Parabeln enthalten grundsätzlich überhaupt keine Figuren" }, "Sie sind oft nicht individuell ausgestaltet, sondern stehen beispielhaft für bestimmte Haltungen",
+            "Figuren in Parabeln bleiben oft typisiert und stehen beispielhaft für bestimmte menschliche Haltungen oder Verhaltensweisen."),
+        ("Wie nennt man die Übertragung von der erzählten Geschichte auf die eigentliche Lehre?", new[] { "Die Deutung bzw. Interpretation der Parabel", "Den Titel der Parabel", "Die Rechtschreibprüfung des Textes" }, "Die Deutung bzw. Interpretation der Parabel",
+            "Der Schritt von der erzählten Geschichte zur dahinterliegenden Lehre wird als Deutung oder Interpretation bezeichnet."),
+        ("Warum werden Parabeln im Deutschunterricht häufig behandelt?", new[] { "Sie eignen sich gut, um Textinterpretation und übertragenes Denken zu üben", "Sie sind zu kurz, um damit irgendetwas zu üben", "Sie enthalten keine interpretierbaren Inhalte" }, "Sie eignen sich gut, um Textinterpretation und übertragenes Denken zu üben",
+            "Der kompakte Aufbau und die übertragene Bedeutung machen Parabeln ideal, um Interpretationsfähigkeiten zu trainieren."),
+        ("Was kennzeichnet den Aufbau vieler Parabeln?", new[] { "Eine kurze Rahmenhandlung, gefolgt von einer klaren Pointe oder Lehre", "Ein endlos langer Spannungsbogen ohne jeden Abschluss", "Eine zufällige Aneinanderreihung unabhängiger Szenen" }, "Eine kurze Rahmenhandlung, gefolgt von einer klaren Pointe oder Lehre",
+            "Viele Parabeln folgen dem Muster einer kurzen erzählten Handlung, die auf eine klare Pointe oder Lehre zusteuert."),
+        ("Was ist das Ziel eines Autors, der eine Parabel schreibt, meist?", new[] { "Den Leser zum Nachdenken über eine tiefere Wahrheit oder Werte anzuregen", "Den Leser möglichst schnell zu langweilen", "Ausschließlich unterhaltsame Spannung ohne jede Botschaft zu erzeugen" }, "Den Leser zum Nachdenken über eine tiefere Wahrheit oder Werte anzuregen",
+            "Autorinnen und Autoren nutzen die Parabel gezielt, um zum Nachdenken über tiefere Wahrheiten oder Werte anzuregen.")
+    };
+
+    private static QuizQuestion Parabel(Random r)
+    {
+        var f = ParabelListe[r.Next(ParabelListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Parabel", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Parabel = kurze, lehrhafte Erzählung mit Bildebene (konkrete Geschichte) und Sachebene (übertragene Lehre) - berühmte Beispiele: biblische Gleichnisse, Kafkas \"Vor dem Gesetz\", Brechts Lehrstücke."
         };
     }
 }

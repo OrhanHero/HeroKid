@@ -12,7 +12,7 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Epochenueberblick, ArmutUndReichtumMigration, JudenChristenMuslime },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg, FeindbilderUndPropaganda }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EpochenueberblickListe =
@@ -516,6 +516,62 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
             Topic = "Die Welt nach dem Kalten Krieg (1989-1991)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "1989-1991 endeten Kalter Krieg und Sowjetunion, die Apartheid in Südafrika wurde beendet, während die Proteste auf dem Tiananmen-Platz in China gewaltsam niedergeschlagen wurden - ein weltweiter, aber ungleich verlaufener Umbruch."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FeindbilderPropagandaListe =
+    {
+        ("Was versteht man unter einem \"Feindbild\"?", new[] { "Ein stark vereinfachtes, oft übertrieben negatives Bild von einer Gruppe oder einem Land", "Ein neutrales, ausgewogenes Porträt eines anderen Landes", "Ein Kunstwerk ohne politischen Bezug" }, "Ein stark vereinfachtes, oft übertrieben negatives Bild von einer Gruppe oder einem Land",
+            "Ein Feindbild reduziert eine andere Gruppe oder ein anderes Land auf ein stark vereinfachtes, negativ überzeichnetes Bild."),
+        ("Was ist Propaganda?", new[] { "Gezielte, oft einseitige Beeinflussung der öffentlichen Meinung für politische Zwecke", "Eine neutrale, rein sachliche Nachrichtensendung", "Ein wissenschaftliches Verfahren zur Datenauswertung" }, "Gezielte, oft einseitige Beeinflussung der öffentlichen Meinung für politische Zwecke",
+            "Propaganda versucht gezielt und oft einseitig, die öffentliche Meinung im Sinne eines politischen Ziels zu beeinflussen."),
+        ("Welches Ziel verfolgt Propaganda typischerweise?", new[] { "Menschen zu überzeugen oder zu manipulieren, statt sie neutral zu informieren", "Menschen möglichst objektiv und ausgewogen zu informieren", "Ausschließlich unterhaltsame, unpolitische Inhalte zu verbreiten" }, "Menschen zu überzeugen oder zu manipulieren, statt sie neutral zu informieren",
+            "Anders als neutrale Information zielt Propaganda darauf ab, Meinungen gezielt in eine bestimmte Richtung zu lenken."),
+        ("Welches Land nutzte im Nationalsozialismus besonders systematisch Propaganda gegen Juden und andere Gruppen?", new[] { "Das nationalsozialistische Deutschland", "Die neutrale Schweiz", "Schweden" }, "Das nationalsozialistische Deutschland",
+            "Das NS-Regime setzte systematisch Propaganda ein, um Feindbilder gegen Juden und andere Gruppen zu schüren."),
+        ("Wer war als NS-Propagandaminister maßgeblich für die gezielte Verbreitung von Feindbildern verantwortlich?", new[] { "Joseph Goebbels", "Konrad Adenauer", "Otto von Bismarck" }, "Joseph Goebbels",
+            "Joseph Goebbels leitete als Reichspropagandaminister die systematische NS-Propaganda, die Feindbilder verbreitete."),
+        ("Was ist ein typisches Mittel der Propaganda, um Feindbilder zu verstärken?", new[] { "Vereinfachende Plakate, Filme und Slogans", "Ausführliche, differenzierte wissenschaftliche Studien", "Neutrale Statistikberichte ohne Wertung" }, "Vereinfachende Plakate, Filme und Slogans",
+            "Propaganda nutzt oft einprägsame, stark vereinfachende Bilder, Filme und Slogans, um Feindbilder zu verbreiten."),
+        ("Wie wirkt Propaganda oft auf komplizierte Sachverhalte?", new[] { "Sie vereinfacht sie stark und lässt kaum Raum für Zwischentöne", "Sie macht sie noch komplizierter und differenzierter", "Sie ignoriert Sachverhalte grundsätzlich vollständig" }, "Sie vereinfacht sie stark und lässt kaum Raum für Zwischentöne",
+            "Propaganda reduziert komplexe Themen oft auf einfache Schwarz-Weiß-Botschaften ohne differenzierte Zwischentöne."),
+        ("Warum pflegten Ost und West während des Kalten Krieges gegenseitig Feindbilder?", new[] { "Um die eigene Bevölkerung gegen das jeweils andere politische System zu mobilisieren", "Weil es zwischen beiden Seiten überhaupt keine politischen Unterschiede gab", "Um internationale Zusammenarbeit gezielt zu fördern" }, "Um die eigene Bevölkerung gegen das jeweils andere politische System zu mobilisieren",
+            "Feindbilder halfen beiden Seiten des Kalten Krieges, die eigene Bevölkerung gegen das gegnerische System zu einen."),
+        ("Was ist ein Beispiel für ein Feindbild im Kalten Krieg aus westlicher Perspektive?", new[] { "Der Kommunismus/die Sowjetunion als Bedrohung", "Die Vereinten Nationen als Bedrohung", "Die eigene Bevölkerung als Bedrohung" }, "Der Kommunismus/die Sowjetunion als Bedrohung",
+            "Im Westen wurde die Sowjetunion bzw. der Kommunismus während des Kalten Krieges oft als zentrales Feindbild dargestellt."),
+        ("Was ist ein Beispiel für ein Feindbild im Kalten Krieg aus östlicher (kommunistischer) Perspektive?", new[] { "Der Kapitalismus/der Westen als Bedrohung", "Die eigene Regierung als Bedrohung", "Neutrale Staaten als Bedrohung" }, "Der Kapitalismus/der Westen als Bedrohung",
+            "Im Ostblock wurde umgekehrt der kapitalistische Westen häufig als Bedrohung und Feindbild propagiert."),
+        ("Welche Rolle spielten Karikaturen häufig bei der Verbreitung von Feindbildern?", new[] { "Sie stellten den \"Feind\" durch überzeichnete, oft entmenschlichende Darstellungen dar", "Sie zeigten stets ein besonders respektvolles, realistisches Bild des Gegners", "Karikaturen wurden in der Propagandageschichte nie eingesetzt" }, "Sie stellten den \"Feind\" durch überzeichnete, oft entmenschlichende Darstellungen dar",
+            "Propagandistische Karikaturen überzeichneten den Gegner oft bewusst negativ und entmenschlichend."),
+        ("Was bedeutet \"Dehumanisierung\" im Zusammenhang mit Feindbildern?", new[] { "Die gegnerische Gruppe wird sprachlich/bildlich als weniger menschlich dargestellt", "Die gegnerische Gruppe wird besonders menschlich und sympathisch dargestellt", "Ein technischer Begriff aus der Medizin ohne politischen Bezug" }, "Die gegnerische Gruppe wird sprachlich/bildlich als weniger menschlich dargestellt",
+            "Dehumanisierung entzieht der gegnerischen Gruppe sprachlich oder bildlich ihre Menschlichkeit, um Feindseligkeit zu rechtfertigen."),
+        ("Warum ist Dehumanisierung eine gefährliche Vorstufe zu Gewalt?", new[] { "Wer den Gegner nicht mehr als vollwertigen Menschen sieht, überschreitet moralische Hemmschwellen leichter", "Dehumanisierung verhindert jegliche Form von Gewalt zuverlässig", "Dehumanisierung hat historisch nie zu realen Konsequenzen geführt" }, "Wer den Gegner nicht mehr als vollwertigen Menschen sieht, überschreitet moralische Hemmschwellen leichter",
+            "Wird eine Gruppe als weniger menschlich wahrgenommen, sinkt die moralische Hemmschwelle für Gewalt gegen sie - historisch ein Vorläufer vieler Gräueltaten."),
+        ("Was ist ein modernes Beispiel dafür, wie Propaganda über neue Medien verbreitet wird?", new[] { "Gezielte Falschinformationen (Desinformation) in sozialen Medien", "Ausschließlich handgeschriebene Flugblätter", "Nur noch gedruckte Tageszeitungen" }, "Gezielte Falschinformationen (Desinformation) in sozialen Medien",
+            "Heute verbreitet sich Propaganda oft als gezielte Desinformation über soziale Medien, oft sehr schnell und breit gestreut."),
+        ("Was können Bürgerinnen und Bürger tun, um Propaganda zu erkennen?", new[] { "Quellen kritisch prüfen und verschiedene, unabhängige Informationsquellen vergleichen", "Ausschließlich einer einzigen Quelle vertrauen", "Jede Information ungeprüft für wahr halten" }, "Quellen kritisch prüfen und verschiedene, unabhängige Informationsquellen vergleichen",
+            "Kritisches Hinterfragen von Quellen und der Vergleich unabhängiger Berichte helfen, Propaganda zu erkennen."),
+        ("Warum ist die Pressefreiheit ein wichtiger Schutz gegen einseitige Propaganda?", new[] { "Unabhängige Medien können Propaganda hinterfragen und verschiedene Perspektiven zeigen", "Pressefreiheit fördert gezielt eine einzige, staatlich vorgegebene Meinung", "Pressefreiheit hat mit Propaganda historisch nichts zu tun" }, "Unabhängige Medien können Propaganda hinterfragen und verschiedene Perspektiven zeigen",
+            "Freie, unabhängige Medien können einseitige Darstellungen hinterfragen und liefern dadurch ein Gegengewicht zu Propaganda."),
+        ("Was unterscheidet neutrale Information von Propaganda?", new[] { "Information versucht sachlich und ausgewogen zu berichten, Propaganda will gezielt eine Meinung durchsetzen", "Beide Begriffe bedeuten in jedem Fall exakt dasselbe", "Propaganda ist per Definition immer wahrheitsgemäßer als neutrale Information" }, "Information versucht sachlich und ausgewogen zu berichten, Propaganda will gezielt eine Meinung durchsetzen",
+            "Neutrale Information strebt Sachlichkeit und Ausgewogenheit an, während Propaganda gezielt eine bestimmte Meinung durchsetzen will."),
+        ("Was ist ein historisches Beispiel für Propaganda in der Kriegsführung?", new[] { "Kriegspropaganda im Ersten und Zweiten Weltkrieg zur Mobilisierung der Bevölkerung", "Neutrale Kriegsberichterstattung ohne jede Beeinflussung", "Propaganda wurde in Kriegen historisch nie eingesetzt" }, "Kriegspropaganda im Ersten und Zweiten Weltkrieg zur Mobilisierung der Bevölkerung",
+            "In beiden Weltkriegen setzten die beteiligten Staaten intensiv Propaganda ein, um die eigene Bevölkerung zu mobilisieren und den Feind zu diskreditieren."),
+        ("Warum können Feindbilder auch nach dem offiziellen Ende eines Konflikts noch lange nachwirken?", new[] { "Vorurteile und erlernte Denkmuster verschwinden nicht automatisch mit dem Kriegsende", "Feindbilder verschwinden immer sofort und vollständig mit dem Friedensschluss", "Feindbilder entstehen erst nach dem Ende eines Konflikts" }, "Vorurteile und erlernte Denkmuster verschwinden nicht automatisch mit dem Kriegsende",
+            "Über Jahre eingeprägte Feindbilder und Vorurteile wirken oft noch lange nach, selbst wenn ein Konflikt offiziell beendet ist."),
+        ("Was ist ein wichtiger Lernauftrag aus der Geschichte von Feindbildern und Propaganda?", new[] { "Kritisches Denken und Quellenprüfung zu fördern, um Manipulation zu erkennen", "Zukünftig jeder staatlichen Quelle blind zu vertrauen", "Geschichtliche Propaganda-Beispiele komplett zu ignorieren" }, "Kritisches Denken und Quellenprüfung zu fördern, um Manipulation zu erkennen",
+            "Aus der Geschichte von Feindbildern und Propaganda lässt sich lernen, wie wichtig kritisches Denken und Quellenkritik sind, um Manipulation zu durchschauen.")
+    };
+
+    private static QuizQuestion FeindbilderUndPropaganda(Random r)
+    {
+        var f = FeindbilderPropagandaListe[r.Next(FeindbilderPropagandaListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Feindbilder und Propaganda", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Propaganda vereinfacht und manipuliert gezielt (z.B. NS-Propaganda unter Goebbels, gegenseitige Feindbilder im Kalten Krieg) - Dehumanisierung senkt moralische Hemmschwellen; Quellenkritik ist der wichtigste Schutz davor."
         };
     }
 }

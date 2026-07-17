@@ -57,6 +57,8 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Schreibformen | Rede, Debatte und Bewerbung |
 | Gesprächsformen und Präsentieren | Satzbau und Sprachwissen |
 | | Wortbedeutung und Sprachwandel |
+| | Novelle |
+| | Parabel |
 
 ## Türkisch (`TurkishGenerator.cs`)
 
@@ -223,6 +225,7 @@ Rahmenlehrplan" weiter unten).
 | | Europa in der Welt |
 | | Völkermorde und Massengewalt |
 | | Die Welt nach dem Kalten Krieg (1989-1991) |
+| | Feindbilder und Propaganda |
 
 ## Medienbildung / ITG (`ItgGenerator.cs`)
 
@@ -350,11 +353,9 @@ Simplifizierungen dieser App gegenüber dem vollständigen RLP):
   abbilden und bleibt daher unberücksichtigt; die übrigen Themenfelder (Informatiksysteme, Leben in
   vernetzten Systemen) sind über die bestehenden Themen (Datenschutz, Cybermobbing, Fake News,
   Algorithmen) plausibel abgedeckt.
-- **Deutsch, Politische Bildung**: Drama-Analyse ist inzwischen abgedeckt (`DramaAufbau`,
-  `Figurencharakterisierung`), Novelle/Parabel sowie tiefergehende Sozialkunde-Themen (z.B.
-  Migration/Bevölkerung, Rechtsstaat) sind bewusst nicht 1:1 übernommen - eine vollständige
-  Abdeckung aller RLP-Themenfelder ist weiterhin nicht das Ziel dieser App (siehe Hinweis am Anfang
-  dieser Datei).
+- **Deutsch**: Drama-Analyse (`DramaAufbau`, `Figurencharakterisierung`) sowie Novelle und Parabel
+  (`Novelle`, `Parabel`) sind inzwischen abgedeckt - eine vollständige Abdeckung aller RLP-
+  Themenfelder ist weiterhin nicht das Ziel dieser App (siehe Hinweis am Anfang dieser Datei).
 
 Dieser Abgleich verbessert die Abdeckung gezielt, ist aber weiterhin keine vollständige 1:1-Analyse
 aller RLP-Themenfelder für alle zehn Jahrgangsstufen - die App konzentriert sich bewusst auf Klasse 6
@@ -515,7 +516,7 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Deutsch (`GermanGenerator.cs`)
 
-- [x] 1.1 Literarische Texte erschließen (Analyse & Interpretation) (→ `DramaAufbau`, `Figurencharakterisierung`)
+- [x] 1.1 Literarische Texte erschließen (Analyse & Interpretation) (→ `DramaAufbau`, `Figurencharakterisierung`, `Novelle`, `Parabel`)
 - [x] 1.2 Sach- und Gebrauchstexte auswerten (→ `Quellenkritik`)
 - [x] 1.3 Texte in unterschiedlicher medialer Form (Filmanalyse) (→ `Filmanalyse`)
 - [x] 1.4 Texte verfassen (Schreibformen & Argumentation) (→ `Textsorten`, `RedeUndBewerbung`)
@@ -585,7 +586,7 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 - [x] 8.4 Verbundmodul 2: Europa in der Welt (globalhistorischer Vergleich) (→ `EuropaInDerWelt`)
 - [x] 8.5 Wahlmodul-Fokus A: Völkermorde und Massengewalt (→ `VoelkermordeUndMassengewalt`)
 - [x] 8.6 Wahlmodul-Fokus B: Die Welt nach dem Kalten Krieg (1989-1991) (→ `WeltNachDemKaltenKrieg`)
-- [ ] 8.7 (Bonus) Wahlmodul-Fokus C: Feindbilder und Propaganda
+- [x] 8.7 (Bonus) Wahlmodul-Fokus C: Feindbilder und Propaganda (→ `FeindbilderUndPropaganda`)
 
 #### Geografie (`GeoGenerator.cs`)
 
@@ -687,13 +688,13 @@ Ethik/`Freundschaft`).
 | Fach | Generator | Klasse 6 Topics | Klasse 9 Topics | Gesamt |
 |------|-----------|----------------|----------------|--------|
 | Mathematik | `MathGenerator.cs` | 12 | 14 | 26 |
-| Deutsch | `GermanGenerator.cs` | 12 | 13 | 25 |
+| Deutsch | `GermanGenerator.cs` | 12 | 15 | 27 |
 | Türkisch | `TurkishGenerator.cs` | 8 | 10 | 18 |
 | Englisch | `EnglischGenerator.cs` | 7 | 9 | 16 |
 | Biologie | `BiologieGenerator.cs` | 6 | 8 | 14 |
 | Chemie | `ChemieGenerator.cs` | 9 | 9 | 18 |
 | Physik | `PhysikGenerator.cs` | 10 | 7 | 17 |
-| Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
+| Geschichte | `GeschichteGenerator.cs` | 3 | 7 | 10 |
 | Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
 | Politik | `PolitikGenerator.cs` | 7 | 8 | 15 |
 | Geografie | `GeoGenerator.cs` | 7 | 9 | 16 |
@@ -702,7 +703,7 @@ Ethik/`Freundschaft`).
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 229 Topics** (je Topic ~20 kuratierte Fragen → ~4.550 Fragen im Pool; Mathematik generiert
+**Total: 232 Topics** (je Topic ~20 kuratierte Fragen → ~4.640 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
@@ -763,8 +764,6 @@ foreach (feed in CuratedNewsFeeds.All)   // 22 Feeds
 | **Sport, Kunst-Praxis, Musik-Praxis, WAT, NaWi-WP 7-10** | RLP-Themenfelder lassen sich schlecht als Quiz abbilden (Bewegung, Gestalten, Musizieren, Werkstatt) |
 | **Naturwissenschaften 5/6 (integriert)** | Nur über Physik/Chemie/Bio-Themen abgedeckt, kein eigenes Fach |
 | **Standardsoftware (ITG)** | Textverarbeitung/Tabellenkalkulation nicht quizbar → bewusst weggelassen |
-| **Literarische Textanalyse: Novelle, Parabel** | Drama ist inzwischen abgedeckt (`DramaAufbau`, `Figurencharakterisierung`); Novelle/Parabel bleiben offen |
-| **Migration/Bevölkerung (Geo/Politik 9)** | Im RLP vorhanden, nicht 1:1 als Topic implementiert |
 | **Kunst/Musik: "Verfahren und Werkzeuge" / "Standardsoftware" (ITG)** | Nur theoretisch (Wissen), keine praktische Übung möglich |
 | **Offline-Erst-Installation des LLM** | Model-Download passiert erst bei erstem Nutzen (~2-4 GB), kein Pre-Bundle im Installer |
 | **TTS für Türkisch** | Piper-Stimmen primär Deutsch/Englisch; Türkisch fehlt/experimentell |
