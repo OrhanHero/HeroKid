@@ -81,7 +81,10 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Von den Sinnen zum Messen | Magnetfelder und elektromagnetische Induktion |
 | Welt des Großen – Welt des Kleinen (Optik und Weltraum) | Gleichförmige und beschleunigte Bewegungen (Kinematik) |
 | Bewegung zu Wasser, zu Lande und in der Luft (Bionik) | Radioaktivität und Kernphysik |
-| | Schwingungen, Wellen und optische Geräte |
+| Thermisches Verhalten von Körpern (Wärmeausdehnung) | Schwingungen, Wellen und optische Geräte |
+| Wechselwirkung und Kraft | |
+| Mechanische Energie und Arbeit | |
+| Thermische Energie und Wärme | |
 
 ## Chemie (`ChemieGenerator.cs`)
 
@@ -442,10 +445,10 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Physik (`PhysikGenerator.cs`)
 
-- [ ] 3.1 Thermisches Verhalten von Körpern (Wärmeausdehnung)
-- [ ] 3.2 Wechselwirkung und Kraft
-- [ ] 3.3 Mechanische Energie und Arbeit
-- [ ] 3.4 Thermische Energie und Wärme
+- [x] 3.1 Thermisches Verhalten von Körpern (Wärmeausdehnung) (→ `WaermeausdehnungKoerper`)
+- [x] 3.2 Wechselwirkung und Kraft (→ `WechselwirkungUndKraft`)
+- [x] 3.3 Mechanische Energie und Arbeit (→ `MechanischeEnergieUndArbeit`)
+- [x] 3.4 Thermische Energie und Wärme (→ `ThermischeEnergieUndWaerme`)
 
 #### Geschichte (`GeschichteGenerator.cs`)
 
@@ -684,7 +687,7 @@ Ethik/`Freundschaft`).
 | Englisch | `EnglischGenerator.cs` | 7 | 6 | 13 |
 | Biologie | `BiologieGenerator.cs` | 6 | 8 | 14 |
 | Chemie | `ChemieGenerator.cs` | 9 | 9 | 18 |
-| Physik | `PhysikGenerator.cs` | 6 | 7 | 13 |
+| Physik | `PhysikGenerator.cs` | 10 | 7 | 17 |
 | Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
 | Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
 | Politik | `PolitikGenerator.cs` | 3 | 8 | 11 |
@@ -694,7 +697,7 @@ Ethik/`Freundschaft`).
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 208 Topics** (je Topic ~20 kuratierte Fragen → ~4.150 Fragen im Pool; Mathematik generiert
+**Total: 212 Topics** (je Topic ~20 kuratierte Fragen → ~4.200 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien

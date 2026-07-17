@@ -11,7 +11,7 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik, WaermeausdehnungKoerper, WechselwirkungUndKraft, MechanischeEnergieUndArbeit, ThermischeEnergieUndWaerme },
             [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion, Kinematik, RadioaktivitaetUndKernphysik, SchwingungenWellenOptik }
         };
 
@@ -708,6 +708,230 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Topic = "Schwingungen, Wellen und optische Geräte", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Amplitude ist die maximale Auslenkung, Frequenz und Periodendauer sind zueinander reziprok; beim Licht gilt Einfallswinkel = Ausfallswinkel (Reflexion) und die Linsengleichung für Sammellinsen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WaermeausdehnungListe =
+    {
+        ("Was passiert mit den meisten Stoffen, wenn man sie erhitzt?", new[] { "Sie dehnen sich aus", "Sie ziehen sich zusammen", "Sie verändern sich überhaupt nicht" }, "Sie dehnen sich aus",
+            "Die meisten Stoffe dehnen sich beim Erwärmen aus, weil sich ihre Teilchen schneller bewegen und mehr Platz brauchen."),
+        ("Was passiert mit den meisten Stoffen, wenn man sie abkühlt?", new[] { "Sie ziehen sich zusammen", "Sie dehnen sich weiter aus", "Sie werden sofort flüssig" }, "Sie ziehen sich zusammen",
+            "Beim Abkühlen bewegen sich die Teilchen langsamer und rücken enger zusammen - der Stoff zieht sich zusammen."),
+        ("Warum haben Brücken oft spezielle Dehnungsfugen?", new[] { "Damit sich das Material bei Hitze ausdehnen kann, ohne zu brechen", "Damit die Brücke leichter wird", "Aus rein optischen Gründen" }, "Damit sich das Material bei Hitze ausdehnen kann, ohne zu brechen",
+            "Ohne Dehnungsfugen könnte sich das Brückenmaterial bei großer Hitze nicht ausdehnen und würde sich verformen oder brechen."),
+        ("Warum lässt sich ein festsitzender Metalldeckel oft leichter öffnen, wenn man ihn kurz unter warmes Wasser hält?", new[] { "Das Metall dehnt sich durch die Wärme leicht aus und löst sich vom Glas", "Warmes Wasser macht das Glas weicher", "Wärme hat auf Metall überhaupt keine Wirkung" }, "Das Metall dehnt sich durch die Wärme leicht aus und löst sich vom Glas",
+            "Metall dehnt sich bei Wärme stärker aus als Glas, wodurch der Deckel etwas größer wird und sich leichter abdrehen lässt."),
+        ("Wie funktioniert ein einfaches Flüssigkeitsthermometer?", new[] { "Die Flüssigkeit dehnt sich bei Wärme aus und steigt im dünnen Röhrchen", "Es misst Temperatur über einen eingebauten Bildschirm", "Die Flüssigkeit verschwindet bei Wärme komplett" }, "Die Flüssigkeit dehnt sich bei Wärme aus und steigt im dünnen Röhrchen",
+            "Die Flüssigkeit im Thermometer (z.B. gefärbter Alkohol) dehnt sich bei steigender Temperatur aus und steigt im dünnen Röhrchen sichtbar an."),
+        ("Warum hatten Eisenbahnschienen früher kleine Lücken zwischen den einzelnen Schienenstücken?", new[] { "Damit sich die Schienen bei Hitze ausdehnen können, ohne sich zu verbiegen", "Damit der Zug dort lauter fährt", "Aus Versehen bei der Herstellung" }, "Damit sich die Schienen bei Hitze ausdehnen können, ohne sich zu verbiegen",
+            "Ohne diese Lücken könnten sich die Schienen bei großer Hitze nicht ausdehnen und würden sich gefährlich verbiegen."),
+        ("Was passiert mit der Luft in einem Ballon, wenn man ihn längere Zeit in die pralle Sonne legt?", new[] { "Die Luft dehnt sich aus und der Ballon kann größer werden oder platzen", "Die Luft zieht sich zusammen und der Ballon schrumpft", "Es passiert überhaupt nichts" }, "Die Luft dehnt sich aus und der Ballon kann größer werden oder platzen",
+            "Die erwärmte Luft im Ballon dehnt sich aus und erhöht den Innendruck, wodurch der Ballon größer wird oder sogar platzen kann."),
+        ("Welcher Aggregatzustand (fest, flüssig oder gasförmig) dehnt sich bei Erwärmung meist am stärksten aus?", new[] { "Gasförmig", "Fest", "Flüssig" }, "Gasförmig",
+            "Gase haben die beweglichsten Teilchen und reagieren deshalb am stärksten mit Ausdehnung auf Erwärmung."),
+        ("Warum ist Wasser bei der Wärmeausdehnung in der Nähe des Gefrierpunkts eine Ausnahme?", new[] { "Wasser dehnt sich beim Gefrieren aus, statt sich zusammenzuziehen", "Wasser verhält sich exakt wie jeder andere Stoff", "Wasser zieht sich beim Erwärmen immer zusammen" }, "Wasser dehnt sich beim Gefrieren aus, statt sich zusammenzuziehen",
+            "Anders als die meisten Stoffe dehnt sich Wasser beim Gefrieren zu Eis aus - deshalb schwimmt Eis auf flüssigem Wasser."),
+        ("Warum können Wasserleitungen im Winter platzen, wenn das Wasser darin gefriert?", new[] { "Das gefrierende Wasser dehnt sich aus und übt hohen Druck auf die Leitung aus", "Gefrierendes Wasser zieht sich stark zusammen und reißt die Leitung ein", "Kälte macht Metallrohre grundsätzlich instabil" }, "Das gefrierende Wasser dehnt sich aus und übt hohen Druck auf die Leitung aus",
+            "Da sich Wasser beim Gefrieren ausdehnt, entsteht in einer vollständig gefüllten Leitung ein hoher Druck, der sie zum Platzen bringen kann."),
+        ("Warum lässt man Stromleitungen zwischen zwei Masten oft etwas durchhängen?", new[] { "Damit sie sich bei Kälte zusammenziehen können, ohne zu reißen", "Damit sie besser aussehen", "Damit Vögel bequemer darauf sitzen können" }, "Damit sie sich bei Kälte zusammenziehen können, ohne zu reißen",
+            "Ziehen sich die Leitungen bei Kälte zusammen, brauchen sie etwas Spielraum (Durchhang), damit sie dabei nicht reißen."),
+        ("Wie nennt man das Prinzip, dass sich Stoffe bei Erwärmung ausdehnen und bei Abkühlung zusammenziehen?", new[] { "Thermische Ausdehnung (Wärmeausdehnung)", "Reibung", "Sublimation" }, "Thermische Ausdehnung (Wärmeausdehnung)",
+            "Die Volumenänderung eines Stoffs mit der Temperatur nennt man thermische Ausdehnung bzw. Wärmeausdehnung."),
+        ("Warum krümmt sich ein Bimetallstreifen (aus zwei verschiedenen Metallen), wenn er erwärmt wird?", new[] { "Weil sich die zwei Metalle unterschiedlich stark ausdehnen", "Weil sich beide Metalle exakt gleich stark ausdehnen", "Weil Metalle sich bei Wärme überhaupt nicht verändern" }, "Weil sich die zwei Metalle unterschiedlich stark ausdehnen",
+            "Da die beiden Metalle unterschiedlich stark auf Wärme reagieren, dehnt sich eine Seite stärker aus als die andere - der Streifen krümmt sich."),
+        ("Wo wird ein Bimetallstreifen im Alltag häufig eingesetzt?", new[] { "In einfachen Thermostaten/Reglern, die auf Temperaturänderung reagieren", "Ausschließlich in Flugzeugtriebwerken", "In gewöhnlichen Fensterscheiben" }, "In einfachen Thermostaten/Reglern, die auf Temperaturänderung reagieren",
+            "Die temperaturabhängige Krümmung des Bimetallstreifens wird genutzt, um z.B. einen Stromkreis bei bestimmter Temperatur zu schließen oder zu öffnen."),
+        ("Was passiert mit dem Druck einer eingeschlossenen Gasmenge, wenn man sie stark erwärmt, ohne dass Gas entweichen kann?", new[] { "Der Druck steigt", "Der Druck sinkt", "Der Druck bleibt exakt gleich" }, "Der Druck steigt",
+            "Erwärmtes Gas will sich ausdehnen - kann es das nicht, weil es eingeschlossen ist, steigt stattdessen der Druck an."),
+        ("Warum sollte man eine geschlossene Getränkedose nicht in der prallen Sonne oder im heißen Auto liegen lassen?", new[] { "Das Gas darin dehnt sich aus und der Druck in der Dose kann gefährlich ansteigen", "Getränkedosen werden durch Sonnenlicht chemisch instabil", "Es besteht dabei überhaupt keine Gefahr" }, "Das Gas darin dehnt sich aus und der Druck in der Dose kann gefährlich ansteigen",
+            "Die Erwärmung lässt das Gas in der geschlossenen Dose sich ausdehnen wollen - der steigende Innendruck kann die Dose im Extremfall zum Platzen bringen."),
+        ("Was zeigt ein Fieberthermometer an, wenn sich die Flüssigkeit darin weiter ausdehnt?", new[] { "Eine höhere Temperatur", "Eine niedrigere Temperatur", "Es zeigt gar keine Temperatur an" }, "Eine höhere Temperatur",
+            "Je mehr sich die Thermometerflüssigkeit ausdehnt und im Röhrchen aufsteigt, desto höher ist die gemessene Temperatur."),
+        ("Warum werden Brücken und Gleise regelmäßig auf ihre Dehnungsfugen kontrolliert?", new[] { "Damit die Wärmeausdehnung nicht zu Schäden oder Verformungen führt", "Weil Dehnungsfugen rein dekorativ sind", "Weil sie sich sonst von selbst auflösen würden" }, "Damit die Wärmeausdehnung nicht zu Schäden oder Verformungen führt",
+            "Funktionierende Dehnungsfugen sind wichtig, damit temperaturbedingte Ausdehnung nicht zu Rissen oder Verformungen an Bauwerken führt."),
+        ("Was passiert grundsätzlich mit den Teilchen eines Stoffs, wenn er erwärmt wird?", new[] { "Sie bewegen sich schneller und brauchen dadurch mehr Platz", "Sie bewegen sich langsamer und rücken enger zusammen", "Sie verändern ihre Bewegung überhaupt nicht" }, "Sie bewegen sich schneller und brauchen dadurch mehr Platz",
+            "Wärme versetzt die Teilchen eines Stoffs in schnellere Bewegung - dadurch beanspruchen sie im Mittel mehr Raum, der Stoff dehnt sich aus."),
+        ("Was passiert mit dem Loch eines Metallrings, wenn der ganze Ring erhitzt wird?", new[] { "Das Loch wird größer, wie der Rest des Rings", "Das Loch wird kleiner, obwohl der Ring wächst", "Das Loch verändert sich nie" }, "Das Loch wird größer, wie der Rest des Rings",
+            "Da sich das gesamte Metall gleichmäßig ausdehnt, wird auch die Öffnung im Ring größer - ein häufiger Denkfehler nimmt fälschlich an, sie würde kleiner.")
+    };
+
+    private static QuizQuestion WaermeausdehnungKoerper(Random r)
+    {
+        var f = WaermeausdehnungListe[r.Next(WaermeausdehnungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Thermisches Verhalten von Körpern (Wärmeausdehnung)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Fast alle Stoffe dehnen sich beim Erwärmen aus und ziehen sich beim Abkühlen zusammen - Wasser ist rund um den Gefrierpunkt eine bekannte Ausnahme."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WechselwirkungKraftListe =
+    {
+        ("Was versteht man unter einer \"Kraft\" in der Physik, einfach erklärt?", new[] { "Etwas, das einen Körper in Bewegung setzen, abbremsen oder verformen kann", "Ein anderes Wort für Energie", "Ein Gerät zum Messen von Temperatur" }, "Etwas, das einen Körper in Bewegung setzen, abbremsen oder verformen kann",
+            "Eine Kraft kann einen Körper beschleunigen, abbremsen, ablenken oder verformen."),
+        ("Was ist die Schwerkraft (Gravitation)?", new[] { "Die Kraft, mit der die Erde alle Gegenstände nach unten zieht", "Eine Kraft, die nur bei Metallen wirkt", "Eine Kraft, die Gegenstände nach oben drückt" }, "Die Kraft, mit der die Erde alle Gegenstände nach unten zieht",
+            "Die Schwerkraft der Erde zieht alle Gegenstände in Richtung Erdmittelpunkt, weshalb sie zu Boden fallen."),
+        ("Was passiert, wenn zwei gleich starke Kräfte in genau entgegengesetzte Richtungen an einem Körper ziehen?", new[] { "Sie heben sich gegenseitig auf, der Körper bleibt in Ruhe", "Der Körper bewegt sich doppelt so schnell", "Der Körper verschwindet" }, "Sie heben sich gegenseitig auf, der Körper bleibt in Ruhe",
+            "Sind zwei entgegengesetzte Kräfte gleich groß, gleichen sie sich vollständig aus - der Körper bewegt sich nicht (Gleichgewicht)."),
+        ("Was ist Reibung?", new[] { "Eine Kraft, die der Bewegung zweier sich berührender Oberflächen entgegenwirkt", "Eine Kraft, die Bewegung immer beschleunigt", "Ein anderes Wort für Schwerkraft" }, "Eine Kraft, die der Bewegung zweier sich berührender Oberflächen entgegenwirkt",
+            "Reibung bremst die Bewegung zweier Oberflächen, die sich berühren, ab - je rauer die Oberflächen, desto größer die Reibung."),
+        ("Warum ist es auf Eis schwerer zu laufen als auf normalem Asphalt?", new[] { "Weil Eis viel weniger Reibung bietet als Asphalt", "Weil Eis viel mehr Reibung bietet als Asphalt", "Weil Eis magnetisch ist" }, "Weil Eis viel weniger Reibung bietet als Asphalt",
+            "Die glatte Eisoberfläche bietet den Schuhsohlen kaum Reibung, wodurch man leicht ausrutscht."),
+        ("Was ist ein Hebel, einfach erklärt?", new[] { "Eine starre Stange, mit der man mit weniger Kraft eine größere Last bewegen kann", "Ein Gerät, das ausschließlich elektrischen Strom misst", "Ein anderes Wort für Reibung" }, "Eine starre Stange, mit der man mit weniger Kraft eine größere Last bewegen kann",
+            "Ein Hebel verstärkt die eingesetzte Kraft, sodass man mit weniger Kraftaufwand eine schwerere Last bewegen kann."),
+        ("Warum kann man mit einer langen Brechstange leichter einen schweren Stein bewegen als mit einer kurzen?", new[] { "Ein längerer Hebelarm verstärkt die Wirkung der eingesetzten Kraft", "Eine lange Stange ist automatisch leichter als eine kurze", "Die Länge einer Stange hat keinerlei Einfluss" }, "Ein längerer Hebelarm verstärkt die Wirkung der eingesetzten Kraft",
+            "Je länger der Hebelarm, desto größer die Wirkung derselben eingesetzten Kraft am anderen Ende."),
+        ("Was besagt das Wechselwirkungsprinzip (\"Kraft = Gegenkraft\") einfach erklärt?", new[] { "Übt ein Körper eine Kraft auf einen anderen aus, wirkt eine gleich große Gegenkraft zurück", "Kräfte wirken immer nur in eine einzige Richtung", "Nur schwere Körper üben Kräfte auf andere aus" }, "Übt ein Körper eine Kraft auf einen anderen aus, wirkt eine gleich große Gegenkraft zurück",
+            "Zu jeder Kraft gibt es eine gleich große Gegenkraft in die entgegengesetzte Richtung - deshalb spürt man beim Drücken gegen eine Wand auch einen Gegendruck."),
+        ("Warum spürt man beim Anschieben einer Wand selbst eine Gegenkraft?", new[] { "Die Wand drückt mit derselben Kraft zurück, mit der man selbst gedrückt hat", "Die Wand bewegt sich unbemerkt ein kleines Stück", "Es handelt sich um reine Einbildung" }, "Die Wand drückt mit derselben Kraft zurück, mit der man selbst gedrückt hat",
+            "Nach dem Wechselwirkungsprinzip übt die Wand exakt dieselbe Kraft in die Gegenrichtung aus, die man selbst auf sie ausübt."),
+        ("Wie wirkt sich eine größere Kraft normalerweise auf die Beschleunigung eines Körpers aus?", new[] { "Eine größere Kraft beschleunigt einen Körper stärker", "Eine größere Kraft verlangsamt den Körper immer", "Kraft hat keinen Einfluss auf die Beschleunigung" }, "Eine größere Kraft beschleunigt einen Körper stärker",
+            "Je größer die auf einen Körper wirkende Kraft, desto stärker wird er beschleunigt."),
+        ("Was ist eine Federwaage und wie funktioniert sie?", new[] { "Ein Messgerät, das die wirkende Kraft an der Dehnung einer Feder misst", "Ein Gerät, das ausschließlich Temperatur misst", "Ein Werkzeug zum Schneiden von Metall" }, "Ein Messgerät, das die wirkende Kraft an der Dehnung einer Feder misst",
+            "Je stärker die Kraft (z.B. das Gewicht eines Gegenstands), desto weiter dehnt sich die Feder der Federwaage - daran liest man die Kraft ab."),
+        ("Warum braucht man beim Ziehen eines schweren Schlittens über Schnee weniger Kraft als über Kies?", new[] { "Schnee bietet weniger Reibung als Kies", "Schnee bietet mehr Reibung als Kies", "Kies ist grundsätzlich schwerer als Schnee" }, "Schnee bietet weniger Reibung als Kies",
+            "Die glattere Schneeoberfläche erzeugt weniger Reibungswiderstand als grober, unebener Kies."),
+        ("Was passiert mit einem ruhenden Gegenstand, auf den keine Kraft wirkt?", new[] { "Er bleibt in Ruhe", "Er beginnt sich von selbst zu bewegen", "Er verschwindet" }, "Er bleibt in Ruhe",
+            "Ohne einwirkende Kraft ändert ein Körper seinen Bewegungszustand nicht - ein ruhender Körper bleibt in Ruhe (Trägheit)."),
+        ("Was ist der Unterschied zwischen einer Zugkraft und einer Druckkraft?", new[] { "Eine Zugkraft zieht an einem Körper, eine Druckkraft drückt gegen ihn", "Beide bezeichnen exakt dasselbe", "Zugkraft wirkt nur bei Flüssigkeiten" }, "Eine Zugkraft zieht an einem Körper, eine Druckkraft drückt gegen ihn",
+            "Eine Zugkraft wirkt ziehend (z.B. an einem Seil), eine Druckkraft wirkt drückend (z.B. beim Zusammenpressen einer Feder)."),
+        ("Warum nutzt ein Fahrrad Kette und Zahnräder statt die Räder direkt anzutreiben?", new[] { "Sie übertragen und verändern die Kraft effizient auf die Räder", "Kette und Zahnräder haben nur eine dekorative Funktion", "Ohne Kette könnte das Fahrrad gar nicht rollen" }, "Sie übertragen und verändern die Kraft effizient auf die Räder",
+            "Kette und Zahnräder übertragen die Tretkraft effizient auf das Hinterrad und ermöglichen durch unterschiedliche Übersetzungen leichteres oder schnelleres Fahren."),
+        ("Was passiert mit der Reibung, wenn man eine Oberfläche mit Öl schmiert?", new[] { "Die Reibung wird deutlich kleiner", "Die Reibung wird deutlich größer", "Öl hat keinerlei Einfluss auf Reibung" }, "Die Reibung wird deutlich kleiner",
+            "Öl verringert den direkten Kontakt zwischen zwei Oberflächen und senkt dadurch die Reibung erheblich."),
+        ("Warum ist eine Flaschenzug-Konstruktion nützlich, um schwere Lasten zu heben?", new[] { "Sie verteilt die nötige Kraft auf mehrere Seilstränge und macht das Heben leichter", "Sie macht die Last selbst leichter", "Sie funktioniert nur bei sehr leichten Gegenständen" }, "Sie verteilt die nötige Kraft auf mehrere Seilstränge und macht das Heben leichter",
+            "Ein Flaschenzug verteilt das Gewicht der Last auf mehrere Seilabschnitte, wodurch pro Seilzug weniger Kraft nötig ist."),
+        ("Was zeigt die physikalische Einheit Newton (N) an?", new[] { "Die Größe einer Kraft", "Eine Temperatur", "Eine Zeitspanne" }, "Die Größe einer Kraft",
+            "Newton ist die physikalische Einheit für Kraft, benannt nach dem Physiker Isaac Newton."),
+        ("Warum braucht ein Auto auf nasser Straße einen längeren Bremsweg als auf trockener Straße?", new[] { "Nasse Straßen bieten weniger Reibung zwischen Reifen und Straße", "Nasse Straßen bieten mehr Reibung als trockene", "Regen hat keinen Einfluss auf den Bremsweg" }, "Nasse Straßen bieten weniger Reibung zwischen Reifen und Straße",
+            "Der Wasserfilm auf nasser Fahrbahn verringert die Reibung zwischen Reifen und Straße, wodurch das Auto weniger stark gebremst wird."),
+        ("Warum ist Fallschirmspringen mit geöffnetem Schirm sicherer als im freien Fall?", new[] { "Der Luftwiderstand wirkt als Gegenkraft und bremst die Fallgeschwindigkeit stark ab", "Der Schirm hat keinerlei Einfluss auf die Fallgeschwindigkeit", "Der Schirm beschleunigt den Fall zusätzlich" }, "Der Luftwiderstand wirkt als Gegenkraft und bremst die Fallgeschwindigkeit stark ab",
+            "Die große Fläche des geöffneten Schirms erzeugt viel Luftwiderstand, der als Gegenkraft zur Schwerkraft wirkt und die Fallgeschwindigkeit deutlich verringert.")
+    };
+
+    private static QuizQuestion WechselwirkungUndKraft(Random r)
+    {
+        var f = WechselwirkungKraftListe[r.Next(WechselwirkungKraftListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Wechselwirkung und Kraft", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Kräfte können beschleunigen, abbremsen oder verformen; zu jeder Kraft gehört eine gleich große Gegenkraft (Wechselwirkung), Reibung bremst Bewegung ab."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MechanischeEnergieListe =
+    {
+        ("Was versteht man unter \"Energie\" in der Physik ganz allgemein?", new[] { "Die Fähigkeit, Arbeit zu verrichten bzw. etwas zu bewegen oder zu verändern", "Ein anderes Wort für Kraft", "Eine Einheit für Temperatur" }, "Die Fähigkeit, Arbeit zu verrichten bzw. etwas zu bewegen oder zu verändern",
+            "Energie beschreibt die Fähigkeit eines Systems, Arbeit zu verrichten, also z.B. etwas zu bewegen, zu erwärmen oder zu verformen."),
+        ("Was ist Bewegungsenergie (kinetische Energie)?", new[] { "Die Energie, die ein sich bewegender Körper besitzt", "Die Energie eines Körpers aufgrund seiner Höhe", "Eine andere Bezeichnung für Wärme" }, "Die Energie, die ein sich bewegender Körper besitzt",
+            "Jeder bewegte Körper besitzt Bewegungsenergie - je schneller er sich bewegt, desto mehr davon."),
+        ("Was ist Lageenergie (potenzielle Energie)?", new[] { "Die Energie, die ein Körper aufgrund seiner Höhe/Lage besitzt", "Die Energie eines sich bewegenden Körpers", "Eine andere Bezeichnung für Reibung" }, "Die Energie, die ein Körper aufgrund seiner Höhe/Lage besitzt",
+            "Ein Körper in großer Höhe besitzt Lageenergie, weil er beim Herunterfallen Arbeit verrichten könnte."),
+        ("Ein Ball liegt oben auf einem Turm - welche Energieform besitzt er hauptsächlich?", new[] { "Lageenergie (potenzielle Energie)", "Bewegungsenergie", "Wärmeenergie" }, "Lageenergie (potenzielle Energie)",
+            "Solange der Ball ruht, aber in großer Höhe liegt, besitzt er vor allem Lageenergie."),
+        ("Was passiert mit der Lageenergie eines fallenden Balls, während er nach unten fällt?", new[] { "Sie wandelt sich zunehmend in Bewegungsenergie um", "Sie verschwindet vollständig", "Sie wird automatisch größer" }, "Sie wandelt sich zunehmend in Bewegungsenergie um",
+            "Beim Fallen nimmt die Höhe (und damit die Lageenergie) ab, während die Geschwindigkeit (und damit die Bewegungsenergie) zunimmt."),
+        ("Was versteht man unter \"mechanischer Arbeit\" in der Physik, vereinfacht?", new[] { "Man verrichtet Arbeit, wenn eine Kraft einen Körper über eine Strecke bewegt", "Arbeit bedeutet ausschließlich geistige Anstrengung", "Arbeit ist ein anderes Wort für Reibung" }, "Man verrichtet Arbeit, wenn eine Kraft einen Körper über eine Strecke bewegt",
+            "Physikalische Arbeit entsteht, wenn eine Kraft auf einen Körper wirkt und ihn dabei über eine Strecke bewegt."),
+        ("Wann verrichtet man laut Physik KEINE mechanische Arbeit, obwohl man sich anstrengt (z.B. beim Halten einer schweren Tasche ohne Bewegung)?", new[] { "Wenn sich der Körper trotz Kraftaufwand nicht bewegt", "Immer, wenn man eine schwere Last hält", "Nur, wenn man sich sehr langsam bewegt" }, "Wenn sich der Körper trotz Kraftaufwand nicht bewegt",
+            "Physikalisch zählt nur Arbeit, bei der sich der Körper über eine Strecke bewegt - reines Halten ohne Bewegung verrichtet keine mechanische Arbeit."),
+        ("Was passiert grundsätzlich mit Energie, wenn sie von einer Form in eine andere umgewandelt wird?", new[] { "Sie geht nicht verloren, sondern wandelt sich nur um", "Sie verschwindet vollständig", "Es entsteht automatisch mehr Energie" }, "Sie geht nicht verloren, sondern wandelt sich nur um",
+            "Nach dem Energieerhaltungssatz geht Energie nicht verloren - sie wechselt lediglich ihre Form, z.B. von Lage- zu Bewegungsenergie."),
+        ("Wozu kann man eine schiefe Ebene (Rampe) nutzen, um schwere Lasten hochzubringen?", new[] { "Um mit weniger Kraft, aber über einen längeren Weg, dieselbe Höhe zu erreichen", "Um die Last automatisch leichter zu machen", "Rampen haben keinerlei praktischen Nutzen" }, "Um mit weniger Kraft, aber über einen längeren Weg, dieselbe Höhe zu erreichen",
+            "Eine Rampe verlängert den Weg nach oben, wodurch pro Meter weniger Kraft nötig ist, um dieselbe Höhe zu erreichen."),
+        ("Was passiert mit der Energie eines Gegenstands, der nach einem Sturz auf dem Boden zur Ruhe kommt?", new[] { "Sie wandelt sich z.B. in Wärme und Schallenergie um", "Sie verschwindet vollständig aus dem Universum", "Sie bleibt unverändert als Bewegungsenergie erhalten" }, "Sie wandelt sich z.B. in Wärme und Schallenergie um",
+            "Beim Aufprall wird die Bewegungsenergie in andere Energieformen wie Wärme (durch Verformung/Reibung) und Schall (der Aufprallknall) umgewandelt."),
+        ("Warum braucht man mehr mechanische Arbeit, um einen schweren Koffer eine Treppe hochzutragen als einen leichten?", new[] { "Ein schwererer Koffer erfordert mehr Kraft für dieselbe Höhe", "Schwere Koffer benötigen grundsätzlich weniger Arbeit", "Das Gewicht des Koffers spielt dabei keine Rolle" }, "Ein schwererer Koffer erfordert mehr Kraft für dieselbe Höhe",
+            "Da Arbeit von der aufgewendeten Kraft abhängt, braucht ein schwererer Koffer bei gleicher Höhe mehr Kraft und damit mehr Arbeit."),
+        ("Was passiert mit der Bewegungsenergie eines rollenden Balls, wenn er durch Reibung langsamer wird?", new[] { "Sie wandelt sich in Wärmeenergie um", "Sie wird automatisch größer", "Sie verschwindet spurlos aus dem Universum" }, "Sie wandelt sich in Wärmeenergie um",
+            "Reibung wandelt einen Teil der Bewegungsenergie in Wärme um, wodurch der Ball nach und nach langsamer wird."),
+        ("Was ist ein einfaches Beispiel für Lageenergie im Alltag?", new[] { "Wasser in einem hoch gelegenen Stausee", "Ein rollender Ball auf ebener Straße", "Ein sich erwärmender Kochtopf" }, "Wasser in einem hoch gelegenen Stausee",
+            "Das in großer Höhe gespeicherte Wasser eines Stausees besitzt Lageenergie, die beim Herabfließen genutzt werden kann."),
+        ("Warum kann in einem Wasserkraftwerk aus der Lageenergie des Wassers Strom erzeugt werden?", new[] { "Das herabfließende Wasser treibt Turbinen an, die Energie in Strom umwandeln", "Wasser erzeugt Strom durch seine Farbe", "Lageenergie kann nicht in Strom umgewandelt werden" }, "Das herabfließende Wasser treibt Turbinen an, die Energie in Strom umwandeln",
+            "Das von oben herabstürzende Wasser wandelt seine Lage- in Bewegungsenergie um, die Turbinen antreibt, welche wiederum elektrischen Strom erzeugen."),
+        ("Wie verändert sich die Bewegungsenergie eines Autos, wenn es schneller fährt?", new[] { "Sie nimmt deutlich zu", "Sie bleibt exakt gleich", "Sie nimmt ab" }, "Sie nimmt deutlich zu",
+            "Je schneller sich ein Körper bewegt, desto größer ist seine Bewegungsenergie."),
+        ("Was passiert mit der gesamten mechanischen Energie eines fallenden Balls ohne Luftwiderstand, näherungsweise?", new[] { "Sie bleibt insgesamt ungefähr gleich, wechselt nur die Form", "Sie steigt immer weiter an", "Sie sinkt kontinuierlich auf null" }, "Sie bleibt insgesamt ungefähr gleich, wechselt nur die Form",
+            "Ohne Luftwiderstand bleibt die Summe aus Lage- und Bewegungsenergie beim Fallen näherungsweise konstant, nur ihr Anteil verschiebt sich."),
+        ("Warum wird beim Bremsen eines Autos Energie in Wärme umgewandelt?", new[] { "Reibung zwischen Bremsen und Rädern wandelt Bewegungsenergie in Wärmeenergie um", "Die Bremsen erzeugen dabei elektrischen Strom", "Beim Bremsen entsteht keinerlei Energieumwandlung" }, "Reibung zwischen Bremsen und Rädern wandelt Bewegungsenergie in Wärmeenergie um",
+            "Die Bremsen erzeugen durch Reibung Wärme, wodurch die Bewegungsenergie des Autos abgebaut wird und es langsamer wird."),
+        ("Wofür ist ein Trampolin ein gutes Beispiel in Bezug auf Energieumwandlung?", new[] { "Umwandlung von Bewegungsenergie in gespannte Energie des Sprungtuchs und wieder zurück", "Umwandlung von Lageenergie in elektrischen Strom", "Ein Trampolin hat mit Energie nichts zu tun" }, "Umwandlung von Bewegungsenergie in gespannte Energie des Sprungtuchs und wieder zurück",
+            "Beim Aufkommen wird die Bewegungsenergie im gespannten Sprungtuch gespeichert und beim Zurückschnellen wieder in Bewegungsenergie umgewandelt."),
+        ("Was zeigt die physikalische Einheit Joule (J) an?", new[] { "Eine Menge an Energie oder Arbeit", "Eine Temperatur", "Eine Kraft" }, "Eine Menge an Energie oder Arbeit",
+            "Joule ist die physikalische Einheit für Energie und Arbeit, benannt nach dem Physiker James Prescott Joule."),
+        ("Was passiert mit der gespannten (elastischen) Energie einer zurückgezogenen Steinschleuder, wenn man sie loslässt?", new[] { "Sie wandelt sich in Bewegungsenergie des Geschosses um", "Sie verschwindet spurlos", "Sie wandelt sich in Lageenergie um, ohne dass sich etwas bewegt" }, "Sie wandelt sich in Bewegungsenergie des Geschosses um",
+            "Die im gespannten Gummiband gespeicherte elastische Energie wird beim Loslassen in Bewegungsenergie des abgeschossenen Gegenstands umgewandelt.")
+    };
+
+    private static QuizQuestion MechanischeEnergieUndArbeit(Random r)
+    {
+        var f = MechanischeEnergieListe[r.Next(MechanischeEnergieListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Mechanische Energie und Arbeit", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Lageenergie (Höhe) und Bewegungsenergie (Geschwindigkeit) wandeln sich ständig ineinander um; Energie geht nie verloren, sondern wechselt nur die Form (auch in Wärme durch Reibung)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ThermischeEnergieListe =
+    {
+        ("Was ist Wärme in der Physik, einfach erklärt?", new[] { "Eine Form von Energie, die von einem wärmeren zu einem kälteren Körper übergeht", "Ein anderes Wort für Temperatur", "Eine Kraft, die Körper anzieht" }, "Eine Form von Energie, die von einem wärmeren zu einem kälteren Körper übergeht",
+            "Wärme ist Energie, die immer vom wärmeren zum kälteren Körper fließt, bis ein Temperaturausgleich erreicht ist."),
+        ("In welche Richtung fließt Wärme immer von selbst?", new[] { "Vom wärmeren zum kälteren Körper", "Vom kälteren zum wärmeren Körper", "Wärme fließt nie von selbst" }, "Vom wärmeren zum kälteren Körper",
+            "Ohne äußere Einwirkung (z.B. einen Kühlschrank) fließt Wärme immer nur vom wärmeren zum kälteren Körper."),
+        ("Wie nennt man die Wärmeübertragung durch direkten Kontakt zweier Körper, z.B. eine heiße Herdplatte, die einen Topf erwärmt?", new[] { "Wärmeleitung", "Wärmestrahlung", "Wärmeströmung" }, "Wärmeleitung",
+            "Bei der Wärmeleitung wird Wärme durch direkten Kontakt von einem Körper auf den anderen übertragen."),
+        ("Wie nennt man die Wärmeübertragung durch Strömung, z.B. wenn warme Luft in einem Raum aufsteigt?", new[] { "Wärmeströmung (Konvektion)", "Wärmeleitung", "Sublimation" }, "Wärmeströmung (Konvektion)",
+            "Bei der Konvektion transportiert eine strömende Flüssigkeit oder ein strömendes Gas die Wärme mit sich - warme Luft steigt dabei nach oben."),
+        ("Wie nennt man die Wärmeübertragung ganz ohne Materie, z.B. die Wärme der Sonne, die durchs Weltall zur Erde gelangt?", new[] { "Wärmestrahlung", "Wärmeleitung", "Wärmeströmung" }, "Wärmestrahlung",
+            "Wärmestrahlung braucht kein Trägermedium und funktioniert deshalb auch durch das Vakuum des Weltalls, z.B. bei der Sonnenwärme."),
+        ("Warum eignen sich Metalle gut, um Wärme schnell weiterzuleiten, z.B. bei einem Kochlöffel?", new[] { "Metalle sind gute Wärmeleiter", "Metalle sind besonders schlechte Wärmeleiter", "Metalle haben keinerlei Bezug zu Wärme" }, "Metalle sind gute Wärmeleiter",
+            "Metalle leiten Wärme sehr effizient weiter - deshalb wird ein Metalllöffel im heißen Topf schnell selbst heiß."),
+        ("Warum benutzt man beim Kochen oft Griffe aus Holz oder Kunststoff statt aus Metall?", new[] { "Holz und Kunststoff sind schlechte Wärmeleiter und werden nicht so heiß", "Holz und Kunststoff leiten Wärme besser als Metall", "Aus rein optischen Gründen" }, "Holz und Kunststoff sind schlechte Wärmeleiter und werden nicht so heiß",
+            "Da Holz und Kunststoff Wärme schlecht leiten, bleiben Griffe daraus auch bei heißem Topf angenehm anfassbar."),
+        ("Warum hält eine Daunenjacke im Winter warm, obwohl sie selbst keine Wärme erzeugt?", new[] { "Die eingeschlossene Luft zwischen den Federn ist ein schlechter Wärmeleiter und hält Körperwärme zurück", "Die Daunenjacke erzeugt selbst chemisch Wärme", "Daunenjacken funktionieren nur bei Sonnenschein" }, "Die eingeschlossene Luft zwischen den Federn ist ein schlechter Wärmeleiter und hält Körperwärme zurück",
+            "Die vielen kleinen Luftpolster zwischen den Daunenfedern isolieren gut und verhindern, dass die eigene Körperwärme nach außen entweicht."),
+        ("Was passiert mit der Temperatur zweier unterschiedlich warmer Körper, die lange in Kontakt bleiben?", new[] { "Sie gleichen sich mit der Zeit an (Temperaturausgleich)", "Der Unterschied wird immer größer", "Die Temperaturen ändern sich überhaupt nicht" }, "Sie gleichen sich mit der Zeit an (Temperaturausgleich)",
+            "Wärme fließt so lange vom wärmeren zum kälteren Körper, bis beide dieselbe Temperatur erreicht haben."),
+        ("Was misst ein Thermometer?", new[] { "Die Temperatur", "Die Kraft eines Gegenstands", "Die Masse eines Gegenstands" }, "Die Temperatur",
+            "Ein Thermometer zeigt an, wie warm oder kalt etwas gerade ist - also die Temperatur."),
+        ("Was ist der Unterschied zwischen Wärme und Temperatur, vereinfacht?", new[] { "Wärme ist übertragene Energie, Temperatur zeigt an, wie warm/kalt etwas gerade ist", "Beide Begriffe bedeuten exakt dasselbe", "Temperatur ist eine Kraft, Wärme eine Strecke" }, "Wärme ist übertragene Energie, Temperatur zeigt an, wie warm/kalt etwas gerade ist",
+            "Wärme beschreibt eine Energiemenge, die übertragen wird, während Temperatur den momentanen Zustand (wie warm etwas ist) angibt."),
+        ("Warum kühlt eine Tasse heißer Tee mit der Zeit von selbst ab?", new[] { "Sie gibt Wärme an die kühlere Umgebungsluft ab, bis ein Ausgleich erreicht ist", "Die Tasse zieht selbst Kälte aus der Luft an", "Tee kühlt grundsätzlich nie von selbst ab" }, "Sie gibt Wärme an die kühlere Umgebungsluft ab, bis ein Ausgleich erreicht ist",
+            "Da die Umgebungsluft kälter ist als der Tee, fließt Wärme vom Tee zur Luft, bis sich die Temperaturen angeglichen haben."),
+        ("Warum friert man an einem kalten, windigen Tag stärker als bei gleicher Temperatur ohne Wind?", new[] { "Der Wind trägt die erwärmte Luftschicht um den Körper schneller weg", "Wind erhöht die tatsächliche Lufttemperatur", "Wind hat auf das Kälteempfinden keinerlei Einfluss" }, "Der Wind trägt die erwärmte Luftschicht um den Körper schneller weg",
+            "Wind entfernt ständig die durch den Körper erwärmte Luftschicht, wodurch man schneller Wärme verliert und stärker friert (Windchill-Effekt)."),
+        ("Wie funktioniert eine Thermoskanne, um Getränke lange warm zu halten?", new[] { "Sie verhindert weitgehend die Wärmeübertragung nach außen, z.B. durch ein Vakuum", "Sie erzeugt selbst zusätzliche Wärme", "Sie funktioniert nur bei kalten Getränken" }, "Sie verhindert weitgehend die Wärmeübertragung nach außen, z.B. durch ein Vakuum",
+            "Das Vakuum bzw. die isolierenden Schichten einer Thermoskanne verhindern weitgehend Wärmeleitung, -strömung und -strahlung nach außen."),
+        ("Was passiert mit den Teilchen eines Stoffs, wenn er Wärme aufnimmt?", new[] { "Sie bewegen sich schneller", "Sie bewegen sich langsamer", "Sie hören auf, sich zu bewegen" }, "Sie bewegen sich schneller",
+            "Wärmeaufnahme erhöht die Bewegungsenergie der Teilchen - sie bewegen sich schneller, was sich als höhere Temperatur zeigt."),
+        ("Warum fühlt sich Metall im selben Raum oft kälter an als Holz, obwohl beide dieselbe Raumtemperatur haben?", new[] { "Metall leitet Wärme von der Hand schneller ab als Holz", "Metall hat tatsächlich immer eine niedrigere Temperatur", "Es ist reine Einbildung ohne physikalischen Grund" }, "Metall leitet Wärme von der Hand schneller ab als Holz",
+            "Da Metall Wärme sehr gut leitet, entzieht es der Hand schneller Wärme als Holz - das fühlt sich kälter an, obwohl beide gleich temperiert sind."),
+        ("Wie nennt man das Gerät, das die Umgebungstemperatur in einem Raum automatisch regelt?", new[] { "Thermostat", "Federwaage", "Bimetallstreifen" }, "Thermostat",
+            "Ein Thermostat misst die Raumtemperatur und regelt automatisch die Heizung, um eine gewünschte Temperatur zu halten."),
+        ("Warum werden Häuser oft mit Dämmmaterial an Wänden und Dach ausgestattet?", new[] { "Um den Wärmeverlust nach außen im Winter zu verringern", "Um das Haus schwerer zu machen", "Dämmmaterial hat keinerlei Effekt auf Wärme" }, "Um den Wärmeverlust nach außen im Winter zu verringern",
+            "Eine gute Dämmung verringert die Wärmeleitung nach außen, sodass im Winter weniger Heizenergie verloren geht."),
+        ("Was passiert mit Eiswürfeln in einem Getränk bei Zimmertemperatur?", new[] { "Sie nehmen Wärme aus dem Getränk und der Umgebung auf und schmelzen dabei", "Sie geben selbst Wärme an das Getränk ab", "Sie bleiben unbegrenzt lange fest" }, "Sie nehmen Wärme aus dem Getränk und der Umgebung auf und schmelzen dabei",
+            "Da das Getränk wärmer ist als die Eiswürfel, fließt Wärme zu den Eiswürfeln, die dadurch schmelzen und gleichzeitig das Getränk abkühlen."),
+        ("Warum beschlägt ein kaltes Fensterglas im Winter von innen, wenn warme, feuchte Raumluft dagegen strömt?", new[] { "Die Luft kühlt am kalten Glas ab und der Wasserdampf kondensiert zu sichtbaren Tröpfchen", "Das Glas selbst produziert Wassertropfen", "Kalte Fenster stoßen grundsätzlich Wasser ab" }, "Die Luft kühlt am kalten Glas ab und der Wasserdampf kondensiert zu sichtbaren Tröpfchen",
+            "Trifft warme, feuchte Luft auf die kalte Scheibe, kühlt sie dort stark ab - der enthaltene Wasserdampf kondensiert und wird als Beschlag sichtbar.")
+    };
+
+    private static QuizQuestion ThermischeEnergieUndWaerme(Random r)
+    {
+        var f = ThermischeEnergieListe[r.Next(ThermischeEnergieListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Thermische Energie und Wärme", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wärme fließt immer vom wärmeren zum kälteren Körper - über Leitung (Kontakt), Strömung (Konvektion) oder Strahlung (ohne Materie); gute Wärmeleiter wie Metall fühlen sich kälter/heißer an als Isolatoren."
         };
     }
 }
