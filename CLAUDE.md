@@ -39,8 +39,8 @@ $env:LERNTOR_SKIP_LOCK = "1"
 dotnet run --project src/LernTor.App
 # (the lock is also auto-skipped when a debugger is attached, e.g. F5 in Visual Studio)
 
-# Self-contained release build
-dotnet publish src/LernTor.App/LernTor.App.csproj --configuration Release --runtime win-x64 --self-contained true --output publish/win-x64
+# Self-contained release build (single-file, ReadyToRun — see docs/BUILD.md for why PublishTrimmed is deliberately not used)
+dotnet publish src/LernTor.App/LernTor.App.csproj --configuration Release --runtime win-x64 --self-contained true --output publish/win-x64 -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true
 
 # Installer (requires Inno Setup's iscc.exe)
 iscc src\LernTor.Installer\setup.iss

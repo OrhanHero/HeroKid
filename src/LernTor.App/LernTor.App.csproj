@@ -10,6 +10,11 @@
     <AssemblyName>LernTor</AssemblyName>
     <Platforms>x64</Platforms>
     <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
+    <!-- Nur für Restore/Publish relevant (RID-spezifische Assets) - dotnet build/run bleibt
+         davon unberührt, SelfContained/PublishSingleFile/PublishReadyToRun werden bewusst erst
+         am `dotnet publish`-Aufruf gesetzt (siehe docs/BUILD.md), damit CI-Build/-Test (die kein
+         Publish machen) unverändert bleiben. -->
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>

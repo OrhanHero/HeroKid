@@ -39,11 +39,24 @@ dotnet publish src/LernTor.App/LernTor.App.csproj `
   --configuration Release `
   --runtime win-x64 `
   --self-contained true `
-  --output publish/win-x64
+  --output publish/win-x64 `
+  -p:PublishSingleFile=true `
+  -p:PublishReadyToRun=true `
+  -p:IncludeNativeLibrariesForSelfExtract=true
 ```
 
 Das Ergebnis in `publish/win-x64` ist eigenständig lauffähig (keine separate .NET-Installation auf dem
-Ziel-PC nötig).
+Ziel-PC nötig) und liegt für den Kiosk-Einsatz als eine einzelne `LernTor.exe`
+(`PublishSingleFile`) vor, die dank `PublishReadyToRun` (vorab-JIT-kompiliert für win-x64) auch
+nach dem automatischen Autostart-Login schneller hochfährt. `IncludeNativeLibrariesForSelfExtract`
+bettet native Abhängigkeiten (z.B. von System.Speech/WPF) direkt in die exe ein, statt sie beim
+ersten Start in einen Temp-Ordner zu extrahieren.
+
+**Bewusst nicht aktiviert: `PublishTrimmed`.** WPF nutzt an vielen Stellen Reflection (Binding,
+`DataTemplate`-Auflösung, Converter), die der Trimmer nicht zuverlässig erkennt - ohne umfangreiche
+`TrimmerRootAssembly`-Ausnahmen und anschließenden vollständigen manuellen GUI-Test auf echtem
+Windows würde Trimmen zur Laufzeit unsichtbar Funktionalität entfernen (kein Compile-Fehler, nur
+kaputtes UI). Der Startzeit-Gewinn kommt ohnehin größtenteils schon aus ReadyToRun.
 
 ## 4. Installer bauen (optional)
 
