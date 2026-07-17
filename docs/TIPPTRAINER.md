@@ -19,7 +19,8 @@ Die Steuerung läuft über die ViewModels:
 
 ## Lektionsstruktur
 
-Der Trainer besteht aus 12 regulären Lektionen + 1 profil-spezifischer Abschluss-Lektion:
+Der Trainer besteht aus 11 regulären Lektionen + 1 profil-spezifischer Abschluss-Lektion (siehe
+`TypingContentProvider.cs` für den Lektionspool):
 
 ### Reguläre Lektionen (für alle Profile gleich)
 1. **Grundreihe** (3 Lektionen): ASDF JKL; → erste Wörter → Kombinationen
@@ -27,12 +28,24 @@ Der Trainer besteht aus 12 regulären Lektionen + 1 profil-spezifischer Abschlus
 3. **Unterreihe** (2 Lektionen): YXCVBNM,.- → Wörter
 4. **Zahlenreihe** (2 Lektionen): 1234567890 → Kombinationen (Telefonnummern, PLZ, Daten)
 5. **Wörter & Silben** (1 Lektion): Häufige deutsche Wörter
-6. **Sätze** (2 Lektionen): Einfache Sätze → Sätze mit Zahlen & Zeichen
+6. **Sätze** (1 Lektion): Einfache Sätze mit Satzzeichen (die zweite Sätze-Lektion mit Zahlen &
+   Zeichen wurde entfernt, um Kinder nicht zu 5-6 Wiederholungen beim 10-Finger-Lernen zu zwingen)
 
-### Profil-spezifische Abschluss-Lektion (Lektion 7)
-Nach allen regulären Lektionen wird automatisch die passende Abschluss-Lektion freigeschaltet:
-- **Emirhan Kahraman** (Klasse 6): Persönlicher Steckbrief-Text mit Name, Geburtsdatum (09.05.2014), Adresse (Weichselstraße 41, 12045 Berlin), Telefon (0173 2085640), Eltern (Orhan & Zehra Kahraman), Schule (Lemgo-Grundschule, 6c), Lieblingsessen (Nudeln mit Sahnesoße und Schnitzel), Hobbys (Fußball, Freunde treffen)
-- **Batuhan Kahraman** (Klasse 9): Persönlicher Steckbrief-Text mit Name, Geburtsdatum (16.08.2011), gleiche Adresse, Telefon (01522 8467854), gleiche Eltern, Schule (Robert-Koch-Gymnasium, 9a), Lieblingsessen (Pommes und Nuggets), Hobbys (Fußball, Freunde treffen)
+Alle regulären Lektionen verlangen aktuell **35% Mindestgenauigkeit** zum Bestehen (in
+`TypingLesson.MinimumAccuracy`, von `TypingExerciseService.CheckInput()` ausgewertet) - bewusst
+niedrig angesetzt, damit das Weiterkommen nicht am 10-Finger-Erlernen selbst scheitert.
+
+### Profil-spezifische Abschluss-Lektion (Lektion 12)
+Nach allen regulären Lektionen wird automatisch GENAU EINE der beiden folgenden Abschluss-Lektionen
+freigeschaltet (`TypingContentProvider.GetFinalLessonForProfile`, anhand des Profilnamens - "Emirhan"
+im Namen → Emirhans Text, sonst Batuhans Text als Standard):
+- **Emirhan Kahraman** (Klasse 6): kurzer persönlicher Steckbrief-Text (Name, Alter, Berlin, Schule
+  6c, Lieblingsessen)
+- **Batuhan Kahraman** (Klasse 9): kurzer persönlicher Steckbrief-Text (Name, Alter, Berlin, Schule
+  9a, Lieblingsessen)
+
+Beide Abschlusstexte wurden gekürzt (~110 Zeichen weniger als ursprünglich) und laufen ebenfalls mit
+35% Mindestgenauigkeit.
 
 **Nur deutsches QWERTZ-Layout** – alle türkischen/englischen Lektionen wurden entfernt.
 
