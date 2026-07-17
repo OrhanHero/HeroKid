@@ -11,7 +11,7 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung, Zelle, LebensraeumeUndNahrungsketten },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem, Immunsystem, Nervensystem, SuchtUndSuchtpraevention, Humangenetik, Evolution }
         };
 
@@ -671,6 +671,118 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Topic = "Evolution – Theorien und Stammesgeschichte", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Darwins Theorie (Variation + Selektion) gilt als bestätigt, Lamarcks Theorie der Vererbung erworbener Eigenschaften als widerlegt; Fossilien, Homologien und Genetik belegen die Evolution."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ZelleListe =
+    {
+        ("Was ist die kleinste Funktionseinheit aller Lebewesen?", new[] { "Die Zelle", "Das Organ", "Das Molekül" }, "Die Zelle",
+            "Die Zelle ist die kleinste Einheit, die alle Merkmale des Lebens zeigen kann - sie ist der Baustein jedes Lebewesens."),
+        ("Womit kann man einzelne Zellen sichtbar machen, weil sie mit bloßem Auge nicht erkennbar sind?", new[] { "Mit einem Mikroskop", "Mit einer Lupe allein", "Mit einem Fernglas" }, "Mit einem Mikroskop",
+            "Zellen sind so winzig, dass man sie erst mit einem Mikroskop, das stark vergrößert, erkennen kann."),
+        ("Wie nennt man Lebewesen, die nur aus einer einzigen Zelle bestehen?", new[] { "Einzeller", "Vielzeller", "Zellhaufen" }, "Einzeller",
+            "Einzeller wie Bakterien oder manche Algen bestehen aus nur einer einzigen Zelle, die alle Lebensfunktionen allein erfüllt."),
+        ("Wie nennt man Lebewesen wie den Menschen, die aus vielen Zellen bestehen?", new[] { "Vielzeller", "Einzeller", "Urzeller" }, "Vielzeller",
+            "Der Mensch besteht aus Billionen Zellen und zählt deshalb zu den Vielzellern."),
+        ("Welcher Zellbestandteil umhüllt jede Zelle nach außen und lässt nur bestimmte Stoffe hindurch?", new[] { "Die Zellmembran", "Der Zellkern", "Die Vakuole" }, "Die Zellmembran",
+            "Die Zellmembran umschließt die Zelle und regelt, welche Stoffe hinein- oder herausgelangen können."),
+        ("Welcher Zellbestandteil enthält die Erbinformation der Zelle?", new[] { "Der Zellkern", "Die Zellmembran", "Das Zytoplasma" }, "Der Zellkern",
+            "Im Zellkern liegt die Erbinformation (DNA) gut geschützt gespeichert."),
+        ("Wie nennt man die gallertartige Flüssigkeit im Inneren der Zelle, in der die Zellbestandteile liegen?", new[] { "Zytoplasma", "Zellwand", "Zellmembran" }, "Zytoplasma",
+            "Das Zytoplasma füllt das Innere der Zelle aus und umgibt die verschiedenen Zellbestandteile."),
+        ("Was besitzt eine Pflanzenzelle zusätzlich, das ihr Stabilität und eine feste Form gibt?", new[] { "Eine Zellwand", "Einen zweiten Zellkern", "Ein Skelett" }, "Eine Zellwand",
+            "Die feste Zellwand aus Zellulose gibt Pflanzenzellen zusätzlich zur Membran Halt und Form - Tierzellen haben das nicht."),
+        ("Welche grünen Zellbestandteile findet man in Pflanzenzellen und die für die Fotosynthese wichtig sind?", new[] { "Chloroplasten", "Mitochondrien", "Ribosomen" }, "Chloroplasten",
+            "Chloroplasten enthalten den grünen Farbstoff Chlorophyll und ermöglichen der Pflanzenzelle die Fotosynthese."),
+        ("Welcher Zellbestandteil speichert in einer Pflanzenzelle Wasser und Nährstoffe und nimmt oft viel Platz ein?", new[] { "Die Vakuole", "Der Zellkern", "Die Zellwand" }, "Die Vakuole",
+            "Die große Vakuole speichert Wasser und Nährstoffe und hilft der Pflanzenzelle, ihre Form stabil zu halten."),
+        ("Wer entdeckte 1665 mit einem einfachen Mikroskop als einer der Ersten Zellen, als er Korkgewebe untersuchte?", new[] { "Robert Hooke", "Charles Darwin", "Gregor Mendel" }, "Robert Hooke",
+            "Robert Hooke prägte 1665 den Begriff \"Zelle\", nachdem er unter dem Mikroskop die kleinen Kammern im Kork entdeckt hatte."),
+        ("Wie viele Zellen hat der menschliche Körper ungefähr (Größenordnung)?", new[] { "Mehrere Billionen", "Genau 100", "Etwa 1.000" }, "Mehrere Billionen",
+            "Der menschliche Körper besteht aus mehreren Billionen Zellen, die zusammenarbeiten."),
+        ("Was passiert, wenn eine Zelle wächst und sich teilt?", new[] { "Aus einer Zelle entstehen zwei neue Zellen", "Die Zelle verschwindet komplett", "Zwei Zellen verschmelzen zu einer" }, "Aus einer Zelle entstehen zwei neue Zellen",
+            "Bei der Zellteilung entstehen aus einer Zelle zwei neue Zellen - so wächst ein Lebewesen und ersetzt verbrauchte Zellen."),
+        ("Wozu dient die Zellteilung z.B. beim Wachstum eines Kindes oder bei der Wundheilung?", new[] { "Um neue Zellen für Wachstum und Reparatur zu bilden", "Um alte Zellen zu vernichten", "Sie hat keinen bestimmten Zweck" }, "Um neue Zellen für Wachstum und Reparatur zu bilden",
+            "Durch Zellteilung entstehen die neuen Zellen, die der Körper zum Wachsen und zum Heilen von Wunden braucht."),
+        ("Was ist der Hauptunterschied zwischen einer Tierzelle und einer Pflanzenzelle?", new[] { "Pflanzenzellen haben zusätzlich Zellwand und Chloroplasten", "Tierzellen haben keinen Zellkern", "Beide Zelltypen sind komplett identisch" }, "Pflanzenzellen haben zusätzlich Zellwand und Chloroplasten",
+            "Pflanzenzellen besitzen im Unterschied zu Tierzellen eine feste Zellwand und grüne Chloroplasten für die Fotosynthese."),
+        ("Zu welcher Gruppe (Ein- oder Vielzeller) zählt ein Bakterium?", new[] { "Einzeller", "Vielzeller", "Weder noch" }, "Einzeller",
+            "Ein Bakterium besteht nur aus einer einzigen Zelle und ist deshalb ein Einzeller."),
+        ("Welches einfache Hilfsmittel braucht man mindestens, um eine einzelne Zelle sehen zu können?", new[] { "Ein Mikroskop", "Ein Fernrohr", "Eine Brille" }, "Ein Mikroskop",
+            "Nur ein Mikroskop vergrößert stark genug, um einzelne Zellen sichtbar zu machen."),
+        ("Was ist ein Gewebe (z.B. Muskelgewebe) im Körper eines Vielzellers?", new[] { "Eine Gruppe gleichartiger Zellen mit gemeinsamer Aufgabe", "Ein anderes Wort für Zellkern", "Ein einzelnes, sehr großes Molekül" }, "Eine Gruppe gleichartiger Zellen mit gemeinsamer Aufgabe",
+            "Viele gleichartige Zellen, die zusammen eine bestimmte Aufgabe erfüllen (z.B. Bewegung), bilden ein Gewebe."),
+        ("Warum bezeichnet man die Zelle als \"kleinste Funktionseinheit des Lebendigen\"?", new[] { "Weil sie die kleinste Einheit ist, die alle Lebensmerkmale wie Stoffwechsel und Wachstum zeigen kann", "Weil sie das kleinste Molekül im Körper ist", "Weil sie nur bei Pflanzen vorkommt" }, "Weil sie die kleinste Einheit ist, die alle Lebensmerkmale wie Stoffwechsel und Wachstum zeigen kann",
+            "Kleiner als eine Zelle gibt es keine Einheit mehr, die selbstständig Stoffwechsel betreiben, wachsen und sich fortpflanzen kann."),
+        ("Was versorgt eine Zelle über die Zellmembran hinweg mit Nährstoffen und Sauerstoff?", new[] { "Der Stoffaustausch mit der Umgebung", "Eine eigene kleine Sonne im Zellinneren", "Die Zelle braucht dafür nichts von außen" }, "Der Stoffaustausch mit der Umgebung",
+            "Über die Zellmembran nimmt die Zelle Nährstoffe und Sauerstoff aus ihrer Umgebung auf und gibt Abfallstoffe ab.")
+    };
+
+    private static QuizQuestion Zelle(Random r)
+    {
+        var f = ZelleListe[r.Next(ZelleListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Die Zelle", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Die Zelle ist die kleinste Funktionseinheit des Lebens. Zellkern (Erbinfo), Zellmembran (Hülle) und Zytoplasma hat jede Zelle; Zellwand, Chloroplasten und Vakuole nur Pflanzenzellen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] LebensraeumeListe =
+    {
+        ("Was versteht man unter dem \"Lebensraum\" eines Tieres oder einer Pflanze?", new[] { "Den natürlichen Ort, an dem ein Lebewesen alles findet, was es zum Überleben braucht", "Nur den genauen Ort, an dem ein Tier geboren wurde", "Ein Gebiet, das ausschließlich Menschen bewohnen" }, "Den natürlichen Ort, an dem ein Lebewesen alles findet, was es zum Überleben braucht",
+            "Ein Lebensraum (z.B. Wald, Teich, Wiese) bietet einem Lebewesen Nahrung, Schutz und die passenden Bedingungen zum Überleben."),
+        ("Wie nennt man Lebewesen, die ihre Energie durch Fotosynthese selbst herstellen, z.B. Pflanzen?", new[] { "Produzenten", "Konsumenten", "Destruenten" }, "Produzenten",
+            "Produzenten wie grüne Pflanzen erzeugen mithilfe von Sonnenlicht selbst ihre Nahrung und stehen am Anfang jeder Nahrungskette."),
+        ("Wie nennt man Lebewesen, die sich von anderen Lebewesen ernähren, weil sie selbst keine Fotosynthese betreiben können?", new[] { "Konsumenten", "Produzenten", "Zersetzer" }, "Konsumenten",
+            "Konsumenten (z.B. Tiere) können ihre Nahrung nicht selbst herstellen und fressen deshalb Pflanzen oder andere Tiere."),
+        ("Wie nennt man Lebewesen wie Pilze und viele Bakterien, die abgestorbene Pflanzen- und Tierreste zersetzen?", new[] { "Destruenten (Zersetzer)", "Produzenten", "Räuber" }, "Destruenten (Zersetzer)",
+            "Destruenten zersetzen tote Organismen und geben deren Nährstoffe zurück in den Boden, wo Pflanzen sie wieder aufnehmen können."),
+        ("Was ist eine Nahrungskette?", new[] { "Eine feste Reihenfolge von Lebewesen, die sich gegenseitig fressen", "Eine Kette aus Metall, mit der Tiere gefangen werden", "Ein anderes Wort für Lebensraum" }, "Eine feste Reihenfolge von Lebewesen, die sich gegenseitig fressen",
+            "Eine Nahrungskette zeigt, wer wen frisst, und damit, wie Energie von einem Lebewesen zum nächsten weitergegeben wird."),
+        ("Womit beginnt fast jede Nahrungskette?", new[] { "Mit einem Produzenten, z.B. einer Pflanze", "Mit einem großen Raubtier", "Mit einem Destruenten" }, "Mit einem Produzenten, z.B. einer Pflanze",
+            "Da Pflanzen als Produzenten die Energie der Sonne nutzbar machen, stehen sie fast immer am Anfang einer Nahrungskette."),
+        ("Wie nennt man ein Tier, das sich ausschließlich von Pflanzen ernährt?", new[] { "Pflanzenfresser (Herbivore)", "Fleischfresser (Carnivore)", "Allesfresser (Omnivore)" }, "Pflanzenfresser (Herbivore)",
+            "Pflanzenfresser wie Rehe oder Kaninchen fressen ausschließlich pflanzliche Nahrung."),
+        ("Wie nennt man ein Tier, das sich von anderen Tieren ernährt?", new[] { "Fleischfresser (Carnivore)", "Pflanzenfresser (Herbivore)", "Destruent" }, "Fleischfresser (Carnivore)",
+            "Fleischfresser wie der Fuchs jagen und fressen andere Tiere."),
+        ("Wie nennt man ein Tier, das sowohl Pflanzen als auch andere Tiere frisst?", new[] { "Allesfresser (Omnivore)", "Reiner Pflanzenfresser", "Destruent" }, "Allesfresser (Omnivore)",
+            "Allesfresser wie das Wildschwein oder der Mensch nehmen sowohl pflanzliche als auch tierische Nahrung zu sich."),
+        ("Was passiert, wenn in einer Nahrungskette ein Glied - z.B. der Räuber - plötzlich wegfällt?", new[] { "Das Gleichgewicht der ganzen Kette gerät durcheinander", "Es ändert sich überhaupt nichts", "Alle anderen Tiere sterben sofort" }, "Das Gleichgewicht der ganzen Kette gerät durcheinander",
+            "Fällt ein Glied einer Nahrungskette weg, z.B. weil ein Räuber verschwindet, vermehren sich Beutetiere oft stark und der Lebensraum gerät aus dem Gleichgewicht."),
+        ("Warum ist ein Nahrungsnetz eine realistischere Darstellung als eine einzelne Nahrungskette?", new[] { "Weil die meisten Tiere mehrere verschiedene Nahrungsquellen haben und mehrfach vernetzt sind", "Weil ein Nahrungsnetz nur aus einer einzigen Kette besteht", "Weil im Nahrungsnetz keine Pflanzen vorkommen" }, "Weil die meisten Tiere mehrere verschiedene Nahrungsquellen haben und mehrfach vernetzt sind",
+            "In der Natur frisst kaum ein Tier nur eine einzige Beuteart - viele Nahrungsketten verknüpfen sich deshalb zu einem Nahrungsnetz."),
+        ("Welches der folgenden ist ein typischer Lebensraum in Mitteleuropa?", new[] { "Wald, Wiese oder Teich", "Nur die Sahara-Wüste", "Nur der Nordpol" }, "Wald, Wiese oder Teich",
+            "Wald, Wiese, Teich, Hecke oder Fluss sind typische Lebensräume, die man in Mitteleuropa direkt vor der Haustür findet."),
+        ("Warum können bestimmte Tiere und Pflanzen nur in bestimmten Lebensräumen überleben?", new[] { "Weil sie an die dortigen Bedingungen wie Klima, Nahrung und Boden angepasst sind", "Weil sie sich das zufällig ausgesucht haben", "Weil andere Lebensräume ihnen verboten sind" }, "Weil sie an die dortigen Bedingungen wie Klima, Nahrung und Boden angepasst sind",
+            "Lebewesen sind im Lauf der Zeit an die Bedingungen ihres Lebensraums angepasst - deshalb überlebt z.B. ein Wasserfrosch nicht in der Wüste."),
+        ("Was bedeutet eine \"Räuber-Beute-Beziehung\"?", new[] { "Ein Tier (Räuber) jagt und frisst ein anderes Tier (Beute)", "Zwei Tiere teilen sich freundschaftlich die Nahrung", "Ein Tier zersetzt abgestorbene Pflanzenreste" }, "Ein Tier (Räuber) jagt und frisst ein anderes Tier (Beute)",
+            "Bei einer Räuber-Beute-Beziehung, z.B. Fuchs und Hase, jagt der Räuber gezielt die Beute, um sich zu ernähren."),
+        ("Was passiert normalerweise mit der Zahl der Beutetiere, wenn es in einem Lebensraum sehr viele Räuber gibt?", new[] { "Sie sinkt, weil mehr Beutetiere gefressen werden", "Sie steigt automatisch stark an", "Sie bleibt exakt gleich" }, "Sie sinkt, weil mehr Beutetiere gefressen werden",
+            "Je mehr Räuber es gibt, desto mehr Beutetiere werden gefressen - die Bestände von Räubern und Beute hängen eng zusammen."),
+        ("Wie nennt man die Gesamtheit aller miteinander verknüpften Nahrungsketten eines Lebensraums?", new[] { "Nahrungsnetz", "Nahrungspyramide", "Zellverband" }, "Nahrungsnetz",
+            "Da viele Nahrungsketten sich überschneiden und verknüpfen, spricht man insgesamt von einem Nahrungsnetz."),
+        ("Was passiert mit den Nährstoffen toter Pflanzen und Tiere durch Destruenten wie Pilze und Bodenbakterien?", new[] { "Sie werden zersetzt und gelangen zurück in den Nährstoffkreislauf", "Sie verschwinden spurlos aus dem Lebensraum", "Sie werden ausschließlich von Räubern verwertet" }, "Sie werden zersetzt und gelangen zurück in den Nährstoffkreislauf",
+            "Destruenten zersetzen abgestorbenes Material, wodurch die enthaltenen Nährstoffe wieder für Pflanzen im Boden verfügbar werden."),
+        ("Warum sind Regenwürmer für einen Lebensraum wie eine Wiese besonders wichtig?", new[] { "Sie zersetzen abgestorbenes Material und lockern dabei den Boden auf", "Sie betreiben als einzige Tiere Fotosynthese", "Sie jagen als Räuber große Beutetiere" }, "Sie zersetzen abgestorbenes Material und lockern dabei den Boden auf",
+            "Regenwürmer sind wichtige Destruenten: Sie zersetzen Pflanzenreste und lockern durch ihre Gänge gleichzeitig den Boden auf."),
+        ("Warum sind Bienen für viele Lebensräume besonders wichtig?", new[] { "Sie bestäuben Blüten und sichern so die Fortpflanzung vieler Pflanzen", "Sie sind die einzigen Destruenten in der Natur", "Sie stehen am Ende jeder Nahrungskette" }, "Sie bestäuben Blüten und sichern so die Fortpflanzung vieler Pflanzen",
+            "Beim Sammeln von Nektar tragen Bienen Blütenstaub von Blüte zu Blüte und ermöglichen so vielen Pflanzen die Fortpflanzung."),
+        ("Was passiert mit der nutzbaren Energiemenge, je weiter man in einer Nahrungskette nach oben (zum Fleischfresser) geht?", new[] { "Sie nimmt ab, weil bei jedem Schritt Energie als Wärme verloren geht", "Sie nimmt automatisch zu", "Sie bleibt auf jeder Stufe exakt gleich groß" }, "Sie nimmt ab, weil bei jedem Schritt Energie als Wärme verloren geht",
+            "Bei jedem Schritt einer Nahrungskette geht ein großer Teil der Energie als Wärme verloren - deshalb gibt es meist viel mehr Pflanzenfresser als Fleischfresser.")
+    };
+
+    private static QuizQuestion LebensraeumeUndNahrungsketten(Random r)
+    {
+        var f = LebensraeumeListe[r.Next(LebensraeumeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Lebensräume und ihre Bewohner (Nahrungsketten)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nahrungsketten laufen meist: Produzent (Pflanze) → Konsument (Pflanzenfresser) → Konsument (Fleischfresser) → Destruenten zersetzen am Ende alles wieder."
         };
     }
 }

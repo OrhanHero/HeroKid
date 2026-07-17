@@ -36,7 +36,7 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Deutsch** | `GermanGenerator.cs` | 12 | 13 | 25 | Drama-Analyse abgedeckt; Novelle/Parabel fehlen noch |
 | **Türkisch** | `TurkishGenerator.cs` | 8 | 7 | 15 | Klasse 9: fehlt Alltag/Konsum, Gesellschaft, Berufswelt |
 | **Englisch** | `EnglischGenerator.cs` | 7 | 6 | 13 | Klasse 9: fehlt Alltag/Konsum, Bewerbung, Kultur/Historie |
-| **Biologie** | `BiologieGenerator.cs` | 4 | 8 | 12 | Klasse 6: fehlt Zelle, Lebensräume/Nahrungsketten |
+| **Biologie** | `BiologieGenerator.cs` | 6 | 8 | 14 | ✅ komplett |
 | **Chemie** | `ChemieGenerator.cs` | 5 | 9 | 14 | Klasse 9 komplett (inkl. organischer Chemie); Klasse 6: fehlt Periodensystem-Basics, Gase, Wasser, Salze |
 | **Physik** | `PhysikGenerator.cs` | 6 | 7 | 13 | Klasse 6: fehlt Thermik, Kraft/Wechselwirkung, mech./therm. Energie |
 | **Geschichte** | `GeschichteGenerator.cs` | 3 | 6 | 9 | Klasse 9: fehlt nur Feindbilder/Propaganda (Bonusmodul) |
@@ -48,7 +48,7 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Musik** | `MusikGenerator.cs` | 5 | 6 | 11 | ✅ |
 | **ITG** | `ItgGenerator.cs` | 3 | 3 | 6 | Standardsoftware bewusst weggelassen (nicht quizbar) |
 
-**Gesamt: 202 Topics × ~20 Fragen = ~4.000 Fragen im Pool**
+**Gesamt: 204 Topics × ~20 Fragen = ~4.000 Fragen im Pool**
 
 > Frühere Fassungen dieses Berichts nannten ~124 Topics und listeten Chemie/Politik/Geografie/Ethik
 > Klasse 9 sowie Deutsch-Drama als große Lücken. Die Generatoren wurden seither erweitert, ohne dass
@@ -78,7 +78,6 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Englisch/Türkisch Klasse 9** | Alltag/Konsum, Bewerbung/Berufswelt, Kultur (Klasse-9-Niveau) | Kernthemen (Identität, Gesellschaft/Medien, Umwelt bzw. Traditionen, Geografie) sind drin |
 | **Türkisch generell** | RLP gliedert in 4 Themenfelder pro Stufe; Generator ist überwiegend grammatikorientiert (Zeiten, Satzglieder, Rechtschreibung) | Funktionell für Quiz nutzbar, mehrere Wortschatz-Themenfelder inzwischen ergänzt, aber nicht 1:1 RLP-abgebildet |
 | **Deutsch** | Literarische Textanalyse: Novelle, Parabel | Drama-Analyse ist inzwischen abgedeckt (`DramaAufbau`, `Figurencharakterisierung`) |
-| **Biologie Klasse 6** | Die Zelle, Lebensräume/Nahrungsketten | Klasse 9 ist komplett (6/6 Themenfelder) |
 | **Geschichte Klasse 9** | Feindbilder/Propaganda (Bonusmodul) | 6 von 7 Themenfeldern abgedeckt |
 
 ---
@@ -90,8 +89,8 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | Priorität | Thema | Details |
 |-----------|-------|---------|
 | 🔴 **Hoch** | **EF Core Migrations fehlen** | Nutzt `EnsureCreated()` + `SqliteSchemaUpdater` (nur additive Änderungen). Bei Spalten-Umbennungen/Entfernung → manuelles DB-Löschen nötig. |
-| 🔴 **Hoch** | **Installer Signing (EV-Zertifikat)** | Ohne Signatur → SmartScreen-Warnung bei Endnutzern. |
-| 🟡 **Mittel** | **TTS Türkisch** | Piper-Stimmen primär Deutsch/Englisch; Türkisch fehlt/experimentell. Fallback: Windows SAPI (oft keine TR-Stimme installiert). |
+| ⏸️ **Zurückgestellt** | **Installer Signing (EV-Zertifikat)** | Ohne Signatur → SmartScreen-Warnung bei Endnutzern. Bewusst auf die finale Version verschoben (Nutzer-Entscheidung). |
+| ✅ **Erledigt/gut genug** | **TTS Türkisch** | Aktuelle Piper-Stimme ist gut genug, bleibt vorerst unangetastet (Nutzer-Entscheidung). |
 | 🟡 **Mittel** | **Offline-Erst-Installation LLM** | Model-Download (~2-4 GB) passiert erst bei erstem Nutzen. Kein Pre-Bundle im Installer. |
 | 🟡 **Mittel** | **Eltern-Export/Backup** | Nur "Alle Daten zurücksetzen", kein Export/Import von Profilen/Fortschritt. |
 | 🟢 **Niedrig** | **Multi-Device Sync** | Nicht vorgesehen (lokal-only, SQLite). |
@@ -115,7 +114,6 @@ vollständig - die reale Restlücke liegt bei Klasse 6 und ein paar Klasse-9-Nis
 |------|----------------------|---------|
 | Chemie Kl.6 | Periodensystem (Kl.6-Niveau), Gase, Wasser, Salze | ~4 Topics × 20 Fragen = 80 Q |
 | Physik Kl.6 | Thermik, Kraft, Energie, Wärme | ~4 Topics × 20 = 80 Q |
-| Biologie Kl.6 | Zelle, Lebensräume/Nahrungsketten | ~2 Topics × 20 = 40 Q |
 | Geografie Kl.6 | Risikoräume, Migration, Regenwald, Armut (Kl.6) | ~4 Topics × 20 = 80 Q |
 | Politik Kl.6 | Armut (Kl.6), Globalisierte Welt, Migration, Rechtsstaat | ~4 Topics × 20 = 80 Q |
 | Ethik Kl.6 | Identität, Freiheit, Gerechtigkeit (Kl.6-Niveau) | ~3 Topics × 20 = 60 Q |
@@ -123,8 +121,9 @@ vollständig - die reale Restlücke liegt bei Klasse 6 und ein paar Klasse-9-Nis
 | Deutsch | Novelle, Parabel | ~2 Topics × 20 = 40 Q |
 | Geschichte Kl.9 | Feindbilder/Propaganda (Bonusmodul) | ~1 Topic × 20 = 20 Q |
 
-**Gesamt Content-Lücke: ~580 Fragen** (bei 202 existierenden Topics/~4.000 Fragen = ~14%
-Erweiterungsmöglichkeit, deutlich kleiner als frühere Schätzungen).
+**Gesamt Content-Lücke: ~540 Fragen** (bei 204 existierenden Topics/~4.000 Fragen = ~14%
+Erweiterungsmöglichkeit). Biologie Klasse 6 (Zelle, Lebensräume/Nahrungsketten) wurde bereits
+geschlossen (siehe `BiologieGenerator.cs`).
 
 ---
 
@@ -157,21 +156,24 @@ Erweiterungsmöglichkeit, deutlich kleiner als frühere Schätzungen).
 
 ## 6. Nächste Meilensteine (Vorschlag)
 
-### Sprint 1: Produktionsreife (2-3 Wochen)
-1. **EV-Zertifikat besorgen & Installer signieren** (SmartScreen)
-2. **Türkische TTS-Stimme** recherchieren (Piper Community / eSpeak-NG Fallback)
-3. **Feed-URL-Healthcheck** (kleines Skript, wöchentlich via Cron/GitHub Action)
-4. **Eltern-Export/Import** (JSON-Backup von Profilen + Fortschritt)
+> **Priorisierung (Nutzer-Entscheidung 2026-07-17):** Installer-Signing (EV-Zertifikat) wird bewusst
+> auf ganz zuletzt verschoben - erst wenn die finale Version erreicht ist. Türkische TTS-Stimme ist
+> aktuell gut genug und bleibt vorerst unangetastet. Fokus liegt auf den Content-Lücken (Sprint 2/3).
 
-### Sprint 2: Content-Runde 1 (2 Wochen)
-5. Chemie Klasse 6: Periodensystem-Basics, Gase, Wasser, Salze (4 Topics)
-6. Physik Klasse 6: Thermik, Kraft, Energie, Wärme (4 Topics)
-7. Biologie Klasse 6: Zelle, Lebensräume/Nahrungsketten (2 Topics)
+### Sprint 2: Content-Runde 1 - Klasse 6 Naturwissenschaften
+5. ~~Biologie Klasse 6: Zelle, Lebensräume/Nahrungsketten (2 Topics)~~ ✅ erledigt (`Zelle`, `LebensraeumeUndNahrungsketten` in `BiologieGenerator.cs`)
+6. Chemie Klasse 6: Periodensystem-Basics, Gase, Wasser, Salze (4 Topics)
+7. Physik Klasse 6: Thermik, Kraft, Energie, Wärme (4 Topics)
 
 ### Sprint 3: Content-Runde 2 (2 Wochen)
 8. Politik/Geografie Klasse 6: Armut, Globalisierte Welt, Migration, Rechtsstaat, Risikoräume, Regenwald (bis zu 8 Topics)
 9. Ethik Klasse 6: Identität, Freiheit, Gerechtigkeit (3 Topics)
 10. Englisch/Türkisch Klasse 9: Alltag/Konsum, Bewerbung (bis zu 4 Topics)
+
+### Später (nach finaler Version)
+- **EV-Zertifikat besorgen & Installer signieren** (SmartScreen)
+- **Feed-URL-Healthcheck** (kleines Skript, wöchentlich via Cron/GitHub Action)
+- **Eltern-Export/Import** (JSON-Backup von Profilen + Fortschritt)
 
 ### Sprint 4: Polish (1-2 Wochen)
 11. Mathe: Offene Zahleneingabe (neuer Fragetyp)
@@ -193,7 +195,7 @@ verbleibende Lücke liegt überwiegend bei Klasse-6-Grundthemen (Physik, Chemie,
 Politik, Ethik) sowie ein paar Klasse-9-Nischenthemen (Englisch/Türkisch Alltag/Bewerbung, Deutsch
 Novelle/Parabel) - dazu bewusst ausgeklammerte Bereiche (Sport, WAT, Standardsoftware).
 
-**Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)**. Alles andere ist "Qualität/Content", kein Blocker.
+**Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)** - bewusst auf die finale Version verschoben. Alles andere ist "Qualität/Content", kein Blocker.
 
 ---
 

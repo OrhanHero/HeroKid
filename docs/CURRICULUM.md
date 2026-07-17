@@ -110,8 +110,8 @@ Rahmenlehrplan" weiter unten).
 | Fotosynthese | Vererbung (Genetik) |
 | Wirbeltierklassen | Ökosysteme |
 | Pubertät und Entwicklung | Gesundheit und Krankheit (Immunologie) |
-| | Bau und Funktion des Nervensystems |
-| | Sucht und Suchtprävention |
+| Die Zelle | Bau und Funktion des Nervensystems |
+| Lebensräume und ihre Bewohner (Nahrungsketten) | Sucht und Suchtprävention |
 | | Vererbung beim Menschen (Humangenetik) |
 | | Evolution – Theorien und Stammesgeschichte |
 
@@ -426,8 +426,8 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Biologie (`BiologieGenerator.cs`)
 
-- [ ] 3.1 Die Zelle – kleinste Funktionseinheit des Lebendigen
-- [ ] 3.2 Lebensräume und ihre Bewohner (Nahrungsketten)
+- [x] 3.1 Die Zelle – kleinste Funktionseinheit des Lebendigen (→ `Zelle`)
+- [x] 3.2 Lebensräume und ihre Bewohner (Nahrungsketten) (→ `LebensraeumeUndNahrungsketten`)
 - [x] 3.3 Stoffwechsel des Menschen (→ `MenschlicheOrgane`)
 - [x] 3.4 Sexualität, Fortpflanzung und Entwicklung (→ `PubertaetUndEntwicklung`)
 
@@ -682,7 +682,7 @@ Ethik/`Freundschaft`).
 | Deutsch | `GermanGenerator.cs` | 12 | 13 | 25 |
 | Türkisch | `TurkishGenerator.cs` | 8 | 7 | 15 |
 | Englisch | `EnglischGenerator.cs` | 7 | 6 | 13 |
-| Biologie | `BiologieGenerator.cs` | 4 | 8 | 12 |
+| Biologie | `BiologieGenerator.cs` | 6 | 8 | 14 |
 | Chemie | `ChemieGenerator.cs` | 5 | 9 | 14 |
 | Physik | `PhysikGenerator.cs` | 6 | 7 | 13 |
 | Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
@@ -694,7 +694,7 @@ Ethik/`Freundschaft`).
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 202 Topics** (je Topic ~20 kuratierte Fragen → ~4.000 Fragen im Pool; Mathematik generiert
+**Total: 204 Topics** (je Topic ~20 kuratierte Fragen → ~4.000 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
