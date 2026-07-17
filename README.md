@@ -316,8 +316,8 @@ benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäum
   durch Rückfragen und Denkanstöße zu helfen - erst wenn das Kind es mehrfach probiert hat oder
   ausdrücklich danach fragt, soll die KI die Lösung erklären.
 - **News-Quellen**: kuratierte RSS-Feeds (siehe `LernTor.News/NewsFeedSource.cs`), inklusive einer
-  KI-/Technik-Quelle (heise online, IT Boltwise), einer dedizierten Spiele-Quelle (GameStar), einer
-  dedizierten Finanzen-Quelle (finanzen.net) sowie offizieller Bundesregierungs-Quellen (Bundesregierung
+  KI-/Technik-Quelle (heise online, IT Boltwise), einer dedizierten Spiele-Quelle (GameStar) sowie
+  offizieller Bundesregierungs-Quellen (Bundesregierung
   kompakt, Bundesregierung Pressemitteilungen, BMBFSFJ für Bildungs-/Familienthemen), dazu einer
   Herabstufung (nicht Ausfilterung) von Artikeln mit verstörenden Themen (Krieg, Gewaltverbrechen, ...)
   über `SensitiveKeywords`. RSS-URLs von Nachrichtenseiten ändern sich gelegentlich – nicht erreichbare

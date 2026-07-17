@@ -642,7 +642,7 @@ Ethik/`Freundschaft`).
 | **Berlin** (Garantie-Kontingent) | 6 | rbb24, Tagesspiegel, Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg, Abgeordnetenhaus Berlin |
 | **Türkei** (Garantie-Kontingent) | 3 | Anadolu Ajansı, TRT Haber, DW Türkçe |
 | **Spiele** (Extra-Slot) | 5 | GameStar, Nintendo.de, PlayStation Blog, Xbox News, Steam News |
-| **Finanzen** | 1 Feed + 1 tägliches Erklärstück | finanzen.net + rotierendes Finanzwissen (Fix) |
+| **Finanzen** | 1 tägliches Erklärstück (kein RSS-Feed) | rotierendes, kuratiertes Finanzwissen (`FinanceKnowledgeArticles`, Fix) |
 | **KI / Technik** | 2 | heise online, IT Boltwise |
 | **Deutschland / Allgemein** | 8 | tagesschau.de, Deutsche Welle, fluter.de (BpB), Bundesregierung ×3, BMBFSFJ |
 | **Welt / International** | 1 | Deutsche Welle International |

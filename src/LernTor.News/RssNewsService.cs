@@ -33,8 +33,9 @@ public sealed class RssNewsService
     /// <summary>
     /// Lädt aus jedem kuratierten Feed genau den neuesten Artikel und bereitet ihn kindgerecht auf.
     /// Fehlerhafte/nicht erreichbare Feeds werden übersprungen statt die ganze Ladung abzubrechen.
-    /// Das Ergebnis ist dadurch bewusst klein und stabil: pro Feed eine News, keine Quoten-, Extra-
-    /// oder Zusatzsammlungen mehr.
+    /// Das Ergebnis ist dadurch bewusst klein und stabil: pro Feed eine News, keine Quoten- oder
+    /// Extrasammlungen - einzige Ausnahme ist das tägliche, fest angehängte Finanzwissen-Erklärstück
+    /// (siehe <see cref="FinanceKnowledgeArticles"/>), da es dafür keinen verlässlichen RSS-Feed gibt.
     /// </summary>
     /// <param name="childAge">Alter des aktiven Kind-Profils für den automatischen Altersfilter:
     /// bis einschließlich 9 Jahren werden Artikel mit verstörenden Schlüsselwörtern KOMPLETT
@@ -69,6 +70,11 @@ public sealed class RssNewsService
                     "News", $"Feed übersprungen: {source.Name} ({source.RssUrl}) - {ex.Message}");
             }
         }
+
+        // Zu Finanzthemen gibt es selten kindtaugliche Tagesmeldungen in den RSS-Feeds (siehe
+        // FinanceKnowledgeArticles) - deshalb hängt sich hier immer EIN rotierendes, kuratiertes
+        // Erklärstück an, statt auf einen (unzuverlässigen) Finanz-RSS-Feed zu setzen.
+        articles.Add(FinanceKnowledgeArticles.GetForDate(DateOnly.FromDateTime(DateTime.Today), gradeLevel));
 
         return articles;
     }
