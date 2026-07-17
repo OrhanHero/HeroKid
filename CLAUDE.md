@@ -10,7 +10,8 @@ parents left enabled, and passes a final quiz (default ≥50%, threshold configu
 parent settings). Only then is the PC unlocked. Target
 audience: German-Turkish kids (~10-15) in Berlin; content follows the Berlin Rahmenlehrplan for
 Klasse 6 and 9. Full behavioral spec lives in `README.md`; curriculum topic mapping in
-`docs/CURRICULUM.md`; build/install steps in `docs/BUILD.md`.
+`docs/CURRICULUM.md`; build/install steps in `docs/BUILD.md`; stage/subject wiring in
+`docs/FAECHER-SYSTEM.md`; typing trainer details in `docs/TIPPTRAINER.md`.
 
 **Environment constraint**: this repo is often developed from a Linux sandbox with no .NET SDK
 and no Windows, so nothing here can actually be compiled or run locally in that environment.
@@ -71,8 +72,10 @@ LernTor.Installer                          — Inno Setup script + PowerShell au
 
 ### Content generators (`LernTor.ContentGen/Generators`)
 
-Every subject in the `Subject` enum (`LernTor.Core.Enums.Subject` — currently 14 curriculum
-subjects plus `News`, which has no generator) is one `ExerciseGeneratorBase` subclass. Each exposes
+Every subject in the `Subject` enum (`LernTor.Core.Enums.Subject` — currently 15 curriculum
+subjects plus `News` and `Tippen`, neither of which has a generator: News questions come from
+`LernTor.News` instead, and typing exercises come from the separate `TypingContentProvider`/
+`TypingExerciseService`, not `ExerciseGeneratorBase`) is one `ExerciseGeneratorBase` subclass. Each exposes
 a `TopicsByGrade: IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>>` — a topic is just a
 `Random -> QuizQuestion` delegate, backed by a curated fixed array of ~20
 question/answer/explanation tuples per topic (Math is the exception: it generates fresh numbers
@@ -101,9 +104,11 @@ sources before calling into `ContentGen`.
 
 `QuizComposer.ComposeFinalQuiz` builds the final quiz dynamically: it excludes generators for
 subjects in the caller-supplied `disabledSubjects` set, then divides `targetTotalQuestions` (default
-22) across however many subjects remain active, so the quiz doesn't balloon when many subjects are
+20) across however many subjects remain active, so the quiz doesn't balloon when many subjects are
 enabled and doesn't include subjects the child never practiced. News questions get capped at
-roughly a third of the target.
+roughly a third of the target. `MainViewModel` calls this twice per day at most: once for the first
+attempt (target 20) and, only if that attempt's score is below the profile's configured threshold,
+once more for a retry weighted toward weak subjects (target 15, via `ComposeRetryExercises`).
 
 ### Stage navigation (`LernTor.Core.Services.LearningStageSubjects`)
 
@@ -127,8 +132,12 @@ callback delegates (not a mediator/messenger) — e.g. `ExerciseViewModel` takes
 `Controls/QuestionCard.xaml`.
 
 Everything is scoped per `StudentProfile` (multiple kids, one PC): `ProgressRepository`,
-`ActivityLogRepository` take a `profileId`. `AppSettings` (admin password, disabled subjects, time
-limit) stays global/shared across profiles; grade level (`GradeLevel`) is per-profile, not global.
+`ActivityLogRepository` take a `profileId`. `AppSettings` (admin password, disabled subjects, LLM
+model choice) stays global/shared across profiles; `GradeLevel` and the difficulty thresholds
+(`TypingMinAccuracy`, `QuizFirstAttemptThreshold`, `QuizRetryThreshold` — parent-configurable presets,
+no rebuild needed to change them) live on `StudentProfile` itself, per-profile, not global.
+`StudentProfileRepository.UpdateSettingsAsync` is currently the only way to edit an existing
+profile's fields after creation — `GradeLevel`/`Name`/etc. otherwise only get set once at creation.
 
 Localization (`LernTor.App.Localization.LocalizationService`) is a hand-rolled singleton with a
 string indexer over `Translations.Map` (DE/TR), bound in XAML via
