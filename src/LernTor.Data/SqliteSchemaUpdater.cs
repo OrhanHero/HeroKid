@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using LernTor.Core.Logging;
 using Microsoft.EntityFrameworkCore;
+#pragma warning disable EF1002 // ExecuteSqlRaw with interpolated string - DDL from EF model, trusted source
 
 namespace LernTor.Data;
 
@@ -190,3 +191,5 @@ public static class SqliteSchemaUpdater
         return results;
     }
 }
+
+#pragma warning restore EF1002

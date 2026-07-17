@@ -13,12 +13,14 @@
 
   <ItemGroup>
     <!-- Für TeacherImport: PDF-/Word-Textextraktion (reine .NET-Bibliotheken, keine Windows-Abhängigkeit).
-         Versionen gegen die echte nuget.org-Versionshistorie geprüft
-         (api.nuget.org/v3-flatcontainer/.../index.json) - siehe README, Abschnitt "Automatisches
-         Einlesen von Lehrer-Unterlagen". UglyToad.PdfPig hat auf nuget.org aktuell nur Vorabversionen
-         (keine ohne Suffix "-alpha"/"-custom"), daher hier bewusst auf die ältere, alpha-gekennzeichnete
-         0.1.9 gepinnt statt auf die deutlich neuere 1.7.0-custom-5, deren API-Form unklar ist. -->
-    <PackageReference Include="UglyToad.PdfPig" Version="0.1.9-alpha001-patch1" />
+         Aktualisiert auf 1.7.0 (neueste verfügbare Version auf nuget.org) mit expliziten Sub-Paketen
+         um NU1603-Warnungen durch fehlende Abhängigkeiten (Core, Tokens, Fonts, Tokenization)
+         bei der alten 0.1.9-alpha zu vermeiden. -->
+    <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
+    <PackageReference Include="UglyToad.PdfPig.Core" Version="1.7.0-custom-5" />
+    <PackageReference Include="UglyToad.PdfPig.Tokens" Version="1.7.0-custom-5" />
+    <PackageReference Include="UglyToad.PdfPig.Fonts" Version="1.7.0-custom-5" />
+    <PackageReference Include="UglyToad.PdfPig.Tokenization" Version="1.7.0-custom-5" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <!-- Einzige KI-Anbindung in LernTor, komplett lokal (kein Cloud-Konto, keine Kosten, Daten
          verlassen nie den PC): LLamaSharp lädt eine GGUF-Modelldatei direkt im App-Prozess. Version

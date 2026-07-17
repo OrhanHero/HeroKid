@@ -19,6 +19,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
     private readonly TypingExerciseService _service;
     private readonly TypingProgressRepository _progressRepo;
     private readonly string _profileId;
+    private readonly string _profileName;
     private readonly Action<string?> _onLessonCompleted;
     private readonly DispatcherTimer _timer;
 
@@ -27,12 +28,14 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         TypingExerciseService service,
         TypingProgressRepository progressRepo,
         string profileId,
+        string profileName,
         Action<string?> onLessonCompleted)
     {
         Lesson = lesson;
         _service = service;
         _progressRepo = progressRepo;
         _profileId = profileId;
+        _profileName = profileName;
         _onLessonCompleted = onLessonCompleted;
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
@@ -133,18 +136,17 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
 
     private async Task SaveAndContinueAsync()
     {
-        // Fortschritt speichern
-        await _progressRepo.RecordAttemptAsync(
-            _profileId,
-            Lesson.Id,
-            (int)Lesson.LessonType,
-            Accuracy,
-            Wpm,
-            CorrectChars,
-            TotalChars,
-            Lesson.MinimumAccuracy,
-            Lesson.MinimumCharacters
-        );
+        // Fortschritt speichern über den Service (der auch die nächste Lektion mit Profilnamen ermittelt)
+        var result = new TypingResult
+        {
+            Accuracy = Accuracy,
+            Wpm = Wpm,
+            CorrectCharacters = CorrectChars,
+            TotalCharacters = TotalChars,
+            Passed = IsPassed,
+            Elapsed = Elapsed
+        };
+        await _service.RecordAttemptAsync(_profileId, Lesson, result, _profileName);
 
         // Sterne berechnen
         int stars = CalculateStars(Accuracy, Wpm);

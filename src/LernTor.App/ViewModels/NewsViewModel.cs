@@ -23,7 +23,7 @@ namespace LernTor.App.ViewModels;
 public sealed partial class NewsViewModel : ObservableObject
 {
     /// <summary>Mindest-Lesezeit pro Artikel in Sekunden.</summary>
-    private const int MinSecondsPerArticle = 20;
+    private const int MinSecondsPerArticle = 10;
 
     private readonly IReadOnlyList<NewsArticle> _articles;
     private readonly Action<NewsArticle, QuestionOutcome, QuizQuestion> _onArticleAnswered;

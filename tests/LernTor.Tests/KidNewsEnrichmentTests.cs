@@ -1,3 +1,4 @@
+using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.News;
 using Xunit;
@@ -188,8 +189,8 @@ public class KidNewsMetadataTests
     {
         foreach (var category in Enum.GetValues<NewsCategory>())
         {
-            Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.WhyImportantFor(category)));
-            Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.MeaningForKidsFor(category)));
+            Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.WhyImportantFor(category, GradeLevel.Klasse6)));
+            Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.MeaningForKidsFor(category, GradeLevel.Klasse6)));
         }
     }
 }

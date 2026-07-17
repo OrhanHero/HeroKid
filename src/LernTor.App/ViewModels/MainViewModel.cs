@@ -262,7 +262,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task<TypingDashboardViewModel> BuildTypingDashboardViewModelAsync()
     {
-        var vm = new TypingDashboardViewModel(CurrentProfile!.Id, _typingProgressRepo, _typingService, lessonId =>
+        var vm = new TypingDashboardViewModel(CurrentProfile!.Id, CurrentProfile!.Name, _typingProgressRepo, _typingService, lessonId =>
         {
             _ = NavigateToTypingExerciseAsync(lessonId);
         }, () => _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen)));
@@ -280,6 +280,7 @@ public sealed partial class MainViewModel : ObservableObject
             _typingService,
             _typingProgressRepo,
             CurrentProfile!.Id,
+            CurrentProfile!.Name,
             lessonId => OnTypingLessonCompleted(lessonId)
         );
         CurrentViewModel = exerciseVm;
@@ -311,24 +312,24 @@ public sealed partial class MainViewModel : ObservableObject
                     Elapsed = TimeSpan.Zero
                 };
                 var completeVm = new TypingLessonCompleteViewModel(
-                    lesson,
-                    result,
-                    () =>
-                    {
-                        var completedLessonIds = progress.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet();
-                        var nextLesson = TypingContentProvider.GetNextUnlockedLesson(completedLessonIds);
-                        if (nextLesson != null)
+                        lesson,
+                        result,
+                        () =>
                         {
-                            _ = NavigateToTypingExerciseAsync(nextLesson.Id);
-                        }
-                        else
-                        {
-                            // All lessons done - go back to dashboard which will show completion
-                            _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen));
-                        }
-                    },
-                    () => _ = NavigateToTypingExerciseAsync(lessonId)
-                );
+                            var completedLessonIds = progress.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet();
+                            var nextLesson = TypingContentProvider.GetNextUnlockedLesson(completedLessonIds, CurrentProfile!.Name);
+                            if (nextLesson != null)
+                            {
+                                _ = NavigateToTypingExerciseAsync(nextLesson.Id);
+                            }
+                            else
+                            {
+                                // All lessons done - go back to dashboard which will show completion
+                                _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen));
+                            }
+                        },
+                        () => _ = NavigateToTypingExerciseAsync(lessonId)
+                    );
                 CurrentViewModel = completeVm;
             }
         }
@@ -345,7 +346,8 @@ public sealed partial class MainViewModel : ObservableObject
     {
         // Artikel und Wetter parallel laden - das Wetter-Widget ist Beiwerk und darf den
         // News-Start nicht verzögern; bei Fehlschlag liefert der Dienst null (Widget bleibt weg).
-        var articlesTask = _newsService.LoadCuratedArticlesAsync(targetCount: NewsTargetCount, childAge: CurrentProfile?.Age);
+        var gradeLevel = CurrentProfile?.GradeLevel ?? GradeLevel.Klasse6;
+        var articlesTask = _newsService.LoadCuratedArticlesAsync(targetCount: NewsTargetCount, childAge: CurrentProfile?.Age, gradeLevel: gradeLevel);
         var weatherTask = _weatherService.LoadBerlinWeatherAsync();
         var articles = await articlesTask;
         var weather = await weatherTask;

@@ -8,6 +8,9 @@ gebaut, dass weitere Themen einfach als zusätzliche private Methode + Eintrag i
 ergänzt werden können.
 
 Der Tipptrainer ist eine eigene Lernstufe vor den News und gehört nicht zum Fachcurriculum.
+**Nur deutsche Sprache & QWERTZ-Layout** (keine türkischen/englischen Wörter mehr).
+Profil-spezifische Abschluss-Lektionen: Emirhan (Klasse 6) und Batuhan (Klasse 9) tippen jeweils
+ihren persönlichen Steckbrief-Text.
 
 **Poolgröße je Thema**: Jedes Thema wird von einer festen Liste kuratierter Beispiele bedient
 (außer Mathematik, das echte Zahlenwerte würfelt statt aus einer festen Liste zu ziehen - dort ist

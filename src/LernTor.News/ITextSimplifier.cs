@@ -1,3 +1,5 @@
+using LernTor.Core.Enums;
+
 namespace LernTor.News;
 
 /// <summary>
@@ -7,5 +9,7 @@ namespace LernTor.News;
 /// </summary>
 public interface ITextSimplifier
 {
-    string Simplify(string rawText);
+    /// <param name="rawText">Rohtext aus dem RSS-Feed.</param>
+    /// <param name="gradeLevel">Klassenstufe des Kindes (6 oder 9) für altersgerechte Anpassung.</param>
+    string Simplify(string rawText, GradeLevel gradeLevel);
 }

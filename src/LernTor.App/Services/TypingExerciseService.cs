@@ -105,7 +105,8 @@ public sealed class TypingExerciseService
     public async Task<LessonCompletionResult> RecordAttemptAsync(
         string profileId,
         TypingLesson lesson,
-        TypingResult result)
+        TypingResult result,
+        string? profileName = null)
     {
         var progress = await _progressRepo.GetOrCreateAsync(profileId, lesson.Id);
 
@@ -138,9 +139,9 @@ public sealed class TypingExerciseService
 
         await _progressRepo.SaveAsync(progress);
 
-        // Prüfe nächste Lektion
+        // Prüfe nächste Lektion (mit Profilnamen für persönliche Abschluss-Lektion)
         var allProgress = await _progressRepo.GetProgressAsync(profileId);
-        var nextLesson = TypingContentProvider.GetNextLesson(progress.LessonId); // Vereinfacht
+        var nextLesson = TypingContentProvider.GetNextLesson(progress.LessonId, profileName); // Profilname übergeben
 
         return new LessonCompletionResult
         {
@@ -165,7 +166,7 @@ public sealed class TypingExerciseService
     /// <summary>
     /// Holt Dashboard-Daten für ein Profil.
     /// </summary>
-    public async Task<TypingDashboardData> GetDashboardDataAsync(string profileId)
+    public async Task<TypingDashboardData> GetDashboardDataAsync(string profileId, string? profileName = null)
     {
         var progressDict = await _progressRepo.GetProgressAsync(profileId);
 
@@ -198,15 +199,32 @@ public sealed class TypingExerciseService
             });
         }
 
+        // Profil-spezifische Abschluss-Lektion zum Dashboard hinzufügen (als letzte Lektion)
+        var finalLesson = TypingContentProvider.GetFinalLessonForProfile(profileName);
+        progressDict.TryGetValue(finalLesson.Id, out var finalProgress);
+        bool finalCompleted = finalProgress?.IsCompleted ?? false;
+        if (finalCompleted) completedCount++;
+
+        lessonStates.Add(new LessonState
+        {
+            Lesson = finalLesson,
+            IsCompleted = finalCompleted,
+            BestAccuracy = finalProgress?.BestAccuracy ?? 0,
+            BestWpm = finalProgress?.BestWpm ?? 0,
+            StarsEarned = finalProgress?.StarsEarned ?? 0,
+            AttemptCount = finalProgress?.AttemptCount ?? 0,
+            IsUnlocked = IsLessonUnlocked(finalLesson, progressDict)
+        });
+
         double avgAccuracy = accuracyCount > 0 ? totalAccuracy / accuracyCount : 0;
 
         return new TypingDashboardData
         {
             Lessons = lessonStates,
             CompletedCount = completedCount,
-            TotalLessons = TypingContentProvider.GetAllLessons().Count,
+            TotalLessons = TypingContentProvider.GetAllLessons().Count + 1, // +1 für Abschluss-Lektion
             AverageAccuracy = avgAccuracy,
-            NextLesson = TypingContentProvider.GetNextUnlockedLesson(progressDict.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet())
+            NextLesson = TypingContentProvider.GetNextUnlockedLesson(progressDict.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet(), profileName)
         };
     }
 

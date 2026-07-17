@@ -23,7 +23,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
 {
     /// <summary>Mindestzeit pro Aufgabe in Sekunden - grob die Zeit, um eine kurze Frage samt
     /// Erklärung tatsächlich zu lesen.</summary>
-    private const int MinSecondsPerQuestion = 20;
+    private const int MinSecondsPerQuestion = 5;
 
     private readonly IReadOnlyList<QuizQuestion> _questions;
     private readonly Action<Subject, QuestionOutcome, QuizQuestion> _onQuestionAnswered;

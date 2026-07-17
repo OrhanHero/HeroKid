@@ -19,15 +19,18 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
     private readonly Action<string> _onLessonSelected;
     private readonly Action _onContinueToNews;
     private readonly string _profileId;
+    private readonly string _profileName;
 
     public TypingDashboardViewModel(
         string profileId,
+        string profileName,
         TypingProgressRepository progressRepo,
         TypingExerciseService service,
         Action<string> onLessonSelected,
         Action onContinueToNews)
     {
         _profileId = profileId;
+        _profileName = profileName;
         _progressRepo = progressRepo;
         _service = service;
         _onLessonSelected = onLessonSelected;
@@ -56,35 +59,27 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        var progress = await _progressRepo.GetProgressAsync(_profileId);
-        var lessonVMs = new List<TypingLessonViewModel>();
+        var dashboardData = await _service.GetDashboardDataAsync(_profileId, _profileName);
 
-        var allLessons = TypingContentProvider.GetAllLessons().OrderBy(l => (int)l.LessonType).ThenBy(l => l.Id).ToList();
-        var completedLessonIds = progress.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet();
-
-        for (int i = 0; i < allLessons.Count; i++)
+        // Map LessonState to TypingLessonViewModel
+        var lessonVMs = dashboardData.Lessons.Select(ls =>
         {
-            var lesson = allLessons[i];
-            progress.TryGetValue(lesson.Id, out var p);
-            var vm = new TypingLessonViewModel(lesson, p);
-
-            // Unlocked if: first lesson, or previous lesson is completed
-            bool isFirstLesson = i == 0;
-            bool prevCompleted = false;
-            if (i > 0)
+            var vm = new TypingLessonViewModel(ls.Lesson, null)
             {
-                var prevLesson = allLessons[i - 1];
-                prevCompleted = completedLessonIds.Contains(prevLesson.Id);
-            }
-            vm.SetUnlocked(isFirstLesson || prevCompleted);
-
-            lessonVMs.Add(vm);
-        }
+                IsCompleted = ls.IsCompleted,
+                BestAccuracy = ls.BestAccuracy,
+                BestWpm = ls.BestWpm,
+                StarsEarned = ls.StarsEarned,
+                AttemptCount = ls.AttemptCount
+            };
+            vm.SetUnlocked(ls.IsUnlocked);
+            return vm;
+        }).ToList();
 
         Lessons = lessonVMs;
-        TotalCount = Lessons.Count;
-        CompletedCount = Lessons.Count(l => l.IsCompleted);
-        EarnedStars = Lessons.Sum(l => l.StarsEarned);
+        TotalCount = dashboardData.TotalLessons;
+        CompletedCount = dashboardData.CompletedCount;
+        EarnedStars = lessonVMs.Sum(l => l.StarsEarned);
         OverallProgress = TotalCount > 0 ? (double)CompletedCount / TotalCount : 0.0;
 
         OnPropertyChanged(nameof(HasCompletedAll));

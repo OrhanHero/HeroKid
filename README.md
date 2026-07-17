@@ -61,10 +61,14 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    der Zugriff auf die Seite nicht möglich, und ihre zeitgenössischen Gedichte/Übersetzungen sind
    urheberrechtlich geschützt und dürften ohne Erlaubnis nicht in die App übernommen werden.)
 3. **Tipptrainer** – der 10-Finger-Trainer mit mehreren aufeinander aufbauenden Lektionen, virtueller
-  Tastatur, Live-Feedback zu Eingaben, Genauigkeit und Geschwindigkeit. Nach jeder abgeschlossenen
+  Tastatur, Live-Feedback zu Eingaben, Genauigkeit und Geschwindigkeit. **Nur deutsche Sprache und
+  QWERTZ-Tastaturlayout** (keine türkischen/englischen Wörter mehr). Nach jeder abgeschlossenen
   Lektion erscheint der gewohnte Weiter-/Wiederholen-Dialog; ist wirklich alles erledigt, zeigt das
-  Dashboard unten ein Glückwunsch-Panel mit einem Button weiter zu den News. Der Tipptrainer ist eine
-  eigene feste Stage und gehört nicht zum Fachcurriculum.
+  Dashboard unten ein Glückwunsch-Panel mit einem Button weiter zu den News. **Profil-spezifische
+  Abschluss-Lektion**: Emirhan (Klasse 6) tippt einen persönlichen Steckbrief-Text (Name, Geburtsdatum,
+  Adresse, Telefon, Eltern, Schule 6c, Lieblingsessen, Hobbys), Batuhan (Klasse 9) seinen eigenen
+  Steckbrief (Geburtsdatum, Adresse, Telefon, Eltern, Gymnasium 9a, Lieblingsessen, Hobbys).
+  Der Tipptrainer ist eine eigene feste Stage und gehört nicht zum Fachcurriculum.
 4. **News für Kinder** (Pflicht) – kuratierte RSS-Artikel, verständlich, neutral und ohne Angstmache
    aufbereitet (sprachliches Vorbild: logo!/Checker-Sendungen). **Rubriken**: 🐻 Berlin (wichtigste
   regionale Rubrik, garantierte Plätze), 🇩🇪 Deutschland, 🌍 Welt, 🇹🇷 Türkei (täglich garantierte

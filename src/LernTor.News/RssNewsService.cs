@@ -3,6 +3,7 @@ using System.ServiceModel.Syndication;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
+using LernTor.Core.Enums;
 using LernTor.Core.Models;
 
 namespace LernTor.News;
@@ -40,7 +41,10 @@ public sealed class RssNewsService
     /// ausgefiltert statt nur herabgestuft ("keine Angstmache" gilt für die Jüngsten strikt);
     /// ab 10 bleibt das mildere Herabstufen, weil sonst an nachrichtenschweren Tagen zu wenige
     /// Artikel übrig blieben. null = kein Alter bekannt, Standardverhalten.</param>
-    public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, int? childAge = null, CancellationToken cancellationToken = default)
+    /// <param name="gradeLevel">Klassenstufe (6 oder 9) für altersgerechte Textvereinfachung:
+    /// Klasse 6 = stark vereinfacht (kurze Sätze, einfaches Vokabular, Aktiv statt Passiv),
+    /// Klasse 9 = mild vereinfacht (normale Satzstruktur, nur schwierigste Wörter ersetzt).</param>
+    public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, int? childAge = null, GradeLevel gradeLevel = GradeLevel.Klasse6, CancellationToken cancellationToken = default)
     {
         var articles = new List<NewsArticle>();
 
@@ -53,7 +57,7 @@ public sealed class RssNewsService
                 var latestItem = SelectLatestItem(items, childAge);
                 if (latestItem is not null)
                 {
-                    articles.Add(BuildArticle(latestItem, source));
+                    articles.Add(BuildArticle(latestItem, source, gradeLevel));
                 }
             }
             catch (Exception ex)
@@ -236,11 +240,11 @@ public sealed class RssNewsService
         return string.Empty;
     }
 
-    private NewsArticle BuildArticle(SyndicationItem item, NewsFeedSource source)
+    private NewsArticle BuildArticle(SyndicationItem item, NewsFeedSource source, GradeLevel gradeLevel)
     {
         var title = item.Title?.Text ?? "Ohne Titel";
         var rawSummary = item.Summary?.Text ?? string.Empty;
-        var simplified = _simplifier.Simplify(rawSummary);
+        var simplified = _simplifier.Simplify(rawSummary, gradeLevel);
         var imageUrl = item.Links.FirstOrDefault(l => l.MediaType?.StartsWith("image") == true)?.Uri.ToString();
 
         // Kindgerechte Anreicherung (siehe README "News für Kinder"): Rubrik + Emoji,
@@ -263,8 +267,8 @@ public sealed class RssNewsService
             CategoryEmoji = NewsCategoryClassifier.EmojiFor(category),
             ReadingMinutes = KidNewsMetadata.ComputeReadingMinutes(title, simplified),
             Difficulty = KidNewsMetadata.ComputeDifficulty(simplified),
-            WhyImportant = KidNewsMetadata.WhyImportantFor(category),
-            MeaningForKids = KidNewsMetadata.MeaningForKidsFor(category),
+            WhyImportant = KidNewsMetadata.WhyImportantFor(category, gradeLevel),
+            MeaningForKids = KidNewsMetadata.MeaningForKidsFor(category, gradeLevel),
             ExplainedTerms = KidTermGlossary.FindTerms($"{title} {simplified}"),
             // 📍-Bezirks-Chip statt Kartenansicht (siehe BerlinDistrictDetector) - auch für
             // Nicht-Berlin-Quellen geprüft, falls z.B. eine tagesschau-Meldung Spandau betrifft.

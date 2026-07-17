@@ -193,7 +193,7 @@ public sealed class TypingProgressRepository
             {
                 entity.CompletedAt = DateTimeOffset.Now;
                 entity.StarsEarned = CalculateStars(accuracy, wpm);
-                _log.LogInformation("Typing", $"Profil {profileId} hat Lektion {lessonId} abgeschlossen (Genauigkeit: {accuracy:P1})");
+                _log.LogInformation("Profil {ProfileId} hat Lektion {LessonId} abgeschlossen (Genauigkeit: {Accuracy:P1})", profileId, lessonId, accuracy);
             }
         }
 
