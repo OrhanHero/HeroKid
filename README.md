@@ -131,6 +131,11 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    wurden, dann gelten sie als gelernt und verschwinden. News-Fragen sind ausgenommen (deren
    Tagesartikel gibt es später nicht mehr). Siehe `ReviewQuestionRepository`/`ReviewQuestionEntity`;
    die neue Tabelle legt der automatische Schema-Abgleich selbst an.
+   **Adaptive Übungsauswahl**: die tägliche Aufgabenauswahl gewichtet Themen nach der
+   Trefferquote der letzten 30 Tage - Themen mit vielen Fehlern werden bis zu 3x so häufig
+   gezogen (`AdaptiveTopicWeighting`), sodass automatisch dort geübt wird, wo es hakt. Kein Thema
+   verschwindet dabei ganz, und Themen mit zu wenig Datenbasis (unter 3 Antworten) bleiben
+   neutral.
    **Spaced Repetition für richtig beantwortete Aufgaben**: einmal richtig beantwortet (egal ob im
    Übungsteil oder im Abschlussquiz), pausiert der exakte Fragetext für dieses Profil - aber nicht
    für immer, denn Wissen zerfällt: nach wachsenden Abständen (Stufe 1 = 7 Tage, Stufe 2 = 30 Tage,

@@ -449,11 +449,30 @@ public sealed partial class MainViewModel : ObservableObject
         return excluded;
     }
 
+    /// <summary>
+    /// Gewichte für die adaptive Übungsauswahl: Trefferquote je Thema aus den letzten 30 Tagen
+    /// Aktivitätsprotokoll dieses Fachs - schwache Themen (viele Fehler) werden bis zu 3x so
+    /// häufig gezogen (siehe AdaptiveTopicWeighting), damit automatisch dort geübt wird, wo es
+    /// hakt. Themen mit zu wenig Datenbasis bleiben neutral.
+    /// </summary>
+    private async Task<IReadOnlyDictionary<string, double>> BuildTopicWeightsAsync(Subject subject)
+    {
+        var recentActivity = await _activityLogRepo.GetActivitySinceAsync(CurrentProfile!.Id, TimeSpan.FromDays(30));
+
+        var topicStats = recentActivity
+            .Where(a => a.Subject == subject.ToString())
+            .GroupBy(a => a.Topic)
+            .Select(g => (Topic: g.Key, Attempts: g.Count(), Correct: g.Count(a => a.WasCorrect)));
+
+        return AdaptiveTopicWeighting.ComputeWeights(topicStats);
+    }
+
     private async Task<ExerciseViewModel> BuildExerciseViewModelAsync(Subject subject)
     {
         var grade = CurrentProfile!.GradeLevel;
         var excludedPrompts = await BuildExcludedPromptsAsync();
-        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, excludedPrompts);
+        var topicWeights = await BuildTopicWeightsAsync(subject);
+        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, excludedPrompts, topicWeights);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
 
         // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST

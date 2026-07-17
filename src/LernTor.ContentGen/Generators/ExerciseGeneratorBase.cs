@@ -13,7 +13,7 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
     /// <summary>Liste der pro Klassenstufe verfügbaren Themen-Generatoren.</summary>
     protected abstract IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; }
 
-    public IReadOnlyList<QuizQuestion> Generate(GradeLevel grade, int count, Random random, IReadOnlySet<string>? recentlySeenPrompts = null)
+    public IReadOnlyList<QuizQuestion> Generate(GradeLevel grade, int count, Random random, IReadOnlySet<string>? recentlySeenPrompts = null, IReadOnlyDictionary<string, double>? topicWeights = null)
     {
         if (!TopicsByGrade.TryGetValue(grade, out var topics) || topics.Count == 0)
         {
@@ -29,6 +29,14 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
             ? new HashSet<string>()
             : new HashSet<string>(recentlySeenPrompts);
 
+        // Adaptive Gewichtung (siehe AdaptiveTopicWeighting in Core): der Themenname steht erst
+        // NACH dem Erzeugen einer Frage fest (TopicFactory ist nur ein Delegate), deshalb
+        // Rejection-Sampling - eine gezogene Frage eines starken Themas wird mit passender
+        // Wahrscheinlichkeit verworfen, sodass schwache Themen relativ häufiger durchkommen.
+        var maxTopicWeight = topicWeights is { Count: > 0 }
+            ? Math.Max(1.0, topicWeights.Values.Max())
+            : 1.0;
+
         // Themen-Pools sind teils klein (z.B. nur 3-5 feste Beispiele je Thema), daher würde
         // reines Ziehen mit Zurücklegen schnell denselben Fragetext doppelt liefern. Bei einer
         // Kollision wird neu gezogen, bis genug einzigartige Fragen da sind oder der Pool
@@ -38,6 +46,15 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
         {
             var topic = topics[random.Next(topics.Count)];
             var question = topic(random);
+
+            if (maxTopicWeight > 1.0)
+            {
+                var weight = topicWeights!.TryGetValue(question.Topic, out var topicWeight) ? topicWeight : 1.0;
+                if (random.NextDouble() * maxTopicWeight > weight)
+                {
+                    continue;
+                }
+            }
 
             if (seenPrompts.Add(question.Prompt))
             {

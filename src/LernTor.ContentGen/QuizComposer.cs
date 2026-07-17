@@ -97,10 +97,13 @@ public sealed class QuizComposer
         return questions;
     }
 
+    /// <summary>Tägliche Übungsaufgaben eines Fachs; <paramref name="topicWeights"/> (optional)
+    /// zieht schwache Themen häufiger (adaptive Auswahl, siehe AdaptiveTopicWeighting in Core).</summary>
     public IReadOnlyList<QuizQuestion> GenerateExercises(
-        Subject subject, GradeLevel grade, int count, Random random, IReadOnlySet<string>? recentlySeenPrompts = null)
+        Subject subject, GradeLevel grade, int count, Random random, IReadOnlySet<string>? recentlySeenPrompts = null,
+        IReadOnlyDictionary<string, double>? topicWeights = null)
     {
         var generator = _generators.FirstOrDefault(g => g.Subject == subject);
-        return generator?.Generate(grade, count, random, recentlySeenPrompts) ?? Array.Empty<QuizQuestion>();
+        return generator?.Generate(grade, count, random, recentlySeenPrompts, topicWeights) ?? Array.Empty<QuizQuestion>();
     }
 }
