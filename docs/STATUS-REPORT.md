@@ -1,4 +1,4 @@
-# LernTor – Status-Quo-Bericht (Stand: 2025-07-17)
+# LernTor – Status-Quo-Bericht (Stand: 2026-07-17)
 
 > **Hinweis**: Dieser Bericht basiert auf Code-Analyse. Die App läuft nur unter Windows (WPF + Win32 P/Invoke). Build-Verifikation erfolgt via GitHub Actions (`.github/workflows/build.yml` auf `windows-latest`).
 
@@ -9,14 +9,14 @@
 | Bereich | Status | Details |
 |---------|--------|---------|
 | **Core Domain** | ✅ Fertig | Enums, Models, `ProgressGateService`, `ScoringService`, `LearningStageSubjects.Map` |
-| **ContentGen (Generatoren)** | ✅ Fertig | 14 Fach-Generatoren, `QuizComposer`, Review-/Mastered-Logik |
+| **ContentGen (Generatoren)** | ✅ Fertig | 15 Fach-Generatoren, `QuizComposer`, Review-/Mastered-Logik |
 | **News (RSS + Aufbereitung)** | ✅ Fertig | RSS-Loading, Vereinfachung, Verständnisfragen, Kategorisierung, Glossar, Bezirks-Erkennung |
 | **Data (EF Core SQLite)** | ✅ Fertig | Repositories: Progress, ActivityLog, MasteredPrompt, ReviewQuestion, CustomQuestion, Settings, Rewards, TypingProgress |
 | **Security (Kiosk)** | ✅ Fertig | Keyboard-Hook, TaskMgr-Policy, Autostart, Admin-Auth |
 | **App (WPF/MVVM)** | ✅ Fertig | MainVM, alle Views (ProfileSelection, Welcome, News, Exercise, FinalQuiz, Result, ParentSettings), QuestionCard, KI-Chat, TTS (Piper), Lehrer-Import (PDF/Word → KI → Entwürfe), Belohnungen, Wochenbericht |
 | **Localization** | ✅ Fertig | DE/TR, String-Indexer, Live-Switch via `PropertyChanged("Item[]")` |
 | **Local LLM** | ✅ Fertig | LLamaSharp, GGUF-Autodownload (~2-4 GB), 2 Features: Lehrer-Import + KI-Hausaufgaben-Chat |
-| **Tipptrainer** | ✅ Fertig (neu) | 12 reguläre Lektionen + 2 profil-spezifische Abschluss-Lektionen (Emirhan/Batuhan), nur Deutsch/QWERTZ |
+| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion (Emirhan ODER Batuhan, je nach Profilname), nur Deutsch/QWERTZ, 35% Mindestgenauigkeit |
 
 ---
 
@@ -24,27 +24,35 @@
 
 **Legende**: ✅ = Topic mit ~20 kuratierten Fragen vorhanden, ⚠️ = Topic existiert aber unvollständig (< 20 Fragen), ❌ = Topic fehlt ganz, — = Fach nicht in App
 
-### ✅ Vollständig implementierte Fächer (14/17 RLP-Fächer)
+### ✅ Vollständig implementierte Fächer (15/17 RLP-Fächer)
+
+*Diese Tabelle wurde direkt aus `TopicsByGrade` in den Generator-Dateien abgeleitet (siehe
+[docs/CURRICULUM.md](CURRICULUM.md) für die Themen-Detailtabellen und den vollständigen
+RLP-Haken-Abgleich), nicht geschätzt.*
 
 | Fach | Generator | Klasse 6 Topics | Klasse 9 Topics | Gesamt | Abdeckung RLP-Themenfelder |
 |------|-----------|----------------|----------------|--------|---------------------------|
-| **Mathematik** | `MathGenerator.cs` | 7 | 7 | 14 | 7/8 (fehlt: Statistik Klasse 9 Mittelwert/Median – *ist aber als Generator-Topic "MittelwertUndMedian" vorhanden*) |
-| **Deutsch** | `GermanGenerator.cs` | 6 | 7 | 13 | 7/7 Klasse 6, 6/7 Klasse 9 (fehlt: tiefere Textanalyse Drama/Novelle/Parabel) |
-| **Türkisch** | `TurkishGenerator.cs` | 5 | 4 | 9 | 4/4 Klasse 6, 2/6 Klasse 9 (RLP gliedert in Themenfelder, Generator ist grammatikorientiert) |
-| **Englisch** | `EnglischGenerator.cs` | 4 | 5 | 9 | 4/4 Klasse 6, 3/6 Klasse 9 (fehlen: Alltag/Konsum, Bewerbung, Kultur) |
-| **Biologie** | `BiologieGenerator.cs` | 3 | 3 | 6 | 2/4 Klasse 6, 6/6 Klasse 9 ✅ |
-| **Chemie** | `ChemieGenerator.cs` | 4 | 0 | 4 | 2/5 Klasse 6, 0/6 Klasse 9 (organische Chemie bewusst ausgeklammert) |
-| **Physik** | `PhysikGenerator.cs` | 3 | 5 | 8 | 1/4 Klasse 6, 6/6 Klasse 9 ✅ |
-| **Geschichte** | `GeschichteGenerator.cs` | 3 | 6 | 9 | 3/3 Klasse 6, 6/7 Klasse 9 (fehlt: Feindbilder/Propaganda) |
-| **Gewi** | `GewiGenerator.cs` | 5 | 2 | 7 | 6/6 Klasse 6, 2/5 Klasse 9 (fehlen: Wirtschaftskreislauf, Medien, Tourismus) |
-| **Politik** | `PolitikGenerator.cs` | 3 | 3 | 6 | 3/4 Klasse 6, 2/6 Klasse 9 (fehlen: Willensbildung/Medien, Konflikte international, Friedenssicherung, EU) |
-| **Geografie** | `GeoGenerator.cs` | 3 | 4 | 7 | 3/4 Klasse 6, 1/6 Klasse 9 (fehlen: Ressourcen, Landwirtschaft, Klimaschutz-Konflikte, Globalisierung, Europa) |
-| **Ethik** | `EthikGenerator.cs` | 3 | 3 | 6 | 1/4 Klasse 6, 2/6 Klasse 9 (fehlen: Identität, Freiheit, Gerechtigkeit, Mensch/Gemeinschaft, Handeln/Moral, Wissen/Glauben) |
-| **Kunst** | `KunstGenerator.cs` | 4 | 6 | 10 | 4/5 Klasse 6, 6/6 Klasse 9 ✅ |
-| **Musik** | `MusikGenerator.cs` | 5 | 6 | 11 | 5/5 Klasse 6, 6/6 Klasse 9 ✅ |
-| **ITG** | `ItgGenerator.cs` | 3 | 2 | 5 | 2/3 Klasse 6, 1/3 Klasse 9 (Standardsoftware bewusst weggelassen) |
+| **Mathematik** | `MathGenerator.cs` | 12 | 14 | 26 | Klasse 9: fehlt nur Stochastik-Baumdiagramme und darstellende Geometrie (Nischenthemen) |
+| **Deutsch** | `GermanGenerator.cs` | 12 | 13 | 25 | Drama-Analyse abgedeckt; Novelle/Parabel fehlen noch |
+| **Türkisch** | `TurkishGenerator.cs` | 8 | 7 | 15 | Klasse 9: fehlt Alltag/Konsum, Gesellschaft, Berufswelt |
+| **Englisch** | `EnglischGenerator.cs` | 7 | 6 | 13 | Klasse 9: fehlt Alltag/Konsum, Bewerbung, Kultur/Historie |
+| **Biologie** | `BiologieGenerator.cs` | 4 | 8 | 12 | Klasse 6: fehlt Zelle, Lebensräume/Nahrungsketten |
+| **Chemie** | `ChemieGenerator.cs` | 5 | 9 | 14 | Klasse 9 komplett (inkl. organischer Chemie); Klasse 6: fehlt Periodensystem-Basics, Gase, Wasser, Salze |
+| **Physik** | `PhysikGenerator.cs` | 6 | 7 | 13 | Klasse 6: fehlt Thermik, Kraft/Wechselwirkung, mech./therm. Energie |
+| **Geschichte** | `GeschichteGenerator.cs` | 3 | 6 | 9 | Klasse 9: fehlt nur Feindbilder/Propaganda (Bonusmodul) |
+| **Gewi** | `GewiGenerator.cs` | 9 | 3 | 12 | Klasse 6 komplett (6/6); Klasse 9 auf Kernthemen fokussiert |
+| **Politik** | `PolitikGenerator.cs` | 3 | 8 | 11 | Klasse 9 komplett (6/6, inkl. EU/Willensbildung/int. Konflikte); Klasse 6 nur Kernthemen |
+| **Geografie** | `GeoGenerator.cs` | 3 | 9 | 12 | Klasse 9 komplett (6/6, inkl. Ressourcen/Klimaschutz/Globalisierung/Europa); Klasse 6 nur Kernthemen |
+| **Ethik** | `EthikGenerator.cs` | 3 | 10 | 13 | Klasse 9 komplett (6/6); Klasse 6: fehlt Identität, Freiheit, Gerechtigkeit |
+| **Kunst** | `KunstGenerator.cs` | 4 | 6 | 10 | ✅ |
+| **Musik** | `MusikGenerator.cs` | 5 | 6 | 11 | ✅ |
+| **ITG** | `ItgGenerator.cs` | 3 | 3 | 6 | Standardsoftware bewusst weggelassen (nicht quizbar) |
 
-**Gesamt: ~124 Topics × ~20 Fragen = ~2.500 Fragen im Pool**
+**Gesamt: 202 Topics × ~20 Fragen = ~4.000 Fragen im Pool**
+
+> Frühere Fassungen dieses Berichts nannten ~124 Topics und listeten Chemie/Politik/Geografie/Ethik
+> Klasse 9 sowie Deutsch-Drama als große Lücken. Die Generatoren wurden seither erweitert, ohne dass
+> dieser Bericht nachgezogen wurde - diese Fassung ist gegen den aktuellen Code verifiziert.
 
 ---
 
@@ -62,13 +70,16 @@
 
 | Fach | Fehlende RLP-Themenfelder | Bewertung |
 |------|---------------------------|-----------|
-| **Chemie Klasse 9** | Periodensystem, Gase, Wasser, Salze, organische Chemie (Kohlenwasserstoffe, Alkohole, Säuren, Ester) | Organische Chemie bewusst ausgeklammert (Zielalter 10-15); Rest "nice to have" |
-| **Physik Klasse 6** | Thermisches Verhalten, Kraft/Wechselwirkung, Mech. Energie, Therm. Energie | Nur 3/7 Themenfelder; Basis-Themen (Aggregatzustände, Stromkreis, Magnetismus) decken Alltagswissen ab |
-| **Geografie Klasse 9** | Ressourcen (Energie/Rohstoffe, Landwirtschaft), Klimaschutz-Konflikte, Globalisierung, Europa in der Welt | Nur Klimawandel implementiert; Rest niedrig priorisiert |
-| **Politik Klasse 9** | Willensbildung/Medien/Gefährdungen, internationale Konflikte, Friedenssicherung, EU | Nur 3/6; Kernthemen (Gewaltenteilung, Bundestag/Bundesrat, Soziale Marktwirtschaft) sind drin |
-| **Ethik beide Stufen** | Identität/Rolle, Freiheit/Verantwortung (Kl.6), Gerechtigkeit (Kl.6), Mensch/Gemeinschaft (Hobbes/Rousseau), Handeln/Moral, Wissen/Glauben | Nur 3/10 Themenfelder; Fokus auf lebensnahe Themen (Freundschaft, Verantwortung, Recht) |
-| **Türkisch** | RLP gliedert in 4 Themenfelder pro Stufe; Generator ist grammatikorientiert (Zeiten, Satzglieder, Rechtschreibung) | Funktionell für Quiz nutzbar, aber nicht 1:1 RLP-abgebildet |
-| **Deutsch Klasse 9** | Literarische Textanalyse (Drama, Novelle, Parabel) | Generator deckt Grammatik/Satzbau/Textsorten ab; tiefere Interpretation nicht automatisierbar |
+| **Chemie Klasse 6** | Periodensystem (Klasse-6-Niveau), Gase, Wasser, Salze | Klasse 9 ist komplett (inkl. organischer Chemie - das ist NICHT mehr ausgeklammert) |
+| **Physik Klasse 6** | Thermisches Verhalten, Kraft/Wechselwirkung, Mech. Energie, Therm. Energie | Nur 4 der zugehörigen RLP-Themenfelder; Basis-Themen (Aggregatzustände, Stromkreis, Magnetismus, Optik) decken Alltagswissen ab |
+| **Geografie Klasse 6** | Risikoräume, Migration/Bevölkerung, tropischer Regenwald, Armut/Reichtum (Kl.6-Niveau) | Klasse 9 ist komplett (Ressourcen, Klimaschutz, Globalisierung, Europa alle vorhanden) |
+| **Politik Klasse 6** | Armut/Reichtum (Kl.6), globalisierte Welt, Migration, Rechtsstaat | Klasse 9 ist komplett (Willensbildung/Medien, int. Konflikte, Friedenssicherung, EU alle vorhanden) |
+| **Ethik Klasse 6** | Identität/Rolle, Freiheit/Verantwortung (Kl.6), Gerechtigkeit (Kl.6) | Klasse 9 ist komplett (alle 6 RLP-Themenfelder vorhanden) |
+| **Englisch/Türkisch Klasse 9** | Alltag/Konsum, Bewerbung/Berufswelt, Kultur (Klasse-9-Niveau) | Kernthemen (Identität, Gesellschaft/Medien, Umwelt bzw. Traditionen, Geografie) sind drin |
+| **Türkisch generell** | RLP gliedert in 4 Themenfelder pro Stufe; Generator ist überwiegend grammatikorientiert (Zeiten, Satzglieder, Rechtschreibung) | Funktionell für Quiz nutzbar, mehrere Wortschatz-Themenfelder inzwischen ergänzt, aber nicht 1:1 RLP-abgebildet |
+| **Deutsch** | Literarische Textanalyse: Novelle, Parabel | Drama-Analyse ist inzwischen abgedeckt (`DramaAufbau`, `Figurencharakterisierung`) |
+| **Biologie Klasse 6** | Die Zelle, Lebensräume/Nahrungsketten | Klasse 9 ist komplett (6/6 Themenfelder) |
+| **Geschichte Klasse 9** | Feindbilder/Propaganda (Bonusmodul) | 6 von 7 Themenfeldern abgedeckt |
 
 ---
 
@@ -97,17 +108,23 @@
 
 ### 3.3 Content-Erweiterung (Nice-to-have)
 
+*Chemie/Politik/Geografie/Ethik Klasse 9 sind entgegen früherer Fassungen dieses Berichts bereits
+vollständig - die reale Restlücke liegt bei Klasse 6 und ein paar Klasse-9-Nischenthemen:*
+
 | Fach | Fehlende Topics (RLP) | Aufwand |
 |------|----------------------|---------|
-| Chemie Kl.9 | Periodensystem, Gase, Wasser, Salze | ~6 Topics × 20 Fragen = 120 Q |
+| Chemie Kl.6 | Periodensystem (Kl.6-Niveau), Gase, Wasser, Salze | ~4 Topics × 20 Fragen = 80 Q |
 | Physik Kl.6 | Thermik, Kraft, Energie, Wärme | ~4 Topics × 20 = 80 Q |
-| Geografie Kl.9 | Ressourcen, Landwirtschaft, Globalisierung, Europa | ~5 Topics × 20 = 100 Q |
-| Politik Kl.9 | Willensbildung/Medien, Int. Konflikte, Friedenssicherung, EU | ~4 Topics × 20 = 80 Q |
-| Ethik beide | Identität, Freiheit, Gerechtigkeit, Mensch/Gemeinschaft, Moral, Wissen/Glauben | ~8 Topics × 20 = 160 Q |
-| Türkisch | Themenfelder statt Grammatik umbauen | Refactoring nötig |
-| Englisch Kl.9 | Alltag/Konsum, Bewerbung, Kultur/Historie | ~3 Topics × 20 = 60 Q |
+| Biologie Kl.6 | Zelle, Lebensräume/Nahrungsketten | ~2 Topics × 20 = 40 Q |
+| Geografie Kl.6 | Risikoräume, Migration, Regenwald, Armut (Kl.6) | ~4 Topics × 20 = 80 Q |
+| Politik Kl.6 | Armut (Kl.6), Globalisierte Welt, Migration, Rechtsstaat | ~4 Topics × 20 = 80 Q |
+| Ethik Kl.6 | Identität, Freiheit, Gerechtigkeit (Kl.6-Niveau) | ~3 Topics × 20 = 60 Q |
+| Englisch/Türkisch Kl.9 | Alltag/Konsum, Bewerbung/Berufswelt, Kultur | ~5 Topics × 20 = 100 Q |
+| Deutsch | Novelle, Parabel | ~2 Topics × 20 = 40 Q |
+| Geschichte Kl.9 | Feindbilder/Propaganda (Bonusmodul) | ~1 Topic × 20 = 20 Q |
 
-**Gesamt Content-Lücke: ~600-700 Fragen** (bei ~2.500 existentes = ~25% Erweiterungsmöglichkeit).
+**Gesamt Content-Lücke: ~580 Fragen** (bei 202 existierenden Topics/~4.000 Fragen = ~14%
+Erweiterungsmöglichkeit, deutlich kleiner als frühere Schätzungen).
 
 ---
 
@@ -130,7 +147,7 @@
 
 | Test-Projekt | Tests | Abdeckung |
 |--------------|-------|-----------|
-| `LernTor.Tests` (xUnit) | ~85 | Core (ProgressGate, Scoring), ContentGen (alle 14 Generatoren: Musterlösungen prüfen), News (RSS-Parser RDF/Atom/RSS2, Vereinfachung, Kategorisierung, Glossar) |
+| `LernTor.Tests` (xUnit) | ~85 | Core (ProgressGate, Scoring), ContentGen (alle 15 Generatoren: Musterlösungen prüfen), News (RSS-Parser RDF/Atom/RSS2, Vereinfachung, Kategorisierung, Glossar, Finanzwissen) |
 | UI-Tests | 0 | WPF-UI-Tests in CI schwer (brauchen Windows + interaktive Session) |
 | Integrationstests | 0 | Manuell auf Windows getestet |
 
@@ -147,19 +164,20 @@
 4. **Eltern-Export/Import** (JSON-Backup von Profilen + Fortschritt)
 
 ### Sprint 2: Content-Runde 1 (2 Wochen)
-5. Chemie Klasse 9: Periodensystem, Gase, Wasser, Salze (4 Topics)
+5. Chemie Klasse 6: Periodensystem-Basics, Gase, Wasser, Salze (4 Topics)
 6. Physik Klasse 6: Thermik, Kraft, Energie, Wärme (4 Topics)
-7. Geografie Klasse 9: Ressourcen, Klimaschutz-Konflikte (2 Topics)
+7. Biologie Klasse 6: Zelle, Lebensräume/Nahrungsketten (2 Topics)
 
 ### Sprint 3: Content-Runde 2 (2 Wochen)
-8. Politik Klasse 9: Willensbildung/Medien, EU (2 Topics)
-9. Ethik: Identität, Freiheit, Gerechtigkeit (3 Topics)
-10. Englisch Klasse 9: Alltag/Konsum, Bewerbung (2 Topics)
+8. Politik/Geografie Klasse 6: Armut, Globalisierte Welt, Migration, Rechtsstaat, Risikoräume, Regenwald (bis zu 8 Topics)
+9. Ethik Klasse 6: Identität, Freiheit, Gerechtigkeit (3 Topics)
+10. Englisch/Türkisch Klasse 9: Alltag/Konsum, Bewerbung (bis zu 4 Topics)
 
 ### Sprint 4: Polish (1-2 Wochen)
 11. Mathe: Offene Zahleneingabe (neuer Fragetyp)
 12. Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)
 13. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
+14. Deutsch: Novelle/Parabel; Geschichte Klasse 9: Feindbilder/Propaganda (Bonusmodul)
 
 ---
 
@@ -167,9 +185,13 @@
 
 **Die App ist funktionskomplett für den Kern-Zweck:**
 
-> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (12 Lektionen + persönlicher Abschluss) → **News** (22 Artikel: Berlin/Türkei garantiert, altersgerecht, Verständnisfragen) → **Fächer** (13 aktive Fächer, ~20 Fragen/Topic, keine Wiederholung bei richtig) → **Abschlussquiz** (dynamisch verteilt, ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen, sehen Wochenbericht.
+> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic, keine Wiederholung bei richtig) → **Abschlussquiz** (dynamisch verteilt, ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen, sehen Wochenbericht.
 
-**Abdeckungsgrad RLP:** ~75% der für Quiz geeigneten Themenfelder (14/17 Fächer, Kern-Themen drin). Die fehlenden 25% sind bewusst ausgeklammerte Bereiche (Sport, WAT, organische Chemie, tiefe Textanalyse) oder "Nice-to-have"-Ergänzungen.
+**Abdeckungsgrad RLP:** deutlich höher als frühere Fassungen dieses Berichts annahmen - Chemie,
+Politik, Geografie und Ethik Klasse 9 sind inzwischen vollständig (6/6 RLP-Themenfelder). Die
+verbleibende Lücke liegt überwiegend bei Klasse-6-Grundthemen (Physik, Chemie, Biologie, Geografie,
+Politik, Ethik) sowie ein paar Klasse-9-Nischenthemen (Englisch/Türkisch Alltag/Bewerbung, Deutsch
+Novelle/Parabel) - dazu bewusst ausgeklammerte Bereiche (Sport, WAT, Standardsoftware).
 
 **Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)**. Alles andere ist "Qualität/Content", kein Blocker.
 
