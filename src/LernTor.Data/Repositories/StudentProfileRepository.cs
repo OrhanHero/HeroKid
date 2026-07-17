@@ -109,6 +109,29 @@ public sealed class StudentProfileRepository
         return entity.TotalStars;
     }
 
+    /// <summary>
+    /// Speichert die von den Eltern im Eltern-Bereich pro Profil eingestellten Schwierigkeitsstufen
+    /// (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte für 1./2. Versuch).
+    /// </summary>
+    public async Task UpdateSettingsAsync(
+        string profileId,
+        double typingMinAccuracy,
+        double quizFirstAttemptThreshold,
+        double quizRetryThreshold,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        entity.TypingMinAccuracy = typingMinAccuracy;
+        entity.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
+        entity.QuizRetryThreshold = quizRetryThreshold;
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
     private static StudentProfile ToModel(StudentProfileEntity entity) => new()
     {
         Id = entity.Id,
@@ -117,6 +140,9 @@ public sealed class StudentProfileRepository
         ClassLabel = entity.ClassLabel,
         GradeLevel = (GradeLevel)entity.GradeLevel,
         AvatarEmoji = string.IsNullOrWhiteSpace(entity.AvatarEmoji) ? StudentProfile.DefaultAvatar : entity.AvatarEmoji,
-        TotalStars = entity.TotalStars
+        TotalStars = entity.TotalStars,
+        TypingMinAccuracy = entity.TypingMinAccuracy,
+        QuizFirstAttemptThreshold = entity.QuizFirstAttemptThreshold,
+        QuizRetryThreshold = entity.QuizRetryThreshold
     };
 }

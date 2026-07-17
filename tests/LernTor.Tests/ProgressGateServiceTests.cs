@@ -59,8 +59,37 @@ public class ProgressGateServiceTests
     }
 
     [Fact]
-    public void ApplyQuizResult_FailingScoreOnRetryAttempt_UnlocksAnyway()
+    public void ApplyQuizResult_CustomLowerThreshold_PassesEvenBelowDefaultThreshold()
     {
+        // Simuliert einen 2. Versuch mit einem niedrigeren, vom Profil konfigurierten
+        // Schwellenwert (z.B. 25% statt der Standard-50%-Hürde des 1. Versuchs).
+        var progress = new StudentProgress
+        {
+            ProfileId = "test-profile",
+            CurrentStage = LearningStage.Abschlussquiz,
+            SubjectsToRetry = new List<Subject> { Subject.Mathematik }
+        };
+        var outcomes = new[]
+        {
+            new QuestionOutcome { QuestionId = "q1", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = true },
+            new QuestionOutcome { QuestionId = "q2", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
+            new QuestionOutcome { QuestionId = "q3", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
+            new QuestionOutcome { QuestionId = "q4", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
+        };
+        var result = _scoring.BuildResult(outcomes, passThreshold: 0.25);
+
+        _gate.ApplyQuizResult(progress, result);
+
+        Assert.True(progress.IsUnlocked);
+        Assert.Equal(LearningStage.Freigeschaltet, progress.CurrentStage);
+        Assert.Empty(progress.SubjectsToRetry);
+    }
+
+    [Fact]
+    public void ApplyQuizResult_RetryAttempt_BelowConfiguredRetryThreshold_StaysLockedAndRefillsRetryList()
+    {
+        // Anders als früher schaltet ein 2. Versuch nicht mehr unabhängig vom Ergebnis frei - auch
+        // beim (niedrigeren) Wiederholungs-Schwellenwert muss dieser tatsächlich erreicht werden.
         var progress = new StudentProgress
         {
             ProfileId = "test-profile",
@@ -72,14 +101,13 @@ public class ProgressGateServiceTests
             new QuestionOutcome { QuestionId = "q1", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
             new QuestionOutcome { QuestionId = "q2", Subject = Subject.Mathematik, GivenAnswer = "x", WasCorrect = false },
         };
-        var result = _scoring.BuildResult(outcomes);
+        var result = _scoring.BuildResult(outcomes, passThreshold: 0.25);
 
-        _gate.ApplyQuizResult(progress, result, isRetryAttempt: true);
+        _gate.ApplyQuizResult(progress, result);
 
-        // Die 50%-Hürde gilt nur beim ersten Versuch - ein zweiter Anlauf schaltet in jedem Fall frei.
-        Assert.True(progress.IsUnlocked);
-        Assert.Equal(LearningStage.Freigeschaltet, progress.CurrentStage);
-        Assert.Empty(progress.SubjectsToRetry);
+        Assert.False(progress.IsUnlocked);
+        Assert.Equal(LearningStage.Abschlussquiz, progress.CurrentStage);
+        Assert.Contains(Subject.Mathematik, progress.SubjectsToRetry);
     }
 
     [Fact]

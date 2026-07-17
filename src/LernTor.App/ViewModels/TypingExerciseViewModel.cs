@@ -20,6 +20,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
     private readonly TypingProgressRepository _progressRepo;
     private readonly string _profileId;
     private readonly string _profileName;
+    private readonly double _minAccuracy;
     private readonly Action<string?> _onLessonCompleted;
     private readonly DispatcherTimer _timer;
 
@@ -29,6 +30,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         TypingProgressRepository progressRepo,
         string profileId,
         string profileName,
+        double minAccuracy,
         Action<string?> onLessonCompleted)
     {
         Lesson = lesson;
@@ -36,6 +38,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         _progressRepo = progressRepo;
         _profileId = profileId;
         _profileName = profileName;
+        _minAccuracy = minAccuracy;
         _onLessonCompleted = onLessonCompleted;
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
@@ -108,8 +111,8 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         CurrentPosition = Math.Min(value.Length, Lesson.TargetText.Length);
         CurrentHighlightIndex = Math.Min(value.Length, Lesson.TargetText.Length - 1);
 
-        // Echtzeit-Validierung (mit Lesson für lesson-spezifische MinimumAccuracy)
-        var result = _service.CheckInput(Lesson.TargetText, value, Elapsed, Lesson);
+        // Echtzeit-Validierung (mit der vom Profil im Eltern-Bereich eingestellten Mindestgenauigkeit)
+        var result = _service.CheckInput(Lesson.TargetText, value, Elapsed, Lesson, _minAccuracy);
         Accuracy = result.Accuracy;
         Wpm = result.Wpm;
         CorrectChars = result.CorrectCharacters;
@@ -130,7 +133,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         _timer.Stop();
         ShowResult = true;
 
-        var result = _service.CheckInput(Lesson.TargetText, finalInput, Elapsed, Lesson);
+        var result = _service.CheckInput(Lesson.TargetText, finalInput, Elapsed, Lesson, _minAccuracy);
         Accuracy = result.Accuracy;
         Wpm = result.Wpm;
         CorrectChars = result.CorrectCharacters;

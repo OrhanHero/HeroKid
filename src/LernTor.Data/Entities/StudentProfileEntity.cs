@@ -10,4 +10,7 @@ public sealed class StudentProfileEntity
     public string AvatarEmoji { get; set; } = "🧒";
     public int TotalStars { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    public double TypingMinAccuracy { get; set; } = 0.25;
+    public double QuizFirstAttemptThreshold { get; set; } = 0.5;
+    public double QuizRetryThreshold { get; set; } = 0.25;
 }

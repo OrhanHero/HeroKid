@@ -31,9 +31,12 @@ Der Trainer besteht aus 11 regulären Lektionen + 1 profil-spezifischer Abschlus
 6. **Sätze** (1 Lektion): Einfache Sätze mit Satzzeichen (die zweite Sätze-Lektion mit Zahlen &
    Zeichen wurde entfernt, um Kinder nicht zu 5-6 Wiederholungen beim 10-Finger-Lernen zu zwingen)
 
-Alle regulären Lektionen verlangen aktuell **35% Mindestgenauigkeit** zum Bestehen (in
-`TypingLesson.MinimumAccuracy`, von `TypingExerciseService.CheckInput()` ausgewertet) - bewusst
-niedrig angesetzt, damit das Weiterkommen nicht am 10-Finger-Erlernen selbst scheitert.
+Alle regulären Lektionen verlangen die im Eltern-Bereich pro Profil eingestellte Mindestgenauigkeit
+(`StudentProfile.TypingMinAccuracy`, Presets 25/50/75/85%, Standard 25% - bewusst niedrig angesetzt,
+damit das Weiterkommen nicht am 10-Finger-Erlernen selbst scheitert). `TypingExerciseService.CheckInput()`
+nutzt diesen Wert statt der lesson-eigenen `TypingLesson.MinimumAccuracy` (die weiterhin als Fallback
+dient, falls kein Profil-Wert übergeben wird) - so ist keine neue App-Version nötig, um die Hürde zu
+verändern.
 
 ### Profil-spezifische Abschluss-Lektion (Lektion 12)
 Nach allen regulären Lektionen wird automatisch GENAU EINE der beiden folgenden Abschluss-Lektionen
@@ -45,7 +48,7 @@ im Namen → Emirhans Text, sonst Batuhans Text als Standard):
   9a, Lieblingsessen)
 
 Beide Abschlusstexte wurden gekürzt (~110 Zeichen weniger als ursprünglich) und laufen ebenfalls mit
-35% Mindestgenauigkeit.
+der pro Profil eingestellten Mindestgenauigkeit.
 
 **Nur deutsches QWERTZ-Layout** – alle türkischen/englischen Lektionen wurden entfernt.
 

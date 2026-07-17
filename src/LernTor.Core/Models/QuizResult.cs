@@ -12,7 +12,12 @@ public sealed class QuestionOutcome
 
 public sealed class QuizResult
 {
-    public const double PassThreshold = 0.5;
+    /// <summary>
+    /// Mindest-Trefferquote zum Bestehen. Standard 50%, aber pro Profil und Versuch (1./2.) über
+    /// StudentProfile.QuizFirstAttemptThreshold/QuizRetryThreshold einstellbar - siehe
+    /// ScoringService.BuildResult, MainViewModel.OnFinalQuizCompleted.
+    /// </summary>
+    public double PassThreshold { get; init; } = 0.5;
 
     public required IReadOnlyList<QuestionOutcome> Outcomes { get; init; }
 
@@ -21,7 +26,7 @@ public sealed class QuizResult
     public double ScorePercentage => TotalQuestions == 0 ? 0 : (double)CorrectCount / TotalQuestions;
     public bool Passed => ScorePercentage >= PassThreshold;
 
-    /// <summary>Fachbereiche, in denen die Trefferquote unter 50% lag – für gezielte Wiederholung.</summary>
+    /// <summary>Fachbereiche, in denen die Trefferquote unter PassThreshold lag – für gezielte Wiederholung.</summary>
     public IReadOnlyList<Subject> WeakSubjects => Outcomes
         .GroupBy(o => o.Subject)
         .Where(g => g.Count(o => o.WasCorrect) / (double)g.Count() < PassThreshold)

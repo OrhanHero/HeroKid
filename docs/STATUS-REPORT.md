@@ -16,7 +16,7 @@
 | **App (WPF/MVVM)** | ✅ Fertig | MainVM, alle Views (ProfileSelection, Welcome, News, Exercise, FinalQuiz, Result, ParentSettings), QuestionCard, KI-Chat, TTS (Piper), Lehrer-Import (PDF/Word → KI → Entwürfe), Belohnungen, Wochenbericht |
 | **Localization** | ✅ Fertig | DE/TR, String-Indexer, Live-Switch via `PropertyChanged("Item[]")` |
 | **Local LLM** | ✅ Fertig | LLamaSharp, GGUF-Autodownload (~2-4 GB), 2 Features: Lehrer-Import + KI-Hausaufgaben-Chat |
-| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion (Emirhan ODER Batuhan, je nach Profilname), nur Deutsch/QWERTZ, 35% Mindestgenauigkeit |
+| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion (Emirhan ODER Batuhan, je nach Profilname), nur Deutsch/QWERTZ, Mindestgenauigkeit pro Profil im Eltern-Bereich einstellbar (Presets 25/50/75/85%, Standard 25%) |
 
 ---
 
@@ -165,6 +165,7 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 13. Mathe: Offene Zahleneingabe (neuer Fragetyp)
 14. ~~Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)~~ ✅ erledigt (`Erlkönig`, `Die Bürgschaft`, `Herr von Ribbeck auf Ribbeck im Havelland` in `ReadingContentProvider.cs`)
 15. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
+16. ~~Schwierigkeitsstufen pro Profil im Eltern-Bereich (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte für 1./2. Versuch)~~ ✅ erledigt (`StudentProfile.TypingMinAccuracy`/`QuizFirstAttemptThreshold`/`QuizRetryThreshold`, Presets als `TabPillButton`-Gruppen im Eltern-Bereich - kein neuer Build mehr nötig, um diese Hürden zu ändern)
 
 ---
 
@@ -172,7 +173,7 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 **Die App ist funktionskomplett für den Kern-Zweck:**
 
-> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic, keine Wiederholung bei richtig) → **Abschlussquiz** (dynamisch verteilt, ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen, sehen Wochenbericht.
+> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic, keine Wiederholung bei richtig) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
 
 **Abdeckungsgrad RLP:** Alle 15 implementierten Fach-Generatoren decken ihre RLP-Themenfelder für
 Klasse 6 und 9 vollständig ab (232 Topics, ~4.640 Fragen im Pool) - inklusive der zuletzt

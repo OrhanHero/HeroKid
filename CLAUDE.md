@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 LernTor is a Windows kiosk learning app for kids: after Windows login it takes over the screen
 (soft kiosk lock) until the child reads news, works through exercises in whichever subjects
-parents left enabled, and passes a final quiz (≥50%). Only then is the PC unlocked. Target
+parents left enabled, and passes a final quiz (default ≥50%, threshold configurable per profile in
+parent settings). Only then is the PC unlocked. Target
 audience: German-Turkish kids (~10-15) in Berlin; content follows the Berlin Rahmenlehrplan for
 Klasse 6 and 9. Full behavioral spec lives in `README.md`; curriculum topic mapping in
 `docs/CURRICULUM.md`; build/install steps in `docs/BUILD.md`.

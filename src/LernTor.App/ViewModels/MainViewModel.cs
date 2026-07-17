@@ -281,6 +281,7 @@ public sealed partial class MainViewModel : ObservableObject
             _typingProgressRepo,
             CurrentProfile!.Id,
             CurrentProfile!.Name,
+            CurrentProfile!.TypingMinAccuracy,
             lessonId => OnTypingLessonCompleted(lessonId)
         );
         CurrentViewModel = exerciseVm;
@@ -519,14 +520,16 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async void OnFinalQuizCompleted(IReadOnlyList<QuestionOutcome> outcomes)
     {
-        // Ein zweiter Anlauf (Wiederholung nach nicht bestandenem ersten Versuch) schaltet danach
-        // in jedem Fall frei - die 50%-Hürde gilt nur beim allerersten Versuch am Tag. Muss VOR
+        // Welcher Schwellenwert gilt, hängt davon ab, ob das hier der erste oder ein zweiter Anlauf
+        // (Wiederholung nach nicht bestandenem ersten Versuch) ist - beide sind von den Eltern pro
+        // Profil einstellbar (StudentProfile.QuizFirstAttemptThreshold/QuizRetryThreshold). Muss VOR
         // ApplyQuizResult geprüft werden, da dieses Progress.SubjectsToRetry beim Bestehen leert.
         var isRetryAttempt = Progress.SubjectsToRetry.Count > 0;
+        var passThreshold = isRetryAttempt ? CurrentProfile!.QuizRetryThreshold : CurrentProfile!.QuizFirstAttemptThreshold;
 
-        var result = _scoring.BuildResult(outcomes);
+        var result = _scoring.BuildResult(outcomes, passThreshold);
         await _activityLogRepo.LogQuizAttemptAsync(CurrentProfile!.Id, result);
-        _gate.ApplyQuizResult(Progress, result, isRetryAttempt);
+        _gate.ApplyQuizResult(Progress, result);
 
         if (Progress.IsUnlocked)
         {

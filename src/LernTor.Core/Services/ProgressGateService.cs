@@ -100,18 +100,19 @@ public sealed class ProgressGateService
 
     /// <summary>
     /// Verarbeitet ein Quizergebnis: entweder Freischaltung, oder gezielte Wiederholung der
-    /// Schwächen. Die 50%-Hürde (<see cref="QuizResult.PassThreshold"/>) gilt nur beim ersten
-    /// Versuch am Tag - ein zweiter Anlauf (<paramref name="isRetryAttempt"/> = true, weil das Kind
-    /// die schwachen Fächer bereits wiederholt hat) schaltet danach in jedem Fall frei, unabhängig
-    /// vom erzielten Ergebnis.
+    /// Schwächen. Der Schwellenwert (<see cref="QuizResult.PassThreshold"/>) unterscheidet sich
+    /// bereits im übergebenen <paramref name="result"/> je nach Versuch (1./2., siehe
+    /// StudentProfile.QuizFirstAttemptThreshold/QuizRetryThreshold und
+    /// MainViewModel.OnFinalQuizCompleted) - hier wird deshalb einheitlich nur noch
+    /// <see cref="QuizResult.Passed"/> geprüft.
     /// </summary>
-    public void ApplyQuizResult(StudentProgress progress, QuizResult result, bool isRetryAttempt = false)
+    public void ApplyQuizResult(StudentProgress progress, QuizResult result)
     {
         progress.FinalQuizAttempts++;
         progress.LastQuizScore = result.ScorePercentage;
         progress.LastUpdatedAt = DateTimeOffset.Now;
 
-        if (result.Passed || isRetryAttempt)
+        if (result.Passed)
         {
             progress.IsUnlocked = true;
             progress.CurrentStage = LearningStage.Freigeschaltet;

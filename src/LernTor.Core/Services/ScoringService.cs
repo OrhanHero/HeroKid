@@ -15,8 +15,8 @@ public sealed class ScoringService
         };
     }
 
-    public QuizResult BuildResult(IEnumerable<QuestionOutcome> outcomes)
+    public QuizResult BuildResult(IEnumerable<QuestionOutcome> outcomes, double passThreshold = 0.5)
     {
-        return new QuizResult { Outcomes = outcomes.ToList() };
+        return new QuizResult { Outcomes = outcomes.ToList(), PassThreshold = passThreshold };
     }
 }

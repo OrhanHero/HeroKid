@@ -781,7 +781,7 @@ foreach (feed in CuratedNewsFeeds.All)   // 22 Feeds
 1. Kind loggt sich ein
 2. **News lesen** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + 1 Finanzwissen-Erklärstück; Berlin/Türkei/KI/Spiele feste Quellen, altersgerecht gefiltert)
 3. **Übungen** in bis zu 15 Fächern (je nach Eltern-Einstellung aktiv, Klasse 6/9, ~20 Fragen/Topic, keine Wiederholung bei richtig)
-4. **Abschlussquiz** (dynamisch verteilt auf aktive Fächer, ≥50% = PC frei)
+4. **Abschlussquiz** (dynamisch verteilt auf aktive Fächer, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei)
 5. Eltern steuern Fächer, Noten, LLM, Belohnungen, sehen Wochenbericht
 
 **Die 3 neuen Generatoren (Kunst, Musik, Geschichte-Klasse-9-Themen) sind voll in die Pipeline integriert:**

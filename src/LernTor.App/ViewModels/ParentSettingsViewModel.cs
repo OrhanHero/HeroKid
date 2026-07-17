@@ -432,6 +432,45 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     partial void OnSelectedProfileChanged(StudentProfile? value)
     {
         _ = ReloadActivityForSelectedProfileAsync();
+
+        TypingMinAccuracyPercent = PercentFromFraction(value?.TypingMinAccuracy, 25);
+        QuizFirstAttemptThresholdPercent = PercentFromFraction(value?.QuizFirstAttemptThreshold, 50);
+        QuizRetryThresholdPercent = PercentFromFraction(value?.QuizRetryThreshold, 25);
+    }
+
+    private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
+        fraction is null ? fallbackPercent : (int)Math.Round(fraction.Value * 100);
+
+    // --- Schwierigkeitsstufen pro Profil (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte) ---
+
+    /// <summary>Preset-Werte für die Tipptrainer-Mindestgenauigkeit (siehe TabPillButton-Gruppe im Eltern-Bereich).</summary>
+    [ObservableProperty]
+    private int typingMinAccuracyPercent = 25;
+
+    /// <summary>Preset-Werte für den 1. Abschlussquiz-Versuch am Tag.</summary>
+    [ObservableProperty]
+    private int quizFirstAttemptThresholdPercent = 50;
+
+    /// <summary>Preset-Werte für den 2. Abschlussquiz-Versuch (Wiederholung nach Nichtbestehen).</summary>
+    [ObservableProperty]
+    private int quizRetryThresholdPercent = 25;
+
+    [RelayCommand]
+    private void SetTypingMinAccuracy(string percent)
+    {
+        TypingMinAccuracyPercent = int.TryParse(percent, out var parsed) ? parsed : 25;
+    }
+
+    [RelayCommand]
+    private void SetQuizFirstAttemptThreshold(string percent)
+    {
+        QuizFirstAttemptThresholdPercent = int.TryParse(percent, out var parsed) ? parsed : 50;
+    }
+
+    [RelayCommand]
+    private void SetQuizRetryThreshold(string percent)
+    {
+        QuizRetryThresholdPercent = int.TryParse(percent, out var parsed) ? parsed : 25;
     }
 
     private async Task ReloadActivityForSelectedProfileAsync()
@@ -557,6 +596,20 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         ApplyLocalLlmOptions();
 
         await _settingsRepo.SaveAsync(_settings);
+
+        if (SelectedProfile is not null)
+        {
+            var typingMinAccuracy = TypingMinAccuracyPercent / 100.0;
+            var quizFirstAttemptThreshold = QuizFirstAttemptThresholdPercent / 100.0;
+            var quizRetryThreshold = QuizRetryThresholdPercent / 100.0;
+
+            await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold);
+
+            SelectedProfile.TypingMinAccuracy = typingMinAccuracy;
+            SelectedProfile.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
+            SelectedProfile.QuizRetryThreshold = quizRetryThreshold;
+        }
+
         RequestClose?.Invoke();
     }
 

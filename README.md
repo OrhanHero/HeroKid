@@ -139,16 +139,18 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
    Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:
-   dort bestraft sich Raten von selbst (unter 50 % beim ersten Versuch gibt es eine Wiederholung,
-   siehe unten).
+   dort bestraft sich Raten von selbst (unter der eingestellten Schwelle beim ersten Versuch gibt es
+   eine Wiederholung, siehe unten).
 6. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl je Fach passt sich automatisch
    an, wie viele Fächer aktiv sind), Nachrichten-Verständnisfragen zählen NICHT mit (die werden nur im
-   News-Bereich selbst gestellt). Erster Versuch am Tag: exakt **20 Fragen**, ≥50% richtig → PC wird
-   freigeschaltet. Bei Nichtbestehen ein kürzeres Wiederholungsquiz mit exakt **15 Fragen**: schwache
-   Fächer bekommen konzentriert Fragen (mind. 2 je Fach), der Rest füllt ein allgemeines Mini-Quiz über
-   alle aktiven Fächer auf - für diesen zweiten Anlauf gilt keine 50%-Hürde mehr, nach dem Durcharbeiten
-   wird in jedem Fall freigeschaltet. Antwortoptionen bei Multiple-Choice-Fragen werden bei jeder
-   Anzeige neu gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
+   News-Bereich selbst gestellt). Erster Versuch am Tag: exakt **20 Fragen**, Bestehens-Schwelle ist im
+   Eltern-Bereich pro Profil einstellbar (Presets 50/75/85%, Standard 50%) → ab dieser Trefferquote wird
+   der PC freigeschaltet. Bei Nichtbestehen ein kürzeres Wiederholungsquiz mit exakt **15 Fragen**:
+   schwache Fächer bekommen konzentriert Fragen (mind. 2 je Fach), der Rest füllt ein allgemeines
+   Mini-Quiz über alle aktiven Fächer auf - für diesen zweiten Anlauf gilt eine eigene, niedrigere
+   Bestehens-Schwelle (Presets 25/50%, Standard 25%, ebenfalls pro Profil einstellbar); wird auch diese
+   nicht erreicht, gibt es einen weiteren Wiederholungsanlauf. Antwortoptionen bei Multiple-Choice-Fragen
+   werden bei jeder Anzeige neu gemischt, damit die richtige Antwort nicht immer an derselben Stelle steht.
 
 Fortschritt wird laufend in einer lokalen SQLite-Datenbank gespeichert (`%LOCALAPPDATA%\LernTor\lerntor.db`),
 ein Absturz oder Neustart verliert also keinen Fortschritt.
@@ -215,6 +217,9 @@ deshalb bewusst nicht umgesetzt.
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
 - Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
 - Fachbereiche einzeln deaktivieren, Klassenstufe (6/9) einstellen.
+- **Schwierigkeitsstufen pro Profil** (Presets statt Freitext, kein neuer Build nötig): Tipptrainer-
+  Mindestgenauigkeit (25/50/75/85%, Standard 25%), Abschlussquiz-Bestehensschwelle für den 1. Versuch
+  (50/75/85%, Standard 50%) und für den 2. Versuch/die Wiederholung (25/50%, Standard 25%).
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
 - **Bericht "Stärken & Schwächen"** (pro Profil, umschaltbar 7/30 Tage): Richtig-Quote je Fach als
   Ampel-Balken (grün ≥75 %, gelb, rot <50 %), schwächste Fächer zuerst; dazu Lerntage im Zeitraum
