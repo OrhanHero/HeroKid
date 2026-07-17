@@ -24,9 +24,7 @@ public sealed class FeedCacheTests : IDisposable
         }
         catch (IOException)
         {
-        }
-        catch (DirectoryNotFoundException)
-        {
+            // Deckt auch DirectoryNotFoundException ab - Aufräumen ist Best-Effort.
         }
     }
 

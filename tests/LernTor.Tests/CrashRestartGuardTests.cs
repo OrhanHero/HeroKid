@@ -23,9 +23,7 @@ public sealed class CrashRestartGuardTests : IDisposable
         }
         catch (IOException)
         {
-        }
-        catch (DirectoryNotFoundException)
-        {
+            // Deckt auch DirectoryNotFoundException ab - Aufräumen ist Best-Effort.
         }
     }
 
