@@ -25,34 +25,51 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 | Klasse 6 | Klasse 9 |
 |---|---|
-| Bruchrechnung: Addition | Lineare Gleichungen |
-| Bruchrechnung: Multiplikation | Lineare Funktionen (Steigung/Achsenabschnitt) |
-| Prozentrechnung (Prozentwert) | Quadratische Gleichungen (pq-Formel) |
+| Bruchrechnung – Addition | Lineare Gleichungen |
+| Bruchrechnung – Multiplikation | Lineare Funktionen |
+| Prozentrechnung – Prozentwert | Quadratische Gleichungen (pq-Formel) |
 | Negative Zahlen | Satz des Pythagoras |
-| Flächen-/Umfangsberechnung (Rechteck) | Zinsrechnung (einfache Zinsen) |
+| Flächen- und Umfangsberechnung | Zinsrechnung |
 | Maßstab | Binomische Formeln |
 | Wahrscheinlichkeit bei Zufallsexperimenten | Mittelwert und Median (Statistik) |
+| Volumen von Quadern | Trigonometrie im rechtwinkligen Dreieck |
+| Bruch-Dezimalzahl-Umwandlung | Satz des Thales |
+| Direkt proportionale Zuordnungen | Volumen von Pyramide, Kegel und Kugel |
+| Kongruenzabbildungen | Lineare Gleichungssysteme |
+| Kombinatorik (systematisches Zählen) | Quadratische Funktionen (Scheitelpunkt) |
+| | Exponentielles Wachstum |
+| | Potenzgesetze |
 
 ## Deutsch (`GermanGenerator.cs`)
 
 | Klasse 6 | Klasse 9 |
 |---|---|
-| Wortarten (Nomen/Verb/Adjektiv) | Aktiv und Passiv |
-| Zeitformen (Präsens/Präteritum/Perfekt) | Satzgefüge und Konjunktionen |
-| Satzglieder (Subjekt/Prädikat/Objekt) | Kommasetzung |
+| Wortarten | Aktiv und Passiv |
+| Zeitformen (Tempus) | Satzgefüge und Konjunktionen |
+| Satzglieder | Kommasetzung |
 | Groß- und Kleinschreibung | "dass" oder "das" |
-| Steigerung von Adjektiven | Wortarten vertieft (Adverb/Präposition/Konjunktion) |
-| | Textsorten unterscheiden (Bericht/Kommentar/Reportage/...) |
+| Steigerung von Adjektiven | Wortarten (vertieft) |
+| Satzarten | Textsorten unterscheiden |
+| Wortbildung | Aufbau eines Dramas |
+| Balladen und Jugendbücher | Figurencharakterisierung |
+| Sach- und Gebrauchstexte auswerten | Argumentation und Quellenkritik |
+| Texte in medialer Form (Wiki, E-Mail, TV) | Filmanalyse |
+| Schreibformen | Rede, Debatte und Bewerbung |
+| Gesprächsformen und Präsentieren | Satzbau und Sprachwissen |
+| | Wortbedeutung und Sprachwandel |
 
 ## Türkisch (`TurkishGenerator.cs`)
 
 | Klasse 6 | Klasse 9 |
 |---|---|
 | Şimdiki Zaman (Präsens) | Cümlenin Ögeleri (Satzglieder) |
-| Geçmiş Zaman (Präteritum) | Gelecek Zaman (Futur) |
+| Geçmiş Zaman (Präteritum/-di'li geçmiş) | Gelecek Zaman (Futur) |
 | Eş Anlamlı Kelimeler (Synonyme) | Yazım Kuralları (Rechtschreibung) |
 | Zıt Anlamlı Kelimeler (Antonyme) | Fiilimsi (Partizip/Verbalnomen) |
-| Doğa ve Çevre (Natur und Umwelt) – Wortschatz | |
+| Doğa ve Çevre (Natur und Umwelt) – Wortschatz | Kimlik ve Gelecek (Identität und Zukunft) – Wortschatz |
+| Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
+| Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | Türkiye'nin Coğrafyası (Geografie der Türkei) |
+| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | |
 
 ## Physik (`PhysikGenerator.cs`)
 
@@ -61,7 +78,10 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Aggregatzustände | Ohmsches Gesetz |
 | Einfacher Stromkreis | Energieerhaltung |
 | Magnetismus | Newtonsche Gesetze |
-| | Magnetfelder und elektromagnetische Induktion |
+| Von den Sinnen zum Messen | Magnetfelder und elektromagnetische Induktion |
+| Welt des Großen – Welt des Kleinen (Optik und Weltraum) | Gleichförmige und beschleunigte Bewegungen (Kinematik) |
+| Bewegung zu Wasser, zu Lande und in der Luft (Bionik) | Radioaktivität und Kernphysik |
+| | Schwingungen, Wellen und optische Geräte |
 
 ## Chemie (`ChemieGenerator.cs`)
 
@@ -70,15 +90,30 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Stoffgemische trennen | Atommodell |
 | Verbrennung | Chemische Reaktionen |
 | Säuren und Laugen | Periodensystem |
-| Metalle und ihre Eigenschaften | |
+| Metalle und ihre Eigenschaften | Klare Verhältnisse – Stöchiometrie |
+| Stoffe im Alltag | Säuren und Laugen – echt ätzend |
+| | Kohlenwasserstoffe – vom Campinggas zum Superbenzin |
+| | Alkohole – vom Holzgeist zum Glycerin |
+| | Organische Säuren – Salatsauce, Entkalker & Co |
+| | Ester – Vielfalt der Produkte aus Alkoholen und Säuren |
+
+Organische Chemie (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester) ist entgegen einer
+früheren Design-Notiz in dieser Datei **inzwischen doch implementiert** (Klasse 9) - die Notiz war
+nicht mehr aktuell und wurde entfernt (siehe Abschnitt "Abgleich mit dem offiziellen
+Rahmenlehrplan" weiter unten).
 
 ## Biologie (`BiologieGenerator.cs`)
 
 | Klasse 6 | Klasse 9 |
 |---|---|
 | Der menschliche Körper | Zellbiologie |
-| Fotosynthese | Vererbung/Genetik |
+| Fotosynthese | Vererbung (Genetik) |
 | Wirbeltierklassen | Ökosysteme |
+| Pubertät und Entwicklung | Gesundheit und Krankheit (Immunologie) |
+| | Bau und Funktion des Nervensystems |
+| | Sucht und Suchtprävention |
+| | Vererbung beim Menschen (Humangenetik) |
+| | Evolution – Theorien und Stammesgeschichte |
 
 ## Englisch (`EnglischGenerator.cs`)
 
@@ -87,6 +122,10 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Simple Present vs. Present Progressive | Simple Past vs. Present Perfect |
 | Unregelmäßige Pluralformen | Conditional Sentences (Type 1) |
 | Question Words | Passive Voice |
+| Individuum und Lebenswelt: Alltag und Familie | Identität, Lebensentwürfe und Zukunft |
+| Gesellschaft: Schule und Zusammenleben | Gesellschaft, Medien und Vielfalt |
+| Kultur und historischer Hintergrund | Umwelt und Nachhaltigkeit |
+| Natur und Umwelt | |
 
 ## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
 
@@ -96,6 +135,11 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Kartenkunde und Himmelsrichtungen | Wirtschaftskreislauf |
 | Kinderrechte | Medien und Gesellschaft |
 | Ernährung – wie werden Menschen satt? | |
+| Wasser – nur Natur oder in Menschenhand? | |
+| Stadt und städtische Vielfalt | |
+| Europa – grenzenlos? | |
+| Tourismus und Mobilität – schneller, weiter, klüger? | |
+| Demokratie und Mitbestimmung | |
 
 ## Politik (`PolitikGenerator.cs`)
 
@@ -105,6 +149,10 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Berlin und seine Bezirke | Bundestag und Bundesrat |
 | Wahlrecht | Wahlsystem |
 | | Soziale Marktwirtschaft |
+| | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
+| | Konflikte und Konfliktlösungen: internationale Akteure |
+| | Friedenssicherung und Entwicklungspolitik |
+| | Europa in der Welt: Die Europäische Union |
 
 ## Geografie (`GeoGenerator.cs`)
 
@@ -114,6 +162,11 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Klimazonen | Klimawandel |
 | Deutschland: Bundesländer | Verstädterung |
 | | Armut und Reichtum weltweit |
+| | Umgang mit Ressourcen: Energie und Rohstoffe |
+| | Umgang mit Ressourcen: Landwirtschaft und Boden |
+| | Klimaschutz: Internationale Konflikte und Lösungen |
+| | Wirtschaftliche Verflechtungen und Globalisierung |
+| | Europa in der Welt (naturräumliche und wirtschaftliche Vielfalt) |
 
 ## Ethik (`EthikGenerator.cs`)
 
@@ -123,6 +176,12 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Freundschaft und Konflikte | Meinungsfreiheit und Grenzen |
 | Weltreligionen | Digitale Ethik |
 | | Recht und Gerechtigkeit |
+| | Wer bin ich? - Identität und Rolle |
+| | Wie frei bin ich? - Freiheit und Verantwortung |
+| | Was ist gerecht? - Gerechtigkeitstheorien vertieft |
+| | Was ist der Mensch? - Mensch und Gemeinschaft |
+| | Was soll ich tun? - Handeln und Moral |
+| | Worauf kann ich vertrauen? - Wissen und Glauben |
 
 ## Kunst (`KunstGenerator.cs`)
 
@@ -155,7 +214,7 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Juden, Christen und Muslime | Konflikte und Konfliktlösungen |
 | | Europa in der Welt |
 | | Völkermorde und Massengewalt |
-| | Die Welt nach dem Kalten Krieg |
+| | Die Welt nach dem Kalten Krieg (1989-1991) |
 
 ## Medienbildung / ITG (`ItgGenerator.cs`)
 
@@ -167,28 +226,36 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## News (`LernTor.News`)
 
-Kuratierte, kostenlose RSS-Quellen (siehe `NewsFeedSource.cs`):
+22 kuratierte, kostenlose RSS-Quellen (siehe `CuratedNewsFeeds.All` in `NewsFeedSource.cs`) -
+öffentlich-rechtlich, Nachrichtenagenturen, Bezirks-/Landesparlament, Hersteller-Feeds, bewusst
+keine Boulevardquellen:
 
-- **Deutschland/Berlin**: tagesschau.de, rbb24 Berlin, Tagesspiegel Berlin
-- **Türkei/Istanbul/Samsun/Ünye**: Hürriyet, Sabah
-- **Technik/KI**: heise online (deckt digitale/KI-Themen ab, die für Jugendliche zunehmend
-  alltagsrelevant sind)
+- **Deutschland/Berlin**: tagesschau.de, Deutsche Welle, rbb24 Berlin, Tagesspiegel Berlin,
+  Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg, Abgeordnetenhaus
+  Berlin, fluter.de, Bundesregierung kompakt/Pressemitteilungen, BMBFSFJ
+- **Türkei**: Anadolu Ajansı, TRT Haber, DW Türkçe (bewusst seriöse Agenturen/Sender statt
+  Boulevardquellen)
+- **KI/Technik**: heise online, IT Boltwise
+- **Spiele**: GameStar, Nintendo.de News, PlayStation Blog DE, Xbox News DE, Steam News
 
-Artikel werden nach Schlüsselwörtern priorisiert (Berlin, Deutschland, Istanbul, Samsun, Ünye,
-Türkei, sowie KI/Künstliche Intelligenz/ChatGPT/Digital) und auf die 5-8 relevantesten/aktuellsten
-reduziert. Berlin-Lokalnachrichten sind explizit sehr wichtig: mindestens 2 (bzw. ein Drittel von
-`targetCount`) aktuelle Berlin-Artikel werden garantiert aufgenommen, bevor die restlichen Plätze
-nach allgemeiner Priorität aufgefüllt werden. Artikel mit verstörenden Themen (Krieg, Gewaltverbrechen,
-Suizid, ...) werden nicht hart ausgefiltert, aber deutlich nach unten gestuft (`SensitiveKeywords` in
-`NewsFeedSource.cs`), damit harmlosere, altersgerechtere Artikel bevorzugt ausgewählt werden. Artikel,
-die inhaltlich (Titel) doppelt vorkommen - z.B. weil zwei Feeds dieselbe Meldung führen - werden vorher
-herausgefiltert. Pro Artikel werden automatisch zwei Verständnisfragen erzeugt (Herkunfts-/Regionsfrage
-+ Schlüsselwort-Frage aus der Überschrift).
+`RssNewsService.LoadCuratedArticlesAsync` übernimmt aus **jedem Feed genau den neuesten Artikel** -
+keine Quoten-/Prioritäts-Rankings mehr, das Ergebnis bleibt dadurch bewusst klein und stabil
+(typischerweise ~22 Artikel statt z.B. 71, wenn mehrere Artikel pro Feed genommen würden). Zusätzlich
+hängt sich täglich EIN rotierendes, kuratiertes Finanzwissen-Erklärstück an (`FinanceKnowledgeArticles`
+- dafür gibt es keinen verlässlichen RSS-Feed, siehe unten). Ab einem Profil-Alter von ≤ 9 Jahren
+werden Artikel mit `SensitiveKeywords` (Krieg, Gewaltverbrechen, Suizid, ... inkl. türkischsprachiger
+Entsprechungen) komplett ausgefiltert statt nur herabgestuft ("keine Angstmache" gilt für die
+Jüngsten strikt); ab 10 Jahren bleibt das mildere Herabstufen im Ranking. Pro Artikel wird automatisch
+GENAU EINE Verständnisfrage erzeugt: ein Lückentext aus der Zusammenfassung mit ausgeblendetem
+Schlüsselwort (`HeuristicComprehensionQuestionGenerator`) - frühere Fragetypen (Regionsfrage,
+Schlüsselwort-aus-Überschrift-Frage) wurden auf Nutzerwunsch entfernt, weil sie ohne echtes Lesen
+lösbar waren. Gibt die Zusammenfassung keinen Lückentext her, bleibt der Artikel ohne Frage.
 
 **Wie die App an Nachrichten kommt**: `RssNewsService` lädt bei jedem Aufruf des News-Bereichs live
 die RSS-Feeds aller obigen Quellen per `HttpClient` (kein Cache, keine gespeicherten Artikel) - die
 Inhalte sind also tatsächlich tagesaktuell, nicht vorproduziert. Nicht erreichbare Feeds werden
-einzeln übersprungen, ohne den Ladevorgang der übrigen Feeds abzubrechen.
+einzeln übersprungen, ohne den Ladevorgang der übrigen Feeds abzubrechen (ein Tages-Archiv dient als
+Offline-Rückfall, siehe README "Tages-Archiv & Offline-Rückfall").
 
 ## Abschlussquiz-Zusammenstellung bei vielen Fächern
 
@@ -260,9 +327,6 @@ Beispielaufgaben inkl. Erklärung/HelpHint, kein reiner Dokumentations-Platzhalt
 **Bewusst nicht übernommene/verbleibende Unterschiede** (kein technischer Mangel, sondern
 Simplifizierungen dieser App gegenüber dem vollständigen RLP):
 
-- **Chemie**: organische Chemie (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester,
-  Doppeljahrgangsstufe 9/10) bleibt bewusst ausgeklammert - eher Grundschul-fernes Spezialwissen für
-  den Zielaltersbereich dieser App.
 - **Biologie**: Der RLP führt Biologie als eigenständiges Fach erst ab Doppeljahrgangsstufe 7/8; in
   5/6 ist es Teil des integrierten Fachs Naturwissenschaften. Unsere Klasse-6-Themen (menschlicher
   Körper, Fotosynthese, Wirbeltierklassen) sind trotzdem sinnvoll, da die App Bio/Chemie/Physik aus
@@ -278,12 +342,11 @@ Simplifizierungen dieser App gegenüber dem vollständigen RLP):
   abbilden und bleibt daher unberücksichtigt; die übrigen Themenfelder (Informatiksysteme, Leben in
   vernetzten Systemen) sind über die bestehenden Themen (Datenschutz, Cybermobbing, Fake News,
   Algorithmen) plausibel abgedeckt.
-- **Deutsch, Geografie, Politische Bildung**: Die RLP-Themenfelder für literarische Textanalyse
-  (Drama, Novelle, Parabel), tiefergehende Sozialkunde-Themen (z.B. Migration/Bevölkerung,
-  Rechtsstaat) und weitere Geografie-Themenfelder (z.B. Tourismus/Mobilität) sind bewusst nicht
-  1:1 übernommen - eine vollständige Abdeckung aller RLP-Themenfelder ist weiterhin nicht das Ziel
-  dieser App (siehe Hinweis am Anfang dieser Datei), die repräsentative Auswahl wurde aber durch
-  diesen Abgleich gezielt um die auffälligsten Lücken erweitert.
+- **Deutsch, Politische Bildung**: Drama-Analyse ist inzwischen abgedeckt (`DramaAufbau`,
+  `Figurencharakterisierung`), Novelle/Parabel sowie tiefergehende Sozialkunde-Themen (z.B.
+  Migration/Bevölkerung, Rechtsstaat) sind bewusst nicht 1:1 übernommen - eine vollständige
+  Abdeckung aller RLP-Themenfelder ist weiterhin nicht das Ziel dieser App (siehe Hinweis am Anfang
+  dieser Datei).
 
 Dieser Abgleich verbessert die Abdeckung gezielt, ist aber weiterhin keine vollständige 1:1-Analyse
 aller RLP-Themenfelder für alle zehn Jahrgangsstufen - die App konzentriert sich bewusst auf Klasse 6
@@ -609,60 +672,63 @@ Ethik/`Freundschaft`).
 
 ---
 
-## 📋 Aktueller Implementierungsstand (Stand: 2026-07-15)
+## 📋 Aktueller Implementierungsstand (Stand: 2026-07-17)
 
-### ✅ Vollständig implementierte Fach-Generatoren (14 Fächer)
+### ✅ Vollständig implementierte Fach-Generatoren (15 Fächer)
 
 | Fach | Generator | Klasse 6 Topics | Klasse 9 Topics | Gesamt |
 |------|-----------|----------------|----------------|--------|
-| Mathematik | `MathGenerator.cs` | 7 | 7 | 14 |
-| Deutsch | `GermanGenerator.cs` | 6 | 7 | 13 |
-| Türkisch | `TurkishGenerator.cs` | 5 | 4 | 9 |
-| Englisch | `EnglischGenerator.cs` | 4 | 5 | 9 |
-| Biologie | `BiologieGenerator.cs` | 3 | 3 | 6 |
-| Chemie | `ChemieGenerator.cs` | 4 | 0 | 4 |
-| Physik | `PhysikGenerator.cs` | 3 | 5 | 8 |
+| Mathematik | `MathGenerator.cs` | 12 | 14 | 26 |
+| Deutsch | `GermanGenerator.cs` | 12 | 13 | 25 |
+| Türkisch | `TurkishGenerator.cs` | 8 | 7 | 15 |
+| Englisch | `EnglischGenerator.cs` | 7 | 6 | 13 |
+| Biologie | `BiologieGenerator.cs` | 4 | 8 | 12 |
+| Chemie | `ChemieGenerator.cs` | 5 | 9 | 14 |
+| Physik | `PhysikGenerator.cs` | 6 | 7 | 13 |
 | Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
-| Gewi | `GewiGenerator.cs` | 5 | 2 | 7 |
-| Politik | `PolitikGenerator.cs` | 3 | 3 | 6 |
-| Geografie | `GeoGenerator.cs` | 3 | 4 | 7 |
-| Ethik | `EthikGenerator.cs` | 3 | 3 | 6 |
-| **Kunst** (NEU) | `KunstGenerator.cs` | **4** | **6** | **10** |
-| **Musik** (NEU) | `MusikGenerator.cs` | **5** | **6** | **11** |
-| ITG | `ItgGenerator.cs` | 3 | 2 | 5 |
+| Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
+| Politik | `PolitikGenerator.cs` | 3 | 8 | 11 |
+| Geografie | `GeoGenerator.cs` | 3 | 9 | 12 |
+| Ethik | `EthikGenerator.cs` | 3 | 10 | 13 |
+| Kunst | `KunstGenerator.cs` | 4 | 6 | 10 |
+| Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
+| ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: ~124 Topics** (je Topic ~20 kuratierte Fragen → ~2.500 Fragen im Pool)
+**Total: 202 Topics** (je Topic ~20 kuratierte Fragen → ~4.000 Fragen im Pool; Mathematik generiert
+zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
+Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
+der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
+abgeleitet, nicht aus dem Gedächtnis geschätzt.
 
 ### 📰 News / RSS-Feeds (`LernTor.News/CuratedNewsFeeds.cs`)
 
-**27 kuratierte RSS-Quellen** (keine Boulevard, ausschließlich öffentlich-rechtlich, Agenturen, etablierte Regionalzeitungen, Hersteller-Feeds):
+**22 kuratierte RSS-Quellen** (keine Boulevard, ausschließlich öffentlich-rechtlich, Agenturen,
+etablierte Regionalzeitungen, Hersteller-Feeds), gruppiert nach `DefaultCategory` (nur ein
+Ausgangspunkt - `NewsCategoryClassifier` ordnet den tatsächlichen Artikeltext zusätzlich per
+Schlüsselwort um, z.B. landet eine Minecraft-Meldung von tagesschau.de trotzdem in 🎮 Spiele):
 
 | Kategorie | Feeds (Anzahl) | Quellen |
 |-----------|----------------|---------|
-| **Berlin** (Garantie-Kontingent) | 6 | rbb24, Tagesspiegel, Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg, Abgeordnetenhaus Berlin |
-| **Türkei** (Garantie-Kontingent) | 3 | Anadolu Ajansı, TRT Haber, DW Türkçe |
-| **Spiele** (Extra-Slot) | 5 | GameStar, Nintendo.de, PlayStation Blog, Xbox News, Steam News |
-| **Finanzen** | 1 tägliches Erklärstück (kein RSS-Feed) | rotierendes, kuratiertes Finanzwissen (`FinanceKnowledgeArticles`, Fix) |
-| **KI / Technik** | 2 | heise online, IT Boltwise |
-| **Deutschland / Allgemein** | 8 | tagesschau.de, Deutsche Welle, fluter.de (BpB), Bundesregierung ×3, BMBFSFJ |
-| **Welt / International** | 1 | Deutsche Welle International |
+| **Berlin** | 5 | rbb24, Tagesspiegel, Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg |
+| **Türkei** | 3 | Anadolu Ajansı, TRT Haber, DW Türkçe |
+| **Spiele** | 5 | GameStar, Nintendo.de News, PlayStation Blog DE, Xbox News DE, Steam News |
+| **KI / Technik** | 1 | IT Boltwise (heise online läuft kategorisiert als Deutschland, deckt aber KI-Themen mit ab) |
+| **Deutschland / Allgemein** | 7 | tagesschau.de, Abgeordnetenhaus Berlin, fluter.de, heise online, Bundesregierung kompakt, Bundesregierung Pressemitteilungen, BMBFSFJ |
+| **Welt / International** | 1 | Deutsche Welle |
+| **Finanzen** (kein Feed) | 1 tägliches Erklärstück | rotierendes, kuratiertes Finanzwissen (`FinanceKnowledgeArticles`, Fix) |
 
-**News-Auswahl-Logik** (in `RssNewsService.LoadCuratedArticlesAsync`):
+**News-Auswahl-Logik** (in `RssNewsService.LoadCuratedArticlesAsync`) - bewusst einfach gehalten,
+keine Quoten/Prioritäts-Rankings mehr:
 
 ```csharp
-targetCount = 20  // Default, aufrufbar via MainViewModel (aktuell 20)
-    │
-    ├─ Berlin-Garantie: Math.Max(2, targetCount/3) = 7 Slots
-    │   (wenigsten Sensitive-Keywords → neueste zuerst)
-    ├─ Türkei-Garantie: max 2 Slots (nach Berlin)
-    ├─ Rest: Priorität-Ranking nach PriorityKeywords
-    │         (Berlin, Deutschland, Istanbul, Samsun, Ünye, Türkei, KI/ChatGPT/Digital)
-    │         minus SensitiveKeywords (Krieg, Gewalt, Suizid, …) + Recency
-    │
-    ├─ +1 GameStar-Extra (falls Feed liefert, zählt NICHT gegen targetCount)
-    └─ +1 Finanzwissen-Erklärstück (täglich fix, zählt NICHT gegen targetCount)
-    │
-    └─ **Maximum pro Tag: 22 Artikel** (20 + 2 Extra)
+foreach (feed in CuratedNewsFeeds.All)   // 22 Feeds
+    → genau der neueste Artikel dieses Feeds
+    → bei ≤9 Jahren: komplett übersprungen, falls SensitiveKeywords treffen
+    → nicht erreichbare Feeds werden einzeln übersprungen (Fehlerprotokoll)
+
++ 1 FinanceKnowledgeArticles.GetForDate(heute)   // täglich fix, kein Feed nötig
+
+→ typischerweise ~22-23 Artikel/Tag (weniger, wenn Feeds ausfallen)
 ```
 
 **Altersfilter** (Parameter `childAge`):
@@ -689,9 +755,8 @@ targetCount = 20  // Default, aufrufbar via MainViewModel (aktuell 20)
 | **Sport, Kunst-Praxis, Musik-Praxis, WAT, NaWi-WP 7-10** | RLP-Themenfelder lassen sich schlecht als Quiz abbilden (Bewegung, Gestalten, Musizieren, Werkstatt) |
 | **Naturwissenschaften 5/6 (integriert)** | Nur über Physik/Chemie/Bio-Themen abgedeckt, kein eigenes Fach |
 | **Standardsoftware (ITG)** | Textverarbeitung/Tabellenkalkulation nicht quizbar → bewusst weggelassen |
-| **Organische Chemie (Klasse 9/10)** | Bewusst ausgeklammert (Zielalter 10-15, zu spezifisch) |
-| **Literarische Textanalyse (Drama, Novelle, Parabel)** | Deutsch-Generator deckt Grammatik/Satzbau/Textsorten ab, keine tiefen Interpretations-Aufgaben |
-| **Migration/Bevölkerung, Tourismus/Mobilität (Geo/Politik 9)** | Im RLP vorhanden, nicht 1:1 als Topics implementiert |
+| **Literarische Textanalyse: Novelle, Parabel** | Drama ist inzwischen abgedeckt (`DramaAufbau`, `Figurencharakterisierung`); Novelle/Parabel bleiben offen |
+| **Migration/Bevölkerung (Geo/Politik 9)** | Im RLP vorhanden, nicht 1:1 als Topic implementiert |
 | **Kunst/Musik: "Verfahren und Werkzeuge" / "Standardsoftware" (ITG)** | Nur theoretisch (Wissen), keine praktische Übung möglich |
 | **Offline-Erst-Installation des LLM** | Model-Download passiert erst bei erstem Nutzen (~2-4 GB), kein Pre-Bundle im Installer |
 | **TTS für Türkisch** | Piper-Stimmen primär Deutsch/Englisch; Türkisch fehlt/experimentell |
@@ -707,8 +772,8 @@ targetCount = 20  // Default, aufrufbar via MainViewModel (aktuell 20)
 **App ist funktionskomplett für den Kern-Zweck:**
 
 1. Kind loggt sich ein
-2. **News lesen** (22 Artikel: 20 RSS + GameStar + Finanzwissen; Berlin/Türkei garantiert, altersgerecht)
-3. **Übungen** in 13 Fächern (Klasse 6/9, ~20 Fragen/Topic, keine Wiederholung bei richtig)
+2. **News lesen** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + 1 Finanzwissen-Erklärstück; Berlin/Türkei/KI/Spiele feste Quellen, altersgerecht gefiltert)
+3. **Übungen** in bis zu 15 Fächern (je nach Eltern-Einstellung aktiv, Klasse 6/9, ~20 Fragen/Topic, keine Wiederholung bei richtig)
 4. **Abschlussquiz** (dynamisch verteilt auf aktive Fächer, ≥50% = PC frei)
 5. Eltern steuern Fächer, Noten, LLM, Belohnungen, sehen Wochenbericht
 
