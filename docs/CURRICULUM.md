@@ -151,9 +151,10 @@ Rahmenlehrplan" weiter unten).
 | Was ist Demokratie? | Gewaltenteilung |
 | Berlin und seine Bezirke | Bundestag und Bundesrat |
 | Wahlrecht | Wahlsystem |
-| | Soziale Marktwirtschaft |
-| | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
-| | Konflikte und Konfliktlösungen: internationale Akteure |
+| Armut und Reichtum (Klasse-6-Niveau) | Soziale Marktwirtschaft |
+| Leben in einer globalisierten Welt | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
+| Migration und Bevölkerung | Konflikte und Konfliktlösungen: internationale Akteure |
+| Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte) | |
 | | Friedenssicherung und Entwicklungspolitik |
 | | Europa in der Welt: Die Europäische Union |
 
@@ -465,10 +466,10 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 
 #### Politische Bildung (`PolitikGenerator.cs`)
 
-- [ ] 3.1 Armut und Reichtum (Klasse-6-Niveau)
-- [ ] 3.2 Leben in einer globalisierten Welt
-- [ ] 3.3 Migration und Bevölkerung
-- [ ] 3.4 Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte)
+- [x] 3.1 Armut und Reichtum (Klasse-6-Niveau) (→ `ArmutUndReichtumPolitik`)
+- [x] 3.2 Leben in einer globalisierten Welt (→ `GlobalisierteWelt`)
+- [x] 3.3 Migration und Bevölkerung (→ `MigrationPolitik`)
+- [x] 3.4 Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte) (→ `LebenImRechtsstaat`)
 
 #### Ethik (`EthikGenerator.cs`)
 
@@ -690,14 +691,14 @@ Ethik/`Freundschaft`).
 | Physik | `PhysikGenerator.cs` | 10 | 7 | 17 |
 | Geschichte | `GeschichteGenerator.cs` | 3 | 6 | 9 |
 | Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
-| Politik | `PolitikGenerator.cs` | 3 | 8 | 11 |
+| Politik | `PolitikGenerator.cs` | 7 | 8 | 15 |
 | Geografie | `GeoGenerator.cs` | 7 | 9 | 16 |
 | Ethik | `EthikGenerator.cs` | 3 | 10 | 13 |
 | Kunst | `KunstGenerator.cs` | 4 | 6 | 10 |
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 216 Topics** (je Topic ~20 kuratierte Fragen → ~4.300 Fragen im Pool; Mathematik generiert
+**Total: 220 Topics** (je Topic ~20 kuratierte Fragen → ~4.400 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien

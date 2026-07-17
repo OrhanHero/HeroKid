@@ -11,7 +11,7 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Demokratie, BerlinBezirke, Wahlrecht },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Demokratie, BerlinBezirke, Wahlrecht, ArmutUndReichtumPolitik, GlobalisierteWelt, MigrationPolitik, LebenImRechtsstaat },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Gewaltenteilung, BundestagBundesrat, Wahlsystem, SozialeMarktwirtschaft, WillensbildungUndMedien, KonflikteInternationaleAkteure, FriedenssicherungUndEntwicklungspolitik, EuropaeischeUnion }
         };
 
@@ -629,6 +629,230 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
             Topic = "Europa in der Welt: Die Europäische Union", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Im EU-Gesetzgebungsverfahren schlägt die Kommission Gesetze vor, über die Parlament und Rat gemeinsam entscheiden; die Debatte um die \"Finalität\" (Bundesstaat vs. Staatenbund) und Instrumente wie die Europäische Bürgerinitiative prägen die europäische Integration."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArmutReichtumPolitikListe =
+    {
+        ("Was ist der Sozialstaat, einfach erklärt?", new[] { "Ein Staat, der Menschen in Not finanziell und sozial unterstützt", "Ein Staat, der sich nicht um seine Bürger kümmert", "Ein anderes Wort für Diktatur" }, "Ein Staat, der Menschen in Not finanziell und sozial unterstützt",
+            "Der Sozialstaat sichert Menschen in schwierigen Lebenslagen ab, z.B. bei Arbeitslosigkeit, Krankheit oder Armut."),
+        ("Was ist der Mindestlohn?", new[] { "Der gesetzlich niedrigste Stundenlohn, den Arbeitgeber zahlen müssen", "Der höchste erlaubte Stundenlohn in Deutschland", "Ein freiwilliges Trinkgeld für Angestellte" }, "Der gesetzlich niedrigste Stundenlohn, den Arbeitgeber zahlen müssen",
+            "Der Mindestlohn legt gesetzlich fest, wie wenig Arbeitgeber ihren Angestellten pro Stunde mindestens zahlen dürfen."),
+        ("Was ist \"Kinderarmut\" in Deutschland?", new[] { "Wenn Kinder in Familien aufwachsen, die nur sehr wenig Geld zur Verfügung haben", "Ein anderes Wort für Kinderarbeit", "Ein Zustand, der in Deutschland gar nicht existiert" }, "Wenn Kinder in Familien aufwachsen, die nur sehr wenig Geld zur Verfügung haben",
+            "Kinderarmut bedeutet, dass Familien mit Kindern nur über sehr geringe finanzielle Mittel verfügen, was den Alltag der Kinder einschränkt."),
+        ("Was ist die \"Tafel\" in Deutschland?", new[] { "Eine Organisation, die überschüssige Lebensmittel an bedürftige Menschen verteilt", "Eine staatliche Behörde für Steuerangelegenheiten", "Ein anderes Wort für Klassenzimmer" }, "Eine Organisation, die überschüssige Lebensmittel an bedürftige Menschen verteilt",
+            "Die Tafeln sammeln überschüssige, aber noch genießbare Lebensmittel und geben sie kostengünstig oder kostenlos an Bedürftige weiter."),
+        ("Was bedeutet \"Umverteilung\" durch Steuern, vereinfacht?", new[] { "Wer mehr verdient, zahlt mehr Steuern - davon werden u.a. Unterstützungsleistungen finanziert", "Alle zahlen exakt denselben Steuerbetrag", "Steuern werden ausschließlich an reiche Menschen ausgezahlt" }, "Wer mehr verdient, zahlt mehr Steuern - davon werden u.a. Unterstützungsleistungen finanziert",
+            "Durch progressive Steuern zahlen Menschen mit höherem Einkommen anteilig mehr - mit diesem Geld werden u.a. Sozialleistungen finanziert."),
+        ("Was ist Wohngeld?", new[] { "Eine staatliche Unterstützung für Menschen mit geringem Einkommen bei den Mietkosten", "Eine Steuer auf den Kauf einer Wohnung", "Ein Bonus für den Kauf von Möbeln" }, "Eine staatliche Unterstützung für Menschen mit geringem Einkommen bei den Mietkosten",
+            "Wohngeld hilft Menschen mit geringem Einkommen, sich die Miete für eine Wohnung leisten zu können."),
+        ("Was ist Bürgergeld?", new[] { "Eine staatliche Grundsicherung für Menschen ohne ausreichendes eigenes Einkommen", "Ein Bonus, den jeder Bürger unabhängig vom Einkommen erhält", "Eine Steuer, die alle Bürger zahlen müssen" }, "Eine staatliche Grundsicherung für Menschen ohne ausreichendes eigenes Einkommen",
+            "Das Bürgergeld sichert Menschen ohne ausreichendes eigenes Einkommen ein finanzielles Existenzminimum."),
+        ("Warum haben manche Kinder in Deutschland weniger Chancen auf einen guten Schulabschluss?", new[] { "Finanzielle Not der Familie kann z.B. Nachhilfe, Ausflüge oder ruhiges Lernen erschweren", "Alle Kinder haben in Deutschland exakt dieselben Startbedingungen", "Schulnoten hängen ausschließlich vom Zufall ab" }, "Finanzielle Not der Familie kann z.B. Nachhilfe, Ausflüge oder ruhiges Lernen erschweren",
+            "Finanzielle und familiäre Rahmenbedingungen beeinflussen, wie gut Kinder in der Schule unterstützt werden können."),
+        ("Was kann die Politik tun, um Kinderarmut zu bekämpfen?", new[] { "Zum Beispiel finanzielle Unterstützung für Familien und kostenlose Bildungsangebote schaffen", "Kinderarmut lässt sich politisch grundsätzlich nicht beeinflussen", "Nur die betroffenen Familien selbst können etwas tun" }, "Zum Beispiel finanzielle Unterstützung für Familien und kostenlose Bildungsangebote schaffen",
+            "Politische Maßnahmen wie Familienleistungen, kostenlose Schulmaterialien oder Ganztagsbetreuung können Kinderarmut verringern."),
+        ("Was ist ein Beispiel für eine soziale Einrichtung, die Familien mit wenig Geld unterstützt?", new[] { "Zum Beispiel eine Suppenküche, Kleiderkammer oder ein Familienzentrum", "Ein privates Luxushotel", "Eine Bank für Wertpapierhandel" }, "Zum Beispiel eine Suppenküche, Kleiderkammer oder ein Familienzentrum",
+            "Solche Einrichtungen bieten bedürftigen Familien praktische Unterstützung im Alltag, von Essen bis Kleidung."),
+        ("Was versteht man unter \"Chancengleichheit\"?", new[] { "Alle Menschen sollen unabhängig von ihrer Herkunft die gleichen Möglichkeiten im Leben haben", "Nur reiche Menschen sollen gute Chancen bekommen", "Chancengleichheit bedeutet, dass alle exakt dasselbe Einkommen haben" }, "Alle Menschen sollen unabhängig von ihrer Herkunft die gleichen Möglichkeiten im Leben haben",
+            "Chancengleichheit bedeutet, dass der Erfolg im Leben nicht von der Herkunft, sondern möglichst von den eigenen Fähigkeiten abhängen soll."),
+        ("Was ist ein Grund, warum Chancengleichheit in der Praxis oft nicht vollständig erreicht wird?", new[] { "Unterschiedliche finanzielle und familiäre Startbedingungen wirken sich auf Bildungschancen aus", "Alle Kinder starten grundsätzlich mit exakt denselben Bedingungen", "Chancengleichheit ist gesetzlich verboten" }, "Unterschiedliche finanzielle und familiäre Startbedingungen wirken sich auf Bildungschancen aus",
+            "Trotz des Ziels der Chancengleichheit beeinflussen reale Unterschiede in Familie und Einkommen oft die tatsächlichen Bildungschancen."),
+        ("Was ist \"Elterngeld\"?", new[] { "Eine staatliche finanzielle Unterstützung für Eltern in der ersten Zeit nach der Geburt eines Kindes", "Ein Bonus, den Kinder direkt selbst erhalten", "Eine Steuer auf die Geburt eines Kindes" }, "Eine staatliche finanzielle Unterstützung für Eltern in der ersten Zeit nach der Geburt eines Kindes",
+            "Elterngeld unterstützt Eltern finanziell, wenn sie nach der Geburt eines Kindes weniger oder gar nicht arbeiten."),
+        ("Warum gibt es in Deutschland eine gesetzliche Kranken- und Rentenversicherung?", new[] { "Damit alle Menschen im Krankheits- oder Rentenfall abgesichert sind, unabhängig vom eigenen Vermögen", "Damit nur reiche Menschen im Alter abgesichert sind", "Diese Versicherungen sind in Deutschland verboten" }, "Damit alle Menschen im Krankheits- oder Rentenfall abgesichert sind, unabhängig vom eigenen Vermögen",
+            "Die gesetzlichen Versicherungen sollen sicherstellen, dass niemand allein wegen Krankheit oder Alter in existenzielle Not gerät."),
+        ("Was ist ein Beispiel für eine Ungleichheit zwischen Arm und Reich, die man im Alltag beobachten kann?", new[] { "Zum Beispiel unterschiedlicher Zugang zu Nachhilfe, Freizeitangeboten oder Wohnraum", "In Deutschland gibt es überhaupt keine Ungleichheiten mehr", "Alle Menschen haben immer denselben Wohnraum" }, "Zum Beispiel unterschiedlicher Zugang zu Nachhilfe, Freizeitangeboten oder Wohnraum",
+            "Finanzielle Unterschiede zeigen sich im Alltag oft beim Zugang zu Bildung, Freizeit und Wohnsituation."),
+        ("Welche Unterstützung kann eine Familie mit geringem Einkommen für Vereinssport oder Ausflüge in Deutschland beantragen?", new[] { "Leistungen aus dem \"Bildungs- und Teilhabepaket\"", "Es gibt dafür keinerlei staatliche Unterstützung", "Nur eine private Spende von Nachbarn" }, "Leistungen aus dem \"Bildungs- und Teilhabepaket\"",
+            "Das Bildungs- und Teilhabepaket unterstützt Kinder aus einkommensschwachen Familien z.B. bei Vereinsbeiträgen, Nachhilfe oder Ausflügen."),
+        ("Was ist ein Ziel der Politik, wenn sie den Mindestlohn erhöht?", new[] { "Menschen mit niedrigem Einkommen sollen von ihrer Arbeit besser leben können", "Unternehmen sollen dadurch weniger Gewinn machen dürfen", "Es gibt dabei überhaupt kein politisches Ziel" }, "Menschen mit niedrigem Einkommen sollen von ihrer Arbeit besser leben können",
+            "Eine Erhöhung des Mindestlohns soll sicherstellen, dass Menschen mit einfachen Jobs von ihrem Einkommen besser leben können."),
+        ("Warum wird in Deutschland politisch oft über die \"Vermögensverteilung\" diskutiert?", new[] { "Weil ein kleiner Teil der Bevölkerung einen großen Teil des Gesamtvermögens besitzt", "Weil alle Menschen in Deutschland exakt gleich viel besitzen", "Vermögensverteilung ist in Deutschland kein politisches Thema" }, "Weil ein kleiner Teil der Bevölkerung einen großen Teil des Gesamtvermögens besitzt",
+            "In Deutschland ist Vermögen sehr ungleich verteilt - ein vergleichsweise kleiner Teil der Bevölkerung besitzt einen großen Anteil des Gesamtvermögens."),
+        ("Was ist eine Grundsicherung im Alter?", new[] { "Eine staatliche Unterstützung für ältere Menschen, deren Rente nicht zum Leben reicht", "Eine zusätzliche Steuer für Rentnerinnen und Rentner", "Ein Bonus, den nur besonders reiche Rentner erhalten" }, "Eine staatliche Unterstützung für ältere Menschen, deren Rente nicht zum Leben reicht",
+            "Reicht die eigene Rente nicht für ein Existenzminimum, springt die Grundsicherung im Alter unterstützend ein."),
+        ("Warum ist Armutsbekämpfung ein wichtiges politisches Thema in einer Demokratie?", new[] { "Weil soziale Gerechtigkeit und gleiche Teilhabechancen als wichtige gesellschaftliche Ziele gelten", "Weil Armut in einer Demokratie per Gesetz gar nicht existieren darf", "Armutsbekämpfung ist in Demokratien kein relevantes Thema" }, "Weil soziale Gerechtigkeit und gleiche Teilhabechancen als wichtige gesellschaftliche Ziele gelten",
+            "Demokratische Gesellschaften streben soziale Gerechtigkeit an - Armutsbekämpfung gehört deshalb zu den zentralen politischen Aufgaben.")
+    };
+
+    private static QuizQuestion ArmutUndReichtumPolitik(Random r)
+    {
+        var f = ArmutReichtumPolitikListe[r.Next(ArmutReichtumPolitikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Armut und Reichtum (Klasse-6-Niveau)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Der deutsche Sozialstaat federt Armut über Leistungen wie Bürgergeld, Wohngeld und Bildungs-/Teilhabepaket ab - finanziert über Steuern nach dem Prinzip: wer mehr verdient, zahlt mehr."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GlobalisierteWeltListe =
+    {
+        ("Was bedeutet \"Globalisierung\" einfach erklärt?", new[] { "Die zunehmende weltweite Vernetzung von Ländern in Wirtschaft, Kultur und Kommunikation", "Der komplette Rückzug aller Länder voneinander", "Ein anderes Wort für Klimawandel" }, "Die zunehmende weltweite Vernetzung von Ländern in Wirtschaft, Kultur und Kommunikation",
+            "Globalisierung beschreibt, wie Länder weltweit wirtschaftlich, kulturell und über Kommunikation immer enger miteinander verbunden werden."),
+        ("Was ist ein Beispiel für Globalisierung im Alltag?", new[] { "Kleidung oder Elektronik, die in vielen verschiedenen Ländern hergestellt wird", "Ein Produkt, das ausschließlich im eigenen Dorf hergestellt und verkauft wird", "Ein Brief, der per Post verschickt wird" }, "Kleidung oder Elektronik, die in vielen verschiedenen Ländern hergestellt wird",
+            "Viele Alltagsprodukte durchlaufen heute mehrere Produktionsschritte in unterschiedlichen Ländern, bevor sie im Laden landen."),
+        ("Warum werden viele Produkte, die wir kaufen, in unterschiedlichen Ländern produziert?", new[] { "Weil einzelne Produktionsschritte dort günstiger oder effizienter erledigt werden können", "Weil es gesetzlich vorgeschrieben ist, Produkte in mehreren Ländern herzustellen", "Aus rein zufälligen Gründen ohne wirtschaftlichen Hintergrund" }, "Weil einzelne Produktionsschritte dort günstiger oder effizienter erledigt werden können",
+            "Unternehmen verteilen Produktionsschritte oft dorthin, wo sie am günstigsten oder effizientesten umgesetzt werden können."),
+        ("Was ist eine globale \"Lieferkette\", einfach erklärt?", new[] { "Der Weg eines Produkts von den Rohstoffen bis zum fertigen Produkt im Laden, oft über mehrere Länder", "Eine Kette aus Metall, die Waren im Laden sichert", "Ein anderes Wort für Zollgebühr" }, "Der Weg eines Produkts von den Rohstoffen bis zum fertigen Produkt im Laden, oft über mehrere Länder",
+            "Eine Lieferkette umfasst alle Schritte von der Rohstoffgewinnung über die Herstellung bis zum fertigen Produkt im Regal - oft über viele Länder verteilt."),
+        ("Was ist ein Vorteil der Globalisierung?", new[] { "Menschen weltweit haben Zugang zu mehr Produkten, Wissen und Austausch", "Alle Länder sind dadurch komplett voneinander isoliert", "Globalisierung hat ausschließlich Nachteile" }, "Menschen weltweit haben Zugang zu mehr Produkten, Wissen und Austausch",
+            "Durch weltweite Vernetzung profitieren Menschen von einem größeren Angebot an Produkten, Wissen und kulturellem Austausch."),
+        ("Was ist ein möglicher Nachteil der Globalisierung?", new[] { "Ungleiche Arbeitsbedingungen oder Umweltbelastung in manchen Produktionsländern", "Globalisierung hat ausschließlich Vorteile ohne jeden Nachteil", "Weniger internationale Kommunikation" }, "Ungleiche Arbeitsbedingungen oder Umweltbelastung in manchen Produktionsländern",
+            "Kritisiert wird oft, dass Produktion in manchen Ländern zu schlechten Arbeitsbedingungen oder Umweltschäden führt."),
+        ("Was ist das Internet ein gutes Beispiel für in Bezug auf globale Vernetzung?", new[] { "Menschen weltweit können sich in Echtzeit austauschen und Informationen teilen", "Das Internet verbindet ausschließlich Menschen innerhalb eines Landes", "Das Internet hat mit Globalisierung nichts zu tun" }, "Menschen weltweit können sich in Echtzeit austauschen und Informationen teilen",
+            "Das Internet ermöglicht sofortigen Austausch von Informationen und Kommunikation über Ländergrenzen hinweg."),
+        ("Warum sprechen viele Menschen weltweit heute Englisch als gemeinsame Sprache?", new[] { "Englisch dient international oft als gemeinsame Verständigungssprache in Wirtschaft und Reisen", "Englisch ist die einzige Sprache, die weltweit gesetzlich erlaubt ist", "Alle anderen Sprachen der Welt sind ausgestorben" }, "Englisch dient international oft als gemeinsame Verständigungssprache in Wirtschaft und Reisen",
+            "Englisch hat sich international als häufig genutzte gemeinsame Sprache etabliert, etwa in Wirtschaft, Wissenschaft und Tourismus."),
+        ("Was ist ein multinationaler Konzern?", new[] { "Ein Unternehmen, das in vielen Ländern der Welt tätig ist", "Ein Unternehmen, das nur in einem einzigen Dorf verkauft", "Eine staatliche Behörde für internationale Beziehungen" }, "Ein Unternehmen, das in vielen Ländern der Welt tätig ist",
+            "Multinationale Konzerne produzieren und verkaufen ihre Produkte in vielen verschiedenen Ländern weltweit."),
+        ("Was können weltweite Handelsabkommen zwischen Ländern regeln?", new[] { "Zum Beispiel Zölle, Handelsregeln und wirtschaftliche Zusammenarbeit", "Ausschließlich die Farbe von Nationalflaggen", "Sie regeln überhaupt nichts Konkretes" }, "Zum Beispiel Zölle, Handelsregeln und wirtschaftliche Zusammenarbeit",
+            "Handelsabkommen legen fest, wie Länder wirtschaftlich zusammenarbeiten, z.B. bei Zöllen und Handelsbestimmungen."),
+        ("Was ist ein Grund, warum manche Menschen Globalisierung kritisch sehen?", new[] { "Sie befürchten, dass lokale Kulturen, Arbeitsplätze oder Umweltstandards darunter leiden", "Kritiker befürchten zu wenig internationalen Handel", "Es gibt an der Globalisierung überhaupt keine Kritikpunkte" }, "Sie befürchten, dass lokale Kulturen, Arbeitsplätze oder Umweltstandards darunter leiden",
+            "Kritikerinnen und Kritiker sorgen sich z.B. um den Verlust lokaler Arbeitsplätze, Kulturen oder um niedrigere Umweltstandards in manchen Ländern."),
+        ("Was bedeutet \"Interdependenz\" zwischen Ländern in einer globalisierten Welt, vereinfacht?", new[] { "Länder sind wirtschaftlich und politisch stark voneinander abhängig", "Länder sind vollkommen unabhängig voneinander", "Ein anderes Wort für Kriegszustand zwischen Ländern" }, "Länder sind wirtschaftlich und politisch stark voneinander abhängig",
+            "Interdependenz bedeutet gegenseitige Abhängigkeit - Entscheidungen und Ereignisse in einem Land wirken sich oft auf andere Länder aus."),
+        ("Was kann passieren, wenn ein wichtiger Rohstoff in einem Land knapp wird, das viele andere Länder beliefert?", new[] { "Die Preise können weltweit steigen und andere Länder sind betroffen", "Andere Länder bemerken davon überhaupt nichts", "Der Rohstoff wird dadurch automatisch billiger" }, "Die Preise können weltweit steigen und andere Länder sind betroffen",
+            "In einer vernetzten Weltwirtschaft wirken sich Engpässe in einem Land oft auf Preise und Versorgung in vielen anderen Ländern aus."),
+        ("Warum ist internationale Zusammenarbeit bei globalen Problemen wie dem Klimawandel wichtig?", new[] { "Weil solche Probleme nicht von einem einzelnen Land allein gelöst werden können", "Weil der Klimawandel nur ein einziges Land betrifft", "Internationale Zusammenarbeit ist bei globalen Problemen unnötig" }, "Weil solche Probleme nicht von einem einzelnen Land allein gelöst werden können",
+            "Globale Herausforderungen wie der Klimawandel erfordern gemeinsames Handeln vieler Länder, da sie Ländergrenzen überschreiten."),
+        ("Was ist ein Beispiel für eine internationale Organisation, die die Zusammenarbeit zwischen Staaten fördert?", new[] { "Die Vereinten Nationen (UN)", "Ein einzelner privater Handwerksbetrieb", "Ein regionaler Sportverein" }, "Die Vereinten Nationen (UN)",
+            "Die Vereinten Nationen sind eine zentrale internationale Organisation, die Zusammenarbeit zwischen fast allen Staaten der Welt fördert."),
+        ("Was versteht man unter kultureller Globalisierung, z.B. bei Musik oder Filmen?", new[] { "Kulturelle Trends und Produkte verbreiten sich heute sehr schnell über Ländergrenzen hinweg", "Kultur bleibt in einer globalisierten Welt streng auf ein einzelnes Land beschränkt", "Kulturelle Globalisierung betrifft nur die Landwirtschaft" }, "Kulturelle Trends und Produkte verbreiten sich heute sehr schnell über Ländergrenzen hinweg",
+            "Musik, Filme und andere kulturelle Trends verbreiten sich dank globaler Vernetzung heute besonders schnell weltweit."),
+        ("Warum kann Globalisierung sowohl reiche als auch arme Länder wirtschaftlich betreffen?", new[] { "Wirtschaftliche Entwicklungen und Krisen wirken sich heute oft weltweit aus, nicht nur lokal", "Wirtschaftliche Ereignisse bleiben immer streng auf ein einziges Land begrenzt", "Nur reiche Länder sind von wirtschaftlichen Ereignissen betroffen" }, "Wirtschaftliche Entwicklungen und Krisen wirken sich heute oft weltweit aus, nicht nur lokal",
+            "Durch enge wirtschaftliche Verflechtung können sich Krisen oder Entwicklungen in einem Land weltweit auf andere Länder auswirken."),
+        ("Was ist ein Vorteil davon, dass Menschen weltweit heute leichter miteinander kommunizieren können?", new[] { "Wissen, Ideen und Kulturen können sich schneller austauschen", "Kommunikation über Ländergrenzen hinweg ist grundsätzlich verboten", "Es gibt dadurch keinerlei Vorteile" }, "Wissen, Ideen und Kulturen können sich schneller austauschen",
+            "Schnellere und einfachere Kommunikation ermöglicht einen regen Austausch von Wissen, Ideen und kulturellen Einflüssen weltweit."),
+        ("Was können Verbraucherinnen und Verbraucher tun, um verantwortungsvoller in einer globalisierten Welt einzukaufen?", new[] { "Zum Beispiel auf faire und nachhaltige Produktion achten", "Es gibt für Verbraucher keinerlei Einflussmöglichkeiten", "Ausschließlich die günstigsten Produkte kaufen, egal woher" }, "Zum Beispiel auf faire und nachhaltige Produktion achten",
+            "Durch bewussten Konsum, z.B. mit Fairtrade- oder Umweltsiegeln, können Verbraucherinnen und Verbraucher globale Produktionsbedingungen mitbeeinflussen."),
+        ("Warum wird die Globalisierung oft mit steigendem Warenverkehr per Schiff, Flugzeug und LKW in Verbindung gebracht?", new[] { "Weil viele Produkte heute über weite Strecken zwischen Produktions- und Verkaufsländern transportiert werden", "Weil Warentransport in einer globalisierten Welt komplett verboten ist", "Weil alle Waren heute ausschließlich lokal produziert und verkauft werden" }, "Weil viele Produkte heute über weite Strecken zwischen Produktions- und Verkaufsländern transportiert werden",
+            "Globaler Handel bedeutet, dass Waren oft weite Strecken zwischen Produktions- und Verkaufsländern zurücklegen müssen.")
+    };
+
+    private static QuizQuestion GlobalisierteWelt(Random r)
+    {
+        var f = GlobalisierteWeltListe[r.Next(GlobalisierteWeltListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Leben in einer globalisierten Welt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Globalisierung vernetzt Länder wirtschaftlich, kulturell und über Kommunikation - das bringt Vorteile (Austausch, Angebot), aber auch Herausforderungen (Arbeitsbedingungen, Umwelt, Interdependenz)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MigrationPolitikListe =
+    {
+        ("Was garantiert das Grundgesetz Menschen, die in Deutschland politisch verfolgt werden?", new[] { "Das Recht auf Asyl", "Das Recht auf ein kostenloses Auto", "Das Recht, sofort die deutsche Staatsbürgerschaft zu erhalten" }, "Das Recht auf Asyl",
+            "Das Grundgesetz garantiert politisch Verfolgten grundsätzlich das Recht, in Deutschland Asyl zu beantragen."),
+        ("Was ist die Staatsbürgerschaft (Staatsangehörigkeit)?", new[] { "Die rechtliche Zugehörigkeit einer Person zu einem bestimmten Staat mit bestimmten Rechten und Pflichten", "Ein anderes Wort für Wohnort", "Ein Reisedokument für den Urlaub" }, "Die rechtliche Zugehörigkeit einer Person zu einem bestimmten Staat mit bestimmten Rechten und Pflichten",
+            "Die Staatsbürgerschaft regelt rechtlich, zu welchem Staat eine Person gehört, inklusive Rechten wie dem Wahlrecht und Pflichten."),
+        ("Wie kann man z.B. die deutsche Staatsbürgerschaft durch Einbürgerung erhalten?", new[] { "Durch Erfüllung bestimmter Voraussetzungen wie Aufenthaltsdauer, Sprachkenntnisse und eigenständige Lebensunterhaltssicherung", "Automatisch nach einem einzigen Tag in Deutschland", "Durch reinen Zufall per Losverfahren" }, "Durch Erfüllung bestimmter Voraussetzungen wie Aufenthaltsdauer, Sprachkenntnisse und eigenständige Lebensunterhaltssicherung",
+            "Einbürgerung setzt in der Regel u.a. eine bestimmte Aufenthaltsdauer, ausreichende Sprachkenntnisse und eigenständige Existenzsicherung voraus."),
+        ("Was bedeutet \"doppelte Staatsbürgerschaft\"?", new[] { "Eine Person besitzt gleichzeitig die Staatsangehörigkeit von zwei Ländern", "Eine Person hat gar keine Staatsangehörigkeit", "Ein Land hat zwei verschiedene Regierungen" }, "Eine Person besitzt gleichzeitig die Staatsangehörigkeit von zwei Ländern",
+            "Bei doppelter Staatsbürgerschaft gehört eine Person rechtlich gleichzeitig zwei verschiedenen Staaten an."),
+        ("Was ist ein Integrationskurs?", new[] { "Ein staatlich gefördertes Angebot, das Zugewanderten Sprache und Grundwissen über Deutschland vermittelt", "Ein Kurs, der ausschließlich Sport unterrichtet", "Ein Kurs, den nur deutsche Staatsbürger besuchen dürfen" }, "Ein staatlich gefördertes Angebot, das Zugewanderten Sprache und Grundwissen über Deutschland vermittelt",
+            "Integrationskurse vermitteln Zugewanderten Deutschkenntnisse sowie Grundwissen über Gesellschaft, Kultur und Rechtsordnung."),
+        ("Wer entscheidet in Deutschland letztlich über die Migrationspolitik?", new[] { "Die gewählten politischen Vertreterinnen und Vertreter in Bundestag und Regierung", "Ausschließlich internationale Konzerne", "Migrationspolitik wird per Losentscheid festgelegt" }, "Die gewählten politischen Vertreterinnen und Vertreter in Bundestag und Regierung",
+            "Wie in anderen Politikbereichen entscheiden die demokratisch gewählten Vertretungen über die Ausgestaltung der Migrationspolitik."),
+        ("Was ist ein politischer Streitpunkt bei der Migrationspolitik, über den Parteien oft unterschiedlich diskutieren?", new[] { "Zum Beispiel wie viele Menschen aufgenommen werden sollen oder wie Integration gestaltet wird", "Ob Deutschland ein Land ist oder nicht", "Ob die deutsche Sprache existiert" }, "Zum Beispiel wie viele Menschen aufgenommen werden sollen oder wie Integration gestaltet wird",
+            "Fragen zur Zahl der Aufnahmen, zur Ausgestaltung der Integration oder zur Verteilung sind typische politische Streitpunkte."),
+        ("Was bedeutet \"kommunale Integrationsarbeit\"?", new[] { "Maßnahmen von Städten und Gemeinden, um Zugewanderten das Ankommen vor Ort zu erleichtern", "Ein Verbot für Städte, sich um Migrationsthemen zu kümmern", "Ausschließlich internationale Verträge zwischen Staaten" }, "Maßnahmen von Städten und Gemeinden, um Zugewanderten das Ankommen vor Ort zu erleichtern",
+            "Städte und Gemeinden unterstützen mit eigenen Angeboten - z.B. Beratung oder Sprachkursen - die Integration vor Ort."),
+        ("Was ist ein Ausländerbeirat bzw. Migrationsrat in manchen Kommunen?", new[] { "Ein Gremium, das die Interessen von Migrantinnen und Migranten in der Kommunalpolitik vertritt", "Eine Behörde, die ausschließlich Reisepässe ausstellt", "Ein privater Verein ohne politische Funktion" }, "Ein Gremium, das die Interessen von Migrantinnen und Migranten in der Kommunalpolitik vertritt",
+            "Solche Beiräte sollen die Perspektiven von Migrantinnen und Migranten in lokale politische Entscheidungen einbringen."),
+        ("Dürfen alle in Deutschland lebenden Menschen bei Bundestagswahlen wählen?", new[] { "Nein, nur Personen mit deutscher Staatsbürgerschaft", "Ja, ausnahmslos jede Person, die in Deutschland wohnt", "Nein, nur Personen über 30 Jahre" }, "Nein, nur Personen mit deutscher Staatsbürgerschaft",
+            "Das Wahlrecht bei Bundestagswahlen ist an die deutsche Staatsbürgerschaft geknüpft, unabhängig von der Wohndauer in Deutschland."),
+        ("Warum ist die politische Teilhabe von Migrantinnen und Migranten ein wichtiges gesellschaftliches Thema?", new[] { "Damit auch ihre Interessen in politischen Entscheidungen berücksichtigt werden", "Weil Migranten grundsätzlich kein Interesse an Politik haben", "Politische Teilhabe betrifft ausschließlich Staatsbürgerinnen ohne Migrationsgeschichte" }, "Damit auch ihre Interessen in politischen Entscheidungen berücksichtigt werden",
+            "Politische Teilhabe stellt sicher, dass auch die Anliegen von Menschen mit Migrationsgeschichte gehört und berücksichtigt werden."),
+        ("Was bedeutet \"Diskriminierung\" im Zusammenhang mit Migration?", new[] { "Die ungerechte Benachteiligung von Menschen aufgrund ihrer Herkunft", "Eine besondere Förderung von Migrantinnen und Migranten", "Ein anderes Wort für Einbürgerung" }, "Die ungerechte Benachteiligung von Menschen aufgrund ihrer Herkunft",
+            "Diskriminierung bedeutet, Menschen ungerecht zu behandeln, z.B. wegen ihrer Herkunft, statt sie nach ihren Fähigkeiten zu beurteilen."),
+        ("Was tut das Allgemeine Gleichbehandlungsgesetz (AGG) in Deutschland?", new[] { "Es schützt Menschen u.a. vor Diskriminierung wegen ihrer Herkunft", "Es erlaubt gezielt die Benachteiligung bestimmter Gruppen", "Es regelt ausschließlich Verkehrsregeln" }, "Es schützt Menschen u.a. vor Diskriminierung wegen ihrer Herkunft",
+            "Das AGG soll Benachteiligungen z.B. aufgrund von Herkunft, Geschlecht oder Religion verhindern."),
+        ("Was versteht man unter \"Multikulturalismus\" als politisches Konzept?", new[] { "Das Zusammenleben verschiedener Kulturen in einer Gesellschaft mit gegenseitigem Respekt", "Die vollständige Abschaffung aller kulturellen Unterschiede", "Ein anderes Wort für Einwanderungsverbot" }, "Das Zusammenleben verschiedener Kulturen in einer Gesellschaft mit gegenseitigem Respekt",
+            "Multikulturalismus beschreibt das Ideal eines respektvollen Zusammenlebens unterschiedlicher kultureller Gruppen in einer Gesellschaft."),
+        ("Warum ist Migration in Deutschland ein zentrales Thema in Wahlkämpfen?", new[] { "Weil sie viele Bereiche wie Arbeitsmarkt, Bildung und Wohnungspolitik betrifft", "Migration hat mit Wahlkämpfen überhaupt nichts zu tun", "Weil es in Deutschland keine Migration gibt" }, "Weil sie viele Bereiche wie Arbeitsmarkt, Bildung und Wohnungspolitik betrifft",
+            "Migration wirkt sich auf viele Politikbereiche aus, weshalb sie häufig ein zentrales Wahlkampfthema ist."),
+        ("Was ist eine Duldung im deutschen Aufenthaltsrecht?", new[] { "Eine vorübergehende Aussetzung der Abschiebung ohne dauerhaftes Aufenthaltsrecht", "Ein dauerhaftes, unbefristetes Aufenthaltsrecht", "Ein anderes Wort für Staatsbürgerschaft" }, "Eine vorübergehende Aussetzung der Abschiebung ohne dauerhaftes Aufenthaltsrecht",
+            "Eine Duldung bedeutet, dass eine Abschiebung vorübergehend ausgesetzt wird, ohne dass ein gesichertes Aufenthaltsrecht besteht."),
+        ("Was macht das Bundesamt für Migration und Flüchtlinge (BAMF)?", new[] { "Es bearbeitet u.a. Asylanträge in Deutschland", "Es organisiert ausschließlich Auslandsreisen für Bürger", "Es ist für den Straßenverkehr zuständig" }, "Es bearbeitet u.a. Asylanträge in Deutschland",
+            "Das BAMF ist die zentrale deutsche Behörde, die u.a. Asylanträge prüft und über Asylverfahren entscheidet."),
+        ("Was ist ein politisches Argument für eine geregelte Zuwanderung von Fachkräften nach Deutschland?", new[] { "Deutschland braucht in vielen Branchen zusätzliche Arbeitskräfte", "Deutschland hat in allen Branchen bereits zu viele Arbeitskräfte", "Fachkräftezuwanderung ist in Deutschland gesetzlich verboten" }, "Deutschland braucht in vielen Branchen zusätzliche Arbeitskräfte",
+            "In vielen Berufsfeldern fehlen in Deutschland Fachkräfte, weshalb geregelte Zuwanderung politisch oft befürwortet wird."),
+        ("Warum ist die Verteilung von Geflüchteten auf verschiedene Bundesländer politisch geregelt?", new[] { "Damit die Aufnahme und Versorgung gerecht auf ganz Deutschland verteilt wird", "Damit ausschließlich ein einziges Bundesland zuständig ist", "Diese Verteilung ist gesetzlich nicht geregelt" }, "Damit die Aufnahme und Versorgung gerecht auf ganz Deutschland verteilt wird",
+            "Ein festgelegter Verteilungsschlüssel sorgt dafür, dass die Aufnahme von Geflüchteten fair auf alle Bundesländer verteilt wird."),
+        ("Was bedeutet \"gesellschaftlicher Zusammenhalt\" im Zusammenhang mit Zuwanderung?", new[] { "Das friedliche und respektvolle Zusammenleben unterschiedlicher Bevölkerungsgruppen", "Die vollständige Trennung verschiedener Bevölkerungsgruppen", "Ein anderes Wort für Grenzkontrollen" }, "Das friedliche und respektvolle Zusammenleben unterschiedlicher Bevölkerungsgruppen",
+            "Gesellschaftlicher Zusammenhalt beschreibt das Ziel, dass Menschen unterschiedlicher Herkunft friedlich und respektvoll zusammenleben.")
+    };
+
+    private static QuizQuestion MigrationPolitik(Random r)
+    {
+        var f = MigrationPolitikListe[r.Next(MigrationPolitikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Migration und Bevölkerung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Grundgesetz garantiert Asylrecht; Staatsbürgerschaft, Einbürgerung, Integration und politische Teilhabe (nur mit deutscher Staatsbürgerschaft wahlberechtigt) sind zentrale politische Begriffe rund um Migration."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] RechtsstaatListe =
+    {
+        ("Was bedeutet \"Rechtsstaat\" einfach erklärt?", new[] { "Ein Staat, in dem sich alle - auch die Regierung - an geltende Gesetze halten müssen", "Ein Staat ohne jegliche Gesetze", "Ein Staat, in dem nur die Regierung Gesetze befolgen muss" }, "Ein Staat, in dem sich alle - auch die Regierung - an geltende Gesetze halten müssen",
+            "Im Rechtsstaat gelten Gesetze für alle gleichermaßen - auch für die Regierung selbst, die sich nicht darüber hinwegsetzen darf."),
+        ("Warum sind Klassenregeln in der Schule ein kleines Beispiel für Rechtsstaatlichkeit?", new[] { "Sie gelten für alle gleichermaßen und sichern ein faires Miteinander", "Sie gelten nur für einzelne, ausgewählte Schülerinnen und Schüler", "Klassenregeln haben mit Rechtsstaatlichkeit nichts zu tun" }, "Sie gelten für alle gleichermaßen und sichern ein faires Miteinander",
+            "Wie Gesetze im Staat gelten Klassenregeln für alle gleichermaßen und sorgen für ein geordnetes, faires Miteinander."),
+        ("Was sind Kinderrechte?", new[] { "Grundlegende Rechte, die speziell den Schutz und die Bedürfnisse von Kindern sichern", "Rechte, die ausschließlich Erwachsene betreffen", "Ein anderes Wort für Hausaufgaben" }, "Grundlegende Rechte, die speziell den Schutz und die Bedürfnisse von Kindern sichern",
+            "Kinderrechte sichern besonders die Bedürfnisse von Kindern ab, z.B. Schutz, Bildung und Mitbestimmung."),
+        ("In welchem internationalen Dokument sind die Kinderrechte weltweit festgelegt?", new[] { "In der UN-Kinderrechtskonvention", "Im Grundgesetz eines einzelnen Landes", "In den Olympischen Statuten" }, "In der UN-Kinderrechtskonvention",
+            "Die UN-Kinderrechtskonvention legt weltweit gültige Grundrechte für Kinder fest, die fast alle Staaten unterzeichnet haben."),
+        ("Was ist ein Beispiel für ein wichtiges Kinderrecht?", new[] { "Das Recht auf Bildung, Schutz vor Gewalt oder das Recht auf Mitbestimmung", "Das Recht, keine Schule besuchen zu müssen", "Das Recht, uneingeschränkt jeden Film zu sehen" }, "Das Recht auf Bildung, Schutz vor Gewalt oder das Recht auf Mitbestimmung",
+            "Zu den zentralen Kinderrechten gehören u.a. das Recht auf Bildung, auf Schutz vor Gewalt und auf Mitbestimmung bei sie betreffenden Fragen."),
+        ("Was regelt der Jugendschutz in Deutschland z.B. bei Filmen und Computerspielen?", new[] { "Ab welchem Alter bestimmte Inhalte für Kinder und Jugendliche freigegeben sind", "Welche Filme grundsätzlich verboten sind, egal für welches Alter", "Wie viel ein Kinoticket kosten darf" }, "Ab welchem Alter bestimmte Inhalte für Kinder und Jugendliche freigegeben sind",
+            "Altersfreigaben (z.B. von der USK) legen fest, ab welchem Alter bestimmte Filme oder Spiele für Kinder und Jugendliche geeignet sind."),
+        ("Warum gibt es Altersbeschränkungen beim Kauf von Alkohol oder Zigaretten?", new[] { "Um Kinder und Jugendliche vor gesundheitsschädlichen Produkten zu schützen", "Weil diese Produkte für Erwachsene verboten sind", "Altersbeschränkungen gibt es dafür in Deutschland nicht" }, "Um Kinder und Jugendliche vor gesundheitsschädlichen Produkten zu schützen",
+            "Jugendschutzregeln sollen verhindern, dass Kinder und Jugendliche zu früh Zugang zu gesundheitsschädlichen Produkten wie Alkohol erhalten."),
+        ("Was ist das Jugendschutzgesetz?", new[] { "Ein Gesetz, das Kinder und Jugendliche z.B. vor bestimmten Medieninhalten, Alkohol oder späten Ausgehzeiten schützt", "Ein Gesetz, das ausschließlich Erwachsene betrifft", "Ein Gesetz zur Regelung von Straßenverkehr" }, "Ein Gesetz, das Kinder und Jugendliche z.B. vor bestimmten Medieninhalten, Alkohol oder späten Ausgehzeiten schützt",
+            "Das Jugendschutzgesetz regelt u.a. Altersgrenzen für Alkohol, Ausgehzeiten und den Zugang zu bestimmten Medieninhalten."),
+        ("Was bedeutet \"Gewaltenteilung\" als Grundprinzip eines Rechtsstaats, ganz einfach?", new[] { "Gesetzgebung, Regierung und Gerichte sind voneinander getrennt und kontrollieren sich gegenseitig", "Eine einzige Person entscheidet über alle Staatsgewalten", "Gewaltenteilung bedeutet, dass es keine Gerichte gibt" }, "Gesetzgebung, Regierung und Gerichte sind voneinander getrennt und kontrollieren sich gegenseitig",
+            "Durch die Trennung von Legislative, Exekutive und Judikative kontrollieren sich die Staatsgewalten gegenseitig und verhindern Machtmissbrauch."),
+        ("Warum darf niemand - auch nicht die Regierung - über dem Gesetz stehen?", new[] { "Damit Macht nicht missbraucht werden kann und alle gleich behandelt werden", "Damit die Regierung machen kann, was sie möchte", "Diese Regel gilt nur für einfache Bürgerinnen und Bürger" }, "Damit Macht nicht missbraucht werden kann und alle gleich behandelt werden",
+            "Gilt das Gesetz für alle gleichermaßen, wird Machtmissbrauch verhindert und Gleichbehandlung gesichert."),
+        ("Was passiert, wenn jemand gegen ein Gesetz verstößt, in einem Rechtsstaat?", new[] { "Ein unabhängiges Gericht entscheidet über eine mögliche Strafe", "Die Regierung entscheidet allein und ohne Gericht über die Strafe", "Es passiert grundsätzlich gar nichts" }, "Ein unabhängiges Gericht entscheidet über eine mögliche Strafe",
+            "In einem Rechtsstaat entscheiden unabhängige Gerichte über Schuld und Strafe, nicht die Regierung selbst."),
+        ("Was bedeutet \"Unschuldsvermutung\"?", new[] { "Eine Person gilt so lange als unschuldig, bis ihre Schuld gerichtlich bewiesen ist", "Jede angeklagte Person gilt automatisch als schuldig", "Ein anderes Wort für Gewaltenteilung" }, "Eine Person gilt so lange als unschuldig, bis ihre Schuld gerichtlich bewiesen ist",
+            "Die Unschuldsvermutung schützt Angeklagte davor, vorschnell als schuldig behandelt zu werden, bevor ein Gericht entschieden hat."),
+        ("Warum haben auch Kinder das Recht, bei sie betreffenden Entscheidungen gehört zu werden?", new[] { "Das ist ein Grundprinzip der Kinderrechte (Recht auf Mitbestimmung/Beteiligung)", "Kinder haben grundsätzlich kein Recht auf Mitsprache", "Nur Erwachsene dürfen über Kinder betreffende Fragen entscheiden" }, "Das ist ein Grundprinzip der Kinderrechte (Recht auf Mitbestimmung/Beteiligung)",
+            "Die UN-Kinderrechtskonvention sieht vor, dass die Meinung von Kindern bei sie betreffenden Entscheidungen berücksichtigt werden soll."),
+        ("Was ist eine Kinderbeauftragte bzw. ein Kinderbeauftragter?", new[] { "Eine Person oder Stelle, die sich besonders für die Rechte und Interessen von Kindern einsetzt", "Ein anderes Wort für Schulleitung", "Eine Person, die ausschließlich Prüfungen abnimmt" }, "Eine Person oder Stelle, die sich besonders für die Rechte und Interessen von Kindern einsetzt",
+            "Kinderbeauftragte setzen sich politisch und gesellschaftlich gezielt für die Wahrung der Kinderrechte ein."),
+        ("Was bedeutet \"Schulpflicht\" in Deutschland?", new[] { "Alle Kinder müssen für eine bestimmte Zeit verpflichtend eine Schule besuchen", "Schule ist in Deutschland komplett freiwillig", "Nur Kinder aus bestimmten Familien müssen zur Schule gehen" }, "Alle Kinder müssen für eine bestimmte Zeit verpflichtend eine Schule besuchen",
+            "Die Schulpflicht verpflichtet alle Kinder in Deutschland, für eine gesetzlich festgelegte Zeit die Schule zu besuchen."),
+        ("Warum ist die Schulpflicht auch eine Umsetzung des Rechts auf Bildung?", new[] { "Sie stellt sicher, dass wirklich alle Kinder Zugang zu Bildung bekommen", "Sie verhindert, dass Kinder überhaupt lernen dürfen", "Schulpflicht hat mit dem Recht auf Bildung nichts zu tun" }, "Sie stellt sicher, dass wirklich alle Kinder Zugang zu Bildung bekommen",
+            "Indem die Schulpflicht für alle Kinder gilt, wird das Recht auf Bildung praktisch für jedes Kind umgesetzt."),
+        ("Was ist Kinderarbeit und warum ist sie in Deutschland weitgehend verboten?", new[] { "Arbeit von Kindern unter dem gesetzlichen Mindestalter - verboten, um Kindheit, Gesundheit und Bildung zu schützen", "Ein anderes Wort für Hausaufgaben", "Kinderarbeit ist in Deutschland ausdrücklich erlaubt und gefördert" }, "Arbeit von Kindern unter dem gesetzlichen Mindestalter - verboten, um Kindheit, Gesundheit und Bildung zu schützen",
+            "Das Verbot von Kinderarbeit soll sicherstellen, dass Kinder ihre Kindheit, Gesundheit und schulische Bildung nicht durch Erwerbsarbeit verlieren."),
+        ("Was können Kinder und Jugendliche tun, wenn ihre Rechte verletzt werden?", new[] { "Sich an Vertrauenspersonen, Beratungsstellen oder Kinderschutzorganisationen wenden", "Es gibt für Kinder keinerlei Möglichkeit, sich zu wehren", "Nur die Polizei darf in solchen Fällen kontaktiert werden" }, "Sich an Vertrauenspersonen, Beratungsstellen oder Kinderschutzorganisationen wenden",
+            "Bei Rechtsverletzungen können sich Kinder an Eltern, Lehrkräfte, Beratungsstellen oder spezielle Kinderschutzorganisationen wenden."),
+        ("Was ist eine Klassensprecherin bzw. ein Klassensprecher ein Beispiel für?", new[] { "Ein kleines Beispiel für demokratische Mitbestimmung von Kindern", "Ein Beispiel für eine Diktatur in der Klasse", "Eine rein zufällige, bedeutungslose Position" }, "Ein kleines Beispiel für demokratische Mitbestimmung von Kindern",
+            "Die Wahl einer Klassensprecherin oder eines Klassensprechers ist ein praktisches, kleines Beispiel für demokratische Mitbestimmung."),
+        ("Warum gelten Gesetze in einem Rechtsstaat für alle Menschen gleichermaßen?", new[] { "Damit niemand wegen seiner Herkunft, seines Status oder seiner Macht bevorzugt oder benachteiligt wird", "Damit mächtige Personen bevorzugt behandelt werden können", "Gesetze gelten in einem Rechtsstaat nur für einfache Bürgerinnen und Bürger" }, "Damit niemand wegen seiner Herkunft, seines Status oder seiner Macht bevorzugt oder benachteiligt wird",
+            "Die Gleichheit vor dem Gesetz ist ein Kernprinzip des Rechtsstaats und verhindert Bevorzugung oder Benachteiligung Einzelner.")
+    };
+
+    private static QuizQuestion LebenImRechtsstaat(Random r)
+    {
+        var f = RechtsstaatListe[r.Next(RechtsstaatListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Im Rechtsstaat gelten Gesetze für alle gleich, auch für die Regierung (Gewaltenteilung); Kinderrechte (UN-Konvention) und Jugendschutz sichern speziell die Bedürfnisse von Kindern ab."
         };
     }
 }
