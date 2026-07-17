@@ -84,16 +84,16 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | ⏸️ **Zurückgestellt** | **Installer Signing (EV-Zertifikat)** | Ohne Signatur → SmartScreen-Warnung bei Endnutzern. Bewusst auf die finale Version verschoben (Nutzer-Entscheidung). |
 | ✅ **Erledigt/gut genug** | **TTS Türkisch** | Aktuelle Piper-Stimme ist gut genug, bleibt vorerst unangetastet (Nutzer-Entscheidung). |
 | 🟡 **Mittel** | **Offline-Erst-Installation LLM** | Model-Download (~2-4 GB) passiert erst bei erstem Nutzen. Kein Pre-Bundle im Installer. |
-| 🟡 **Mittel** | **Eltern-Export/Backup** | Nur "Alle Daten zurücksetzen", kein Export/Import von Profilen/Fortschritt. |
+| ✅ **Erledigt** | **Eltern-Export/Backup** | Sicherung erstellen/wiederherstellen im Eltern-Bereich: Export als konsistente .db-Datei (`VACUUM INTO`), Import ersetzt die aktive DB nach Bestätigung (App-Neustart, Schema-Abgleich macht alte Sicherungen kompatibel). |
 | 🟢 **Niedrig** | **Multi-Device Sync** | Nicht vorgesehen (lokal-only, SQLite). |
-| 🟢 **Niedrig** | **News-Feed-URLs pflegen** | RSS-Endpunkte ändern sich gelegentlich; in `NewsFeedSource.cs` kuratiert, aber nicht automatisiert geprüft. |
+| ✅ **Erledigt** | **News-Feed-URLs pflegen** | Wöchentlicher automatischer Healthcheck (`.github/workflows/feed-healthcheck.yml` + `scripts/check-feeds.py`): prüft alle URLs aus `NewsFeedSource.cs` montags, Lauf wird rot bei totem Feed. Zusätzlich 48h-Offline-Cache pro Feed in der App (`FeedCache`). |
 
 ### 3.2 UX / Pädagogische Lücken
 
 | Priorität | Thema | Details |
 |-----------|-------|---------|
 | ✅ **Erledigt** | **Lesestufen-Texte** | 63 Texte (33 literarisch/Allgemeinwissen + 30 Pop-Kultur), inkl. Klassiker-Ergänzung Goethe (Erlkönig), Schiller (Die Bürgschaft) und Fontane (Herr von Ribbeck auf Ribbeck im Havelland). |
-| 🟡 **Mittel** | **Mathe: Offene Eingabe vs. MC** | Aktuell nur Multiple-Choice; offene Zahleneingabe wäre besser (aber schwerer zu validieren). |
+| ✅ **Erledigt** | **Mathe: Offene Eingabe vs. MC** | Alle rechnerischen Topics nutzen `QuestionType.OpenText` (offene Zahleneingabe). Nur `Kongruenzabbildungen` und `Satz des Thales` bleiben bewusst Multiple-Choice: konzeptuelle Fragen mit Satz-Antworten, eine offene Eingabe wäre dort nicht sinnvoll validierbar. |
 | 🟢 **Niedrig** | **Gamification: Streaks** | Bewusst weggelassen (kein Druck bei verpassten Tagen), aber könnte optional ergänzt werden. |
 | 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
 
@@ -158,11 +158,11 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 ### Später (nach finaler Version)
 - **EV-Zertifikat besorgen & Installer signieren** (SmartScreen)
-- **Feed-URL-Healthcheck** (kleines Skript, wöchentlich via Cron/GitHub Action)
-- **Eltern-Export/Import** (JSON-Backup von Profilen + Fortschritt)
+- ~~**Feed-URL-Healthcheck**~~ ✅ erledigt (wöchentliche GitHub Action `feed-healthcheck.yml`)
+- ~~**Eltern-Export/Import**~~ ✅ erledigt (DB-Sicherung im Eltern-Bereich, siehe 3.1)
 
 ### Sprint 4: Polish (1-2 Wochen)
-13. Mathe: Offene Zahleneingabe (neuer Fragetyp)
+13. ~~Mathe: Offene Zahleneingabe (neuer Fragetyp)~~ ✅ bereits umgesetzt (alle rechnerischen Topics in `MathGenerator.cs` nutzen `OpenText`; `Kongruenzabbildungen`/`SatzDesThales` bleiben als konzeptuelle Fragen bewusst Multiple-Choice)
 14. ~~Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)~~ ✅ erledigt (`Erlkönig`, `Die Bürgschaft`, `Herr von Ribbeck auf Ribbeck im Havelland` in `ReadingContentProvider.cs`)
 15. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
 16. ~~Schwierigkeitsstufen pro Profil im Eltern-Bereich (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte für 1./2. Versuch)~~ ✅ erledigt (`StudentProfile.TypingMinAccuracy`/`QuizFirstAttemptThreshold`/`QuizRetryThreshold`, Presets als `TabPillButton`-Gruppen im Eltern-Bereich - kein neuer Build mehr nötig, um diese Hürden zu ändern)

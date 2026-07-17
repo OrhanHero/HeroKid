@@ -2,6 +2,9 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-17",
   "done": [
+    "Backup-Export/-Import im Eltern-Bereich (VACUUM INTO / Header-Validierung + ClearAllPools + App-Neustart) — 9748404",
+    "Feed-Healthcheck: woechentliche GitHub Action + scripts/check-feeds.py (22 Feeds) — 9267d62; build.yml-Publish an Release-Flags angeglichen — f45f9fb",
+    "Mathe offene Eingabe: war bereits umgesetzt, nur STATUS-REPORT war stale (Kongruenz/Thales bleiben bewusst MC)",
     "Crash-Handling: HandleFatalException in App.xaml.cs (+TaskScheduler.UnobservedTaskException); Kiosk = still loggen + Auto-Neustart, CrashRestartGuard (Core, max 3/10min, crash-restarts.txt); Dev = MessageBox — Tests: CrashRestartGuardTests",
     "News-Offline-Cache (FeedCache): Roh-Bytes pro Feed, gzip-JSON, 48h-Fallback in FetchFeedAsync; Stufe 2 (ArchivedArticleRepository, 7 Tage) existierte schon — Tests: FeedCacheTests",
     "RSS-Fixes (RDF/Atom/DTD/User-Agent) + Tests grün",
