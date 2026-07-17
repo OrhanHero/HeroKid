@@ -15,3 +15,5 @@ dist/
 ## OS
 .DS_Store
 Thumbs.db
+.claude/settings.json
+.github/.claude/settings.json

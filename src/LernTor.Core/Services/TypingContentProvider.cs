@@ -9,7 +9,7 @@ namespace LernTor.Core.Services;
 /// Statischer Pool an Tipp-Lektionen für den 10-Finger-Trainer.
 /// Jede Lektion hat einen Zieltext, Finger-Mapping und Metadaten.
 /// Nur deutsche Sprache und Tastaturlayout (QWERTZ).
-/// Lektionen sind sequentiell: Freischaltung der nächsten erst bei ≥85% Genauigkeit.
+/// Lektionen sind sequentiell: Freischaltung der nächsten erst bei ≥35% Genauigkeit.
 /// Die Abschluss-Lektion ist profil-spezifisch (siehe GetFinalLessonForProfile).
 /// </summary>
 public static class TypingContentProvider
@@ -41,7 +41,7 @@ public static class TypingContentProvider
             },
             Difficulty = 1,
             EstimatedDurationSeconds = 60,
-            MinimumAccuracy = 0.50,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 20
         },
         new TypingLesson
@@ -66,7 +66,7 @@ public static class TypingContentProvider
             },
             Difficulty = 1,
             EstimatedDurationSeconds = 60,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 20
         },
         new TypingLesson
@@ -80,7 +80,7 @@ public static class TypingContentProvider
             FingerMapping = BuildFingerMapping("asdf jkl; sad fad jag lag had fas jad sal das glad"),
             Difficulty = 1,
             EstimatedDurationSeconds = 70,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 30
         },
         #endregion
@@ -110,7 +110,7 @@ public static class TypingContentProvider
             },
             Difficulty = 2,
             EstimatedDurationSeconds = 70,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 30
         },
         new TypingLesson
@@ -124,7 +124,7 @@ public static class TypingContentProvider
             FingerMapping = BuildFingerMapping("quer zitronen puppe tropfen gleich quietsch wasser pneu roboter"),
             Difficulty = 2,
             EstimatedDurationSeconds = 80,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 40
         },
         #endregion
@@ -154,7 +154,7 @@ public static class TypingContentProvider
             },
             Difficulty = 2,
             EstimatedDurationSeconds = 70,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 30
         },
         new TypingLesson
@@ -168,7 +168,7 @@ public static class TypingContentProvider
             FingerMapping = BuildFingerMapping("baby nymphen myrthen xaver cvjm byron zymatisch"),
             Difficulty = 2,
             EstimatedDurationSeconds = 70,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 30
         },
         #endregion
@@ -198,7 +198,7 @@ public static class TypingContentProvider
             },
             Difficulty = 3,
             EstimatedDurationSeconds = 60,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 25
         },
         new TypingLesson
@@ -212,7 +212,7 @@ public static class TypingContentProvider
             FingerMapping = BuildFingerMapping("12345 67890 0176 54321 101112 131415 161718 192021"),
             Difficulty = 3,
             EstimatedDurationSeconds = 70,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 30
         },
         #endregion
@@ -229,7 +229,7 @@ public static class TypingContentProvider
             FingerMapping = BuildFingerMapping("der die und nicht den ein ich mir mit auf so ist das mich dich was wir sind hab sie es an"),
             Difficulty = 2,
             EstimatedDurationSeconds = 80,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 40
         },
         #endregion
@@ -246,7 +246,7 @@ public static class TypingContentProvider
             FingerMapping = BuildFingerMapping("Ich lerne tippen. Das macht Spaß. Meine Finger sind schnell. Ich übe jeden Tag."),
             Difficulty = 3,
             EstimatedDurationSeconds = 90,
-            MinimumAccuracy = 0.85,
+            MinimumAccuracy = 0.35,
             MinimumCharacters = 60
         },
         #endregion
@@ -260,12 +260,12 @@ public static class TypingContentProvider
         Title = "Lektion 7: Abschluss – Emirhans Text",
         InstructionDe = "Der finale Test! Tippe deinen persönlichen Text fehlerfrei und flüssig.",
         InstructionTr = "",
-        TargetText = "Hallo, mein Name ist Emirhan Kahraman. Ich wurde am 09.05.2014 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 0173 2085640. Ich gehe auf die Lemgo-Grundschule und bin in der Klasse 6c. Mein Lieblingsessen ist Nudeln mit Sahnesoße und Schnitzel. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden.",
-        FingerMapping = BuildFingerMapping("Hallo, mein Name ist Emirhan Kahraman. Ich wurde am 09.05.2014 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 0173 2085640. Ich gehe auf die Lemgo-Grundschule und bin in der Klasse 6c. Mein Lieblingsessen ist Nudeln mit Sahnesoße und Schnitzel. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden."),
+        TargetText = "Hallo, ich bin Emirhan (12) aus Berlin. Ich gehe in die 6c der Lemgo-Grundschule. Mein Lieblingsessen: Nudeln mit Sahnesoße.",
+        FingerMapping = BuildFingerMapping("Hallo, ich bin Emirhan (12) aus Berlin. Ich gehe in die 6c der Lemgo-Grundschule. Mein Lieblingsessen: Nudeln mit Sahnesoße."),
         Difficulty = 3,
-        EstimatedDurationSeconds = 180,
-        MinimumAccuracy = 0.85,
-        MinimumCharacters = 100
+        EstimatedDurationSeconds = 120,
+        MinimumAccuracy = 0.35,
+        MinimumCharacters = 80
     };
 
     private static TypingLesson CreateBatuhanFinalLesson() => new TypingLesson
@@ -275,12 +275,12 @@ public static class TypingContentProvider
         Title = "Lektion 7: Abschluss – Batuhans Text",
         InstructionDe = "Der finale Test! Tippe deinen persönlichen Text fehlerfrei und flüssig.",
         InstructionTr = "",
-        TargetText = "Hallo, mein Name ist Batuhan Kahraman. Ich wurde am 16.08.2011 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 01522 8467854. Ich gehe auf das Robert-Koch-Gymnasium und bin in der Klasse 9a. Mein Lieblingsessen ist Pommes und Nuggets. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden.",
-        FingerMapping = BuildFingerMapping("Hallo, mein Name ist Batuhan Kahraman. Ich wurde am 16.08.2011 geboren. Ich wohne in der Weichselstraße 41 in 12045 Berlin. Meine Telefonnummer ist 01522 8467854. Ich gehe auf das Robert-Koch-Gymnasium und bin in der Klasse 9a. Mein Lieblingsessen ist Pommes und Nuggets. Ich finde es wichtig, schnell tippen zu lernen, weil ich oft am Computer arbeite. Heute übe ich das Zehn-Finger-System und möchte immer besser werden."),
+        TargetText = "Hallo, ich bin Batuhan (15) aus Berlin. Ich besuche die 9a am Robert-Koch-Gymnasium. Lieblingsessen: Pommes und Nuggets.",
+        FingerMapping = BuildFingerMapping("Hallo, ich bin Batuhan (15) aus Berlin. Ich besuche die 9a am Robert-Koch-Gymnasium. Lieblingsessen: Pommes und Nuggets."),
         Difficulty = 3,
-        EstimatedDurationSeconds = 180,
-        MinimumAccuracy = 0.85,
-        MinimumCharacters = 100
+        EstimatedDurationSeconds = 120,
+        MinimumAccuracy = 0.35,
+        MinimumCharacters = 80
     };
 
     public static IReadOnlyList<TypingLesson> GetAllLessons()

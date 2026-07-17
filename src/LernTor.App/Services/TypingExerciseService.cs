@@ -22,8 +22,9 @@ public sealed class TypingExerciseService
 
     /// <summary>
     /// Prüft die getippte Eingabe gegen den Zieltext und berechnet Genauigkeit, WPM, Fehler.
+    /// Nutzt die lesson-spezifische MinimumAccuracy statt hartem 85%.
     /// </summary>
-    public TypingResult CheckInput(string targetText, string userInput, TimeSpan elapsed)
+    public TypingResult CheckInput(string targetText, string userInput, TimeSpan elapsed, TypingLesson? lesson = null)
     {
         var result = new TypingResult
         {
@@ -93,7 +94,9 @@ public sealed class TypingExerciseService
             result.Wpm = (correctChars / 5.0) / minutes;
         }
 
-        result.Passed = result.Accuracy >= 0.85 && correctChars >= GetMinCharsForLesson(targetText);
+        // Nutze lesson-spezifische Mindestgenauigkeit (Default 85% falls keine Lektion übergeben)
+        double minAccuracy = lesson?.MinimumAccuracy ?? 0.85;
+        result.Passed = result.Accuracy >= minAccuracy && correctChars >= GetMinCharsForLesson(targetText);
         return result;
     }
 

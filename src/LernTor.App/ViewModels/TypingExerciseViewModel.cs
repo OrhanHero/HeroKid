@@ -108,8 +108,8 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         CurrentPosition = Math.Min(value.Length, Lesson.TargetText.Length);
         CurrentHighlightIndex = Math.Min(value.Length, Lesson.TargetText.Length - 1);
 
-        // Echtzeit-Validierung
-        var result = _service.CheckInput(Lesson.TargetText, value, Elapsed);
+        // Echtzeit-Validierung (mit Lesson für lesson-spezifische MinimumAccuracy)
+        var result = _service.CheckInput(Lesson.TargetText, value, Elapsed, Lesson);
         Accuracy = result.Accuracy;
         Wpm = result.Wpm;
         CorrectChars = result.CorrectCharacters;
@@ -130,7 +130,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         _timer.Stop();
         ShowResult = true;
 
-        var result = _service.CheckInput(Lesson.TargetText, finalInput, Elapsed);
+        var result = _service.CheckInput(Lesson.TargetText, finalInput, Elapsed, Lesson);
         Accuracy = result.Accuracy;
         Wpm = result.Wpm;
         CorrectChars = result.CorrectCharacters;
