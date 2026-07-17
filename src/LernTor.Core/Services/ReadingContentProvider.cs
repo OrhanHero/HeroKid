@@ -4,7 +4,7 @@ namespace LernTor.Core.Services;
 
 /// <summary>
 /// Fester Pool an Gedichten/wichtigen Werken (gemeinfrei) sowie eigens verfassten Kurzgeschichten für
-/// den täglichen Pflicht-Leseabschnitt (aktuell 60 Stücke). Jedes Stück liegt parallel auf Deutsch,
+/// den täglichen Pflicht-Leseabschnitt (aktuell 63 Stücke). Jedes Stück liegt parallel auf Deutsch,
 /// Türkisch und Englisch vor, damit es in der ReadingView als drei Spalten nebeneinander gelesen
 /// werden kann. Übersetzungen ins Deutsche/Türkische bzw. Englische, die im Original in einer
 /// anderen Sprache verfasst sind, sind eigene, freie Übertragungen zum Vorlesen (keine Zitate
@@ -706,6 +706,7 @@ public static class ReadingContentProvider
         {
             Title = "Minecraft-Abenteuer: Der verlorene Diamant",
             Author = "Original-Geschichte (inspiriert von Minecraft)",
+            IsPopKultur = true,
             TextDe = "Steve stand tief in einer dunklen Höhle und sein Fackellicht flackerte. Irgendwo in der " +
                      "Nähe hörte er das leise Zischen eines Creepers. Vorsichtig grub er durch den Stein, bis " +
                      "er endlich einen glitzernden Diamanten fand. 'Endlich!', rief er und baute schnell eine " +
@@ -724,6 +725,7 @@ public static class ReadingContentProvider
         {
             Title = "Minecraft-Abenteuer: Das Dorf der Villager",
             Author = "Original-Geschichte (inspiriert von Minecraft)",
+            IsPopKultur = true,
             TextDe = "Als Alex ein kleines Dorf entdeckte, waren die Villager gerade dabei, ihre Felder zu " +
                      "bestellen. Ein Zombie hatte in der Nacht zuvor das Tor beschädigt. Alex sammelte Holz und " +
                      "Eisen und reparierte gemeinsam mit den Dorfbewohnern die Mauer. Am Abend tauschte sie " +
@@ -741,6 +743,7 @@ public static class ReadingContentProvider
         {
             Title = "Minecraft-Abenteuer: Reise zum Nether",
             Author = "Original-Geschichte (inspiriert von Minecraft)",
+            IsPopKultur = true,
             TextDe = "Mit einem selbstgebauten Portal aus Obsidian betrat Finn zum ersten Mal den Nether. Die " +
                      "Luft war heiß, überall floss Lava, und in der Ferne hörte er ein Piglin grunzen. Er " +
                      "tauschte vorsichtig etwas Gold gegen seltene Gegenstände und achtete darauf, keinem " +
@@ -759,6 +762,7 @@ public static class ReadingContentProvider
         {
             Title = "Super Mario: Der Sprung über die Lava",
             Author = "Original-Geschichte (inspiriert von Super Mario Bros.)",
+            IsPopKultur = true,
             TextDe = "Mario rannte durch die Festung von Bowser, während unter ihm Lava brodelte. Mit einem " +
                      "mutigen Sprung erreichte er die nächste Plattform, sammelte eine leuchtende Münze ein und " +
                      "wich einem fliegenden Koopa-Panzer aus. Am Ende des Levels wartete schon die nächste " +
@@ -774,6 +778,7 @@ public static class ReadingContentProvider
         {
             Title = "Super Mario: Luigis mutiger Plan",
             Author = "Original-Geschichte (inspiriert von Super Mario Bros.)",
+            IsPopKultur = true,
             TextDe = "Luigi zitterte ein wenig, als er das gruselige Schloss betrat, aber er dachte an seinen " +
                      "Bruder Mario und fasste Mut. Mit seiner Taschenlampe erhellte er dunkle Gänge und fing " +
                      "vorsichtig ein paar schüchterne Geister ein. Am Ende fand er den Schlüssel, der Mario aus " +
@@ -790,6 +795,7 @@ public static class ReadingContentProvider
         {
             Title = "Super Mario: Das Rennen auf der Regenbogenstrecke",
             Author = "Original-Geschichte (inspiriert von Super Mario Bros.)",
+            IsPopKultur = true,
             TextDe = "Beim großen Kart-Rennen auf der Regenbogenstrecke lag Peach knapp in Führung. Toad " +
                      "versuchte mit einem Turbo-Pilz aufzuholen, während Yoshi geschickt einer Bananenschale " +
                      "auswich. Kurz vor der Ziellinie überholte Toad in letzter Sekunde - ein knappes, " +
@@ -807,6 +813,7 @@ public static class ReadingContentProvider
         {
             Title = "AntonCraft: Der Bauplan für die Festung",
             Author = "Original-Geschichte (inspiriert von AntonCraft)",
+            IsPopKultur = true,
             TextDe = "In seiner Minecraft-Welt begann Anton mit dem Bau einer riesigen Festung aus Stein und " +
                      "Holz. Zuerst plante er die Grundmauern, dann fügte er Türme und ein großes Tor hinzu. " +
                      "Seine Freunde in der Community gaben ihm Tipps in den Kommentaren, wie er die Festung " +
@@ -824,6 +831,7 @@ public static class ReadingContentProvider
         {
             Title = "AntonCraft: Ein Tag mit Freunden im Multiplayer",
             Author = "Original-Geschichte (inspiriert von AntonCraft)",
+            IsPopKultur = true,
             TextDe = "Gemeinsam mit seinen Freunden im Multiplayer-Modus baute Anton eine Achterbahn quer durch " +
                      "die ganze Welt. Es gab viele Lacher, als jemand versehentlich ins Wasser fiel, und alle " +
                      "halfen zusammen, das nächste Teilstück der Strecke zu bauen. Am Ende der Sitzung war die " +
@@ -842,6 +850,7 @@ public static class ReadingContentProvider
         {
             Title = "Geometry Dash: Der schwierige Sprung",
             Author = "Original-Geschichte (inspiriert von Geometry Dash)",
+            IsPopKultur = true,
             TextDe = "Nach dutzenden Versuchen hatte Mia endlich den Rhythmus des Levels verinnerlicht. Im " +
                      "Takt der Musik ließ sie ihren Würfel über spitze Hindernisse springen und durch enge " +
                      "Lücken fliegen. Kurz vor dem Ende scheiterte sie fast an einem doppelten Sprung, doch sie " +
@@ -859,6 +868,7 @@ public static class ReadingContentProvider
         {
             Title = "Geometry Dash: Ein eigenes Level bauen",
             Author = "Original-Geschichte (inspiriert von Geometry Dash)",
+            IsPopKultur = true,
             TextDe = "Ben verbrachte den ganzen Nachmittag damit, ein eigenes Level im Editor zu gestalten. Er " +
                      "platzierte Sprungpads, wechselte die Hintergrundfarbe im Takt der Musik und testete jeden " +
                      "Abschnitt mehrmals. Als er das Level schließlich mit Freunden teilte, war er gespannt, " +
@@ -876,6 +886,7 @@ public static class ReadingContentProvider
         {
             Title = "Rock'n'Roll: Die erste Bandprobe",
             Author = "Original-Geschichte",
+            IsPopKultur = true,
             TextDe = "In der Garage stimmten Elif und ihre Freunde ihre Instrumente: E-Gitarre, Bass und " +
                      "Schlagzeug. Nach ein paar holprigen Versuchen fanden sie endlich einen gemeinsamen " +
                      "Rhythmus. Der treibende Rock'n'Roll-Beat wurde von Mal zu Mal fester, und am Ende der " +
@@ -893,6 +904,7 @@ public static class ReadingContentProvider
         {
             Title = "Rock'n'Roll: Die Geschichte eines Musikstils",
             Author = "Allgemeinwissen",
+            IsPopKultur = true,
             TextDe = "Rock'n'Roll entstand in den 1950er-Jahren in den USA aus einer Mischung von Blues, " +
                      "Country und Gospel. Er wurde schnell zur Musik einer ganzen Jugendgeneration, die zu " +
                      "treibenden Gitarrenriffs und mitreißenden Rhythmen tanzte. Bis heute prägt Rock'n'Roll " +
@@ -910,6 +922,7 @@ public static class ReadingContentProvider
         {
             Title = "Pac-Man: Die Flucht durch das Labyrinth",
             Author = "Original-Geschichte (inspiriert von Pac-Man)",
+            IsPopKultur = true,
             TextDe = "Mit vollem Tempo raste Pac-Man durch die engen Gänge des Labyrinths, immer dicht " +
                      "gefolgt von den bunten Geistern Blinky und Pinky. Gerade rechtzeitig erreichte er einen " +
                      "der großen Power-Pellets und drehte den Spieß um: Jetzt waren es die Geister, die fliehen " +
@@ -925,6 +938,7 @@ public static class ReadingContentProvider
         {
             Title = "Pac-Man: Ein Highscore für die Ewigkeit",
             Author = "Original-Geschichte (inspiriert von Pac-Man)",
+            IsPopKultur = true,
             TextDe = "Jeden Tag nach der Schule übte Deniz am alten Pac-Man-Automaten im Jugendzentrum. Er " +
                      "lernte die Muster der Geister genau kennen und wusste irgendwann, welchen Weg er nehmen " +
                      "musste, um jede Frucht einzusammeln. Als er schließlich den höchsten Highscore der Woche " +
@@ -942,6 +956,7 @@ public static class ReadingContentProvider
         {
             Title = "Kirby: Der rosa Held saugt alles auf",
             Author = "Original-Geschichte (inspiriert von Kirby Super Star)",
+            IsPopKultur = true,
             TextDe = "Kirby rollte fröhlich durch die Blumenwiesen von Dream Land, als plötzlich ein fieser " +
                      "Gegner auftauchte. Ohne zu zögern sog Kirby ihn ein und verwandelte sich in einen " +
                      "Feuer-Kirby mit einer neuen Fähigkeit. Mit einem Feuerball vertrieb er die Bedrohung und " +
@@ -959,6 +974,7 @@ public static class ReadingContentProvider
         {
             Title = "Kirby: Zusammenhalt mit King Dedede",
             Author = "Original-Geschichte (inspiriert von Kirby Super Star)",
+            IsPopKultur = true,
             TextDe = "Obwohl King Dedede und Kirby sich manchmal necken, arbeiteten sie diesmal zusammen, um " +
                      "die geheimnisvollen Sterne zurückzuholen, die aus dem Himmel über Dream Land " +
                      "verschwunden waren. Gemeinsam lösten sie knifflige Rätsel und besiegten am Ende einen " +
@@ -975,6 +991,7 @@ public static class ReadingContentProvider
         {
             Title = "Minecraft Legends: Der Angriff der Piglins",
             Author = "Original-Geschichte (inspiriert von Minecraft Legends)",
+            IsPopKultur = true,
             TextDe = "Als die Piglin-Horden das friedliche Dorf angriffen, versammelte die junge Heldin " +
                      "schnell Wölfe, Golems und tapfere Verbündete. Gemeinsam bauten sie Verteidigungstürme und " +
                      "trieben die Angreifer mit vereinten Kräften zurück. Am Ende des Kampfes stand das Dorf " +
@@ -992,6 +1009,7 @@ public static class ReadingContentProvider
         {
             Title = "Minecraft Legends: Strategie über den Wolken",
             Author = "Original-Geschichte (inspiriert von Minecraft Legends)",
+            IsPopKultur = true,
             TextDe = "Bevor die große Schlacht begann, plante das Team genau, wo sie ihre Verteidigungsanlagen " +
                      "errichten sollten. Sie sammelten Ressourcen aus der Overworld, bauten Katapulte und " +
                      "stimmten ihre Angriffswellen sorgfältig ab. Diese kluge Strategie machte am Ende den " +
@@ -1009,6 +1027,7 @@ public static class ReadingContentProvider
         {
             Title = "Batman: Eine ruhige Nacht in Gotham?",
             Author = "Original-Geschichte (inspiriert von Batman)",
+            IsPopKultur = true,
             TextDe = "Vom Dach eines Wolkenkratzers aus beobachtete Batman die Straßen von Gotham City. Ein " +
                      "verdächtiges Geräusch aus einer Seitengasse ließ ihn aufhorchen - jemand versuchte, in " +
                      "ein Geschäft einzubrechen. Lautlos glitt er hinab, überraschte die Einbrecher und übergab " +
@@ -1026,6 +1045,7 @@ public static class ReadingContentProvider
         {
             Title = "Batman: Zusammenarbeit mit Commissioner Gordon",
             Author = "Original-Geschichte (inspiriert von Batman)",
+            IsPopKultur = true,
             TextDe = "Als am Nachthimmel über Gotham das Bat-Signal aufleuchtete, wusste Batman sofort, dass " +
                      "Commissioner Gordon seine Hilfe brauchte. Gemeinsam werteten sie Hinweise in der " +
                      "Polizeizentrale aus und fanden heraus, wo sich die Täter versteckt hielten. Dank ihrer " +
@@ -1043,6 +1063,7 @@ public static class ReadingContentProvider
         {
             Title = "Batman: Der Wert von Mut und Geduld",
             Author = "Original-Geschichte (inspiriert von Batman)",
+            IsPopKultur = true,
             TextDe = "Bevor Bruce Wayne zu Batman wurde, verbrachte er Jahre damit, Kampfkunst, " +
                      "Detektivarbeit und Wissenschaft zu erlernen. Er wusste: Echte Stärke kommt nicht nur aus " +
                      "Muskeln, sondern auch aus Geduld, Planung und dem Willen, nie aufzugeben. Diese Lektion " +
@@ -1060,6 +1081,7 @@ public static class ReadingContentProvider
         {
             Title = "One Punch Man: Ein Held aus Langeweile",
             Author = "Original-Geschichte (inspiriert von One Punch Man)",
+            IsPopKultur = true,
             TextDe = "Saitama trainierte drei Jahre lang jeden Tag - hundert Liegestütze, hundert Sit-ups, " +
                      "zehn Kilometer laufen - bis er zum stärksten Helden der Welt wurde. Das Problem: Seitdem " +
                      "besiegt er jeden Gegner mit nur einem einzigen Schlag, und kein Kampf ist mehr wirklich " +
@@ -1076,6 +1098,7 @@ public static class ReadingContentProvider
         {
             Title = "One Punch Man: Genos und der treue Schüler",
             Author = "Original-Geschichte (inspiriert von One Punch Man)",
+            IsPopKultur = true,
             TextDe = "Der Cyborg-Held Genos bewunderte Saitamas unglaubliche Kraft so sehr, dass er ihn bat, " +
                      "sein Schüler werden zu dürfen. Gemeinsam kämpften sie gegen gefährliche Monster, auch " +
                      "wenn Saitama die meiste Zeit lieber im Sonderangebot einkaufen gegangen wäre. Trotzdem " +
@@ -1093,6 +1116,7 @@ public static class ReadingContentProvider
         {
             Title = "Dragon Ball: Die Suche nach den sieben Kugeln",
             Author = "Original-Geschichte (inspiriert von Dragon Ball)",
+            IsPopKultur = true,
             TextDe = "Son-Goku und seine Freunde reisten durch Wüsten, Wälder und über hohe Berge, um alle " +
                      "sieben Dragon Balls zu finden. Jede Kugel brachte neue Abenteuer und neue Gegner mit " +
                      "sich. Als schließlich die letzte Kugel gefunden war, konnten sie den mächtigen Drachen " +
@@ -1110,6 +1134,7 @@ public static class ReadingContentProvider
         {
             Title = "Dragon Ball: Training für den nächsten Kampf",
             Author = "Original-Geschichte (inspiriert von Dragon Ball)",
+            IsPopKultur = true,
             TextDe = "Nach der Niederlage gegen einen mächtigen Gegner zog sich Vegeta zurück, um härter zu " +
                      "trainieren als je zuvor. Unter extremer Schwerkraft übte er neue Techniken, bis seine " +
                      "Muskeln vor Erschöpfung zitterten. Als der nächste Kampf begann, war er spürbar stärker " +
@@ -1127,6 +1152,7 @@ public static class ReadingContentProvider
         {
             Title = "One Piece: Der Traum vom größten Schatz",
             Author = "Original-Geschichte (inspiriert von One Piece)",
+            IsPopKultur = true,
             TextDe = "Monkey D. Ruffy träumte schon als Kind davon, den legendären Schatz 'One Piece' zu " +
                      "finden und König der Piraten zu werden. Mit seiner Mannschaft, der Strohhutbande, " +
                      "segelte er von Insel zu Insel und erlebte dabei gefährliche Stürme, seltsame " +
@@ -1144,6 +1170,7 @@ public static class ReadingContentProvider
         {
             Title = "One Piece: Zusammenhalt der Mannschaft",
             Author = "Original-Geschichte (inspiriert von One Piece)",
+            IsPopKultur = true,
             TextDe = "Als die Strohhutbande in einen heftigen Sturm geriet, arbeitete jedes Crewmitglied genau " +
                      "nach seiner Stärke: Der Steuermann hielt Kurs, der Koch versorgte alle mit Kraft " +
                      "spendendem Essen, und der Arzt kümmerte sich um die Verletzten. Nur durch diesen " +
@@ -1161,6 +1188,7 @@ public static class ReadingContentProvider
         {
             Title = "One Piece: Eine Insel voller Geheimnisse",
             Author = "Original-Geschichte (inspiriert von One Piece)",
+            IsPopKultur = true,
             TextDe = "Auf einer nebligen, unbekannten Insel entdeckte die Mannschaft alte Ruinen mit " +
                      "rätselhaften Schriftzeichen. Nami studierte ihre Karte genau, während Robin die alten " +
                      "Inschriften zu entziffern versuchte. Gemeinsam fanden sie einen Hinweis, der sie ihrem " +
@@ -1177,6 +1205,7 @@ public static class ReadingContentProvider
         {
             Title = "Backrooms: Der endlose gelbe Flur",
             Author = "Original-Geschichte (inspiriert von Backrooms)",
+            IsPopKultur = true,
             TextDe = "Plötzlich befand sich Aylin in einem endlosen Flur mit gelben Tapeten und summendem " +
                      "Neonlicht - den sogenannten Backrooms. Der Teppichboden roch feucht und alt, und ihre " +
                      "Schritte hallten seltsam laut wider. Ruhig blieb sie stehen, überlegte genau und folgte " +
@@ -1194,6 +1223,7 @@ public static class ReadingContentProvider
         {
             Title = "Backrooms: Zusammen ist man weniger allein",
             Author = "Original-Geschichte (inspiriert von Backrooms)",
+            IsPopKultur = true,
             TextDe = "Als Kerem sich in den Backrooms verirrte, traf er zum Glück auf zwei andere " +
                      "'Entdecker', die schon länger unterwegs waren. Gemeinsam zeichneten sie eine Karte der " +
                      "Gänge, die sie bereits gesehen hatten, und teilten sich Wasser und Vorräte. Mit " +
@@ -1208,7 +1238,115 @@ public static class ReadingContentProvider
                      "ile erzaklarını paylaştılar. Birleşik çaba ve bolca sabırla sonunda normal dünyaya dönüş " +
                      "yolunu buldular."
         },
+        new()
+        {
+            Title = "Erlkönig (Auszug)",
+            Author = "Johann Wolfgang von Goethe",
+            TextDe = "Wer reitet so spät durch Nacht und Wind?\n" +
+                     "Es ist der Vater mit seinem Kind;\n" +
+                     "Er hat den Knaben wohl in dem Arm,\n" +
+                     "Er faßt ihn sicher, er hält ihn warm.\n\n" +
+                     "Mein Sohn, was birgst du so bang dein Gesicht? –\n" +
+                     "Siehst, Vater, du den Erlkönig nicht?\n" +
+                     "Den Erlenkönig mit Kron' und Schweif? –\n" +
+                     "Mein Sohn, es ist ein Nebelstreif. –\n\n" +
+                     "'Du liebes Kind, komm, geh mit mir!\n" +
+                     "Gar schöne Spiele spiel' ich mit dir;\n" +
+                     "Manch bunte Blumen sind an dem Strand,\n" +
+                     "Meine Mutter hat manch gülden Gewand.'",
+            TextEn = "Who rides so late through night and wind?\n" +
+                     "It is the father with his child;\n" +
+                     "He holds the boy safe in his arm,\n" +
+                     "He grips him firmly, keeps him warm.\n\n" +
+                     "'My son, why do you hide your face so afraid?' –\n" +
+                     "'Father, do you not see the Erlking there?\n" +
+                     "The Erlking with his crown and train?' –\n" +
+                     "'My son, it is only a streak of mist.' –\n\n" +
+                     "'You dear child, come, go with me!\n" +
+                     "Such lovely games I'll play with you;\n" +
+                     "Many bright flowers grow upon the shore,\n" +
+                     "My mother has many golden robes.'",
+            TextTr = "Bu kadar geç saatte, gece ve rüzgârda kim at sürüyor?\n" +
+                     "Çocuğuyla birlikte bir babadır bu;\n" +
+                     "Oğlunu kollarında güvenle tutar,\n" +
+                     "Onu sıkıca sarar, sıcak tutar.\n\n" +
+                     "'Oğlum, neden yüzünü böyle korkuyla saklıyorsun?' –\n" +
+                     "'Baba, Orman Kralı'nı görmüyor musun?\n" +
+                     "Tacı ve kuyruğuyla Orman Kralı'nı?' –\n" +
+                     "'Oğlum, bu sadece bir sis şeridi.' –\n\n" +
+                     "'Sevgili çocuk, gel, benimle gel!\n" +
+                     "Seninle ne güzel oyunlar oynarım;\n" +
+                     "Kıyıda nice renkli çiçekler var,\n" +
+                     "Annemin nice altın elbiseleri var.'"
+        },
+        new()
+        {
+            Title = "Die Bürgschaft (Auszug)",
+            Author = "Friedrich Schiller",
+            TextDe = "Zu Dionys, dem Tyrannen, schlich\n" +
+                     "Damon, den Dolch im Gewande;\n" +
+                     "Ihn schlugen die Häscher in Bande.\n" +
+                     "'Was wolltest du mit dem Dolche? sprich!'\n" +
+                     "Entgegnet ihm finster der Wüterich.\n" +
+                     "'Die Stadt vom Tyrannen befreien!'\n" +
+                     "'Das sollst du mir auf dem Kreuze bereuen.'",
+            TextEn = "Toward Dionysius, the tyrant, crept\n" +
+                     "Damon, a dagger hid in his cloak;\n" +
+                     "The guards seized him and bound him in chains.\n" +
+                     "'What did you want with that dagger? Speak!'\n" +
+                     "The furious ruler demanded, grim.\n" +
+                     "'To free this city from its tyrant!'\n" +
+                     "'For that you shall repent upon the cross.'",
+            TextTr = "Zorba Dionysius'a doğru sinsice ilerledi\n" +
+                     "Damon, hırkasının altında bir hançerle;\n" +
+                     "Muhafızlar onu yakalayıp zincire vurdu.\n" +
+                     "'Bu hançerle ne yapacaktın? Konuş!'\n" +
+                     "Öfkeli zorba karanlık bir sesle sordu.\n" +
+                     "'Şehri zorbadan kurtaracaktım!'\n" +
+                     "'Bunun için haçta pişman olacaksın.'"
+        },
+        new()
+        {
+            Title = "Herr von Ribbeck auf Ribbeck im Havelland (Auszug)",
+            Author = "Theodor Fontane",
+            TextDe = "Herr von Ribbeck auf Ribbeck im Havelland,\n" +
+                     "Ein Birnbaum in seinem Garten stand,\n" +
+                     "Und kam die goldene Herbsteszeit\n" +
+                     "Und die Birnen leuchteten weit und breit,\n" +
+                     "Da stopfte, wenn's Mittag vom Turme scholl,\n" +
+                     "Der alte Ribbeck sich die Taschen voll,\n" +
+                     "Und kam in Pantinen ein Junge daher,\n" +
+                     "So rief er: 'Junge, wist'n Beer?'\n\n" +
+                     "Und kam ein Mädel, so rief er: 'Lütt Dirn,\n" +
+                     "Kumm man röwer, ick hebb 'ne Birn.'",
+            TextEn = "Squire von Ribbeck of Ribbeck in the Havelland,\n" +
+                     "A pear tree stood there in his garden's plot,\n" +
+                     "And when the golden autumn came around\n" +
+                     "And pears shone bright and gleaming all around,\n" +
+                     "Then, when the noon bell rang out from the tower,\n" +
+                     "Old Ribbeck filled his pockets to the brim,\n" +
+                     "And if a boy came shuffling by in clogs,\n" +
+                     "He'd call out: 'Boy, do you want a pear?'\n\n" +
+                     "And if a girl came by, he'd call: 'Little lass,\n" +
+                     "Come on over, I've got a pear for you.'",
+            TextTr = "Havelland'daki Ribbeck'in beyefendisi von Ribbeck,\n" +
+                     "Bahçesinde bir armut ağacı dururdu,\n" +
+                     "Ve altın sonbahar mevsimi geldiğinde\n" +
+                     "Armutlar her yanda parıl parıl parladığında,\n" +
+                     "Kuleden öğle çanı çaldığında\n" +
+                     "Yaşlı Ribbeck ceplerini armutla doldururdu,\n" +
+                     "Ve tahta terlikleriyle bir çocuk geçerse\n" +
+                     "Şöyle seslenirdi: 'Oğlum, bir armut ister misin?'\n\n" +
+                     "Ve bir kız geçerse, derdi ki: 'Küçük kız,\n" +
+                     "Gel buraya, sende bir armudum var.'"
+        },
     };
+
+    private static readonly IReadOnlyList<ReadingPiece> LiterarischPool =
+        Pool.Where(p => !p.IsPopKultur).ToList();
+
+    private static readonly IReadOnlyList<ReadingPiece> PopKulturPool =
+        Pool.Where(p => p.IsPopKultur).ToList();
 
     public static ReadingPiece GetForDate(DateOnly date)
     {
@@ -1217,15 +1355,19 @@ public static class ReadingContentProvider
     }
 
     /// <summary>
-    /// Zweiter Lesetext des Tages: um die halbe Pool-Länge versetzt, sodass bei der Pool-Anordnung
-    /// (erste Hälfte literarisch/Allgemeinwissen, zweite Hälfte Pop-Kultur) täglich ein Text aus
-    /// jeder Hälfte zusammenkommt und nie zweimal derselbe. Zwei ganze Texte statt künstlich
-    /// verlängerter Einzeltexte: die literarischen Stücke sind echte, gemeinfreie Gedichte - denen
-    /// eine zweite Strophe anzudichten würde die Werke verfälschen.
+    /// Zweiter Lesetext des Tages: garantiert aus der jeweils anderen Kategorie (literarisch/
+    /// Allgemeinwissen vs. Pop-Kultur) als <see cref="GetForDate"/>, damit täglich ein Text aus
+    /// jeder Kategorie zusammenkommt. Wählt per Kategorie-eigenem Modulo statt über eine feste
+    /// Pool-Halbierung, damit die beiden Kategorien unterschiedlich groß sein können (z.B. wenn
+    /// neue literarische Klassiker ergänzt werden, ohne dass gleich viele Pop-Kultur-Stücke
+    /// nachgezogen werden müssen). Zwei ganze Texte statt künstlich verlängerter Einzeltexte: die
+    /// literarischen Stücke sind echte, gemeinfreie Gedichte - denen eine zweite Strophe
+    /// anzudichten würde die Werke verfälschen.
     /// </summary>
     public static ReadingPiece GetSecondForDate(DateOnly date)
     {
-        var index = (date.DayOfYear + Pool.Count / 2) % Pool.Count;
-        return Pool[index];
+        var firstIsPopKultur = Pool[date.DayOfYear % Pool.Count].IsPopKultur;
+        var targetPool = firstIsPopKultur ? LiterarischPool : PopKulturPool;
+        return targetPool[date.DayOfYear % targetPool.Count];
     }
 }

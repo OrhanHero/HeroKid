@@ -29,7 +29,7 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
 
 1. **Profil wählen**
 2. **Lesen** (Pflicht, nicht überspringbar) – täglich **zwei** wechselnde Stücke aus einem festen Pool
-   von 60 Texten (siehe `LernTor.Core/Services/ReadingContentProvider.cs`; die Tagespaarung kombiniert
+   von 63 Texten (siehe `LernTor.Core/Services/ReadingContentProvider.cs`; die Tagespaarung kombiniert
    je einen literarischen/Allgemeinwissen-Text mit einer Pop-Kultur-Geschichte - zwei ganze Texte statt
    künstlich verlängerter Einzeltexte, denn den echten, gemeinfreien Gedichten eine zweite Strophe
    anzudichten würde die Werke verfälschen). Beide werden **gleichzeitig auf Deutsch, Türkisch und
@@ -46,10 +46,10 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    Audiodaten - Piper ist das passende (und viel kleinere) dedizierte TTS-Modell. Soll **laut
    vorgelesen** werden. Ein 5-Minuten-Timer läuft; "Weiter" ist erst danach nutzbar - es gibt bewusst
    keine Überspringen-Funktion. Ob tatsächlich (laut) gelesen wurde, kann technisch nicht geprüft
-   werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion. Der Pool besteht aus zwei
-   Hälften:
-   - **30 literarische/Allgemeinwissen-Stücke**: gemeinfreie Gedichte/Texte (Goethe, Heine, Yunus
-     Emre, Schiller, Rilke, Robert Frost, William Blake, Lewis Carroll, u.a.) sowie kurze
+   werden – das ist eine bekannte, akzeptierte Grenze dieser Funktion. Der Pool gliedert sich in
+   zwei Kategorien:
+   - **33 literarische/Allgemeinwissen-Stücke**: gemeinfreie Gedichte/Texte (Goethe, Heine, Yunus
+     Emre, Schiller, Rilke, Fontane, Robert Frost, William Blake, Lewis Carroll, u.a.) sowie kurze
      "kurz erklärt"-Sachtexte (Berlin, Sonnensystem, Menschenrechte, EU, ...). Fremdsprachige
      Originale werden mit eigenen, freien Übertragungen (keine fremden Übersetzungen) begleitet.
    - **30 Pop-Kultur-Kurzgeschichten**: eigens verfasste, kindgerechte Abenteuergeschichten rund um

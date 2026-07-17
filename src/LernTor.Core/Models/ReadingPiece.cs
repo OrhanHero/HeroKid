@@ -13,4 +13,11 @@ public sealed class ReadingPiece
     public required string TextDe { get; init; }
     public required string TextTr { get; init; }
     public required string TextEn { get; init; }
+
+    /// <summary>
+    /// true = Pop-Kultur-Stück (Minecraft/Anime/etc.), false (Default) = literarisches Werk/
+    /// Allgemeinwissen. Genutzt von <see cref="ReadingContentProvider.GetSecondForDate"/>, um
+    /// unabhängig von der Gesamtgröße des Pools garantiert ein Stück aus jeder Kategorie zu wählen.
+    /// </summary>
+    public bool IsPopKultur { get; init; }
 }

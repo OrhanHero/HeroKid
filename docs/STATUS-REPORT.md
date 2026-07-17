@@ -92,7 +92,7 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 
 | Priorität | Thema | Details |
 |-----------|-------|---------|
-| 🟡 **Mittel** | **Lesestufen-Texte** | 60 Texte (30 literarisch + 30 Pop-Kultur) – aber keine Klassiker-Abdeckung für Klasse 9 (z. B. Goethe/Schiller/Fontane nur rudimentär). |
+| ✅ **Erledigt** | **Lesestufen-Texte** | 63 Texte (33 literarisch/Allgemeinwissen + 30 Pop-Kultur), inkl. Klassiker-Ergänzung Goethe (Erlkönig), Schiller (Die Bürgschaft) und Fontane (Herr von Ribbeck auf Ribbeck im Havelland). |
 | 🟡 **Mittel** | **Mathe: Offene Eingabe vs. MC** | Aktuell nur Multiple-Choice; offene Zahleneingabe wäre besser (aber schwerer zu validieren). |
 | 🟢 **Niedrig** | **Gamification: Streaks** | Bewusst weggelassen (kein Druck bei verpassten Tagen), aber könnte optional ergänzt werden. |
 | 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
@@ -163,7 +163,7 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 ### Sprint 4: Polish (1-2 Wochen)
 13. Mathe: Offene Zahleneingabe (neuer Fragetyp)
-14. Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)
+14. ~~Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)~~ ✅ erledigt (`Erlkönig`, `Die Bürgschaft`, `Herr von Ribbeck auf Ribbeck im Havelland` in `ReadingContentProvider.cs`)
 15. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
 
 ---
