@@ -34,8 +34,8 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 |------|-----------|----------------|----------------|--------|---------------------------|
 | **Mathematik** | `MathGenerator.cs` | 12 | 14 | 26 | Klasse 9: fehlt nur Stochastik-Baumdiagramme und darstellende Geometrie (Nischenthemen) |
 | **Deutsch** | `GermanGenerator.cs` | 12 | 13 | 25 | Drama-Analyse abgedeckt; Novelle/Parabel fehlen noch |
-| **Türkisch** | `TurkishGenerator.cs` | 8 | 7 | 15 | Klasse 9: fehlt Alltag/Konsum, Gesellschaft, Berufswelt |
-| **Englisch** | `EnglischGenerator.cs` | 7 | 6 | 13 | Klasse 9: fehlt Alltag/Konsum, Bewerbung, Kultur/Historie |
+| **Türkisch** | `TurkishGenerator.cs` | 8 | 10 | 18 | ✅ komplett (alle 4 kommunikativen RLP-Themenfelder je Stufe) |
+| **Englisch** | `EnglischGenerator.cs` | 7 | 9 | 16 | ✅ komplett (beide Stufen 6/6) |
 | **Biologie** | `BiologieGenerator.cs` | 6 | 8 | 14 | ✅ komplett |
 | **Chemie** | `ChemieGenerator.cs` | 9 | 9 | 18 | ✅ komplett (beide Stufen 6/6) |
 | **Physik** | `PhysikGenerator.cs` | 10 | 7 | 17 | ✅ komplett (beide Stufen 6/6 bzw. 6/7) |
@@ -48,7 +48,7 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Musik** | `MusikGenerator.cs` | 5 | 6 | 11 | ✅ |
 | **ITG** | `ItgGenerator.cs` | 3 | 3 | 6 | Standardsoftware bewusst weggelassen (nicht quizbar) |
 
-**Gesamt: 223 Topics × ~20 Fragen = ~4.450 Fragen im Pool**
+**Gesamt: 229 Topics × ~20 Fragen = ~4.550 Fragen im Pool**
 
 > Frühere Fassungen dieses Berichts nannten ~124 Topics und listeten Chemie/Politik/Geografie/Ethik
 > Klasse 9 sowie Deutsch-Drama als große Lücken. Die Generatoren wurden seither erweitert, ohne dass
@@ -70,8 +70,6 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 
 | Fach | Fehlende RLP-Themenfelder | Bewertung |
 |------|---------------------------|-----------|
-| **Englisch/Türkisch Klasse 9** | Alltag/Konsum, Bewerbung/Berufswelt, Kultur (Klasse-9-Niveau) | Kernthemen (Identität, Gesellschaft/Medien, Umwelt bzw. Traditionen, Geografie) sind drin |
-| **Türkisch generell** | RLP gliedert in 4 Themenfelder pro Stufe; Generator ist überwiegend grammatikorientiert (Zeiten, Satzglieder, Rechtschreibung) | Funktionell für Quiz nutzbar, mehrere Wortschatz-Themenfelder inzwischen ergänzt, aber nicht 1:1 RLP-abgebildet |
 | **Deutsch** | Literarische Textanalyse: Novelle, Parabel | Drama-Analyse ist inzwischen abgedeckt (`DramaAufbau`, `Figurencharakterisierung`) |
 | **Geschichte Klasse 9** | Feindbilder/Propaganda (Bonusmodul) | 6 von 7 Themenfeldern abgedeckt |
 
@@ -102,19 +100,20 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 
 ### 3.3 Content-Erweiterung (Nice-to-have)
 
-*Chemie/Politik/Geografie/Ethik Klasse 9 sind entgegen früherer Fassungen dieses Berichts bereits
-vollständig - die reale Restlücke liegt bei Klasse 6 und ein paar Klasse-9-Nischenthemen:*
+Nach Abschluss von Sprint 2 und 3 sind alle Klasse-6-Grundthemen (Naturwissenschaften +
+Gesellschaftswissenschaften) sowie Chemie/Politik/Geografie/Ethik/Englisch/Türkisch Klasse 9
+vollständig. Es bleiben nur noch zwei kleine, bewusst niedrig priorisierte Lücken:
 
 | Fach | Fehlende Topics (RLP) | Aufwand |
 |------|----------------------|---------|
-| Englisch/Türkisch Kl.9 | Alltag/Konsum, Bewerbung/Berufswelt, Kultur | ~5 Topics × 20 = 100 Q |
 | Deutsch | Novelle, Parabel | ~2 Topics × 20 = 40 Q |
 | Geschichte Kl.9 | Feindbilder/Propaganda (Bonusmodul) | ~1 Topic × 20 = 20 Q |
 
-**Gesamt Content-Lücke: ~160 Fragen** (bei 223 existierenden Topics/~4.450 Fragen = ~4%
-Erweiterungsmöglichkeit). Biologie, Chemie, Physik, Geografie, Politik und Ethik Klasse 6 sind
-vollständig geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `PhysikGenerator.cs`,
-`GeoGenerator.cs`, `PolitikGenerator.cs`, `EthikGenerator.cs`).
+**Gesamt Content-Lücke: ~60 Fragen** (bei 229 existierenden Topics/~4.550 Fragen = ~1,3%
+Erweiterungsmöglichkeit). Biologie, Chemie, Physik, Geografie, Politik, Ethik Klasse 6 sowie
+Englisch/Türkisch Klasse 9 sind vollständig geschlossen (siehe `BiologieGenerator.cs`,
+`ChemieGenerator.cs`, `PhysikGenerator.cs`, `GeoGenerator.cs`, `PolitikGenerator.cs`,
+`EthikGenerator.cs`, `EnglischGenerator.cs`, `TurkishGenerator.cs`).
 
 ---
 
@@ -156,11 +155,12 @@ vollständig geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `P
 6. ~~Chemie Klasse 6: Periodensystem-Basics, Gase, Wasser, Salze (4 Topics)~~ ✅ erledigt (`PeriodensystemGrundlagen`, `Gase`, `Wasser`, `Salze` in `ChemieGenerator.cs`)
 7. ~~Physik Klasse 6: Thermik, Kraft, Energie, Wärme (4 Topics)~~ ✅ erledigt (`WaermeausdehnungKoerper`, `WechselwirkungUndKraft`, `MechanischeEnergieUndArbeit`, `ThermischeEnergieUndWaerme` in `PhysikGenerator.cs`)
 
-### Sprint 3: Content-Runde 2 (läuft)
+### Sprint 3: Content-Runde 2 ✅ ABGESCHLOSSEN
 8. ~~Geografie Klasse 6: Risikoräume, Migration/Bevölkerung, Regenwald, Armut (4 Topics)~~ ✅ erledigt (`RisikoraeumeNaturgefahren`, `MigrationUndBevoelkerung`, `TropischerRegenwald`, `ArmutUndReichtumKlasse6` in `GeoGenerator.cs`)
 9. ~~Politik Klasse 6: Armut, Globalisierte Welt, Migration, Rechtsstaat (4 Topics)~~ ✅ erledigt (`ArmutUndReichtumPolitik`, `GlobalisierteWelt`, `MigrationPolitik`, `LebenImRechtsstaat` in `PolitikGenerator.cs`)
 10. ~~Ethik Klasse 6: Identität, Freiheit, Gerechtigkeit (3 Topics)~~ ✅ erledigt (`IdentitaetUndRolleKlasse6`, `FreiheitUndVerantwortungKlasse6`, `RechtUndGerechtigkeitKlasse6` in `EthikGenerator.cs`)
-11. Englisch/Türkisch Klasse 9: Alltag/Konsum, Bewerbung (bis zu 4 Topics)
+11. ~~Englisch Klasse 9: Alltag/Konsum, Bewerbung, Kultur (3 Topics)~~ ✅ erledigt (`AlltagUndKonsum`, `SchuleUndArbeitswelt`, `KulturUndHistorischerHintergrund` in `EnglischGenerator.cs`)
+12. ~~Türkisch Klasse 9: Alltag/Konsum, Gesellschaft, Berufswelt (3 Topics)~~ ✅ erledigt (`AlltagUndKonsum`, `GesellschaftUndOeffentlichesLeben`, `SchuleUndBerufswelt` in `TurkishGenerator.cs`)
 
 ### Später (nach finaler Version)
 - **EV-Zertifikat besorgen & Installer signieren** (SmartScreen)
@@ -168,10 +168,10 @@ vollständig geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `P
 - **Eltern-Export/Import** (JSON-Backup von Profilen + Fortschritt)
 
 ### Sprint 4: Polish (1-2 Wochen)
-11. Mathe: Offene Zahleneingabe (neuer Fragetyp)
-12. Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)
-13. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
-14. Deutsch: Novelle/Parabel; Geschichte Klasse 9: Feindbilder/Propaganda (Bonusmodul)
+13. Mathe: Offene Zahleneingabe (neuer Fragetyp)
+14. Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)
+15. Optionale Streaks (ein/ausschaltbar im Eltern-Bereich)
+16. Deutsch: Novelle/Parabel; Geschichte Klasse 9: Feindbilder/Propaganda (Bonusmodul)
 
 ---
 
@@ -181,12 +181,12 @@ vollständig geschlossen (siehe `BiologieGenerator.cs`, `ChemieGenerator.cs`, `P
 
 > Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic, keine Wiederholung bei richtig) → **Abschlussquiz** (dynamisch verteilt, ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen, sehen Wochenbericht.
 
-**Abdeckungsgrad RLP:** deutlich höher als frühere Fassungen dieses Berichts annahmen - Chemie,
-Politik, Geografie und Ethik Klasse 9 sind vollständig (6/6 RLP-Themenfelder), ebenso Biologie,
-Chemie, Physik, Geografie, Politik und Ethik Klasse 6 (4/4, 6/6, 6/6, 4/4, 6/6 bzw. 6/6). Alle
-Klasse-6-Grundthemen der Naturwissenschaften und Gesellschaftswissenschaften sind damit vollständig.
-Die verbleibende Lücke liegt nur noch bei ein paar Klasse-9-Nischenthemen (Englisch/Türkisch
-Alltag/Bewerbung, Deutsch Novelle/Parabel) - dazu bewusst ausgeklammerte Bereiche (Sport, WAT,
+**Abdeckungsgrad RLP:** deutlich höher als frühere Fassungen dieses Berichts annahmen. Vollständig
+(6/6 bzw. 4/4 RLP-Themenfelder) sind: Chemie, Politik, Geografie, Ethik, Englisch und Türkisch
+Klasse 9, sowie Biologie, Chemie, Physik, Geografie, Politik und Ethik Klasse 6 - praktisch alle
+Klasse-6-Grundthemen (Naturwissenschaften + Gesellschaftswissenschaften) und fast alle Klasse-9-
+Themen. Die verbleibende Lücke ist minimal: nur noch Deutsch (Novelle/Parabel) und ein
+Geschichte-Bonusmodul (Feindbilder/Propaganda) - dazu bewusst ausgeklammerte Bereiche (Sport, WAT,
 Standardsoftware).
 
 **Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)** - bewusst auf die finale Version verschoben. Alles andere ist "Qualität/Content", kein Blocker.

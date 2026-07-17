@@ -19,7 +19,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
                 SimplePastVsPresentPerfect, FirstConditional, PassiveVoice,
-                IdentitaetUndZukunft, GesellschaftUndMedien, UmweltUndNachhaltigkeit
+                IdentitaetUndZukunft, GesellschaftUndMedien, UmweltUndNachhaltigkeit,
+                AlltagUndKonsum, SchuleUndArbeitswelt, KulturUndHistorischerHintergrund
             }
         };
 
@@ -497,6 +498,114 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Topic = "Umwelt und Nachhaltigkeit", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Wortschatz zu Umwelt und Nachhaltigkeit: carbon footprint, global warming, renewable energy, sustainable."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KonsumListe =
+    {
+        ("Wie sagt man auf Englisch \"Verbraucher/Konsument\"?", new[] { "consumer", "container", "commuter" }, "consumer", "\"consumer\" bedeutet \"Verbraucher/Konsument\"."),
+        ("Was bedeutet \"advertisement\" auf Deutsch?", new[] { "Werbung/Anzeige", "Abenteuer", "Vereinbarung" }, "Werbung/Anzeige", "\"advertisement\" bedeutet \"Werbung/Anzeige\"."),
+        ("Wie sagt man auf Englisch \"Marke\"?", new[] { "brand", "brain", "brand new" }, "brand", "\"brand\" bedeutet \"Marke\"."),
+        ("Was bedeutet \"to save money\" auf Deutsch?", new[] { "Geld sparen", "Geld ausgeben", "Geld verlieren" }, "Geld sparen", "\"to save money\" bedeutet \"Geld sparen\"."),
+        ("Wie sagt man auf Englisch \"Rabatt\"?", new[] { "discount", "discourse", "discomfort" }, "discount", "\"discount\" bedeutet \"Rabatt\"."),
+        ("Was bedeutet \"refund\" auf Deutsch?", new[] { "Rückerstattung", "Rechnung", "Rabatt" }, "Rückerstattung", "\"refund\" bedeutet \"Rückerstattung\"."),
+        ("Wie sagt man auf Englisch \"Kassenbon/Quittung\"?", new[] { "receipt", "recipe", "reception" }, "receipt", "\"receipt\" bedeutet \"Kassenbon/Quittung\"."),
+        ("Was bedeutet \"warranty\" auf Deutsch?", new[] { "Garantie", "Warnung", "Lagerhaus" }, "Garantie", "\"warranty\" bedeutet \"Garantie\"."),
+        ("Wie sagt man auf Englisch \"sich beschweren\"?", new[] { "to complain", "to complete", "to compliment" }, "to complain", "\"to complain\" bedeutet \"sich beschweren\"."),
+        ("Was bedeutet \"consumer rights\" auf Deutsch?", new[] { "Verbraucherrechte", "Konsumverbote", "Kaufverträge" }, "Verbraucherrechte", "\"consumer rights\" bedeutet \"Verbraucherrechte\"."),
+        ("Wie sagt man auf Englisch \"Abonnement\"?", new[] { "subscription", "description", "prescription" }, "subscription", "\"subscription\" bedeutet \"Abonnement\"."),
+        ("Was bedeutet \"to cancel a subscription\" auf Deutsch?", new[] { "ein Abonnement kündigen", "ein Abonnement abschließen", "ein Abonnement verschenken" }, "ein Abonnement kündigen", "\"to cancel a subscription\" bedeutet \"ein Abonnement kündigen\"."),
+        ("Wie sagt man auf Englisch \"Online-Einkauf\"?", new[] { "online shopping", "online banking", "online gaming" }, "online shopping", "\"online shopping\" bedeutet \"Online-Einkauf\"."),
+        ("Was bedeutet \"delivery\" auf Deutsch?", new[] { "Lieferung", "Entdeckung", "Entwicklung" }, "Lieferung", "\"delivery\" bedeutet \"Lieferung\"."),
+        ("Wie sagt man auf Englisch \"einen Artikel zurückgeben\"?", new[] { "to return an item", "to remove an item", "to repeat an item" }, "to return an item", "\"to return an item\" bedeutet \"einen Artikel zurückgeben\"."),
+        ("Was bedeutet \"sustainable consumption\" auf Deutsch?", new[] { "nachhaltiger Konsum", "übermäßiger Konsum", "verbotener Konsum" }, "nachhaltiger Konsum", "\"sustainable consumption\" bedeutet \"nachhaltiger Konsum\"."),
+        ("Wie sagt man auf Englisch \"Gebraucht-/Second-Hand-Ware\"?", new[] { "second-hand goods", "second chance goods", "second class goods" }, "second-hand goods", "\"second-hand goods\" bedeutet \"Gebraucht-/Second-Hand-Ware\"."),
+        ("Was bedeutet \"to spend money\" auf Deutsch?", new[] { "Geld ausgeben", "Geld sparen", "Geld verleihen" }, "Geld ausgeben", "\"to spend money\" bedeutet \"Geld ausgeben\"."),
+        ("Wie sagt man auf Englisch \"Budget/Haushaltsplan\"?", new[] { "budget", "burden", "bundle" }, "budget", "\"budget\" bedeutet \"Budget/Haushaltsplan\"."),
+        ("Was bedeutet \"misleading advertisement\" auf Deutsch?", new[] { "irreführende Werbung", "ehrliche Werbung", "verbotene Produkte" }, "irreführende Werbung", "\"misleading advertisement\" bedeutet \"irreführende Werbung\".")
+    };
+
+    private static QuizQuestion AlltagUndKonsum(Random r)
+    {
+        var f = KonsumListe[r.Next(KonsumListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Konsum und Verbraucherschutz: consumer, refund, warranty, subscription, sustainable consumption."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArbeitsweltListe =
+    {
+        ("Wie sagt man auf Englisch \"Bewerbung\"?", new[] { "job application", "job description", "job interview" }, "job application", "\"job application\" bedeutet \"Bewerbung\"."),
+        ("Was bedeutet \"CV\" (curriculum vitae) auf Deutsch?", new[] { "Lebenslauf", "Anschreiben", "Zeugnis" }, "Lebenslauf", "\"CV\" (curriculum vitae) bedeutet \"Lebenslauf\"."),
+        ("Wie sagt man auf Englisch \"Anschreiben/Bewerbungsschreiben\"?", new[] { "cover letter", "cover story", "cover page" }, "cover letter", "\"cover letter\" bedeutet \"Anschreiben/Bewerbungsschreiben\"."),
+        ("Was bedeutet \"job interview\" auf Deutsch?", new[] { "Vorstellungsgespräch", "Arbeitsvertrag", "Kündigung" }, "Vorstellungsgespräch", "\"job interview\" bedeutet \"Vorstellungsgespräch\"."),
+        ("Wie sagt man auf Englisch \"Qualifikation\"?", new[] { "qualification", "quantity", "qualification exam only" }, "qualification", "\"qualification\" bedeutet \"Qualifikation\"."),
+        ("Was bedeutet \"apprenticeship\" auf Deutsch?", new[] { "Ausbildung/Lehre", "Praktikum", "Studium" }, "Ausbildung/Lehre", "\"apprenticeship\" bedeutet \"Ausbildung/Lehre\"."),
+        ("Wie sagt man auf Englisch \"Praktikum\"?", new[] { "internship", "internal", "interview" }, "internship", "\"internship\" bedeutet \"Praktikum\"."),
+        ("Was bedeutet \"employer\" auf Deutsch?", new[] { "Arbeitgeber", "Angestellte/r", "Arbeitsamt" }, "Arbeitgeber", "\"employer\" bedeutet \"Arbeitgeber\"."),
+        ("Wie sagt man auf Englisch \"Angestellte/r\"?", new[] { "employee", "employer", "unemployed" }, "employee", "\"employee\" bedeutet \"Angestellte/r\"."),
+        ("Was bedeutet \"salary\" auf Deutsch?", new[] { "Gehalt", "Urlaub", "Rente" }, "Gehalt", "\"salary\" bedeutet \"Gehalt\"."),
+        ("Wie sagt man auf Englisch \"Teilzeitjob\"?", new[] { "part-time job", "full-time job", "part of a job" }, "part-time job", "\"part-time job\" bedeutet \"Teilzeitjob\"."),
+        ("Was bedeutet \"skills\" auf Deutsch?", new[] { "Fähigkeiten/Kenntnisse", "Aufgaben", "Zeugnisse" }, "Fähigkeiten/Kenntnisse", "\"skills\" bedeutet \"Fähigkeiten/Kenntnisse\"."),
+        ("Wie sagt man auf Englisch \"sich um eine Stelle bewerben\"?", new[] { "to apply for a job", "to apologize for a job", "to appoint a job" }, "to apply for a job", "\"to apply for a job\" bedeutet \"sich um eine Stelle bewerben\"."),
+        ("Was bedeutet \"work experience\" auf Deutsch?", new[] { "Arbeitserfahrung/Praxiserfahrung", "Arbeitszeit", "Arbeitsplatz" }, "Arbeitserfahrung/Praxiserfahrung", "\"work experience\" bedeutet \"Arbeitserfahrung/Praxiserfahrung\"."),
+        ("Wie sagt man auf Englisch \"Abgabefrist\"?", new[] { "deadline", "headline", "byline" }, "deadline", "\"deadline\" bedeutet \"Abgabefrist\"."),
+        ("Was bedeutet \"vocational training\" auf Deutsch?", new[] { "Berufsausbildung", "Freiwilligenarbeit", "Urlaubsreise" }, "Berufsausbildung", "\"vocational training\" bedeutet \"Berufsausbildung\"."),
+        ("Wie sagt man auf Englisch \"Karriere/Laufbahn\"?", new[] { "career", "carrier", "career break only" }, "career", "\"career\" bedeutet \"Karriere/Laufbahn\"."),
+        ("Was bedeutet \"to be hired\" auf Deutsch?", new[] { "eingestellt werden", "entlassen werden", "befördert werden" }, "eingestellt werden", "\"to be hired\" bedeutet \"eingestellt werden\"."),
+        ("Wie sagt man auf Englisch \"entlassen werden\"?", new[] { "to be fired", "to be hired", "to be tired" }, "to be fired", "\"to be fired\" bedeutet \"entlassen werden\"."),
+        ("Was bedeutet \"job vacancy\" auf Deutsch?", new[] { "offene Stelle", "Kündigungsschreiben", "Arbeitsvertrag" }, "offene Stelle", "\"job vacancy\" bedeutet \"offene Stelle\".")
+    };
+
+    private static QuizQuestion SchuleUndArbeitswelt(Random r)
+    {
+        var f = ArbeitsweltListe[r.Next(ArbeitsweltListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Schule, Ausbildung und Arbeitswelt (Bewerbung)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Bewerbung und Arbeitswelt: job application, CV, cover letter, job interview, to apply for a job."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] HistorischerHintergrundListe =
+    {
+        ("Wie sagt man auf Englisch \"Kulturerbe\"?", new[] { "heritage", "inheritance only", "hermitage" }, "heritage", "\"heritage\" bedeutet \"Kulturerbe\"."),
+        ("Was bedeutet \"tradition\" auf Deutsch?", new[] { "Tradition/Brauch", "Übersetzung", "Transaktion" }, "Tradition/Brauch", "\"tradition\" bedeutet \"Tradition/Brauch\"."),
+        ("Wie sagt man auf Englisch \"historisches Ereignis\"?", new[] { "historical event", "historic building", "history book" }, "historical event", "\"historical event\" bedeutet \"historisches Ereignis\"."),
+        ("Was bedeutet \"monument\" auf Deutsch?", new[] { "Denkmal", "Moment", "Dokument" }, "Denkmal", "\"monument\" bedeutet \"Denkmal\"."),
+        ("Wie sagt man auf Englisch \"Kolonialismus\"?", new[] { "colonialism", "colony only", "colonel" }, "colonialism", "\"colonialism\" bedeutet \"Kolonialismus\"."),
+        ("Was bedeutet \"immigrant\" auf Deutsch?", new[] { "Einwanderer/Immigrant", "Auswanderer", "Reisender" }, "Einwanderer/Immigrant", "\"immigrant\" bedeutet \"Einwanderer/Immigrant\"."),
+        ("Wie sagt man auf Englisch \"Vielfalt\"?", new[] { "diversity", "diversion", "division" }, "diversity", "\"diversity\" bedeutet \"Vielfalt\"."),
+        ("Was bedeutet \"custom\" auf Deutsch?", new[] { "Brauch/Sitte", "Zoll (Behörde)", "Kunde" }, "Brauch/Sitte", "\"custom\" bedeutet in diesem Zusammenhang \"Brauch/Sitte\" (als \"customs\" auch \"Zoll\")."),
+        ("Wie sagt man auf Englisch \"Fest/Festival\"?", new[] { "festival", "fasting", "festivity only" }, "festival", "\"festival\" bedeutet \"Fest/Festival\"."),
+        ("Was bedeutet \"folklore\" auf Deutsch?", new[] { "Volkskunde/Folklore", "Wald", "Volksmusik ausschließlich" }, "Volkskunde/Folklore", "\"folklore\" bedeutet \"Volkskunde/Folklore\"."),
+        ("Wie sagt man auf Englisch \"Vorfahre\"?", new[] { "ancestor", "descendant", "assistant" }, "ancestor", "\"ancestor\" bedeutet \"Vorfahre\" (das Gegenteil ist \"descendant\", Nachkomme)."),
+        ("Was bedeutet \"civil rights movement\" auf Deutsch?", new[] { "Bürgerrechtsbewegung", "Zivildienst", "Bürgerkrieg" }, "Bürgerrechtsbewegung", "\"civil rights movement\" bedeutet \"Bürgerrechtsbewegung\"."),
+        ("Wie sagt man auf Englisch \"Weltreich/Imperium\"?", new[] { "empire", "emperor only", "empty" }, "empire", "\"empire\" bedeutet \"Weltreich/Imperium\"."),
+        ("Was bedeutet \"independence\" auf Deutsch?", new[] { "Unabhängigkeit", "Abhängigkeit", "Unsicherheit" }, "Unabhängigkeit", "\"independence\" bedeutet \"Unabhängigkeit\"."),
+        ("Wie sagt man auf Englisch \"Generation\"?", new[] { "generation", "generator only", "genre" }, "generation", "\"generation\" bedeutet \"Generation\"."),
+        ("Was bedeutet \"cultural identity\" auf Deutsch?", new[] { "kulturelle Identität", "kulturelle Vielfalt", "kulturelles Erbe" }, "kulturelle Identität", "\"cultural identity\" bedeutet \"kulturelle Identität\"."),
+        ("Wie sagt man auf Englisch \"Museum\"?", new[] { "museum", "monument only", "memorial only" }, "museum", "\"museum\" bedeutet \"Museum\"."),
+        ("Was bedeutet \"historical figure\" auf Deutsch?", new[] { "historische Persönlichkeit", "historisches Gebäude", "historische Zahl" }, "historische Persönlichkeit", "\"historical figure\" bedeutet \"historische Persönlichkeit\"."),
+        ("Wie sagt man auf Englisch \"Revolution\"?", new[] { "revolution", "resolution", "revelation" }, "revolution", "\"revolution\" bedeutet \"Revolution\"."),
+        ("Was bedeutet \"to commemorate\" auf Deutsch?", new[] { "gedenken/erinnern an", "feiern ohne Anlass", "vergessen" }, "gedenken/erinnern an", "\"to commemorate\" bedeutet \"gedenken/erinnern an\".")
+    };
+
+    private static QuizQuestion KulturUndHistorischerHintergrund(Random r)
+    {
+        var f = HistorischerHintergrundListe[r.Next(HistorischerHintergrundListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Kultur und historischer Hintergrund (Klasse-9-Niveau)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz zu Kultur und Geschichte: heritage, tradition, colonialism, civil rights movement, independence."
         };
     }
 }

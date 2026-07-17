@@ -69,7 +69,9 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 | Doğa ve Çevre (Natur und Umwelt) – Wortschatz | Kimlik ve Gelecek (Identität und Zukunft) – Wortschatz |
 | Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
 | Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | Türkiye'nin Coğrafyası (Geografie der Türkei) |
-| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | |
+| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | Alltag, Konsum und türkische Kultur – Wortschatz |
+| | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
+| | Schule, Ausbildung und Berufswelt – Wortschatz |
 
 ## Physik (`PhysikGenerator.cs`)
 
@@ -128,7 +130,9 @@ Rahmenlehrplan" weiter unten).
 | Individuum und Lebenswelt: Alltag und Familie | Identität, Lebensentwürfe und Zukunft |
 | Gesellschaft: Schule und Zusammenleben | Gesellschaft, Medien und Vielfalt |
 | Kultur und historischer Hintergrund | Umwelt und Nachhaltigkeit |
-| Natur und Umwelt | |
+| Natur und Umwelt | Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) |
+| | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
+| | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
 
 ## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
 
@@ -335,12 +339,12 @@ Simplifizierungen dieser App gegenüber dem vollständigen RLP):
   5/6 ist es Teil des integrierten Fachs Naturwissenschaften. Unsere Klasse-6-Themen (menschlicher
   Körper, Fotosynthese, Wirbeltierklassen) sind trotzdem sinnvoll, da die App Bio/Chemie/Physik aus
   Vereinfachungsgründen als getrennte Fächer ab Klasse 6 führt.
-- **Türkisch**: Der RLP gliedert das Fach primär in kommunikative Themenfelder (Individuum und
-  Gesellschaft, Gesellschaft und öffentliches Leben, Kultur und historischer Hintergrund, Natur und
-  Umwelt) statt nach Grammatikthemen. `TurkishGenerator.cs` bleibt überwiegend grammatikorientiert
-  (Zeiten, Satzglieder, Rechtschreibung), da das für automatisch geprüfbare Übungsfragen
-  praktikabler ist - das neue Wortschatz-Thema ist ein erster Schritt in Richtung RLP-Themenfelder,
-  kein vollständiger Umbau.
+- **Türkisch**: Der RLP gliedert das Fach primär in kommunikative Themenfelder statt nach
+  Grammatikthemen. `TurkishGenerator.cs` deckt inzwischen alle 4 kommunikativen Themenfelder
+  (Individuum und Gesellschaft, Gesellschaft und öffentliches Leben, Kultur und historischer
+  Hintergrund, Natur und Umwelt) beider Klassenstufen zusätzlich zu den grammatikorientierten
+  Themen (Zeiten, Satzglieder, Rechtschreibung) ab - kein vollständiger Umbau, aber die RLP-
+  Themenfelder sind jetzt genauso vollständig abgebildet wie die Grammatik.
 - **Informatik/ITG**: Das RLP-Themenfeld "Standardsoftware" (praktischer Umgang mit
   Textverarbeitung/Tabellenkalkulation) lässt sich kaum als automatisch auswertbare Quizfrage
   abbilden und bleibt daher unberücksichtigt; die übrigen Themenfelder (Informatiksysteme, Leben in
@@ -531,18 +535,18 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 #### Englisch (`EnglischGenerator.cs`)
 
 - [x] 3.1 Persönlichkeit, Identität und Zukunft (→ `IdentitaetUndZukunft`)
-- [ ] 3.2 Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz)
+- [x] 3.2 Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) (→ `AlltagUndKonsum`)
 - [x] 3.3 Gesellschaftliches Zusammenleben und Medien (→ `GesellschaftUndMedien`)
-- [ ] 3.4 Schule, Ausbildung und Arbeitswelt (Bewerbung)
-- [ ] 3.5 Kultur und historischer Hintergrund (Klasse-9-Niveau)
+- [x] 3.4 Schule, Ausbildung und Arbeitswelt (Bewerbung) (→ `SchuleUndArbeitswelt`)
+- [x] 3.5 Kultur und historischer Hintergrund (Klasse-9-Niveau) (→ `KulturUndHistorischerHintergrund`)
 - [x] 3.6 Natur, Umwelt und Ökologie (→ `UmweltUndNachhaltigkeit`)
 
 #### Türkisch (`TurkishGenerator.cs`)
 
 - [x] 4.1 Identität, Lebenswelt und Migration (→ `KimlikVeGelecek`)
-- [ ] 4.2 Alltag, Konsum und türkische Kultur
-- [ ] 4.3 Gesellschaft und öffentliches Leben (Klasse-9-Niveau)
-- [ ] 4.4 Schule, Ausbildung und Berufswelt
+- [x] 4.2 Alltag, Konsum und türkische Kultur (→ `AlltagUndKonsum`)
+- [x] 4.3 Gesellschaft und öffentliches Leben (Klasse-9-Niveau) (→ `GesellschaftUndOeffentlichesLeben`)
+- [x] 4.4 Schule, Ausbildung und Berufswelt (→ `SchuleUndBerufswelt`)
 - [x] 4.5 Traditionen und historischer Hintergrund (→ `TarihVeGelenekler`)
 - [x] 4.6 Natur, Umwelt und Regionen der Türkei (→ `TurkiyeCografyasi`)
 
@@ -684,8 +688,8 @@ Ethik/`Freundschaft`).
 |------|-----------|----------------|----------------|--------|
 | Mathematik | `MathGenerator.cs` | 12 | 14 | 26 |
 | Deutsch | `GermanGenerator.cs` | 12 | 13 | 25 |
-| Türkisch | `TurkishGenerator.cs` | 8 | 7 | 15 |
-| Englisch | `EnglischGenerator.cs` | 7 | 6 | 13 |
+| Türkisch | `TurkishGenerator.cs` | 8 | 10 | 18 |
+| Englisch | `EnglischGenerator.cs` | 7 | 9 | 16 |
 | Biologie | `BiologieGenerator.cs` | 6 | 8 | 14 |
 | Chemie | `ChemieGenerator.cs` | 9 | 9 | 18 |
 | Physik | `PhysikGenerator.cs` | 10 | 7 | 17 |
@@ -698,7 +702,7 @@ Ethik/`Freundschaft`).
 | Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
 | ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
 
-**Total: 223 Topics** (je Topic ~20 kuratierte Fragen → ~4.450 Fragen im Pool; Mathematik generiert
+**Total: 229 Topics** (je Topic ~20 kuratierte Fragen → ~4.550 Fragen im Pool; Mathematik generiert
 zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
 Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien

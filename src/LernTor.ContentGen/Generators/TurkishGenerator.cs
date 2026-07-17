@@ -33,7 +33,10 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
                 FiilimsiTuru,
                 KimlikVeGelecek,
                 TarihVeGelenekler,
-                TurkiyeCografyasi
+                TurkiyeCografyasi,
+                AlltagUndKonsum,
+                GesellschaftUndOeffentlichesLeben,
+                SchuleUndBerufswelt
             }
         };
 
@@ -609,6 +612,126 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Topic = "Türkiye'nin Coğrafyası (Geografie der Türkei)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Türkiye Avrupa ve Asya arasında yer alır. Bölgeler: Karadeniz (kuzey), Akdeniz (güney), Ege (batı), İç Anadolu (orta), Doğu ve Güneydoğu Anadolu."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] AlltagKonsumListe =
+    {
+        ("alışveriş", "Einkaufen", new[] { "Reisen", "Kochen", "Aufräumen" }),
+        ("indirim", "Rabatt", new[] { "Erhöhung", "Steuer", "Gebühr" }),
+        ("fatura", "Rechnung", new[] { "Werbung", "Garantie", "Vertrag" }),
+        ("tüketici", "Verbraucher", new[] { "Verkäufer", "Hersteller", "Lieferant" }),
+        ("bütçe", "Budget/Haushaltsplan", new[] { "Sparbuch", "Gehalt", "Kredit" }),
+        ("taksit", "Ratenzahlung", new[] { "Barzahlung", "Rabatt", "Steuer" }),
+        ("marka", "Marke", new[] { "Produkt allgemein", "Preis", "Werbung" }),
+        ("reklam", "Werbung", new[] { "Nachricht", "Zeitung", "Brief" }),
+        ("iade etmek", "zurückgeben", new[] { "kaufen", "verkaufen", "bestellen" }),
+        ("garanti", "Garantie", new[] { "Rechnung", "Rabatt", "Vertrag" }),
+        ("çevrimiçi alışveriş", "Online-Einkauf", new[] { "Ladenbesuch", "Straßenmarkt", "Tauschhandel" }),
+        ("kargo", "Lieferung/Versand", new[] { "Geschenk", "Einkaufstüte", "Rechnung" }),
+        ("tasarruf etmek", "sparen", new[] { "ausgeben", "verschenken", "verlieren" }),
+        ("geleneksel yemek", "traditionelles Gericht", new[] { "modernes Gericht", "Fastfood", "Süßigkeit" }),
+        ("bayram", "Fest (religiös/national)", new[] { "gewöhnliches Wochenende", "Ferien allgemein", "Geburtstag" }),
+        ("çarşı", "Markt/Basar", new[] { "modernes Einkaufszentrum", "Supermarkt", "Fabrik" }),
+        ("nakit", "Bargeld", new[] { "Kreditkarte", "Scheck", "Kryptowährung" }),
+        ("fiyat karşılaştırmak", "Preise vergleichen", new[] { "Preise erhöhen", "Preise verstecken", "Preise festlegen" }),
+        ("tüketici hakları", "Verbraucherrechte", new[] { "Herstellerpflichten", "Steuerpflichten", "Handelsgesetze" }),
+        ("israf", "Verschwendung", new[] { "Sparsamkeit", "Großzügigkeit", "Ordnung" })
+    };
+
+    private static QuizQuestion AlltagUndKonsum(Random r)
+    {
+        var d = AlltagKonsumListe[r.Next(AlltagKonsumListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Alltag, Konsum und türkische Kultur – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Alışveriş ve tüketimle ilgili kelimeler: indirim, fatura, tüketici, tasarruf etmek, tüketici hakları."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] ToplumsalYasamListe =
+    {
+        ("toplum", "Gesellschaft", new[] { "nur Familie", "Staat allgemein", "Verein" }),
+        ("vatandaş", "Bürger/Staatsbürger", new[] { "Ausländer", "Tourist", "Gast" }),
+        ("sivil toplum kuruluşu", "Nichtregierungsorganisation (NGO)", new[] { "Staatsbehörde", "Firma", "Partei" }),
+        ("gönüllü çalışmak", "ehrenamtlich arbeiten", new[] { "bezahlt arbeiten", "studieren", "Urlaub machen" }),
+        ("eşitlik", "Gleichheit", new[] { "Ungleichheit", "Wettbewerb", "Konkurrenz" }),
+        ("ayrımcılık", "Diskriminierung", new[] { "Gleichbehandlung", "Zusammenarbeit", "Freundschaft" }),
+        ("kamuoyu", "öffentliche Meinung", new[] { "private Meinung", "Regierungsmeinung", "Expertenmeinung" }),
+        ("sorumluluk", "Verantwortung", new[] { "Freizeit", "Erlaubnis", "Zufall" }),
+        ("dayanışma", "Solidarität", new[] { "Konkurrenz", "Gleichgültigkeit", "Distanz" }),
+        ("toplumsal cinsiyet", "soziales Geschlecht (Gender)", new[] { "nur biologisches Geschlecht", "Alter", "Herkunft" }),
+        ("hoşgörü", "Toleranz", new[] { "Intoleranz", "Gleichgültigkeit", "Misstrauen" }),
+        ("katılım", "Teilnahme/Beteiligung", new[] { "Ablehnung", "Ausschluss", "Isolation" }),
+        ("yerel yönetim", "Kommunalverwaltung", new[] { "Bundesregierung", "Weltregierung", "Firmenleitung" }),
+        ("sosyal medya", "soziale Medien", new[] { "nur Zeitung", "nur Fernsehen", "nur Radio" }),
+        ("kamu hizmeti", "öffentlicher Dienst", new[] { "Privatunternehmen", "nur Ehrenamt", "nur Militärdienst" }),
+        ("göçmen", "Einwanderer/Migrant", new[] { "Tourist", "Einheimischer", "Botschafter" }),
+        ("entegrasyon", "Integration", new[] { "Ausgrenzung", "Trennung", "Isolation" }),
+        ("kültürel çeşitlilik", "kulturelle Vielfalt", new[] { "kulturelle Einheitlichkeit", "kulturelle Isolation", "kulturelle Überlegenheit" }),
+        ("sosyal adalet", "soziale Gerechtigkeit", new[] { "soziale Ungleichheit", "wirtschaftliches Wachstum", "politische Macht" }),
+        ("demokratik katılım", "demokratische Teilhabe", new[] { "autoritäre Herrschaft", "Monarchie", "Diktatur" })
+    };
+
+    private static QuizQuestion GesellschaftUndOeffentlichesLeben(Random r)
+    {
+        var d = ToplumsalYasamListe[r.Next(ToplumsalYasamListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Toplum ve kamusal yaşamla ilgili kelimeler: vatandaş, eşitlik, hoşgörü, entegrasyon, sosyal adalet."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] BerufsweltListe =
+    {
+        ("meslek", "Beruf", new[] { "Hobby", "Schulfach", "Freizeit" }),
+        ("staj", "Praktikum", new[] { "Urlaub", "Prüfung", "Ferienjob" }),
+        ("iş başvurusu", "Bewerbung", new[] { "Arbeitsvertrag", "Kündigung", "Gehaltsabrechnung" }),
+        ("özgeçmiş", "Lebenslauf", new[] { "Anschreiben", "Zeugnis", "Arbeitsvertrag" }),
+        ("iş görüşmesi", "Vorstellungsgespräch", new[] { "Elternabend", "Prüfungsgespräch", "Beratungsgespräch" }),
+        ("maaş", "Gehalt", new[] { "Urlaubsgeld", "Rente", "Stipendium" }),
+        ("işveren", "Arbeitgeber", new[] { "Arbeitnehmer", "Arbeitsamt", "Gewerkschaft" }),
+        ("işçi", "Arbeiter/Angestellter", new[] { "Arbeitgeber", "Chef", "Kunde" }),
+        ("yetenek", "Fähigkeit/Talent", new[] { "Schwäche", "Fehler", "Note" }),
+        ("meslek okulu", "Berufsschule", new[] { "Universität", "Grundschule", "Kindergarten" }),
+        ("iş tecrübesi", "Berufserfahrung", new[] { "Schulzeugnis", "Freizeitaktivität", "Urlaubserfahrung" }),
+        ("çıraklık", "Lehre/Ausbildung", new[] { "Studium", "Ferienjob", "Urlaub" }),
+        ("kariyer", "Karriere/Laufbahn", new[] { "Hobby", "Freizeit", "Urlaub" }),
+        ("işe alınmak", "eingestellt werden", new[] { "entlassen werden", "befördert werden", "gekündigt werden" }),
+        ("işten çıkarılmak", "entlassen werden", new[] { "eingestellt werden", "befördert werden", "in Rente gehen" }),
+        ("açık iş pozisyonu", "offene Stelle", new[] { "besetzte Stelle", "Ausbildungsplatz", "Praktikumsplatz" }),
+        ("yarı zamanlı çalışmak", "Teilzeit arbeiten", new[] { "Vollzeit arbeiten", "gar nicht arbeiten", "ehrenamtlich arbeiten" }),
+        ("mesleki eğitim", "Berufsausbildung", new[] { "Freizeitkurs", "Sprachkurs", "Musikunterricht" }),
+        ("hedef meslek", "Wunschberuf/Zielberuf", new[] { "aktueller Beruf", "früherer Beruf", "Nebenjob" }),
+        ("iş piyasası", "Arbeitsmarkt", new[] { "Wohnungsmarkt", "Aktienmarkt", "Lebensmittelmarkt" })
+    };
+
+    private static QuizQuestion SchuleUndBerufswelt(Random r)
+    {
+        var d = BerufsweltListe[r.Next(BerufsweltListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Schule, Ausbildung und Berufswelt – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Meslek ve iş dünyasıyla ilgili kelimeler: iş başvurusu, özgeçmiş, iş görüşmesi, maaş, iş tecrübesi."
         };
     }
 }
