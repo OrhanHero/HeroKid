@@ -30,6 +30,11 @@ jobs:
       - name: Unit-Tests ausführen
         run: dotnet test tests/LernTor.Tests/LernTor.Tests.csproj --configuration Release --no-build --verbosity normal
 
+      - name: UI-Smoke-Tests ausführen (XAML-Load + Start der echten exe)
+        # Fängt die XamlParseException-Bug-Klasse (kompiliert sauber, crasht erst beim Laden),
+        # die kein Unit-Test abdecken kann - siehe tests/LernTor.UiTests.
+        run: dotnet test tests/LernTor.UiTests/LernTor.UiTests.csproj --configuration Release --no-build --verbosity normal
+
       - name: Self-contained Windows-Build veröffentlichen
         # Identische Flags wie der dokumentierte Release-Build (docs/BUILD.md), damit das
         # CI-Artefakt wirklich dem entspricht, was auch installiert wird: Single-File +

@@ -129,9 +129,9 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 | Test-Projekt | Tests | Abdeckung |
 |--------------|-------|-----------|
-| `LernTor.Tests` (xUnit) | ~85 | Core (ProgressGate, Scoring), ContentGen (alle 15 Generatoren: Musterlösungen prüfen), News (RSS-Parser RDF/Atom/RSS2, Vereinfachung, Kategorisierung, Glossar, Finanzwissen) |
-| UI-Tests | 0 | WPF-UI-Tests in CI schwer (brauchen Windows + interaktive Session) |
-| Integrationstests | 0 | Manuell auf Windows getestet |
+| `LernTor.Tests` (xUnit) | ~110 | Core (ProgressGate, Scoring, Streaks, Spaced Repetition), ContentGen (alle 15 Generatoren: Musterlösungen prüfen), News (RSS-Parser RDF/Atom/RSS2, FeedCache, Vereinfachung, Kategorisierung, Glossar, Finanzwissen), Data (Repositories gegen echte SQLite-Dateien) |
+| `LernTor.UiTests` (xUnit, net8.0-windows) | ~14 | XAML-Load-Tests (jede View mit App-Ressourcen instanziieren + Layout - fängt die XamlParseException-Klasse) + Prozess-Smoke-Test (echte exe startet, Hauptfenster erscheint, kein Fehlerdialog) - läuft im selben windows-latest-CI-Lauf |
+| Integrationstests | 0 | Manuell auf Windows getestet (siehe docs/PILOT-CHECKLISTE.md) |
 
 **CI**: `.github/workflows/build.yml` baut auf `windows-latest` → Artefakt hochladen → manueller Smoke-Test auf Windows empfohlen.
 

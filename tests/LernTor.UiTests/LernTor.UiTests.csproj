@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- UI-Smoke-Tests: die gefährlichste Bug-Klasse dieses Projekts sind XAML-LAUFZEIT-Fehler
+       (XamlParseException - kompiliert sauber, crasht erst beim Laden, siehe "Hard-won gotchas"
+       in CLAUDE.md), und kein Unit-Test in LernTor.Tests kann sie fangen. Dieses Projekt braucht
+       net8.0-windows + WPF und läuft deshalb (wie LernTor.App selbst) nur auf dem
+       windows-latest-CI-Runner, nicht in der Linux-Entwicklungs-Sandbox. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>LernTor.UiTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <!-- [WpfFact]/[WpfTheory]: führt Tests auf einem STA-Thread mit WPF-Dispatcher aus -
+         Voraussetzung, um WPF-Controls überhaupt instanziieren zu dürfen. -->
+    <PackageReference Include="Xunit.StaFact" Version="1.1.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LernTor.App\LernTor.App.csproj" />
+  </ItemGroup>
+
+</Project>

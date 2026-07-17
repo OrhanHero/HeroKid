@@ -2,6 +2,7 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-17",
   "done": [
+    "UI-Smoke-Tests (tests/LernTor.UiTests, net8.0-windows): XamlLoadTests (jede parameterlose View + App-Ressourcen + Layout) + StartupSmokeTests (echte exe, LERNTOR_SKIP_LOCK=1, Hauptfenster-Check); eigener CI-Step in build.yml",
     "Tages-Zusammenfassung auf dem Freigeschaltet-Bildschirm: Aufgaben heute + Trefferquote (ActivityLog seit Mitternacht) + optionale 🔥-Serie; MainViewModel.BuildResultViewModelAsync",
     "Spaced Repetition: MasteredPromptRepository.RecordOutcomeAsync + ReviewStage/NextDueAt (additive Spalten), SpacedRepetitionSchedule (Core, 7/30/90d), Alt-Eintraege (NextDueAt NULL) sofort faellig; falsche Auffrischung loescht Meisterung -> Fehler-Kartei uebernimmt",
     "Optionale Streaks: StreakCalculator (Core) + AppSettings.StreaksEnabled (Standard aus) + 🔥-Zeile im WelcomeView (ab 2 Tagen) + Eltern-Checkbox; Tests: StreakCalculatorTests",
