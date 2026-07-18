@@ -3,7 +3,7 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Englisch als Fremdsprache, Klasse 6 (Grundlagen) und Klasse 9 (vertieft).</summary>
+/// <summary>Englisch als Fremdsprache, Klasse 6 (Grundlagen), Klasse 7 (Aufbau) und Klasse 9 (vertieft).</summary>
 public sealed class EnglischGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Englisch;
@@ -15,6 +15,11 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             {
                 SimplePresentVsProgressive, IrregularPlurals, QuestionWords,
                 AlltagUndFamilie, SchuleUndGesellschaft, KulturUndTraditionen, NaturUndUmwelt
+            },
+            [GradeLevel.Klasse7] = new List<TopicFactory>
+            {
+                SimplePastVsPastProgressive, GoingToUndWillFuture, ComparativeSuperlative,
+                SomeAnyMuchMany, FreizeitUndReisen, GrossbritannienLandeskunde
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -606,6 +611,228 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Topic = "Kultur und historischer Hintergrund (Klasse-9-Niveau)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Wortschatz zu Kultur und Geschichte: heritage, tradition, colonialism, civil rights movement, independence."
+        };
+    }
+
+    // ----- Klasse 7 -----
+
+    private static readonly (string Satz, string Loesung, string Regel)[] PastProgressiveListe =
+    {
+        ("While I ___ (do) my homework, the phone rang.", "was doing", "Die längere Hintergrundhandlung steht im Past Progressive (was/were + -ing), die kurze Unterbrechung im Simple Past."),
+        ("She ___ (watch) TV when the lights went out.", "was watching", "Laufende Handlung in der Vergangenheit = Past Progressive; das plötzliche Ereignis steht im Simple Past."),
+        ("They ___ (play) football when it started to rain.", "were playing", "Die laufende Handlung (Past Progressive) wird vom Regen (Simple Past) unterbrochen."),
+        ("Yesterday at 8 o'clock, I ___ (have) breakfast.", "was having", "Eine Handlung, die zu einem bestimmten Zeitpunkt in der Vergangenheit gerade lief, steht im Past Progressive."),
+        ("When the teacher came in, the students ___ (talk).", "were talking", "Die Schüler waren mitten im Sprechen (Past Progressive), als der Lehrer hereinkam (Simple Past)."),
+        ("He ___ (ride) his bike when he saw the accident.", "was riding", "Laufende Handlung = Past Progressive; das plötzliche Ereignis (\"saw\") = Simple Past."),
+        ("Last night, I ___ (finish) my homework and went to bed.", "finished", "Zwei nacheinander abgeschlossene Handlungen stehen beide im Simple Past."),
+        ("We ___ (visit) our grandma last weekend.", "visited", "Abgeschlossene Handlung mit Zeitangabe (\"last weekend\") = Simple Past."),
+        ("While mum ___ (cook), dad was setting the table.", "was cooking", "Zwei gleichzeitig laufende Handlungen stehen beide im Past Progressive (while = während)."),
+        ("I ___ (see) a great film yesterday.", "saw", "Abgeschlossene Handlung mit \"yesterday\" = Simple Past; \"see\" ist unregelmäßig: see-saw-seen."),
+        ("The children ___ (sleep) when their parents came home.", "were sleeping", "Die Kinder schliefen gerade (Past Progressive), als die Eltern kamen (Simple Past)."),
+        ("She ___ (break) her leg while she was skiing.", "broke", "Das kurze Ereignis steht im Simple Past (\"broke\"), die laufende Handlung im Past Progressive (\"was skiing\")."),
+        ("At 6 pm yesterday, we ___ (drive) home.", "were driving", "Zu einem genauen Zeitpunkt in der Vergangenheit lief die Handlung gerade - Past Progressive."),
+        ("He ___ (go) to London two years ago.", "went", "Abgeschlossene Handlung mit \"two years ago\" = Simple Past; \"go\" ist unregelmäßig: go-went-gone."),
+        ("While they ___ (wait) for the bus, it began to snow.", "were waiting", "Die Wartesituation läuft (Past Progressive), der Schneefall beginnt plötzlich (Simple Past)."),
+        ("I ___ (read) a book when someone knocked on the door.", "was reading", "Laufende Handlung (Past Progressive) wird durch das Klopfen (Simple Past) unterbrochen."),
+        ("They ___ (buy) a new car last month.", "bought", "Abgeschlossene Handlung mit \"last month\" = Simple Past; \"buy\" ist unregelmäßig: buy-bought-bought."),
+        ("What ___ you ___ (do) at 9 o'clock last night?", "were / doing", "Frage nach einer laufenden Handlung zu einem Zeitpunkt in der Vergangenheit - Past Progressive (were you doing)."),
+        ("The sun ___ (shine) when we left the house.", "was shining", "Hintergrundbeschreibung (Past Progressive), während das Verlassen des Hauses im Simple Past steht."),
+        ("She ___ (write) an email when her computer crashed.", "was writing", "Laufende Handlung = Past Progressive; der Absturz = Simple Past.")
+    };
+
+    private static QuizQuestion SimplePastVsPastProgressive(Random r)
+    {
+        var p = PastProgressiveListe[r.Next(PastProgressiveListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Simple Past vs. Past Progressive", Type = QuestionType.OpenText,
+            Prompt = $"Setze die richtige Form ein: \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Past Progressive (was/were + -ing) für laufende Hintergrundhandlungen, Simple Past für kurze/abgeschlossene Ereignisse. \"While\" deutet oft auf Past Progressive hin."
+        };
+    }
+
+    private static readonly (string Satz, string Loesung, string Regel)[] FutureListe =
+    {
+        ("Look at those clouds! It ___ (rain).", "is going to rain", "Bei einer Vorhersage mit sichtbaren Anzeichen (dunkle Wolken) nutzt man going-to-Future."),
+        ("We ___ (visit) our cousins next weekend. It's all planned.", "are going to visit", "Feste Pläne und Absichten stehen im going-to-Future."),
+        ("I think it ___ (be) sunny tomorrow.", "will be", "Vermutungen mit \"I think\" stehen im will-Future."),
+        ("The phone is ringing. - I ___ (answer) it!", "will answer", "Spontane Entscheidungen im Moment des Sprechens stehen im will-Future."),
+        ("She ___ (study) medicine after school. That's her plan.", "is going to study", "Ein fester Zukunftsplan steht im going-to-Future."),
+        ("Maybe we ___ (win) the match.", "will win", "Unsichere Vermutungen (\"maybe\", \"perhaps\") stehen im will-Future."),
+        ("Careful! You ___ (drop) the glasses!", "are going to drop", "Wenn etwas gleich sichtbar passieren wird, nutzt man going-to-Future."),
+        ("I'm sure he ___ (pass) the test.", "will pass", "Vermutungen mit \"I'm sure\" stehen im will-Future."),
+        ("They ___ (move) to Hamburg next month. They have already found a flat.", "are going to move", "Ein bereits beschlossener Plan steht im going-to-Future."),
+        ("It's cold in here. - I ___ (close) the window.", "will close", "Spontanes Angebot im Moment des Sprechens = will-Future."),
+        ("What ___ you ___ (do) in the summer holidays? Any plans?", "are / going to do", "Frage nach Plänen = going-to-Future (are you going to do)."),
+        ("He ___ (probably/come) to the party.", "will probably come", "\"probably\" zeigt eine Vermutung - will-Future (will probably + Grundform)."),
+        ("Watch out! The dog ___ (bite) you!", "is going to bite", "Sichtbare Anzeichen für ein gleich eintretendes Ereignis = going-to-Future."),
+        ("Don't worry, I ___ (help) you with your bags.", "will help", "Spontanes Hilfsangebot = will-Future."),
+        ("My parents ___ (buy) a new car. They have already chosen one.", "are going to buy", "Beschlossener Plan (schon ausgesucht) = going-to-Future."),
+        ("Perhaps she ___ (call) you later.", "will call", "\"perhaps\" zeigt eine unsichere Vermutung - will-Future."),
+        ("Next year, I ___ (learn) to play the guitar. I've already got one.", "am going to learn", "Fester Vorsatz/Plan = going-to-Future (I am going to + Grundform)."),
+        ("I promise I ___ (not/tell) anyone.", "won't tell", "Versprechen stehen im will-Future; verneint: won't + Grundform."),
+        ("The bus is full. We ___ (not/get) a seat.", "aren't going to get", "Vorhersage aufgrund sichtbarer Anzeichen (voller Bus) = going-to-Future, verneint."),
+        ("She's very good at maths. She ___ (probably/become) an engineer.", "will probably become", "Vermutung über die Zukunft mit \"probably\" = will-Future.")
+    };
+
+    private static QuizQuestion GoingToUndWillFuture(Random r)
+    {
+        var p = FutureListe[r.Next(FutureListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "going-to-Future vs. will-Future", Type = QuestionType.OpenText,
+            Prompt = $"Setze die richtige Zukunftsform ein: \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "going-to-Future für Pläne und sichtbare Anzeichen; will-Future für Vermutungen (I think/maybe/probably), spontane Entscheidungen und Versprechen."
+        };
+    }
+
+    private static readonly (string Satz, string Loesung, string Regel)[] ComparisonListe =
+    {
+        ("A car is ___ (fast) than a bike.", "faster", "Kurze Adjektive bilden den Komparativ mit -er: fast - faster."),
+        ("Mount Everest is ___ (high) mountain in the world.", "the highest", "Der Superlativ kurzer Adjektive: the + Adjektiv + -est (the highest)."),
+        ("This book is ___ (interesting) than that one.", "more interesting", "Lange Adjektive (3+ Silben) bilden den Komparativ mit \"more\": more interesting."),
+        ("She is ___ (good) player in our team.", "the best", "\"good\" steigert unregelmäßig: good - better - the best."),
+        ("Today is ___ (bad) day of the week.", "the worst", "\"bad\" steigert unregelmäßig: bad - worse - the worst."),
+        ("My brother is ___ (old) than me.", "older", "Kurze Adjektive: Komparativ mit -er (older than)."),
+        ("This is ___ (beautiful) beach I have ever seen.", "the most beautiful", "Lange Adjektive bilden den Superlativ mit \"the most\": the most beautiful."),
+        ("Maths is ___ (difficult) than art for me.", "more difficult", "Lange Adjektive: Komparativ mit \"more\" (more difficult than)."),
+        ("A blue whale is ___ (big) animal on Earth.", "the biggest", "Bei kurzen Adjektiven mit Endkonsonant wird dieser verdoppelt: big - bigger - the biggest."),
+        ("This exercise is ___ (easy) than the last one.", "easier", "Adjektive auf -y: y wird zu i + -er (easy - easier)."),
+        ("Winter days are ___ (short) than summer days.", "shorter", "Kurze Adjektive: Komparativ mit -er (shorter than)."),
+        ("He is ___ (happy) boy in the class.", "the happiest", "Adjektive auf -y: y wird zu i + -est (the happiest)."),
+        ("My bag is ___ (heavy) than yours.", "heavier", "Adjektive auf -y: y wird zu i + -er (heavier than)."),
+        ("That was ___ (exciting) film of the year.", "the most exciting", "Lange Adjektive: Superlativ mit \"the most\" (the most exciting)."),
+        ("Gold is ___ (expensive) than silver.", "more expensive", "Lange Adjektive: Komparativ mit \"more\" (more expensive than)."),
+        ("February is ___ (short) month of the year.", "the shortest", "Superlativ kurzer Adjektive: the + -est (the shortest)."),
+        ("Your idea is ___ (good) than mine.", "better", "\"good\" steigert unregelmäßig: good - better - the best."),
+        ("This street is ___ (noisy) than ours.", "noisier", "Adjektive auf -y: y wird zu i + -er (noisier than)."),
+        ("The weather today is ___ (bad) than yesterday.", "worse", "\"bad\" steigert unregelmäßig: bad - worse - the worst."),
+        ("It was ___ (hot) day of the summer.", "the hottest", "Kurze Adjektive mit Endkonsonant: Verdopplung + -est (the hottest).")
+    };
+
+    private static QuizQuestion ComparativeSuperlative(Random r)
+    {
+        var p = ComparisonListe[r.Next(ComparisonListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Steigerung von Adjektiven (Comparison)", Type = QuestionType.OpenText,
+            Prompt = $"Setze die richtige Steigerungsform ein: \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Kurze Adjektive: -er/-est (mit \"the\" beim Superlativ). Lange Adjektive: more/most. Unregelmäßig: good-better-best, bad-worse-worst."
+        };
+    }
+
+    private static readonly (string Satz, string[] Optionen, string Antwort, string Erklaerung)[] QuantifierListe =
+    {
+        ("Is there ___ milk in the fridge?", new[] { "any", "some", "many" }, "any", "In Fragen und Verneinungen nutzt man meist \"any\" (Is there any milk?)."),
+        ("I'd like ___ water, please.", new[] { "some", "any", "many" }, "some", "In Aussagesätzen und höflichen Bitten nutzt man \"some\"."),
+        ("There aren't ___ apples left.", new[] { "any", "some", "much" }, "any", "In Verneinungen (aren't) steht \"any\"."),
+        ("How ___ money do you have?", new[] { "much", "many", "some" }, "much", "\"money\" ist nicht zählbar - deshalb \"how much\"."),
+        ("How ___ friends do you have?", new[] { "many", "much", "any" }, "many", "\"friends\" ist zählbar (Plural) - deshalb \"how many\"."),
+        ("We don't have ___ time.", new[] { "much", "many", "some" }, "much", "\"time\" ist nicht zählbar - \"much time\"."),
+        ("There are ___ books on the shelf.", new[] { "many", "much", "any" }, "many", "\"books\" ist zählbar - \"many books\"."),
+        ("Would you like ___ tea?", new[] { "some", "any", "many" }, "some", "Bei Angeboten (Would you like ...?) nutzt man \"some\", obwohl es eine Frage ist."),
+        ("She doesn't eat ___ sugar.", new[] { "much", "many", "some" }, "much", "\"sugar\" ist nicht zählbar - verneint: not much sugar."),
+        ("Have you got ___ brothers or sisters?", new[] { "any", "some", "much" }, "any", "In normalen Fragen steht \"any\" (Have you got any ...?)."),
+        ("There is too ___ noise in here.", new[] { "much", "many", "any" }, "much", "\"noise\" ist nicht zählbar - \"too much noise\"."),
+        ("There are too ___ cars in the city.", new[] { "many", "much", "some" }, "many", "\"cars\" ist zählbar - \"too many cars\"."),
+        ("I bought ___ new shoes yesterday.", new[] { "some", "any", "much" }, "some", "In positiven Aussagesätzen steht \"some\"."),
+        ("He didn't buy ___ bread.", new[] { "any", "some", "many" }, "any", "In Verneinungen (didn't) steht \"any\"."),
+        ("How ___ homework do we have?", new[] { "much", "many", "any" }, "much", "\"homework\" ist nicht zählbar - \"how much homework\"."),
+        ("There isn't ___ juice left in the bottle.", new[] { "much", "many", "some" }, "much", "\"juice\" ist nicht zählbar - verneint: not much juice."),
+        ("___ people enjoy travelling.", new[] { "Many", "Much", "Any" }, "Many", "\"people\" ist zählbar (Plural) - \"many people\"."),
+        ("Can I have ___ more rice, please?", new[] { "some", "any", "many" }, "some", "Bei höflichen Bitten (Can I have ...?) nutzt man \"some\"."),
+        ("We saw ___ interesting animals at the zoo.", new[] { "some", "any", "much" }, "some", "Positiver Aussagesatz mit zählbarem Nomen - \"some animals\"."),
+        ("Do you have ___ questions?", new[] { "any", "some", "much" }, "any", "In normalen Fragen steht \"any\" (Do you have any questions?).")
+    };
+
+    private static QuizQuestion SomeAnyMuchMany(Random r)
+    {
+        var q = QuantifierListe[r.Next(QuantifierListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "some/any und much/many", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welches Wort passt in die Lücke? \"{q.Satz}\"",
+            Options = q.Optionen, CorrectAnswers = new[] { q.Antwort }, Explanation = q.Erklaerung,
+            HelpHint = "some: Aussagesätze, Angebote, Bitten. any: Fragen und Verneinungen. much: nicht zählbar (money, time). many: zählbar (friends, cars)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FreizeitReisenListe =
+    {
+        ("What do you need to travel to another country?", new[] { "A passport", "A blackboard", "A dishwasher" }, "A passport", "\"passport\" = Reisepass - das wichtigste Dokument für Auslandsreisen."),
+        ("Where do you wait for your plane at the airport?", new[] { "At the gate", "In the kitchen", "At the bus stop" }, "At the gate", "Am \"gate\" (Flugsteig) wartet man auf das Boarding."),
+        ("What is a \"return ticket\"?", new[] { "A ticket for the journey there and back", "A ticket you give back", "A free ticket" }, "A ticket for the journey there and back", "\"return ticket\" = Hin- und Rückfahrkarte."),
+        ("What does \"to go sightseeing\" mean?", new[] { "To visit famous places in a city", "To sleep all day", "To do your homework" }, "To visit famous places in a city", "\"sightseeing\" = Sehenswürdigkeiten besichtigen."),
+        ("Where can you stay overnight on holiday?", new[] { "At a hotel or a youth hostel", "At a supermarket", "At a petrol station" }, "At a hotel or a youth hostel", "\"hotel\" und \"youth hostel\" (Jugendherberge) sind typische Unterkünfte."),
+        ("What do you call the bags you take on a journey?", new[] { "Luggage", "Lettuce", "Furniture" }, "Luggage", "\"luggage\" = Gepäck (nicht zählbar: much luggage)."),
+        ("What does \"to book a room\" mean?", new[] { "To reserve a room in advance", "To read a book in your room", "To paint a room" }, "To reserve a room in advance", "\"to book\" = reservieren/buchen."),
+        ("What is a \"timetable\"?", new[] { "A plan that shows when buses or trains leave", "A table made of wood", "A kind of watch" }, "A plan that shows when buses or trains leave", "\"timetable\" = Fahrplan (oder Stundenplan in der Schule)."),
+        ("What hobby needs a ball and a racket?", new[] { "Tennis", "Swimming", "Chess" }, "Tennis", "Tennis spielt man mit \"racket\" (Schläger) und Ball."),
+        ("What does \"to hang out with friends\" mean?", new[] { "To spend free time with friends", "To hang clothes on a line", "To argue with friends" }, "To spend free time with friends", "\"to hang out\" = Zeit mit Freunden verbringen (Umgangssprache)."),
+        ("Where do you buy a train ticket?", new[] { "At the ticket office or a machine", "At the baker's", "At the hairdresser's" }, "At the ticket office or a machine", "\"ticket office\" = Fahrkartenschalter."),
+        ("What is a \"journey\"?", new[] { "Travelling from one place to another", "A kind of food", "A newspaper" }, "Travelling from one place to another", "\"journey\" = die Reise/Fahrt."),
+        ("What does \"abroad\" mean?", new[] { "In a foreign country", "On a wide street", "In the garden" }, "In a foreign country", "\"abroad\" = im Ausland (to go abroad = ins Ausland gehen)."),
+        ("What do you call a person who travels on a plane?", new[] { "A passenger", "A pedestrian", "A goalkeeper" }, "A passenger", "\"passenger\" = Fahrgast/Passagier."),
+        ("What is \"a sleeping bag\" used for?", new[] { "Sleeping outdoors or when camping", "Carrying books", "Cooking soup" }, "Sleeping outdoors or when camping", "\"sleeping bag\" = Schlafsack, typisch fürs Camping."),
+        ("What does \"to score a goal\" mean?", new[] { "To shoot the ball into the goal", "To lose the game", "To clean the pitch" }, "To shoot the ball into the goal", "\"to score a goal\" = ein Tor schießen."),
+        ("What do you call the place where you can swim indoors?", new[] { "A swimming pool", "A car park", "A library" }, "A swimming pool", "\"(indoor) swimming pool\" = Schwimmbad/Hallenbad."),
+        ("What is a \"day trip\"?", new[] { "A short journey there and back on the same day", "A trip that takes a month", "A kind of breakfast" }, "A short journey there and back on the same day", "\"day trip\" = Tagesausflug."),
+        ("What does \"to miss the bus\" mean?", new[] { "To arrive too late for the bus", "To like the bus very much", "To repair the bus" }, "To arrive too late for the bus", "\"to miss\" = verpassen (I missed the bus = ich habe den Bus verpasst)."),
+        ("What do you call free time activities you do regularly?", new[] { "Hobbies", "Homework", "Chores" }, "Hobbies", "\"hobbies\" = Hobbys, regelmäßige Freizeitbeschäftigungen.")
+    };
+
+    private static QuizQuestion FreizeitUndReisen(Random r)
+    {
+        var f = FreizeitReisenListe[r.Next(FreizeitReisenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Freizeit und Reisen (Wortschatz)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Reise-Wortschatz: passport, luggage, return ticket, youth hostel, timetable, journey, abroad, day trip."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] LandeskundeListe =
+    {
+        ("What is the capital of the United Kingdom?", new[] { "London", "Manchester", "Dublin" }, "London", "London ist die Hauptstadt des Vereinigten Königreichs."),
+        ("Which countries make up Great Britain?", new[] { "England, Scotland and Wales", "England, France and Spain", "England, Ireland and Iceland" }, "England, Scotland and Wales", "Großbritannien besteht aus England, Schottland und Wales; das UK umfasst zusätzlich Nordirland."),
+        ("What is the river that flows through London?", new[] { "The Thames", "The Rhine", "The Seine" }, "The Thames", "Die Themse (the Thames) fließt durch London."),
+        ("What is \"Big Ben\"?", new[] { "The famous bell in the clock tower of the Houses of Parliament", "A famous football player", "A mountain in Scotland" }, "The famous bell in the clock tower of the Houses of Parliament", "\"Big Ben\" ist eigentlich der Name der großen Glocke im Elizabeth Tower."),
+        ("What is the London Underground also called?", new[] { "The Tube", "The Pipe", "The Tunnel Train" }, "The Tube", "Die Londoner U-Bahn heißt umgangssprachlich \"the Tube\"."),
+        ("What is the flag of the United Kingdom called?", new[] { "The Union Jack", "The Stars and Stripes", "The Maple Leaf" }, "The Union Jack", "Die britische Flagge heißt \"Union Jack\"."),
+        ("Who lives in Buckingham Palace?", new[] { "The British King or Queen", "The Prime Minister", "The Mayor of London" }, "The British King or Queen", "Der Buckingham Palace ist die offizielle Londoner Residenz der britischen Monarchie."),
+        ("What do the British traditionally drink in the afternoon?", new[] { "Tea", "Hot lemonade", "Iced coffee" }, "Tea", "Der \"afternoon tea\" ist eine bekannte britische Tradition."),
+        ("What is a \"double-decker\"?", new[] { "A bus with two floors", "A sandwich with two eggs", "A house with two doors" }, "A bus with two floors", "Die roten Doppeldeckerbusse sind ein Wahrzeichen Londons."),
+        ("On which side of the road do people drive in the UK?", new[] { "On the left", "On the right", "In the middle" }, "On the left", "In Großbritannien herrscht Linksverkehr."),
+        ("What is the currency of the United Kingdom?", new[] { "Pound sterling", "Euro", "Dollar" }, "Pound sterling", "Im UK zahlt man mit dem britischen Pfund (pound sterling, £)."),
+        ("What is \"fish and chips\"?", new[] { "A traditional British dish with fried fish and chips", "A card game", "A famous TV show" }, "A traditional British dish with fried fish and chips", "\"Fish and chips\" ist das wohl bekannteste britische Gericht."),
+        ("What is the capital of Scotland?", new[] { "Edinburgh", "Glasgow", "Cardiff" }, "Edinburgh", "Edinburgh ist die Hauptstadt Schottlands, Cardiff die von Wales."),
+        ("What is Stonehenge?", new[] { "A prehistoric stone circle in England", "A castle in London", "A Scottish lake" }, "A prehistoric stone circle in England", "Stonehenge ist ein weltberühmter prähistorischer Steinkreis in Südengland."),
+        ("What is Loch Ness famous for?", new[] { "The legend of a monster living in the lake", "Its beaches", "A famous football stadium" }, "The legend of a monster living in the lake", "\"Nessie\", das Ungeheuer von Loch Ness, ist eine berühmte schottische Legende."),
+        ("What do British pupils usually wear at school?", new[] { "A school uniform", "Sports clothes only", "Whatever they like, there are no rules" }, "A school uniform", "An den meisten britischen Schulen tragen die Schüler Schuluniform."),
+        ("What is the \"Tower of London\"?", new[] { "A historic castle where the Crown Jewels are kept", "The tallest skyscraper in Europe", "A football stadium" }, "A historic castle where the Crown Jewels are kept", "Der Tower of London ist eine historische Festung; dort werden die Kronjuwelen aufbewahrt."),
+        ("Which sport was invented in England?", new[] { "Football (soccer)", "Basketball", "Ice hockey" }, "Football (soccer)", "Die modernen Fußballregeln entstanden im 19. Jahrhundert in England."),
+        ("What is a \"red telephone box\"?", new[] { "A famous British public phone booth", "A post office", "A fire station" }, "A famous British public phone booth", "Die roten Telefonzellen sind ein bekanntes britisches Wahrzeichen."),
+        ("What language is spoken in Wales besides English?", new[] { "Welsh", "Dutch", "Gaelic only" }, "Welsh", "In Wales wird neben Englisch auch Walisisch (Welsh) gesprochen.")
+    };
+
+    private static QuizQuestion GrossbritannienLandeskunde(Random r)
+    {
+        var f = LandeskundeListe[r.Next(LandeskundeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Großbritannien (Landeskunde)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Landeskunde UK: London/Thames/Big Ben/Tube, Union Jack, Linksverkehr, pound sterling, Edinburgh, Stonehenge, Schuluniformen."
         };
     }
 }

@@ -130,17 +130,17 @@ Rahmenlehrplan" weiter unten).
 
 ## Englisch (`EnglischGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Simple Present vs. Present Progressive | Simple Past vs. Present Perfect |
-| Unregelmäßige Pluralformen | Conditional Sentences (Type 1) |
-| Question Words | Passive Voice |
-| Individuum und Lebenswelt: Alltag und Familie | Identität, Lebensentwürfe und Zukunft |
-| Gesellschaft: Schule und Zusammenleben | Gesellschaft, Medien und Vielfalt |
-| Kultur und historischer Hintergrund | Umwelt und Nachhaltigkeit |
-| Natur und Umwelt | Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) |
-| | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
-| | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Simple Present vs. Present Progressive | Simple Past vs. Past Progressive | Simple Past vs. Present Perfect |
+| Unregelmäßige Pluralformen | going-to-Future vs. will-Future | Conditional Sentences (Type 1) |
+| Question Words | Steigerung von Adjektiven (Comparison) | Passive Voice |
+| Individuum und Lebenswelt: Alltag und Familie | some/any und much/many | Identität, Lebensentwürfe und Zukunft |
+| Gesellschaft: Schule und Zusammenleben | Freizeit und Reisen (Wortschatz) | Gesellschaft, Medien und Vielfalt |
+| Kultur und historischer Hintergrund | Großbritannien (Landeskunde) | Umwelt und Nachhaltigkeit |
+| Natur und Umwelt | | Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) |
+| | | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
+| | | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
 
 ## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
 
