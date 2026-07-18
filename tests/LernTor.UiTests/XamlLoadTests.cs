@@ -1,5 +1,4 @@
 using System.Windows;
-using LernTor.App;
 using Xunit;
 
 namespace LernTor.UiTests;
@@ -29,7 +28,9 @@ public sealed class XamlLoadTests
 
         if (Application.Current is null)
         {
-            var app = new App();
+            // Voll qualifiziert: der unqualifizierte Name "App" kollidiert mit dem Namespace
+            // LernTor.App (CS0118).
+            var app = new LernTor.App.App();
             app.InitializeComponent();
         }
 
