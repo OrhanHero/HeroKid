@@ -2,6 +2,9 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-18",
   "done": [
+    "Tipptrainer-Fix (realer Bug): Passed verlangte zusaetzlich 'alle Zeichen korrekt' und ueberschrieb so das Eltern-Preset mit 100% - jetzt zaehlt NUR die Mindestgenauigkeit; Preset-Reihe auf 25/50/75/100 umgestellt (85->100); Tests: TypingPassThresholdTests (UiTests)",
+    "LLM-Native-Fix (realer Bug, 'type initializer LLama.Native.NativeApi'): Single-File-Publish machte llama.dll/ggml*.dll fuer LLamaSharps eigene Pfadsuche unsichtbar - Publish-Target KeepLlamaNativeLibsOutsideSingleFileBundle laesst runtimes/win-x64/native/ als lose Dateien neben der EXE; verstaendliche Fehlermeldung in LocalLlmModelHost; NUTZER-HINWEIS: neue Version installieren noetig",
+    "Laengen-Bias-Audit (Kinder-Exploit 'laengste Antwort ist richtig'): scripts/check-answer-length-bias.py misst pro Generator den Anteil 'richtig = strikt laengste Option' - 13/15 Generatoren bei 70-93% (Erwartung ~33%); OFFEN: Distraktoren generatorweise angleichen, danach Script als CI-Wächter verdrahten",
     "Umfang-Settings im Eltern-Bereich (pro Profil): Aufgaben pro Fach (4/6/8/10), Quiz-Erstversuch (10/15/20/25 Fragen), Quiz-Wiederholung (10/15/20) - ersetzt die festen 6/20/15 in MainViewModel; gleiche Legacy-0-Regel wie die Timer",
     "Ferien-/Pausenmodus (global): AppSettings.PauseUntilDate (ISO-String-Spalte, additiv); bis einschliesslich Datum startet die App ohne Kiosk-Sperre (App.xaml.cs prueft vor Lock), danach automatisch wieder aktiv; DatePicker + Beenden-Button + Aktiv-Hinweis im Eltern-Bereich - Tests: SettingsRepositoryTests",
     "Klasse-7-Sprint Teil 4 (Tuerkisch): 6 Themen im TurkishGenerator (Simdiki zamanin hikayesi, -mis'li gecmis, Deyimler/Atasozleri, Noktalama, Metin turleri, Medya-Wortschatz), je ~20 kuratierte Fragen; OFFEN: die uebrigen 11 Faecher, danach Klasse 8/10",

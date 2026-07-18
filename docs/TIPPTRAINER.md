@@ -32,7 +32,7 @@ Der Trainer besteht aus 11 regulären Lektionen + 1 profil-spezifischer Abschlus
    Zeichen wurde entfernt, um Kinder nicht zu 5-6 Wiederholungen beim 10-Finger-Lernen zu zwingen)
 
 Alle regulären Lektionen verlangen die im Eltern-Bereich pro Profil eingestellte Mindestgenauigkeit
-(`StudentProfile.TypingMinAccuracy`, Presets 25/50/75/85%, Standard 25% - bewusst niedrig angesetzt,
+(`StudentProfile.TypingMinAccuracy`, Presets 25/50/75/100%, Standard 25% - bewusst niedrig angesetzt,
 damit das Weiterkommen nicht am 10-Finger-Erlernen selbst scheitert). `TypingExerciseService.CheckInput()`
 nutzt diesen Wert statt der lesson-eigenen `TypingLesson.MinimumAccuracy` (die weiterhin als Fallback
 dient, falls kein Profil-Wert übergeben wird) - so ist keine neue App-Version nötig, um die Hürde zu

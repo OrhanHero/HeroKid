@@ -129,10 +129,10 @@
                             </MultiBinding>
                         </Button.Tag>
                     </Button>
-                    <Button Content="85%" Style="{StaticResource TabPillButton}" Command="{Binding SetTypingMinAccuracyCommand}" CommandParameter="85">
+                    <Button Content="100%" Style="{StaticResource TabPillButton}" Command="{Binding SetTypingMinAccuracyCommand}" CommandParameter="100">
                         <Button.Tag>
                             <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
-                                <Binding Source="85" />
+                                <Binding Source="100" />
                                 <Binding Path="TypingMinAccuracyPercent" />
                             </MultiBinding>
                         </Button.Tag>

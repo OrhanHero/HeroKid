@@ -16,7 +16,7 @@
 | **App (WPF/MVVM)** | ✅ Fertig | MainVM, alle Views (ProfileSelection, Welcome, News, Exercise, FinalQuiz, Result, ParentSettings), QuestionCard, KI-Chat, TTS (Piper), Lehrer-Import (PDF/Word → KI → Entwürfe), Belohnungen, Wochenbericht |
 | **Localization** | ✅ Fertig | DE/TR, String-Indexer, Live-Switch via `PropertyChanged("Item[]")` |
 | **Local LLM** | ✅ Fertig | LLamaSharp, GGUF-Autodownload (~2-4 GB), 2 Features: Lehrer-Import + KI-Hausaufgaben-Chat |
-| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion (Emirhan ODER Batuhan, je nach Profilname), nur Deutsch/QWERTZ, Mindestgenauigkeit pro Profil im Eltern-Bereich einstellbar (Presets 25/50/75/85%, Standard 25%) |
+| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion (Emirhan ODER Batuhan, je nach Profilname), nur Deutsch/QWERTZ, Mindestgenauigkeit pro Profil im Eltern-Bereich einstellbar (Presets 25/50/75/100%, Standard 25%) |
 
 ---
 

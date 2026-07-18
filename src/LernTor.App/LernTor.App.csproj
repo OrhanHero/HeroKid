@@ -35,4 +35,20 @@
     <PackageReference Include="System.Speech" Version="8.0.0" />
   </ItemGroup>
 
+  <!-- LLamaSharp sucht seine nativen Bibliotheken (llama.dll/ggml*.dll) selbst per Dateipfad unter
+       runtimes/win-x64/native/<variante>/ relativ zur EXE. Im Single-File-Bundle sind sie zwar
+       eingebettet und extrahiert, aber für diese EIGENE Pfadsuche unsichtbar - Folge auf
+       installierten Rechnern: "The type initializer for 'LLama.Native.NativeApi' threw an
+       exception" (realer Bug aus dem Familientest). Daher bleiben genau diese Dateien beim Publish
+       als lose Dateien mit Ordnerstruktur neben der EXE liegen. -->
+  <Target Name="KeepLlamaNativeLibsOutsideSingleFileBundle"
+          AfterTargets="ComputeResolvedFilesToPublishList"
+          Condition="'$(PublishSingleFile)' == 'true'">
+    <ItemGroup>
+      <ResolvedFileToPublish Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').Replace('\','/').Contains('runtimes/win-x64/native/'))">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 </Project>

@@ -78,7 +78,20 @@ public sealed class LocalLlmModelHost : IDisposable
                 GpuLayerCount = 0
             };
 
-            _weights = LLamaWeights.LoadFromFile(modelParams);
+            try
+            {
+                _weights = LLamaWeights.LoadFromFile(modelParams);
+            }
+            catch (TypeInitializationException ex)
+            {
+                // Tritt auf, wenn die native llama.dll nicht gefunden/geladen werden kann (z.B.
+                // ältere Single-File-Installation ohne lose runtimes/-Dateien, siehe
+                // LernTor.App.csproj "KeepLlamaNativeLibsOutsideSingleFileBundle").
+                throw new InvalidOperationException(
+                    "Die lokale KI-Komponente (llama.dll) konnte nicht geladen werden. Bitte die " +
+                    "neueste LernTor-Version installieren; danach muss neben LernTor.exe ein Ordner " +
+                    "\"runtimes\" liegen.", ex);
+            }
             _executor = new StatelessExecutor(_weights, modelParams);
             _loadedModelPath = modelPath;
 

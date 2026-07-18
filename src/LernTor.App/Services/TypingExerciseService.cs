@@ -95,13 +95,14 @@ public sealed class TypingExerciseService
             result.Wpm = (correctChars / 5.0) / minutes;
         }
 
-        // Nutze die profil-spezifische Mindestgenauigkeit, sonst die lesson-spezifische (Default 85%)
+        // Nutze die profil-spezifische Mindestgenauigkeit, sonst die lesson-spezifische (Default 85%).
+        // Bewusst NUR die Genauigkeit: eine frühere Zusatzbedingung ("alle Zeichen korrekt") hat die
+        // Eltern-Einstellung faktisch auf 100% überschrieben - Lektionen galten trotz z.B. 25%-Preset
+        // erst als bestanden, wenn ALLES fehlerfrei getippt war (realer Bug aus dem Familientest).
         double minAccuracy = minAccuracyOverride ?? lesson?.MinimumAccuracy ?? 0.85;
-        result.Passed = result.Accuracy >= minAccuracy && correctChars >= GetMinCharsForLesson(targetText);
+        result.Passed = result.Accuracy >= minAccuracy;
         return result;
     }
-
-    private int GetMinCharsForLesson(string targetText) => targetText.Length; // Vereinfacht: alle Zeichen
 
     /// <summary>
     /// Speichert den Versuch und prüft Freischaltung der nächsten Lektion.
