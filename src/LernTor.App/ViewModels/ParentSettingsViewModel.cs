@@ -293,6 +293,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
             SelectedLlmModel = LocalLlmModelCatalog.Resolve(_settings.LocalLlmModelKey);
             StreaksEnabled = _settings.StreaksEnabled;
+            PauseUntil = _settings.PauseUntilDate is { } pauseUntil
+                ? pauseUntil.ToDateTime(TimeOnly.MinValue)
+                : null;
         }
         finally
         {
@@ -440,6 +443,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         ReadingMinutes = value?.ReadingMinutes ?? StudentProfile.DefaultReadingMinutes;
         NewsSecondsPerArticle = value?.NewsSecondsPerArticle ?? StudentProfile.DefaultNewsSecondsPerArticle;
         ExerciseSecondsPerQuestion = value?.ExerciseSecondsPerQuestion ?? StudentProfile.DefaultExerciseSecondsPerQuestion;
+        ExercisesPerSubject = value?.ExercisesPerSubject ?? StudentProfile.DefaultExercisesPerSubject;
+        QuizQuestionCount = value?.QuizQuestionCount ?? StudentProfile.DefaultQuizQuestionCount;
+        QuizRetryQuestionCount = value?.QuizRetryQuestionCount ?? StudentProfile.DefaultQuizRetryQuestionCount;
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -517,6 +523,55 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         ExerciseSecondsPerQuestion = int.TryParse(seconds, out var parsed) ? parsed : StudentProfile.DefaultExerciseSecondsPerQuestion;
     }
+
+    // --- Umfang pro Profil (Aufgaben pro Fach, Quiz-Längen) - Presets wie oben. ---
+
+    /// <summary>Generierte Übungsaufgaben pro Fach und Tag (Presets 4/6/8/10).</summary>
+    [ObservableProperty]
+    private int exercisesPerSubject = StudentProfile.DefaultExercisesPerSubject;
+
+    /// <summary>Fragenzahl des ersten Abschlussquiz (Presets 10/15/20/25).</summary>
+    [ObservableProperty]
+    private int quizQuestionCount = StudentProfile.DefaultQuizQuestionCount;
+
+    /// <summary>Fragenzahl des Wiederholungs-Quiz (Presets 10/15/20).</summary>
+    [ObservableProperty]
+    private int quizRetryQuestionCount = StudentProfile.DefaultQuizRetryQuestionCount;
+
+    [RelayCommand]
+    private void SetExercisesPerSubject(string count)
+    {
+        ExercisesPerSubject = int.TryParse(count, out var parsed) ? parsed : StudentProfile.DefaultExercisesPerSubject;
+    }
+
+    [RelayCommand]
+    private void SetQuizQuestionCount(string count)
+    {
+        QuizQuestionCount = int.TryParse(count, out var parsed) ? parsed : StudentProfile.DefaultQuizQuestionCount;
+    }
+
+    [RelayCommand]
+    private void SetQuizRetryQuestionCount(string count)
+    {
+        QuizRetryQuestionCount = int.TryParse(count, out var parsed) ? parsed : StudentProfile.DefaultQuizRetryQuestionCount;
+    }
+
+    // --- Ferien-/Pausenmodus (global): bis einschließlich des Datums keine Kiosk-Sperre. ---
+
+    /// <summary>Enddatum des Ferienmodus als DateTime? (DatePicker-freundlich); direkt in
+    /// _settings gespiegelt, damit jeder Speicherpfad den aktuellen Wert persistiert.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsPauseActive))]
+    private DateTime? pauseUntil;
+
+    /// <summary>Zeigt den Aktiv-Hinweis, solange das gesetzte Datum heute oder in der Zukunft liegt.</summary>
+    public bool IsPauseActive => PauseUntil is { } until && until.Date >= DateTime.Today;
+
+    partial void OnPauseUntilChanged(DateTime? value) =>
+        _settings.PauseUntilDate = value is { } d ? DateOnly.FromDateTime(d) : null;
+
+    [RelayCommand]
+    private void ClearPauseUntil() => PauseUntil = null;
 
     private async Task ReloadActivityForSelectedProfileAsync()
     {
@@ -681,7 +736,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             var quizRetryThreshold = QuizRetryThresholdPercent / 100.0;
 
             await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold,
-                ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion);
+                ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion,
+                ExercisesPerSubject, QuizQuestionCount, QuizRetryQuestionCount);
 
             SelectedProfile.TypingMinAccuracy = typingMinAccuracy;
             SelectedProfile.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
@@ -689,6 +745,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             SelectedProfile.ReadingMinutes = ReadingMinutes;
             SelectedProfile.NewsSecondsPerArticle = NewsSecondsPerArticle;
             SelectedProfile.ExerciseSecondsPerQuestion = ExerciseSecondsPerQuestion;
+            SelectedProfile.ExercisesPerSubject = ExercisesPerSubject;
+            SelectedProfile.QuizQuestionCount = QuizQuestionCount;
+            SelectedProfile.QuizRetryQuestionCount = QuizRetryQuestionCount;
         }
 
         RequestClose?.Invoke();

@@ -20,4 +20,7 @@ public sealed class StudentProfileEntity
     public int ReadingMinutes { get; set; } = 5;
     public int NewsSecondsPerArticle { get; set; } = 10;
     public int ExerciseSecondsPerQuestion { get; set; } = 5;
+    public int ExercisesPerSubject { get; set; } = 6;
+    public int QuizQuestionCount { get; set; } = 20;
+    public int QuizRetryQuestionCount { get; set; } = 15;
 }

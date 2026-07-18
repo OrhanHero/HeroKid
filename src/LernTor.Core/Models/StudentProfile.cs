@@ -64,9 +64,30 @@ public sealed class StudentProfile
     /// </summary>
     public int ExerciseSecondsPerQuestion { get; set; } = DefaultExerciseSecondsPerQuestion;
 
+    /// <summary>
+    /// Anzahl generierter Übungsaufgaben pro Fach und Tag, von den Eltern als Preset (4/6/8/10)
+    /// einstellbar - steuert zusammen mit den aktivierten Fächern die Länge der Tagessession.
+    /// </summary>
+    public int ExercisesPerSubject { get; set; } = DefaultExercisesPerSubject;
+
+    /// <summary>
+    /// Zielgröße des ersten Abschlussquiz am Tag, von den Eltern als Preset (10/15/20/25)
+    /// einstellbar - siehe QuizComposer.ComposeFinalQuiz (verteilt über alle aktiven Fächer).
+    /// </summary>
+    public int QuizQuestionCount { get; set; } = DefaultQuizQuestionCount;
+
+    /// <summary>
+    /// Zielgröße des Wiederholungs-Quiz (zweiter Versuch nach Nichtbestehen), von den Eltern als
+    /// Preset (10/15/20) einstellbar - gewichtet auf die schwachen Fächer des ersten Versuchs.
+    /// </summary>
+    public int QuizRetryQuestionCount { get; set; } = DefaultQuizRetryQuestionCount;
+
     public const int DefaultReadingMinutes = 5;
     public const int DefaultNewsSecondsPerArticle = 10;
     public const int DefaultExerciseSecondsPerQuestion = 5;
+    public const int DefaultExercisesPerSubject = 6;
+    public const int DefaultQuizQuestionCount = 20;
+    public const int DefaultQuizRetryQuestionCount = 15;
 
     public const string DefaultAvatar = "🧒";
 

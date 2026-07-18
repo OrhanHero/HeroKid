@@ -236,6 +236,18 @@ public partial class App : Application
 
         if (!shouldSkipKioskLock)
         {
+            // Ferien-/Pausenmodus (Eltern-Bereich): bis einschließlich des gesetzten Datums keine
+            // Kiosk-Sperre - danach reaktiviert sie sich beim nächsten Start von selbst.
+            var settings = await _host.Services.GetRequiredService<SettingsRepository>().LoadAsync();
+            if (settings.PauseUntilDate is { } pauseUntil && DateOnly.FromDateTime(DateTime.Today) <= pauseUntil)
+            {
+                shouldSkipKioskLock = true;
+                AppLog.Info("App", $"Ferienmodus aktiv bis {pauseUntil:yyyy-MM-dd} - Kiosk-Sperre übersprungen");
+            }
+        }
+
+        if (!shouldSkipKioskLock)
+        {
             _host.Services.GetRequiredService<KioskLockService>().Lock();
         }
 

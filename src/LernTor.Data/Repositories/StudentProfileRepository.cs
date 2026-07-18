@@ -121,6 +121,9 @@ public sealed class StudentProfileRepository
         int readingMinutes,
         int newsSecondsPerArticle,
         int exerciseSecondsPerQuestion,
+        int exercisesPerSubject,
+        int quizQuestionCount,
+        int quizRetryQuestionCount,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -135,6 +138,9 @@ public sealed class StudentProfileRepository
         entity.ReadingMinutes = readingMinutes;
         entity.NewsSecondsPerArticle = newsSecondsPerArticle;
         entity.ExerciseSecondsPerQuestion = exerciseSecondsPerQuestion;
+        entity.ExercisesPerSubject = exercisesPerSubject;
+        entity.QuizQuestionCount = quizQuestionCount;
+        entity.QuizRetryQuestionCount = quizRetryQuestionCount;
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -154,6 +160,9 @@ public sealed class StudentProfileRepository
         // entstanden sind, laufen mit den bisherigen fest verdrahteten Standardwerten weiter.
         ReadingMinutes = entity.ReadingMinutes > 0 ? entity.ReadingMinutes : StudentProfile.DefaultReadingMinutes,
         NewsSecondsPerArticle = entity.NewsSecondsPerArticle > 0 ? entity.NewsSecondsPerArticle : StudentProfile.DefaultNewsSecondsPerArticle,
-        ExerciseSecondsPerQuestion = entity.ExerciseSecondsPerQuestion > 0 ? entity.ExerciseSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion
+        ExerciseSecondsPerQuestion = entity.ExerciseSecondsPerQuestion > 0 ? entity.ExerciseSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion,
+        ExercisesPerSubject = entity.ExercisesPerSubject > 0 ? entity.ExercisesPerSubject : StudentProfile.DefaultExercisesPerSubject,
+        QuizQuestionCount = entity.QuizQuestionCount > 0 ? entity.QuizQuestionCount : StudentProfile.DefaultQuizQuestionCount,
+        QuizRetryQuestionCount = entity.QuizRetryQuestionCount > 0 ? entity.QuizRetryQuestionCount : StudentProfile.DefaultQuizRetryQuestionCount
     };
 }

@@ -422,13 +422,11 @@ public sealed partial class MainViewModel : ObservableObject
     /// </summary>
     private static readonly TimeSpan RecentPromptsWindow = TimeSpan.FromDays(21);
 
-    /// <summary>Angestrebte Gesamtfragenzahl des ersten Abschlussquiz-Versuchs am Tag.</summary>
-    private const int InitialQuizTargetQuestions = 20;
-
-    /// <summary>Angestrebte Gesamtfragenzahl bei einer Wiederholung nach nicht bestandenem Quiz -
-    /// bewusst kleiner als der erste Versuch (Wiederholung soll nicht wie eine zusätzliche Strafe
-    /// wirken), aber mit konzentriert vielen Fragen zu den schwachen Fächern.</summary>
-    private const int RetryQuizTargetQuestions = 15;
+    // Die Fragenzahlen (Übungen pro Fach, Quiz-Erstversuch, Quiz-Wiederholung) sind seit der
+    // Eltern-Bereich-Erweiterung pro Profil konfigurierbar - siehe
+    // StudentProfile.ExercisesPerSubject/QuizQuestionCount/QuizRetryQuestionCount
+    // (Standard 6/20/15; die Wiederholung ist bewusst kleiner als der erste Versuch, damit sie
+    // nicht wie eine zusätzliche Strafe wirkt).
 
     /// <summary>
     /// Vereint zwei unabhängige Ausschlussgründe für die Aufgabenauswahl: das 21-Tage-Fenster
@@ -472,7 +470,7 @@ public sealed partial class MainViewModel : ObservableObject
         var grade = CurrentProfile!.GradeLevel;
         var excludedPrompts = await BuildExcludedPromptsAsync();
         var topicWeights = await BuildTopicWeightsAsync(subject);
-        var generated = _quizComposer.GenerateExercises(subject, grade, 6, _random, excludedPrompts, topicWeights);
+        var generated = _quizComposer.GenerateExercises(subject, grade, CurrentProfile!.ExercisesPerSubject, _random, excludedPrompts, topicWeights);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
 
         // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST
@@ -523,11 +521,12 @@ public sealed partial class MainViewModel : ObservableObject
             // 15er-Zielbudget; der Rest füllt ein allgemeines Mini-Quiz über alle aktiven Fächer
             // auf - genau wie beim ersten Versuch passt sich die Fragenzahl je Fach dynamisch an
             // die Anzahl aktiver Fächer an (siehe ComposeFinalQuiz).
-            var perWeakSubjectCount = Math.Max(2, RetryQuizTargetQuestions * 2 / 3 / relevantSubjects.Count);
+            var retryTarget = CurrentProfile!.QuizRetryQuestionCount;
+            var perWeakSubjectCount = Math.Max(2, retryTarget * 2 / 3 / relevantSubjects.Count);
             var retryQuestions = _quizComposer.ComposeRetryExercises(
                 relevantSubjects, grade, _random, countPerSubject: perWeakSubjectCount, recentlySeenPrompts: excludedPrompts);
 
-            var topUpTarget = Math.Max(RetryQuizTargetQuestions - retryQuestions.Count, 1);
+            var topUpTarget = Math.Max(retryTarget - retryQuestions.Count, 1);
             var topUpQuestions = _quizComposer.ComposeFinalQuiz(
                 grade, _random, disabledSubjects, targetTotalQuestions: topUpTarget, recentlySeenPrompts: excludedPrompts);
 
@@ -537,7 +536,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             questions = _quizComposer.ComposeFinalQuiz(
                 grade, _random, disabledSubjects,
-                targetTotalQuestions: InitialQuizTargetQuestions, recentlySeenPrompts: excludedPrompts);
+                targetTotalQuestions: CurrentProfile!.QuizQuestionCount, recentlySeenPrompts: excludedPrompts);
         }
 
         // Eigene (von den Eltern eingetragene) Aufgaben ergänzen additiv - unabhängig vom

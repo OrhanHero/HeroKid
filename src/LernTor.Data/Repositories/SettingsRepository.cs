@@ -31,6 +31,9 @@ public sealed class SettingsRepository
             DisabledSubjects = JsonSerializer.Deserialize<HashSet<Subject>>(entity.DisabledSubjectsJson, JsonOptions.Default) ?? new(),
             HardLockShellReplacementEnabled = entity.HardLockShellReplacementEnabled,
             StreaksEnabled = entity.StreaksEnabled,
+            PauseUntilDate = DateOnly.TryParseExact(entity.PauseUntilDate, "yyyy-MM-dd", out var pauseUntil)
+                ? pauseUntil
+                : null,
             LocalLlmModelPath = entity.LocalLlmModelPath,
             LocalLlmModelKey = entity.LocalLlmModelKey
         };
@@ -51,6 +54,7 @@ public sealed class SettingsRepository
         entity.DisabledSubjectsJson = JsonSerializer.Serialize(settings.DisabledSubjects, JsonOptions.Default);
         entity.HardLockShellReplacementEnabled = settings.HardLockShellReplacementEnabled;
         entity.StreaksEnabled = settings.StreaksEnabled;
+        entity.PauseUntilDate = settings.PauseUntilDate?.ToString("yyyy-MM-dd");
         entity.LocalLlmModelPath = settings.LocalLlmModelPath;
         entity.LocalLlmModelKey = settings.LocalLlmModelKey;
 

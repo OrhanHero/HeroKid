@@ -10,6 +10,10 @@ public sealed class SettingsEntity
     public string DisabledSubjectsJson { get; set; } = "[]";
     public bool HardLockShellReplacementEnabled { get; set; }
     public bool StreaksEnabled { get; set; }
+
+    /// <summary>Ferienmodus-Enddatum als ISO-String (yyyy-MM-dd), null = kein Pausenmodus -
+    /// bewusst kulturneutraler String statt DateOnly (additive Spalte, sortier-/lesbar in SQLite).</summary>
+    public string? PauseUntilDate { get; set; }
     public string? LocalLlmModelPath { get; set; }
     public string? LocalLlmModelKey { get; set; }
 }

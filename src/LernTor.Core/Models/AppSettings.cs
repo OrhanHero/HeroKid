@@ -19,6 +19,11 @@ public sealed class AppSettings
     /// Eltern schalten es explizit ein (siehe StreakCalculator).</summary>
     public bool StreaksEnabled { get; set; } = false;
 
+    /// <summary>Ferien-/Pausenmodus: bis EINSCHLIESSLICH dieses Datums startet die App ohne
+    /// Kiosk-Sperre (Lernen bleibt freiwillig möglich). Nach Ablauf reaktiviert sich die Sperre
+    /// von selbst - Eltern müssen an nichts denken. Null = kein Pausenmodus.</summary>
+    public DateOnly? PauseUntilDate { get; set; }
+
     /// <summary>Pfad zu einer lokalen GGUF-Modelldatei für das lokale LLM (Lehrer-Import + KI-Lernchat,
     /// siehe LernTor.ContentGen.Llm.LocalLlmModelHost). Null/leer = das gewählte Katalog-Modell wird
     /// beim ersten Gebrauch automatisch heruntergeladen; gesetzt hat der Pfad Vorrang.</summary>
