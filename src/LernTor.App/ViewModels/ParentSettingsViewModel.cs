@@ -522,6 +522,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     public ObservableCollection<SubjectReportRowViewModel> ReportRows { get; } = new();
 
+    /// <summary>Themen-Heatmap: die schwächsten Einzel-Themen im Zeitraum (max. 10, mindestens
+    /// 3 Antworten je Thema als Datenbasis) - zeigt Eltern, dass z.B. genau "Brüche" hakt,
+    /// nicht nur pauschal "Mathe".</summary>
+    public ObservableCollection<SubjectReportRowViewModel> TopicReportRows { get; } = new();
+
+    [ObservableProperty]
+    private bool hasTopicReportData;
+
     [ObservableProperty]
     private int reportDays = 7;
 
@@ -544,6 +552,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void RebuildReport()
     {
         ReportRows.Clear();
+        TopicReportRows.Clear();
 
         var loc = LocalizationService.Instance;
         var cutoff = DateTimeOffset.Now - TimeSpan.FromDays(ReportDays);
@@ -552,6 +561,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         HasReportData = answers.Count > 0;
         if (!HasReportData)
         {
+            HasTopicReportData = false;
             ReportLearnedDaysDisplay = string.Empty;
             ReportQuizTrendDisplay = string.Empty;
             return;
@@ -572,6 +582,28 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         foreach (var row in bySubject)
         {
             ReportRows.Add(row);
+        }
+
+        // Themen-Heatmap: nur Themen mit genug Datenbasis (>= 3 Antworten), schwächste zuerst,
+        // maximal 10 Zeilen - Eltern brauchen die Brennpunkte, keine vollständige Themenliste.
+        var weakestTopics = answers
+            .GroupBy(a => (a.Subject, a.Topic))
+            .Where(g => g.Count() >= 3)
+            .Select(g => new SubjectReportRowViewModel
+            {
+                Label = $"{loc[$"Stage_{g.Key.Subject}"]} · {g.Key.Topic}",
+                Correct = g.Count(a => a.WasCorrect),
+                Total = g.Count()
+            })
+            .OrderBy(r => r.Rate)
+            .ThenByDescending(r => r.Total)
+            .Take(10)
+            .ToList();
+
+        HasTopicReportData = weakestTopics.Count > 0;
+        foreach (var row in weakestTopics)
+        {
+            TopicReportRows.Add(row);
         }
 
         var learnedDays = answers.Select(a => DateOnly.FromDateTime(a.Timestamp.LocalDateTime)).Distinct().Count();

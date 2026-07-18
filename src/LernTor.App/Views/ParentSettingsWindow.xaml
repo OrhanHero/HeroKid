@@ -6,6 +6,39 @@
         Width="760" Height="800"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}">
+    <Window.Resources>
+        <!-- Gemeinsame Berichts-Zeile (Label + Ampel-Balken + Quote): genutzt vom Fach-Bericht
+             UND der Themen-Heatmap ("Schwächste Themen"), damit beide identisch aussehen. -->
+        <DataTemplate x:Key="ReportRowTemplate">
+            <Grid Margin="0,3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="240" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Label}" FontSize="13" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" ToolTip="{Binding Label}" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Rate, Mode=OneWay}"
+                             Height="14" BorderThickness="0" Background="{StaticResource ProgressTrackBrush}">
+                    <ProgressBar.Style>
+                        <Style TargetType="ProgressBar">
+                            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStrong}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsWeak}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ProgressBar.Style>
+                </ProgressBar>
+                <TextBlock Grid.Column="2" Text="{Binding RateDisplay}" FontSize="12"
+                           VerticalAlignment="Center" Margin="10,0,0,0" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <Grid Margin="28">
 
         <!-- Login / Ersteinrichtung -->
@@ -202,38 +235,15 @@
                            Visibility="{Binding HasReportData, Converter={StaticResource InverseBoolToVis}}" />
 
                 <StackPanel Visibility="{Binding HasReportData, Converter={StaticResource BoolToVis}}">
-                    <ItemsControl ItemsSource="{Binding ReportRows}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="180" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="120" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Label}" FontSize="13" VerticalAlignment="Center" />
-                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Rate, Mode=OneWay}"
-                                                 Height="14" BorderThickness="0" Background="{StaticResource ProgressTrackBrush}">
-                                        <ProgressBar.Style>
-                                            <Style TargetType="ProgressBar">
-                                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsStrong}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsWeak}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ProgressBar.Style>
-                                    </ProgressBar>
-                                    <TextBlock Grid.Column="2" Text="{Binding RateDisplay}" FontSize="12"
-                                               VerticalAlignment="Center" Margin="10,0,0,0" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding ReportRows}" ItemTemplate="{StaticResource ReportRowTemplate}" />
+
+                    <!-- Themen-Heatmap: die schwächsten EINZEL-Themen (nicht nur Fächer) - damit
+                         Eltern sehen, dass z.B. genau "Brüche" hakt und nicht pauschal "Mathe". -->
+                    <StackPanel Visibility="{Binding HasTopicReportData, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Report_WeakTopics]}"
+                                   Style="{StaticResource BodyText}" FontWeight="Bold" FontSize="14" Margin="0,14,0,4" />
+                        <ItemsControl ItemsSource="{Binding TopicReportRows}" ItemTemplate="{StaticResource ReportRowTemplate}" />
+                    </StackPanel>
 
                     <TextBlock Text="{Binding ReportLearnedDaysDisplay}" Style="{StaticResource BodyText}" FontSize="14" Margin="0,10,0,0" />
                     <TextBlock Text="{Binding ReportQuizTrendDisplay}" Style="{StaticResource BodyText}" FontSize="14" Margin="0,4,0,0" TextWrapping="Wrap" />

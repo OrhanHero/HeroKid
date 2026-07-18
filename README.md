@@ -251,9 +251,11 @@ deshalb bewusst nicht umgesetzt.
   Schema-Abgleich ergänzt fehlende Tabellen/Spalten beim Start).
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
 - **Bericht "Stärken & Schwächen"** (pro Profil, umschaltbar 7/30 Tage): Richtig-Quote je Fach als
-  Ampel-Balken (grün ≥75 %, gelb, rot <50 %), schwächste Fächer zuerst; dazu Lerntage im Zeitraum
-  und der Abschlussquiz-Verlauf. Rechnet komplett aus dem vorhandenen Aktivitätsprotokoll - keine
-  neuen Tabellen.
+  Ampel-Balken (grün ≥75 %, gelb, rot <50 %), schwächste Fächer zuerst; dazu die
+  **Themen-Heatmap „Schwächste Themen"** - die bis zu 10 schwächsten Einzel-Themen (ab 3
+  Antworten Datenbasis), damit sichtbar wird, dass z.B. genau „Brüche" hakt und nicht pauschal
+  „Mathe"; außerdem Lerntage im Zeitraum und der Abschlussquiz-Verlauf. Rechnet komplett aus dem
+  vorhandenen Aktivitätsprotokoll - keine neuen Tabellen.
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
 - "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
   App heraus, mit Ja/Nein-Bestätigung. Vorher ging das nur manuell über das Löschen von `lerntor.db`.

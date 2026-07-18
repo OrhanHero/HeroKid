@@ -339,6 +339,7 @@ public static class Translations
             ["Parent_Difficulty_QuizRetry"] = L("Abschlussquiz: 2. Versuch (Wiederholung)", "Bitirme sınavı: 2. deneme (tekrar)"),
 
             ["Parent_Report_Title"] = L("Bericht: Stärken & Schwächen", "Rapor: Güçlü ve zayıf yönler"),
+            ["Parent_Report_WeakTopics"] = L("Schwächste Themen (Brennpunkte):", "En zayıf konular (odak noktaları):"),
             ["Parent_Report_Days7"] = L("Letzte 7 Tage", "Son 7 gün"),
             ["Parent_Report_Days30"] = L("Letzte 30 Tage", "Son 30 gün"),
             ["Parent_Report_NoData"] = L(
