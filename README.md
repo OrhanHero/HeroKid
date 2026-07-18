@@ -7,7 +7,9 @@ im Eltern-Bereich fest, welche der 15 verfügbaren Fächer für den Tag/das Prof
 sind (siehe "Bereiche deaktivieren").
 
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
-am Berliner Rahmenlehrplan, Klasse 6 und 9 (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
+am Berliner Rahmenlehrplan, Klasse 6 und 9 vollständig, Klasse 7 im Aufbau - Mathematik hat
+bereits einen eigenen Klasse-7-Pool, alle übrigen Fächer wiederholen für Klasse-7-Profile
+übergangsweise ihren Klasse-6-Stoff (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
 
 ## Profile
 

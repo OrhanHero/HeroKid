@@ -10,6 +10,7 @@ public class MathGeneratorTests
 
     [Theory]
     [InlineData(GradeLevel.Klasse6)]
+    [InlineData(GradeLevel.Klasse7)]
     [InlineData(GradeLevel.Klasse9)]
     public void Generate_ReturnsRequestedCount(GradeLevel grade)
     {
@@ -26,6 +27,7 @@ public class MathGeneratorTests
         // Für jede generierte Frage muss die eigene "richtige" Antwort auch als richtig erkannt werden.
         var random = new Random(1234);
         var questions = _generator.Generate(GradeLevel.Klasse6, 50, random)
+            .Concat(_generator.Generate(GradeLevel.Klasse7, 50, random))
             .Concat(_generator.Generate(GradeLevel.Klasse9, 50, random));
 
         foreach (var question in questions)
@@ -48,10 +50,33 @@ public class MathGeneratorTests
     }
 
     [Fact]
-    public void Generate_UnknownGrade_ReturnsEmpty()
+    public void Generate_UnbekannteHoehereStufe_faellt_auf_die_naechstniedrigere_zurueck()
     {
-        // Simuliert eine Klassenstufe ohne konfigurierte Themen (defensive Prüfung der Basisklasse).
-        var questions = _generator.Generate((GradeLevel)999, 5, new Random());
-        Assert.Empty(questions);
+        // Übergangsregel der Basisklasse: eine Stufe ohne eigenen Themenpool nutzt die
+        // nächstniedrigere vorhandene Stufe, statt gar nichts zu liefern (siehe
+        // ExerciseGeneratorBase.Generate) - hier fällt die Fantasie-Stufe auf Klasse 9 zurück.
+        var questions = _generator.Generate((GradeLevel)999, 5, new Random(7));
+
+        Assert.Equal(5, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse9, q.GradeLevel));
+    }
+
+    [Fact]
+    public void Generate_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
+    {
+        var questions = _generator.Generate(GradeLevel.Klasse7, 9, new Random(7));
+
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+    }
+
+    [Fact]
+    public void Fach_ohne_Klasse7_Pool_faellt_auf_Klasse6_zurueck()
+    {
+        // GermanGenerator hat (noch) keinen Klasse-7-Pool - die Übergangsregel liefert dann
+        // Klasse-6-Aufgaben (Wiederholung des zuletzt Gelernten) statt das Fach zu überspringen.
+        var questions = new GermanGenerator().Generate(GradeLevel.Klasse7, 5, new Random(7));
+
+        Assert.Equal(5, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse6, q.GradeLevel));
     }
 }

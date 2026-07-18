@@ -30,6 +30,18 @@ public sealed class MathGenerator : ExerciseGeneratorBase
                 Kongruenzabbildungen,
                 Kombinatorik
             },
+            [GradeLevel.Klasse7] = new List<TopicFactory>
+            {
+                RationaleZahlenRechnen,
+                ProzentwertBerechnen,
+                EinfacheZinsen,
+                TermeZusammenfassen,
+                EinfacheGleichungen,
+                DreisatzProportional,
+                WinkelBerechnen,
+                FlaechenVielecke,
+                WahrscheinlichkeitUrne
+            },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
                 LineareGleichung,
@@ -810,6 +822,293 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { differenz.ToString() },
             Explanation = $"Bei gleicher Basis werden bei der Division die Exponenten subtrahiert: {basis}^{expGross} : {basis}^{expKlein} = {basis}^({expGross}-{expKlein}) = {basis}^{differenz}.",
             HelpHint = "Potenzgesetz: a^m : a^n = a^(m-n) (gleiche Basis: Exponenten subtrahieren)."
+        };
+    }
+
+    // ============ Klasse 7 (Berliner RLP Sek I, Doppeljahrgang 7/8) ============
+
+    private static QuizQuestion RationaleZahlenRechnen(Random r)
+    {
+        int a = r.Next(-12, 13);
+        int b = r.Next(-12, 13);
+        while (a == 0) a = r.Next(-12, 13);
+        while (b == 0) b = r.Next(-12, 13);
+
+        int op = r.Next(3);
+        (string symbol, int ergebnis) = op switch
+        {
+            0 => ("+", a + b),
+            1 => ("-", a - b),
+            _ => ("·", a * b)
+        };
+        string bText = b < 0 ? $"({b})" : b.ToString();
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Rationale Zahlen",
+            Type = QuestionType.OpenText,
+            Prompt = $"Berechne: {a} {symbol} {bText} = ?",
+            CorrectAnswers = new[] { ergebnis.ToString() },
+            Explanation = op switch
+            {
+                0 => $"{a} + {bText}: auf der Zahlengeraden von {a} um {Math.Abs(b)} nach {(b > 0 ? "rechts" : "links")} = {ergebnis}.",
+                1 => $"{a} - {bText}: Minus einer negativen Zahl ist Plus bzw. auf der Zahlengeraden nach links gehen - Ergebnis {ergebnis}.",
+                _ => $"{a} · {bText}: Beträge multiplizieren ({Math.Abs(a)}·{Math.Abs(b)}={Math.Abs(ergebnis)}); {(Math.Sign(a) * Math.Sign(b) > 0 ? "gleiche Vorzeichen → Plus" : "verschiedene Vorzeichen → Minus")} = {ergebnis}."
+            },
+            HelpHint = "Vorzeichenregeln: Minus mal Minus = Plus, Minus mal Plus = Minus. Beim Addieren/Subtrahieren hilft die Zahlengerade."
+        };
+    }
+
+    private static QuizQuestion ProzentwertBerechnen(Random r)
+    {
+        int[] saetze = { 5, 10, 15, 20, 25, 30, 40, 50, 60, 75 };
+        int prozentsatz = saetze[r.Next(saetze.Length)];
+        int grundwert = r.Next(2, 21) * 20; // Vielfaches von 20 → Ergebnis mit 5er-Sätzen immer ganzzahlig
+        int prozentwert = grundwert * prozentsatz / 100;
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Prozentrechnung",
+            Type = QuestionType.OpenText,
+            Prompt = $"Eine Jacke kostet {grundwert} €. Sie ist um {prozentsatz}% reduziert. Wie viel Euro sparst du? (nur die Zahl)",
+            CorrectAnswers = new[] { prozentwert.ToString() },
+            Explanation = $"Prozentwert = Grundwert · Prozentsatz : 100 = {grundwert} · {prozentsatz} : 100 = {prozentwert} €.",
+            HelpHint = "Prozentwert = Grundwert · Prozentsatz : 100. Tipp: 10% sind ein Zehntel des Grundwerts."
+        };
+    }
+
+    private static QuizQuestion EinfacheZinsen(Random r)
+    {
+        int[] kapitale = { 200, 400, 500, 800, 1000, 1500, 2000, 2500 };
+        int kapital = kapitale[r.Next(kapitale.Length)];
+        int zinssatz = r.Next(2, 6);
+        int zinsen = kapital * zinssatz / 100;
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Zinsrechnung (einfach)",
+            Type = QuestionType.OpenText,
+            Prompt = $"Du legst {kapital} € für ein Jahr zu {zinssatz}% Zinsen an. Wie viel Euro Zinsen bekommst du nach einem Jahr? (nur die Zahl)",
+            CorrectAnswers = new[] { zinsen.ToString() },
+            Explanation = $"Zinsen = Kapital · Zinssatz : 100 = {kapital} · {zinssatz} : 100 = {zinsen} €.",
+            HelpHint = "Zinsen für ein Jahr = Kapital · Zinssatz : 100 - das ist Prozentrechnung mit Geld."
+        };
+    }
+
+    private static QuizQuestion TermeZusammenfassen(Random r)
+    {
+        int a = r.Next(2, 10);
+        int b = r.Next(2, 10);
+        int c = r.Next(1, Math.Min(a + b, 9));
+        int ergebnis = a + b - c;
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Terme zusammenfassen",
+            Type = QuestionType.OpenText,
+            Prompt = $"Fasse zusammen: {a}x + {b}x - {c}x. Wie viele x bleiben übrig? (nur die Zahl vor dem x)",
+            CorrectAnswers = new[] { ergebnis.ToString() },
+            Explanation = $"Gleichartige Terme werden über ihre Koeffizienten zusammengefasst: {a} + {b} - {c} = {ergebnis}, also {ergebnis}x.",
+            HelpHint = "Nur die Zahlen vor dem x verrechnen (Koeffizienten) - das x bleibt stehen."
+        };
+    }
+
+    private static QuizQuestion EinfacheGleichungen(Random r)
+    {
+        int x = r.Next(2, 13);
+        int a = r.Next(2, 7);
+        int b = r.Next(1, 21);
+        int c = a * x + b;
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Einfache Gleichungen",
+            Type = QuestionType.OpenText,
+            Prompt = $"Löse die Gleichung: {a}x + {b} = {c}. Wie groß ist x?",
+            CorrectAnswers = new[] { x.ToString() },
+            Explanation = $"Beide Seiten minus {b}: {a}x = {c - b}. Beide Seiten durch {a}: x = {x}. Probe: {a}·{x} + {b} = {c} ✓",
+            HelpHint = "Erst die Zahl ohne x auf die andere Seite bringen (minus rechnen), dann durch die Zahl vor dem x teilen."
+        };
+    }
+
+    private static QuizQuestion DreisatzProportional(Random r)
+    {
+        int einzelpreis = r.Next(2, 7);
+        int menge1 = r.Next(2, 6);
+        int menge2 = r.Next(menge1 + 1, 13);
+        int preis1 = einzelpreis * menge1;
+        int preis2 = einzelpreis * menge2;
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Zuordnungen und Dreisatz",
+            Type = QuestionType.OpenText,
+            Prompt = $"{menge1} kg Äpfel kosten {preis1} €. Wie viel Euro kosten {menge2} kg? (nur die Zahl)",
+            CorrectAnswers = new[] { preis2.ToString() },
+            Explanation = $"Dreisatz: 1 kg kostet {preis1} : {menge1} = {einzelpreis} €. Also kosten {menge2} kg: {menge2} · {einzelpreis} = {preis2} €.",
+            HelpHint = "Dreisatz bei proportionalen Zuordnungen: erst auf 1 Einheit herunterrechnen (teilen), dann auf die gesuchte Menge hochrechnen (malnehmen)."
+        };
+    }
+
+    private static QuizQuestion WinkelBerechnen(Random r)
+    {
+        int variante = r.Next(3);
+
+        if (variante == 0)
+        {
+            int alpha = r.Next(30, 91);
+            int beta = r.Next(30, Math.Min(180 - alpha - 10, 100));
+            int gamma = 180 - alpha - beta;
+
+            return new QuizQuestion
+            {
+                Id = NewId(),
+                Subject = Subject.Mathematik,
+                GradeLevel = GradeLevel.Klasse7,
+                Topic = "Winkel",
+                Type = QuestionType.OpenText,
+                Prompt = $"In einem Dreieck sind zwei Winkel bekannt: α = {alpha}° und β = {beta}°. Wie groß ist der dritte Winkel γ in Grad? (nur die Zahl)",
+                CorrectAnswers = new[] { gamma.ToString() },
+                Explanation = $"Die Winkelsumme im Dreieck beträgt 180°: γ = 180° - {alpha}° - {beta}° = {gamma}°.",
+                HelpHint = "Winkelsumme im Dreieck: α + β + γ = 180°."
+            };
+        }
+
+        if (variante == 1)
+        {
+            int alpha = r.Next(20, 161);
+            int neben = 180 - alpha;
+
+            return new QuizQuestion
+            {
+                Id = NewId(),
+                Subject = Subject.Mathematik,
+                GradeLevel = GradeLevel.Klasse7,
+                Topic = "Winkel",
+                Type = QuestionType.OpenText,
+                Prompt = $"Zwei Geraden schneiden sich. Ein Winkel beträgt {alpha}°. Wie groß ist sein Nebenwinkel in Grad? (nur die Zahl)",
+                CorrectAnswers = new[] { neben.ToString() },
+                Explanation = $"Nebenwinkel ergänzen sich zu 180°: 180° - {alpha}° = {neben}°.",
+                HelpHint = "Nebenwinkel liegen auf einer Geraden nebeneinander und ergeben zusammen 180°."
+            };
+        }
+
+        int winkel = r.Next(20, 161);
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Winkel",
+            Type = QuestionType.OpenText,
+            Prompt = $"Zwei Geraden schneiden sich. Ein Winkel beträgt {winkel}°. Wie groß ist sein Scheitelwinkel in Grad? (nur die Zahl)",
+            CorrectAnswers = new[] { winkel.ToString() },
+            Explanation = $"Scheitelwinkel liegen sich am Schnittpunkt gegenüber und sind immer gleich groß: {winkel}°.",
+            HelpHint = "Scheitelwinkel liegen sich gegenüber und sind IMMER gleich groß."
+        };
+    }
+
+    private static QuizQuestion FlaechenVielecke(Random r)
+    {
+        int variante = r.Next(3);
+
+        if (variante == 0)
+        {
+            int grundseite = r.Next(2, 13) * 2; // gerade → Fläche ganzzahlig
+            int hoehe = r.Next(2, 11);
+            int flaeche = grundseite * hoehe / 2;
+
+            return new QuizQuestion
+            {
+                Id = NewId(),
+                Subject = Subject.Mathematik,
+                GradeLevel = GradeLevel.Klasse7,
+                Topic = "Flächen von Vielecken",
+                Type = QuestionType.OpenText,
+                Prompt = $"Ein Dreieck hat die Grundseite g = {grundseite} cm und die Höhe h = {hoehe} cm. Wie groß ist sein Flächeninhalt in cm²? (nur die Zahl)",
+                CorrectAnswers = new[] { flaeche.ToString() },
+                Explanation = $"A = g · h : 2 = {grundseite} · {hoehe} : 2 = {flaeche} cm².",
+                HelpHint = "Dreiecksfläche: A = Grundseite · Höhe : 2."
+            };
+        }
+
+        if (variante == 1)
+        {
+            int grundseite = r.Next(3, 13);
+            int hoehe = r.Next(2, 11);
+            int flaeche = grundseite * hoehe;
+
+            return new QuizQuestion
+            {
+                Id = NewId(),
+                Subject = Subject.Mathematik,
+                GradeLevel = GradeLevel.Klasse7,
+                Topic = "Flächen von Vielecken",
+                Type = QuestionType.OpenText,
+                Prompt = $"Ein Parallelogramm hat die Grundseite g = {grundseite} cm und die Höhe h = {hoehe} cm. Wie groß ist sein Flächeninhalt in cm²? (nur die Zahl)",
+                CorrectAnswers = new[] { flaeche.ToString() },
+                Explanation = $"A = g · h = {grundseite} · {hoehe} = {flaeche} cm².",
+                HelpHint = "Parallelogrammfläche: A = Grundseite · Höhe (nicht die schräge Seite!)."
+            };
+        }
+
+        int a = r.Next(3, 11);
+        int c = a + r.Next(1, 6);
+        if ((a + c) % 2 != 0) c++; // Summe gerade → Fläche ganzzahlig
+        int h = r.Next(2, 9);
+        int trapezflaeche = (a + c) * h / 2;
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Flächen von Vielecken",
+            Type = QuestionType.OpenText,
+            Prompt = $"Ein Trapez hat die parallelen Seiten a = {a} cm und c = {c} cm sowie die Höhe h = {h} cm. Wie groß ist sein Flächeninhalt in cm²? (nur die Zahl)",
+            CorrectAnswers = new[] { trapezflaeche.ToString() },
+            Explanation = $"A = (a + c) : 2 · h = ({a} + {c}) : 2 · {h} = {(a + c) / 2} · {h} = {trapezflaeche} cm².",
+            HelpHint = "Trapezfläche: Mittelwert der parallelen Seiten mal Höhe: A = (a + c) : 2 · h."
+        };
+    }
+
+    private static QuizQuestion WahrscheinlichkeitUrne(Random r)
+    {
+        int rote = r.Next(1, 7);
+        int blaue = r.Next(1, 7);
+        var (z, n) = Reduce(rote, rote + blaue);
+        string ergebnis = n == 1 ? $"{z}" : $"{z}/{n}";
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse7,
+            Topic = "Wahrscheinlichkeit (einstufig)",
+            Type = QuestionType.OpenText,
+            Prompt = $"In einer Urne liegen {rote} rote und {blaue} blaue Kugeln. Du ziehst eine Kugel, ohne hinzusehen. " +
+                     $"Wie groß ist die Wahrscheinlichkeit für Rot? (gekürzter Bruch als z/n oder ganze Zahl)",
+            CorrectAnswers = new[] { ergebnis },
+            Explanation = $"P(Rot) = günstige : mögliche Ergebnisse = {rote} : {rote + blaue} = {ergebnis} (gekürzt).",
+            HelpHint = "Wahrscheinlichkeit = Anzahl günstige Ergebnisse geteilt durch Anzahl aller möglichen Ergebnisse."
         };
     }
 }

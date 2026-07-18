@@ -39,8 +39,35 @@ public sealed partial class ProfileSelectionViewModel : ObservableObject
     [ObservableProperty]
     private string newProfileClassLabel = string.Empty;
 
+    /// <summary>Klassenstufe des neuen Profils. Die drei Bool-Spiegel darunter existieren nur,
+    /// damit die RadioButtons im XAML mit schlichtem Two-Way-IsChecked auskommen.</summary>
     [ObservableProperty]
-    private bool newProfileIsGrade9;
+    private GradeLevel newProfileGrade = GradeLevel.Klasse6;
+
+    public bool NewProfileIsGrade6
+    {
+        get => NewProfileGrade == GradeLevel.Klasse6;
+        set { if (value) NewProfileGrade = GradeLevel.Klasse6; }
+    }
+
+    public bool NewProfileIsGrade7
+    {
+        get => NewProfileGrade == GradeLevel.Klasse7;
+        set { if (value) NewProfileGrade = GradeLevel.Klasse7; }
+    }
+
+    public bool NewProfileIsGrade9
+    {
+        get => NewProfileGrade == GradeLevel.Klasse9;
+        set { if (value) NewProfileGrade = GradeLevel.Klasse9; }
+    }
+
+    partial void OnNewProfileGradeChanged(GradeLevel value)
+    {
+        OnPropertyChanged(nameof(NewProfileIsGrade6));
+        OnPropertyChanged(nameof(NewProfileIsGrade7));
+        OnPropertyChanged(nameof(NewProfileIsGrade9));
+    }
 
     [ObservableProperty]
     private string selectedAvatar = StudentProfile.DefaultAvatar;
@@ -89,7 +116,7 @@ public sealed partial class ProfileSelectionViewModel : ObservableObject
         NewProfileName = string.Empty;
         NewProfileAge = string.Empty;
         NewProfileClassLabel = string.Empty;
-        NewProfileIsGrade9 = false;
+        NewProfileGrade = GradeLevel.Klasse6;
         SelectedAvatar = StudentProfile.DefaultAvatar;
         ErrorMessage = string.Empty;
         IsCreatingNewProfile = true;
@@ -111,7 +138,7 @@ public sealed partial class ProfileSelectionViewModel : ObservableObject
         }
 
         int? age = int.TryParse(NewProfileAge, out var parsedAge) ? parsedAge : null;
-        var grade = NewProfileIsGrade9 ? GradeLevel.Klasse9 : GradeLevel.Klasse6;
+        var grade = NewProfileGrade;
         var classLabel = string.IsNullOrWhiteSpace(NewProfileClassLabel) ? null : NewProfileClassLabel.Trim();
 
         var profile = await _profileRepo.CreateAsync(NewProfileName.Trim(), age, classLabel, grade, SelectedAvatar);

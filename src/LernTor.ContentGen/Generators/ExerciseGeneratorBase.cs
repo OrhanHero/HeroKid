@@ -17,7 +17,29 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
     {
         if (!TopicsByGrade.TryGetValue(grade, out var topics) || topics.Count == 0)
         {
-            return Array.Empty<QuizQuestion>();
+            // Übergangsregel für neu eingeführte Klassenstufen (z.B. Klasse 7, solange ein Fach
+            // noch keinen eigenen Themenpool dafür hat): statt GAR keiner Aufgabe (das Fach würde
+            // sonst kommentarlos übersprungen) auf die nächstniedrigere vorhandene Stufe
+            // zurückfallen - Wiederholung des zuletzt Gelernten. Gibt es keine niedrigere,
+            // die niedrigste vorhandene Stufe insgesamt.
+            var fallbackGrade = TopicsByGrade
+                .Where(entry => entry.Value.Count > 0)
+                .Select(entry => entry.Key)
+                .OrderByDescending(g => g)
+                .Cast<GradeLevel?>()
+                .FirstOrDefault(g => g < grade)
+                ?? TopicsByGrade
+                    .Where(entry => entry.Value.Count > 0)
+                    .Select(entry => (GradeLevel?)entry.Key)
+                    .OrderBy(g => g)
+                    .FirstOrDefault();
+
+            if (fallbackGrade is null)
+            {
+                return Array.Empty<QuizQuestion>();
+            }
+
+            topics = TopicsByGrade[fallbackGrade.Value];
         }
 
         var questions = new List<QuizQuestion>(count);

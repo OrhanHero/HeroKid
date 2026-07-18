@@ -23,22 +23,28 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## Mathematik (`MathGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Bruchrechnung – Addition | Lineare Gleichungen |
-| Bruchrechnung – Multiplikation | Lineare Funktionen |
-| Prozentrechnung – Prozentwert | Quadratische Gleichungen (pq-Formel) |
-| Negative Zahlen | Satz des Pythagoras |
-| Flächen- und Umfangsberechnung | Zinsrechnung |
-| Maßstab | Binomische Formeln |
-| Wahrscheinlichkeit bei Zufallsexperimenten | Mittelwert und Median (Statistik) |
-| Volumen von Quadern | Trigonometrie im rechtwinkligen Dreieck |
-| Bruch-Dezimalzahl-Umwandlung | Satz des Thales |
-| Direkt proportionale Zuordnungen | Volumen von Pyramide, Kegel und Kugel |
-| Kongruenzabbildungen | Lineare Gleichungssysteme |
-| Kombinatorik (systematisches Zählen) | Quadratische Funktionen (Scheitelpunkt) |
-| | Exponentielles Wachstum |
-| | Potenzgesetze |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Bruchrechnung – Addition | Rationale Zahlen | Lineare Gleichungen |
+| Bruchrechnung – Multiplikation | Prozentrechnung | Lineare Funktionen |
+| Prozentrechnung – Prozentwert | Zinsrechnung (einfach) | Quadratische Gleichungen (pq-Formel) |
+| Negative Zahlen | Terme zusammenfassen | Satz des Pythagoras |
+| Flächen- und Umfangsberechnung | Einfache Gleichungen | Zinsrechnung |
+| Maßstab | Zuordnungen und Dreisatz | Binomische Formeln |
+| Wahrscheinlichkeit bei Zufallsexperimenten | Winkel (Winkelsumme, Neben-/Scheitelwinkel) | Mittelwert und Median (Statistik) |
+| Volumen von Quadern | Flächen von Vielecken (Dreieck/Parallelogramm/Trapez) | Trigonometrie im rechtwinkligen Dreieck |
+| Bruch-Dezimalzahl-Umwandlung | Wahrscheinlichkeit (einstufig, Urne) | Satz des Thales |
+| Direkt proportionale Zuordnungen | | Volumen von Pyramide, Kegel und Kugel |
+| Kongruenzabbildungen | | Lineare Gleichungssysteme |
+| Kombinatorik (systematisches Zählen) | | Quadratische Funktionen (Scheitelpunkt) |
+| | | Exponentielles Wachstum |
+| | | Potenzgesetze |
+
+> **Klasse 7 (neu, im Aufbau):** Mathematik hat als erstes Fach einen eigenen Klasse-7-Pool
+> (9 generative Themen nach RLP Sek I, Doppeljahrgang 7/8). Alle anderen Fächer fallen für
+> Klasse-7-Profile übergangsweise auf ihren Klasse-6-Pool zurück (Wiederholung des zuletzt
+> Gelernten, siehe `ExerciseGeneratorBase.Generate`) - der Klasse-7-Content wird Fach für Fach
+> ergänzt. News-Vereinfachung behandelt Klasse 7 wie Klasse 9 (mild vereinfacht).
 
 ## Deutsch (`GermanGenerator.cs`)
 
