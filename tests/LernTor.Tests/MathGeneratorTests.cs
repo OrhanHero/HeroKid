@@ -72,11 +72,20 @@ public class MathGeneratorTests
     [Fact]
     public void Fach_ohne_Klasse7_Pool_faellt_auf_Klasse6_zurueck()
     {
-        // GermanGenerator hat (noch) keinen Klasse-7-Pool - die Übergangsregel liefert dann
+        // MusikGenerator hat (noch) keinen Klasse-7-Pool - die Übergangsregel liefert dann
         // Klasse-6-Aufgaben (Wiederholung des zuletzt Gelernten) statt das Fach zu überspringen.
-        var questions = new GermanGenerator().Generate(GradeLevel.Klasse7, 5, new Random(7));
+        var questions = new MusikGenerator().Generate(GradeLevel.Klasse7, 5, new Random(7));
 
         Assert.Equal(5, questions.Count);
         Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse6, q.GradeLevel));
+    }
+
+    [Fact]
+    public void Deutsch_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
+    {
+        var questions = new GermanGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));
+
+        Assert.Equal(12, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
 }

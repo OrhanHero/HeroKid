@@ -1,8 +1,9 @@
 {
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
-  "updated": "2026-07-17",
+  "updated": "2026-07-18",
   "done": [
-    "Klasse-7-Sprint Teil 1: GradeLevel.Klasse7 (=7, int-persistiert, sicher), Uebergangsregel in ExerciseGeneratorBase (Fach ohne Pool -> naechstniedrigere Stufe), MathGenerator 9 generative Klasse-7-Themen, Profil-Anlage mit 3 Klassenstufen; OFFEN: Klasse-7-Pools fuer die uebrigen 14 Faecher, danach Klasse 8/10",
+    "Klasse-7-Sprint Teil 2 (Deutsch): 6 Themen im GermanGenerator (Konjunktiv/indirekte Rede, Adverbialsaetze, Sprachliche Bilder, Inhaltsangabe, Argumentieren, Kurzgeschichten), je ~20 kuratierte Fragen; Fallback-Test auf MusikGenerator umgestellt; OFFEN: Englisch als naechstes, dann die uebrigen 12 Faecher, danach Klasse 8/10",
+    "Klasse-7-Sprint Teil 1 (CI-verifiziert f11b960): GradeLevel.Klasse7 (=7, int-persistiert, sicher), Uebergangsregel in ExerciseGeneratorBase (Fach ohne Pool -> naechstniedrigere Stufe), MathGenerator 9 generative Klasse-7-Themen, Profil-Anlage mit 3 Klassenstufen",
     "Themen-Heatmap im Eltern-Bericht: bis zu 10 schwaechste Einzel-Themen (>=3 Antworten), gemeinsames ReportRowTemplate (Window.Resources) fuer Fach- und Themen-Zeilen",
     "Anti-Durchklick: nach falscher Antwort Pflicht-Button 'Erklaerung gelesen' (QuestionAnswerViewModel.requireExplanationAcknowledgment, nur Uebungsteil; Quiz bewusst frei) bevor Weiter freigeschaltet wird",
     "Adaptive Uebungsauswahl: AdaptiveTopicWeighting (Core, 1.0-3.0 nach Fehlerquote, min 3 Antworten) + Rejection-Sampling in ExerciseGeneratorBase.Generate (neuer optionaler topicWeights-Param) + MainViewModel.BuildTopicWeightsAsync (30-Tage-Fenster)",

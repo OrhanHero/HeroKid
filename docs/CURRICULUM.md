@@ -48,23 +48,23 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## Deutsch (`GermanGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Wortarten | Aktiv und Passiv |
-| Zeitformen (Tempus) | Satzgefüge und Konjunktionen |
-| Satzglieder | Kommasetzung |
-| Groß- und Kleinschreibung | "dass" oder "das" |
-| Steigerung von Adjektiven | Wortarten (vertieft) |
-| Satzarten | Textsorten unterscheiden |
-| Wortbildung | Aufbau eines Dramas |
-| Balladen und Jugendbücher | Figurencharakterisierung |
-| Sach- und Gebrauchstexte auswerten | Argumentation und Quellenkritik |
-| Texte in medialer Form (Wiki, E-Mail, TV) | Filmanalyse |
-| Schreibformen | Rede, Debatte und Bewerbung |
-| Gesprächsformen und Präsentieren | Satzbau und Sprachwissen |
-| | Wortbedeutung und Sprachwandel |
-| | Novelle |
-| | Parabel |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Wortarten | Konjunktiv und indirekte Rede | Aktiv und Passiv |
+| Zeitformen (Tempus) | Adverbialsätze | Satzgefüge und Konjunktionen |
+| Satzglieder | Sprachliche Bilder (Stilmittel) | Kommasetzung |
+| Groß- und Kleinschreibung | Inhaltsangabe | "dass" oder "das" |
+| Steigerung von Adjektiven | Argumentieren und Erörtern | Wortarten (vertieft) |
+| Satzarten | Kurzgeschichten verstehen | Textsorten unterscheiden |
+| Wortbildung | | Aufbau eines Dramas |
+| Balladen und Jugendbücher | | Figurencharakterisierung |
+| Sach- und Gebrauchstexte auswerten | | Argumentation und Quellenkritik |
+| Texte in medialer Form (Wiki, E-Mail, TV) | | Filmanalyse |
+| Schreibformen | | Rede, Debatte und Bewerbung |
+| Gesprächsformen und Präsentieren | | Satzbau und Sprachwissen |
+| | | Wortbedeutung und Sprachwandel |
+| | | Novelle |
+| | | Parabel |
 
 ## Türkisch (`TurkishGenerator.cs`)
 

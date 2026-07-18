@@ -4,7 +4,8 @@ using LernTor.Core.Models;
 namespace LernTor.ContentGen.Generators;
 
 /// <summary>
-/// Deutsch-Aufgabengenerator: Grammatik, Rechtschreibung, Zeitformen, Satzglieder (Klasse 6)
+/// Deutsch-Aufgabengenerator: Grammatik, Rechtschreibung, Zeitformen, Satzglieder (Klasse 6),
+/// Konjunktiv/indirekte Rede, Adverbialsätze, Inhaltsangabe, Argumentieren (Klasse 7)
 /// sowie Aktiv/Passiv, Satzgefüge, Kommasetzung (Klasse 9), jeweils nach Berliner Rahmenlehrplan.
 /// </summary>
 public sealed class GermanGenerator : ExerciseGeneratorBase
@@ -28,6 +29,15 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
                 MedialeTexte,
                 Schreibformen,
                 Gespraechsformen
+            },
+            [GradeLevel.Klasse7] = new List<TopicFactory>
+            {
+                KonjunktivIndirekteRede,
+                Adverbialsaetze,
+                SprachlicheBilder,
+                Inhaltsangabe,
+                Argumentieren,
+                Kurzgeschichte
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -1407,6 +1417,298 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Topic = "Parabel", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Parabel = kurze, lehrhafte Erzählung mit Bildebene (konkrete Geschichte) und Sachebene (übertragene Lehre) - berühmte Beispiele: biblische Gleichnisse, Kafkas \"Vor dem Gesetz\", Brechts Lehrstücke."
+        };
+    }
+
+    // ----- Klasse 7 -----
+
+    private static readonly (string DirekteRede, string Rahmen, string Loesung, string Infinitiv)[] KonjunktivBeispiele =
+    {
+        ("Ich komme morgen.", "Er sagt, er ___ morgen.", "komme", "kommen"),
+        ("Ich bin müde.", "Sie sagt, sie ___ müde.", "sei", "sein"),
+        ("Ich habe Hunger.", "Er sagt, er ___ Hunger.", "habe", "haben"),
+        ("Ich gehe nach Hause.", "Sie sagt, sie ___ nach Hause.", "gehe", "gehen"),
+        ("Ich will helfen.", "Er sagt, er ___ helfen.", "wolle", "wollen"),
+        ("Ich kann schwimmen.", "Sie sagt, sie ___ schwimmen.", "könne", "können"),
+        ("Ich muss lernen.", "Er sagt, er ___ lernen.", "müsse", "müssen"),
+        ("Ich weiß die Antwort.", "Sie sagt, sie ___ die Antwort.", "wisse", "wissen"),
+        ("Ich mache die Hausaufgaben.", "Er sagt, er ___ die Hausaufgaben.", "mache", "machen"),
+        ("Ich spiele Fußball.", "Sie sagt, sie ___ Fußball.", "spiele", "spielen"),
+        ("Ich lerne Türkisch.", "Er sagt, er ___ Türkisch.", "lerne", "lernen"),
+        ("Ich brauche Hilfe.", "Sie sagt, sie ___ Hilfe.", "brauche", "brauchen"),
+        ("Ich fahre mit dem Bus.", "Er sagt, er ___ mit dem Bus.", "fahre", "fahren"),
+        ("Ich sehe den Fehler.", "Sie sagt, sie ___ den Fehler.", "sehe", "sehen"),
+        ("Ich finde das gut.", "Er sagt, er ___ das gut.", "finde", "finden"),
+        ("Ich gebe mein Bestes.", "Sie sagt, sie ___ ihr Bestes.", "gebe", "geben"),
+        ("Ich nehme den Zug.", "Er sagt, er ___ den Zug.", "nehme", "nehmen"),
+        ("Ich darf mitkommen.", "Sie sagt, sie ___ mitkommen.", "dürfe", "dürfen"),
+        ("Ich mag Musik.", "Er sagt, er ___ Musik.", "möge", "mögen"),
+        ("Ich bleibe zu Hause.", "Sie sagt, sie ___ zu Hause.", "bleibe", "bleiben")
+    };
+
+    private static QuizQuestion KonjunktivIndirekteRede(Random r)
+    {
+        var k = KonjunktivBeispiele[r.Next(KonjunktivBeispiele.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Konjunktiv und indirekte Rede", Type = QuestionType.OpenText,
+            Prompt = $"Direkte Rede: \"{k.DirekteRede}\" – Setze die indirekte Rede in den Konjunktiv I: \"{k.Rahmen}\" (Verb: {k.Infinitiv})",
+            CorrectAnswers = new[] { k.Loesung },
+            Explanation = $"In der indirekten Rede steht der Konjunktiv I: 3. Person Singular von \"{k.Infinitiv}\" ist \"{k.Loesung}\". " +
+                          "Er zeigt, dass eine Aussage nur wiedergegeben wird.",
+            HelpHint = "Konjunktiv I bildet man vom Wortstamm + Endung -e (er komme, sie habe); \"sein\" ist unregelmäßig: er/sie sei."
+        };
+    }
+
+    private static readonly (string Satz, string Typ)[] AdverbialsatzBeispiele =
+    {
+        ("Ich bleibe zu Hause, weil ich krank bin.", "Kausalsatz (Grund)"),
+        ("Da es regnete, fiel das Spiel aus.", "Kausalsatz (Grund)"),
+        ("Sie freut sich, weil sie eine Eins geschrieben hat.", "Kausalsatz (Grund)"),
+        ("Er kam zu spät, weil der Bus ausfiel.", "Kausalsatz (Grund)"),
+        ("Da er müde war, ging er früh schlafen.", "Kausalsatz (Grund)"),
+        ("Als ich klein war, wohnte ich in Ankara.", "Temporalsatz (Zeit)"),
+        ("Während wir aßen, klingelte das Telefon.", "Temporalsatz (Zeit)"),
+        ("Nachdem sie gelernt hatte, sah sie fern.", "Temporalsatz (Zeit)"),
+        ("Bevor du gehst, räum bitte auf.", "Temporalsatz (Zeit)"),
+        ("Seitdem er trainiert, ist er viel fitter.", "Temporalsatz (Zeit)"),
+        ("Wenn es morgen regnet, bleiben wir drinnen.", "Konditionalsatz (Bedingung)"),
+        ("Falls du Hilfe brauchst, ruf mich an.", "Konditionalsatz (Bedingung)"),
+        ("Wenn du übst, wirst du besser.", "Konditionalsatz (Bedingung)"),
+        ("Falls der Zug Verspätung hat, warten wir.", "Konditionalsatz (Bedingung)"),
+        ("Wenn ich Zeit habe, komme ich vorbei.", "Konditionalsatz (Bedingung)"),
+        ("Ich lerne viel, damit ich die Prüfung bestehe.", "Finalsatz (Zweck/Absicht)"),
+        ("Sie spart Geld, damit sie ein Fahrrad kaufen kann.", "Finalsatz (Zweck/Absicht)"),
+        ("Er spricht leise, damit das Baby nicht aufwacht.", "Finalsatz (Zweck/Absicht)"),
+        ("Wir beeilen uns, damit wir den Bus erreichen.", "Finalsatz (Zweck/Absicht)"),
+        ("Sie schreibt alles auf, damit sie nichts vergisst.", "Finalsatz (Zweck/Absicht)")
+    };
+
+    private static QuizQuestion Adverbialsaetze(Random r)
+    {
+        var a = AdverbialsatzBeispiele[r.Next(AdverbialsatzBeispiele.Length)];
+        var optionen = new[] { "Kausalsatz (Grund)", "Temporalsatz (Zeit)", "Konditionalsatz (Bedingung)", "Finalsatz (Zweck/Absicht)" };
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Adverbialsätze", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welche Art von Nebensatz steckt in diesem Satz? \"{a.Satz}\"",
+            Options = optionen, CorrectAnswers = new[] { a.Typ },
+            Explanation = $"\"{a.Satz}\" enthält einen {a.Typ}. " +
+                          "Kausalsätze (weil/da) nennen einen Grund, Temporalsätze (als/während/nachdem) eine Zeit, " +
+                          "Konditionalsätze (wenn/falls) eine Bedingung, Finalsätze (damit) einen Zweck.",
+            HelpHint = "Achte auf die Konjunktion: weil/da = Grund, als/während/nachdem = Zeit, wenn/falls = Bedingung, damit = Zweck."
+        };
+    }
+
+    private static readonly (string Beispiel, string Stilmittel, string Erklaerung)[] SprachlicheBilderBeispiele =
+    {
+        ("Ihre Augen leuchten wie Sterne.", "Vergleich", "Ein Vergleich verbindet zwei Dinge mit \"wie\" oder \"als\": Augen wie Sterne."),
+        ("Er ist stark wie ein Löwe.", "Vergleich", "Das Vergleichswort \"wie\" verbindet die Person mit dem Löwen."),
+        ("Sie schwimmt wie ein Fisch.", "Vergleich", "\"wie ein Fisch\" ist ein Vergleich mit Vergleichswort."),
+        ("Er kämpft wie ein Held.", "Vergleich", "\"wie ein Held\" - das Vergleichswort \"wie\" macht den Vergleich erkennbar."),
+        ("Das Kind ist flink wie ein Wiesel.", "Vergleich", "Vergleich mit \"wie\": flink wie ein Wiesel."),
+        ("Er hat ein Herz aus Stein.", "Metapher", "Eine Metapher überträgt die Bedeutung ohne Vergleichswort: Das Herz ist nicht wirklich aus Stein - gemeint ist Gefühlskälte."),
+        ("Sie steht am Scheideweg ihres Lebens.", "Metapher", "\"Scheideweg\" ist ein sprachliches Bild für eine wichtige Entscheidung - ohne Vergleichswort."),
+        ("Die Schule ist ein Dschungel.", "Metapher", "Direkte Übertragung ohne \"wie\": Die Schule wird als Dschungel bezeichnet."),
+        ("Er ertrinkt in Arbeit.", "Metapher", "Niemand ertrinkt wirklich - das Bild überträgt \"zu viel Arbeit\" ohne Vergleichswort."),
+        ("Ihre Worte waren Balsam für seine Seele.", "Metapher", "\"Balsam\" steht bildlich für Trost - eine Metapher ohne Vergleichswort."),
+        ("Das Feuer der Begeisterung brannte in ihr.", "Metapher", "Begeisterung wird bildlich als Feuer bezeichnet - ohne Vergleichswort."),
+        ("Die Sonne lacht vom Himmel.", "Personifikation", "Die Sonne bekommt eine menschliche Eigenschaft (lachen) - das ist eine Personifikation."),
+        ("Der Wind heult um das Haus.", "Personifikation", "Der Wind \"heult\" wie ein Lebewesen - eine Personifikation."),
+        ("Die Zeit rennt.", "Personifikation", "Die Zeit kann nicht wirklich rennen - sie wird vermenschlicht."),
+        ("Die Blätter tanzen im Wind.", "Personifikation", "Blätter \"tanzen\" - eine menschliche Tätigkeit wird auf Dinge übertragen."),
+        ("Der Himmel weint.", "Personifikation", "Regen wird als Weinen des Himmels beschrieben - Personifikation."),
+        ("Die Angst packte ihn.", "Personifikation", "Die Angst handelt wie eine Person, die zupackt - Personifikation."),
+        ("Das alte Haus schläft im Mondlicht.", "Personifikation", "Ein Haus kann nicht schlafen - es wird vermenschlicht."),
+        ("Sie ist langsam wie eine Schnecke.", "Vergleich", "Das Vergleichswort \"wie\" zeigt den Vergleich mit der Schnecke."),
+        ("Er trägt eine Maske der Freundlichkeit.", "Metapher", "\"Maske\" steht bildlich für vorgetäuschte Freundlichkeit - ohne Vergleichswort.")
+    };
+
+    private static QuizQuestion SprachlicheBilder(Random r)
+    {
+        var s = SprachlicheBilderBeispiele[r.Next(SprachlicheBilderBeispiele.Length)];
+        var optionen = new[] { "Vergleich", "Metapher", "Personifikation" };
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Sprachliche Bilder (Stilmittel)", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welches sprachliche Bild wird hier verwendet? \"{s.Beispiel}\"",
+            Options = optionen, CorrectAnswers = new[] { s.Stilmittel },
+            Explanation = s.Erklaerung,
+            HelpHint = "Vergleich: mit \"wie\"/\"als\". Metapher: bildliche Übertragung OHNE Vergleichswort. Personifikation: Dinge/Tiere bekommen menschliche Eigenschaften."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] InhaltsangabeListe =
+    {
+        ("In welcher Zeitform schreibt man eine Inhaltsangabe?", new[] { "Präsens (Gegenwart)", "Präteritum (Vergangenheit)", "Futur (Zukunft)" }, "Präsens (Gegenwart)",
+            "Eine Inhaltsangabe steht immer im Präsens, auch wenn der Originaltext in der Vergangenheit erzählt."),
+        ("Was gehört in die Einleitung einer Inhaltsangabe?", new[] { "Textsorte, Titel, Autor/in, Erscheinungsjahr und Kernthema", "Die eigene Meinung zum Text", "Alle Einzelheiten der Handlung" }, "Textsorte, Titel, Autor/in, Erscheinungsjahr und Kernthema",
+            "Der Einleitungssatz nennt Textsorte, Titel, Autor/in, ggf. Jahr und das Thema in einem Satz."),
+        ("Darf die eigene Meinung in eine Inhaltsangabe?", new[] { "Nein, die Inhaltsangabe bleibt sachlich und neutral", "Ja, in jedem Absatz", "Ja, aber nur in der Einleitung" }, "Nein, die Inhaltsangabe bleibt sachlich und neutral",
+            "Eine Inhaltsangabe gibt nur den Inhalt wieder - Bewertungen und Meinungen gehören nicht hinein."),
+        ("Wie geht man mit wörtlicher Rede aus dem Originaltext um?", new[] { "Man wandelt sie in indirekte Rede um", "Man übernimmt sie wörtlich mit Anführungszeichen", "Man lässt alle Gespräche komplett weg" }, "Man wandelt sie in indirekte Rede um",
+            "Wörtliche Rede wird in der Inhaltsangabe zu indirekter Rede (oft im Konjunktiv I)."),
+        ("Wie lang sollte eine Inhaltsangabe im Vergleich zum Originaltext sein?", new[] { "Deutlich kürzer - nur das Wichtigste", "Genauso lang", "Länger, weil man alles erklärt" }, "Deutlich kürzer - nur das Wichtigste",
+            "Die Inhaltsangabe verdichtet den Text auf die wesentlichen Informationen."),
+        ("In welcher Reihenfolge gibt man die Handlung wieder?", new[] { "In der zeitlichen Reihenfolge der Ereignisse", "In beliebiger Reihenfolge", "Rückwärts vom Ende zum Anfang" }, "In der zeitlichen Reihenfolge der Ereignisse",
+            "Die Handlung wird chronologisch, also in ihrer zeitlichen Abfolge, zusammengefasst."),
+        ("Welche sprachliche Ebene ist für eine Inhaltsangabe richtig?", new[] { "Sachliche Standardsprache ohne Umgangssprache", "Lockere Jugendsprache", "Möglichst viele Ausrufe und Gefühle" }, "Sachliche Standardsprache ohne Umgangssprache",
+            "Inhaltsangaben werden sachlich und in Standardsprache formuliert."),
+        ("Was macht man mit unwichtigen Einzelheiten des Originaltexts?", new[] { "Man lässt sie weg", "Man beschreibt sie besonders genau", "Man erfindet neue dazu" }, "Man lässt sie weg",
+            "Nur die wesentlichen Handlungsschritte kommen in die Inhaltsangabe - Details werden weggelassen."),
+        ("Aus welcher Perspektive schreibt man die Inhaltsangabe?", new[] { "In der 3. Person (er/sie), nicht in der Ich-Form des Textes", "Immer in der Ich-Form", "In der Wir-Form" }, "In der 3. Person (er/sie), nicht in der Ich-Form des Textes",
+            "Auch bei einem Ich-Erzähler gibt die Inhaltsangabe die Handlung in der 3. Person wieder."),
+        ("Was gehört NICHT in eine Inhaltsangabe?", new[] { "Spannungsaufbau und Ausschmückungen wie im Original", "Der Einleitungssatz", "Die wichtigsten Handlungsschritte" }, "Spannungsaufbau und Ausschmückungen wie im Original",
+            "Die Inhaltsangabe erzählt nicht spannend nach, sondern informiert knapp und sachlich."),
+        ("Wozu dient eine Inhaltsangabe?", new[] { "Jemand soll den Inhalt eines Textes schnell erfassen können, ohne ihn zu lesen", "Sie soll den Leser unterhalten wie ein Roman", "Sie soll die Meinung des Verfassers zeigen" }, "Jemand soll den Inhalt eines Textes schnell erfassen können, ohne ihn zu lesen",
+            "Eine Inhaltsangabe informiert kurz und sachlich über den Inhalt eines Textes."),
+        ("Wie beginnt man den Hauptteil einer Inhaltsangabe sinnvoll?", new[] { "Mit dem ersten wichtigen Handlungsschritt", "Mit der eigenen Bewertung", "Mit dem Schluss der Geschichte" }, "Mit dem ersten wichtigen Handlungsschritt",
+            "Nach dem Einleitungssatz folgt der Hauptteil chronologisch mit den wichtigsten Handlungsschritten."),
+        ("Welches Verb passt zu einer sachlichen Inhaltsangabe?", new[] { "\"Der Text handelt von ...\"", "\"Ich fand total spannend, dass ...\"", "\"Stell dir vor, was dann passierte!\"" }, "\"Der Text handelt von ...\"",
+            "Formulierungen wie \"Der Text handelt von ...\" sind sachlich und typisch für Inhaltsangaben."),
+        ("Was ist der Unterschied zwischen Nacherzählung und Inhaltsangabe?", new[] { "Die Nacherzählung erzählt spannend nach, die Inhaltsangabe fasst sachlich zusammen", "Es gibt keinen Unterschied", "Die Inhaltsangabe ist immer länger" }, "Die Nacherzählung erzählt spannend nach, die Inhaltsangabe fasst sachlich zusammen",
+            "Nacherzählung = erzählend/spannend, Inhaltsangabe = sachlich/knapp im Präsens."),
+        ("Muss man in der Inhaltsangabe das Ende des Textes nennen?", new[] { "Ja, auch der Schluss der Handlung wird knapp wiedergegeben", "Nein, das Ende bleibt geheim", "Nur, wenn es ein Happy End ist" }, "Ja, auch der Schluss der Handlung wird knapp wiedergegeben",
+            "Anders als ein Klappentext verrät die Inhaltsangabe die komplette Handlung inklusive Schluss."),
+        ("Wie zitiert man in einer Inhaltsangabe am besten?", new[] { "Gar nicht oder nur sehr sparsam - man formuliert mit eigenen Worten", "Man übernimmt ganze Absätze wörtlich", "Man kopiert den Originaltext" }, "Gar nicht oder nur sehr sparsam - man formuliert mit eigenen Worten",
+            "Die Inhaltsangabe gibt den Inhalt mit eigenen Worten wieder, nicht mit Zitaten."),
+        ("Welche Konjunktionen helfen, Handlungsschritte zu verknüpfen?", new[] { "danach, anschließend, schließlich", "und dann, und dann, und dann", "ähm, halt, irgendwie" }, "danach, anschließend, schließlich",
+            "Abwechslungsreiche Verknüpfungen wie \"danach\", \"anschließend\", \"schließlich\" verbinden die Schritte."),
+        ("Was bedeutet es, einen Text zu \"verdichten\"?", new[] { "Das Wichtigste in wenigen Worten zusammenfassen", "Den Text länger machen", "Den Text auswendig lernen" }, "Das Wichtigste in wenigen Worten zusammenfassen",
+            "Verdichten heißt: nur die Kernaussagen behalten, alles Unwichtige weglassen."),
+        ("Wofür steht der Begriff \"W-Fragen\" bei der Vorbereitung einer Inhaltsangabe?", new[] { "Wer? Was? Wann? Wo? Warum? Wie?", "Fragen, die mit \"Welche Farbe\" beginnen", "Fragen ohne Antwort" }, "Wer? Was? Wann? Wo? Warum? Wie?",
+            "Mit den W-Fragen erfasst man die Kerninformationen eines Textes."),
+        ("Was macht einen guten Schlusssatz einer Inhaltsangabe aus?", new[] { "Er rundet die Zusammenfassung knapp ab, ohne Neues zu erzählen", "Er beginnt eine neue Geschichte", "Er enthält die private Meinung" }, "Er rundet die Zusammenfassung knapp ab, ohne Neues zu erzählen",
+            "Der Schluss fasst das Ende der Handlung knapp zusammen - ohne Bewertung, ohne neue Inhalte.")
+    };
+
+    private static QuizQuestion Inhaltsangabe(Random r)
+    {
+        var f = InhaltsangabeListe[r.Next(InhaltsangabeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Inhaltsangabe", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Inhaltsangabe: Präsens, sachlich, chronologisch, keine Meinung, wörtliche Rede wird indirekt, deutlich kürzer als das Original."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArgumentierenListe =
+    {
+        ("Aus welchen drei Bausteinen besteht ein vollständiges Argument?", new[] { "Behauptung (These), Begründung, Beispiel/Beleg", "Überschrift, Bild, Unterschrift", "Frage, Antwort, Punkt" }, "Behauptung (These), Begründung, Beispiel/Beleg",
+            "Ein Argument nennt eine These, begründet sie und stützt sie mit einem Beispiel oder Beleg (B-B-B)."),
+        ("Was ist eine These?", new[] { "Eine Behauptung, die begründet werden soll", "Ein bewiesener Fakt", "Eine Frage an den Leser" }, "Eine Behauptung, die begründet werden soll",
+            "Die These ist die Ausgangsbehauptung einer Argumentation - sie muss erst begründet werden."),
+        ("Was macht ein Beispiel in einer Argumentation?", new[] { "Es veranschaulicht und stützt die Begründung", "Es ersetzt die Begründung vollständig", "Es lenkt vom Thema ab" }, "Es veranschaulicht und stützt die Begründung",
+            "Beispiele machen eine Begründung anschaulich und überzeugender - ersetzen sie aber nicht."),
+        ("Wie ordnet man Argumente in einer Erörterung am wirkungsvollsten an?", new[] { "Vom schwächsten zum stärksten Argument", "Vom stärksten zum schwächsten Argument", "In zufälliger Reihenfolge" }, "Vom schwächsten zum stärksten Argument",
+            "Das stärkste Argument kommt zum Schluss, damit es beim Leser am besten in Erinnerung bleibt."),
+        ("Was ist ein Gegenargument?", new[] { "Ein Argument, das gegen die eigene Position spricht", "Ein besonders starkes eigenes Argument", "Eine Beleidigung des Gegners" }, "Ein Argument, das gegen die eigene Position spricht",
+            "Wer Gegenargumente kennt und entkräftet, argumentiert überzeugender."),
+        ("Was bedeutet es, ein Gegenargument zu \"entkräften\"?", new[] { "Zu zeigen, warum es weniger überzeugend ist als die eigenen Argumente", "Es einfach zu ignorieren", "Es lauter zu wiederholen" }, "Zu zeigen, warum es weniger überzeugend ist als die eigenen Argumente",
+            "Entkräften heißt, das Gegenargument aufzugreifen und sachlich zu widerlegen oder abzuschwächen."),
+        ("Welche Formulierung leitet ein Argument sachlich ein?", new[] { "\"Ein wichtiges Argument dafür ist ...\"", "\"Jeder weiß doch, dass ...\"", "\"Nur Dumme glauben, dass ...\"" }, "\"Ein wichtiges Argument dafür ist ...\"",
+            "Sachliche Überleitungen nennen das Argument, ohne andere abzuwerten."),
+        ("Was unterscheidet ein Faktenargument von einem Gefühl?", new[] { "Es stützt sich auf überprüfbare Tatsachen oder Zahlen", "Es klingt lauter", "Es ist immer länger" }, "Es stützt sich auf überprüfbare Tatsachen oder Zahlen",
+            "Faktenargumente lassen sich mit Daten, Studien oder Tatsachen belegen."),
+        ("Was ist ein Autoritätsargument?", new[] { "Man beruft sich auf Fachleute oder anerkannte Quellen", "Man droht dem Gesprächspartner", "Man wiederholt die eigene Meinung" }, "Man beruft sich auf Fachleute oder anerkannte Quellen",
+            "Beim Autoritätsargument stützt eine anerkannte Person oder Institution die Aussage."),
+        ("Warum sind Beleidigungen in einer Diskussion kein Argument?", new[] { "Sie begründen nichts, sondern greifen nur die Person an", "Sie sind zu kurz", "Sie sind zu schwer auszusprechen" }, "Sie begründen nichts, sondern greifen nur die Person an",
+            "Ein Angriff auf die Person (statt auf die Sache) hat keine Begründungskraft."),
+        ("Was gehört in die Einleitung einer Erörterung?", new[] { "Das Thema/die Streitfrage wird vorgestellt und ihre Bedeutung erklärt", "Das stärkste Argument", "Die vollständige Meinung mit allen Begründungen" }, "Das Thema/die Streitfrage wird vorgestellt und ihre Bedeutung erklärt",
+            "Die Einleitung führt zur Streitfrage hin - die Argumente folgen im Hauptteil."),
+        ("Was gehört in den Schluss einer Erörterung?", new[] { "Ein Fazit mit der eigenen begründeten Position", "Ein völlig neues Argument", "Eine unbegründete Behauptung" }, "Ein Fazit mit der eigenen begründeten Position",
+            "Der Schluss fasst zusammen und zieht ein begründetes Fazit - neue Argumente gehören nicht hinein."),
+        ("Was ist eine Pro-und-Kontra-Erörterung?", new[] { "Man wägt Argumente für und gegen eine Streitfrage ab", "Man nennt nur Argumente für die eigene Meinung", "Man beschreibt einen Gegenstand" }, "Man wägt Argumente für und gegen eine Streitfrage ab",
+            "Die dialektische (Pro-Kontra-)Erörterung betrachtet beide Seiten und wägt sie ab."),
+        ("Welcher Satz ist eine These (und kein Fakt)?", new[] { "\"Hausaufgaben sollten abgeschafft werden.\"", "\"Berlin ist die Hauptstadt Deutschlands.\"", "\"Ein Tag hat 24 Stunden.\"" }, "\"Hausaufgaben sollten abgeschafft werden.\"",
+            "Eine These ist eine strittige Behauptung - Fakten wie \"Berlin ist die Hauptstadt\" sind nicht strittig."),
+        ("Wie reagiert man in einer Diskussion fair auf eine andere Meinung?", new[] { "Ausreden lassen, zuhören und sachlich antworten", "Unterbrechen und lauter werden", "Das Thema wechseln" }, "Ausreden lassen, zuhören und sachlich antworten",
+            "Faires Diskutieren heißt: zuhören, ausreden lassen, auf Argumente eingehen."),
+        ("Was ist ein \"Scheinargument\"?", new[] { "Eine Aussage, die wie ein Argument klingt, aber nichts begründet", "Ein besonders gutes Argument", "Ein Argument aus einem Buch" }, "Eine Aussage, die wie ein Argument klingt, aber nichts begründet",
+            "Scheinargumente (z.B. \"Das war schon immer so\") begründen nichts und lassen sich leicht entkräften."),
+        ("Warum sollte man Argumente mit Beispielen aus dem Alltag stützen?", new[] { "Der Leser kann sie leichter nachvollziehen", "Beispiele ersetzen die Begründung", "Beispiele machen den Text nur länger" }, "Der Leser kann sie leichter nachvollziehen",
+            "Alltagsnahe Beispiele machen abstrakte Begründungen konkret und nachvollziehbar."),
+        ("Welche Formulierung leitet ein Gegenargument ein?", new[] { "\"Andererseits könnte man einwenden, dass ...\"", "\"Und außerdem ...\"", "\"Wie bereits gesagt ...\"" }, "\"Andererseits könnte man einwenden, dass ...\"",
+            "Wendungen wie \"andererseits\" oder \"dagegen spricht\" kündigen die Gegenposition an."),
+        ("Was bedeutet \"abwägen\" in einer Erörterung?", new[] { "Pro- und Kontra-Argumente vergleichen und gewichten", "Alle Argumente gleich gut finden", "Die Wörter zählen" }, "Pro- und Kontra-Argumente vergleichen und gewichten",
+            "Beim Abwägen prüft man, welche Argumente schwerer wiegen, und begründet so das Fazit."),
+        ("Was ist das Ziel einer Argumentation?", new[] { "Andere mit Begründungen von einer Position überzeugen", "Andere überreden, ohne Gründe zu nennen", "Möglichst viele Fremdwörter benutzen" }, "Andere mit Begründungen von einer Position überzeugen",
+            "Argumentieren heißt überzeugen mit Gründen - nicht überreden mit Druck oder Tricks.")
+    };
+
+    private static QuizQuestion Argumentieren(Random r)
+    {
+        var f = ArgumentierenListe[r.Next(ArgumentierenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Argumentieren und Erörtern", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ein Argument = These + Begründung + Beispiel. In der Erörterung: Einleitung mit Streitfrage, Hauptteil mit gewichteten Argumenten, Schluss mit Fazit."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KurzgeschichteListe =
+    {
+        ("Woran erkennt man den typischen Anfang einer Kurzgeschichte?", new[] { "Sie beginnt unvermittelt, mitten im Geschehen", "Sie beginnt mit \"Es war einmal\"", "Sie beginnt mit einer langen Vorstellung aller Figuren" }, "Sie beginnt unvermittelt, mitten im Geschehen",
+            "Kurzgeschichten haben einen offenen, unvermittelten Anfang - der Leser wird direkt ins Geschehen geworfen."),
+        ("Was ist typisch für das Ende einer Kurzgeschichte?", new[] { "Es bleibt oft offen oder überraschend", "Alles wird bis ins Detail aufgelöst", "Es endet immer mit einer Hochzeit" }, "Es bleibt oft offen oder überraschend",
+            "Das offene oder pointierte Ende regt zum Nachdenken über die Geschichte an."),
+        ("Wie viele Figuren hat eine Kurzgeschichte meistens?", new[] { "Wenige - oft nur eine oder zwei Hauptfiguren", "Mindestens zehn", "Gar keine" }, "Wenige - oft nur eine oder zwei Hauptfiguren",
+            "Wegen der Kürze konzentriert sich die Kurzgeschichte auf wenige Figuren."),
+        ("Welchen Zeitraum umfasst die Handlung einer Kurzgeschichte typischerweise?", new[] { "Einen kurzen Ausschnitt, oft nur Minuten oder Stunden", "Mehrere Generationen", "Immer genau ein Jahr" }, "Einen kurzen Ausschnitt, oft nur Minuten oder Stunden",
+            "Kurzgeschichten zeigen einen knappen Ausschnitt aus dem Alltag - keine Lebensgeschichte."),
+        ("Welche Themen behandeln Kurzgeschichten häufig?", new[] { "Alltagssituationen und Konflikte gewöhnlicher Menschen", "Nur Fantasiewelten mit Drachen", "Ausschließlich historische Schlachten" }, "Alltagssituationen und Konflikte gewöhnlicher Menschen",
+            "Im Zentrum stehen Alltagsmomente, die für die Figuren eine besondere Bedeutung bekommen."),
+        ("Was bedeutet ein \"Wendepunkt\" in einer Kurzgeschichte?", new[] { "Ein Moment, an dem sich die Situation entscheidend ändert", "Der erste Satz", "Eine Fußnote" }, "Ein Moment, an dem sich die Situation entscheidend ändert",
+            "Viele Kurzgeschichten steuern auf einen Wendepunkt zu, der die Figur oder Situation verändert."),
+        ("Warum sagt man, in Kurzgeschichten sei \"jedes Wort wichtig\"?", new[] { "Wegen der Kürze trägt jedes Detail zur Bedeutung bei", "Weil die Wörter besonders lang sind", "Weil man sie auswendig lernen muss" }, "Wegen der Kürze trägt jedes Detail zur Bedeutung bei",
+            "Auf engem Raum hat jedes Detail (Titel, Gegenstände, Wiederholungen) oft eine tiefere Bedeutung."),
+        ("Was ist bei der Analyse einer Kurzgeschichte mit \"Leerstellen\" gemeint?", new[] { "Dinge, die der Text nicht erzählt und die der Leser selbst deuten muss", "Leere Seiten im Buch", "Fehlende Satzzeichen" }, "Dinge, die der Text nicht erzählt und die der Leser selbst deuten muss",
+            "Leerstellen sind bewusste Auslassungen - der Leser ergänzt sie durch eigene Deutung."),
+        ("Aus welcher Erzählperspektive wird eine Geschichte erzählt, wenn ein \"Ich\" von eigenen Erlebnissen berichtet?", new[] { "Ich-Erzähler", "Auktorialer (allwissender) Erzähler", "Es gibt keinen Erzähler" }, "Ich-Erzähler",
+            "Der Ich-Erzähler erzählt aus der eigenen, begrenzten Sicht - der Leser weiß nur, was das Ich weiß."),
+        ("Was weiß ein auktorialer (allwissender) Erzähler?", new[] { "Alles - auch Gedanken und Gefühle aller Figuren", "Nur, was eine einzige Figur denkt", "Gar nichts" }, "Alles - auch Gedanken und Gefühle aller Figuren",
+            "Der auktoriale Erzähler steht über dem Geschehen und kennt alle Figuren von innen."),
+        ("Was ist ein personaler Erzähler?", new[] { "Er erzählt in der 3. Person, aber aus der Sicht einer Figur", "Er nennt sich selbst \"ich\"", "Er kommentiert das Geschehen von außen und weiß alles" }, "Er erzählt in der 3. Person, aber aus der Sicht einer Figur",
+            "Der personale Erzähler bleibt bei einer Figur (\"er/sie\"), der Leser erlebt nur deren Innenwelt."),
+        ("Was untersucht man bei einer Figurencharakterisierung?", new[] { "Äußeres, Verhalten, Sprache und Beziehungen der Figur", "Nur die Haarfarbe", "Die Seitenzahl des Buches" }, "Äußeres, Verhalten, Sprache und Beziehungen der Figur",
+            "Charakterisieren heißt: Merkmale der Figur aus dem Text belegen und deuten."),
+        ("Was ist der Unterschied zwischen direkter und indirekter Charakterisierung?", new[] { "Direkt: der Text beschreibt die Figur ausdrücklich; indirekt: man schließt aus ihrem Verhalten", "Direkt: mündlich; indirekt: schriftlich", "Es gibt keinen Unterschied" }, "Direkt: der Text beschreibt die Figur ausdrücklich; indirekt: man schließt aus ihrem Verhalten",
+            "Direkte Charakterisierung nennt Eigenschaften ausdrücklich, indirekte zeigt sie durch Handeln und Sprechen."),
+        ("Warum ist der Titel einer Kurzgeschichte oft wichtig für die Deutung?", new[] { "Er gibt häufig einen Hinweis auf das zentrale Thema oder Symbol", "Er verrät immer das Ende", "Er ist nie wichtig" }, "Er gibt häufig einen Hinweis auf das zentrale Thema oder Symbol",
+            "Der Titel lenkt den Blick oft auf das Kernmotiv oder die zentrale Aussage der Geschichte."),
+        ("Was ist ein Symbol in einer Geschichte?", new[] { "Ein Gegenstand oder Bild, das für etwas Tieferes steht", "Ein Rechtschreibfehler", "Eine Seitenzahl" }, "Ein Gegenstand oder Bild, das für etwas Tieferes steht",
+            "Symbole (z.B. Licht, Mauer, Brücke) verweisen über sich hinaus auf eine tiefere Bedeutung."),
+        ("Was macht man beim \"Belegen\" einer Aussage über einen Text?", new[] { "Man zitiert die passende Textstelle mit Zeilenangabe", "Man wiederholt die Aussage lauter", "Man fragt eine andere Person" }, "Man zitiert die passende Textstelle mit Zeilenangabe",
+            "Deutungen müssen am Text belegt werden - mit Zitat und Zeilenangabe."),
+        ("Was bedeutet \"innerer Monolog\" als Erzähltechnik?", new[] { "Die unausgesprochenen Gedanken einer Figur werden direkt wiedergegeben", "Zwei Figuren sprechen miteinander", "Der Autor spricht den Leser an" }, "Die unausgesprochenen Gedanken einer Figur werden direkt wiedergegeben",
+            "Beim inneren Monolog liest man die Gedanken der Figur, als würde sie mit sich selbst sprechen."),
+        ("Welche Sprache ist typisch für viele moderne Kurzgeschichten?", new[] { "Einfache Alltagssprache, oft mit knappen Sätzen", "Altertümliche Verssprache", "Ausschließlich Fachbegriffe" }, "Einfache Alltagssprache, oft mit knappen Sätzen",
+            "Kurzgeschichten nutzen oft nüchterne Alltagssprache, die zur Alltagshandlung passt."),
+        ("Warum eignet sich eine Kurzgeschichte gut für den Unterricht?", new[] { "Sie ist in einer Stunde lesbar und bietet viel zu deuten", "Sie hat keine Handlung", "Sie ist immer lustig" }, "Sie ist in einer Stunde lesbar und bietet viel zu deuten",
+            "Die Kürze erlaubt genaues Lesen und Deuten im Unterricht - trotz kleiner Textmenge viel Gehalt."),
+        ("Was prüft man zuerst, wenn man eine Kurzgeschichte deuten will?", new[] { "Wer erzählt, was passiert und wo der Wendepunkt liegt", "Wie schwer das Buch ist", "Ob der Autor noch lebt" }, "Wer erzählt, was passiert und wo der Wendepunkt liegt",
+            "Erzählperspektive, Handlung und Wendepunkt sind der Schlüssel zur Deutung einer Kurzgeschichte.")
+    };
+
+    private static QuizQuestion Kurzgeschichte(Random r)
+    {
+        var f = KurzgeschichteListe[r.Next(KurzgeschichteListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Kurzgeschichten verstehen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Kurzgeschichte: unvermittelter Anfang, offenes Ende, wenige Figuren, Alltagssituation, oft ein Wendepunkt - jedes Detail kann Bedeutung tragen."
         };
     }
 }
