@@ -72,13 +72,17 @@
 
                         <!-- Wort-/Zeichenzähler -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,4,0">
+                            <!-- Mode=OneWay zwingend: Run.Text bindet standardmäßig TwoWay und
+                                 crasht beim Laden gegen die Read-Only-Quellen (Localization-Indexer,
+                                 Zähler-Properties) - siehe "Hard-won gotchas" in CLAUDE.md; von den
+                                 XamlLoadTests in CI gefangen. -->
                             <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,16,0">
-                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Words]}" />
-                                <Run Text="{Binding WordCount}" FontWeight="Bold" />
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Words], Mode=OneWay}" />
+                                <Run Text="{Binding WordCount, Mode=OneWay}" FontWeight="Bold" />
                             </TextBlock>
                             <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}">
-                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Chars]}" />
-                                <Run Text="{Binding CharCount}" FontWeight="Bold" />
+                                <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Chars], Mode=OneWay}" />
+                                <Run Text="{Binding CharCount, Mode=OneWay}" FontWeight="Bold" />
                             </TextBlock>
                         </StackPanel>
                     </StackPanel>

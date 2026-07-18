@@ -226,6 +226,9 @@ public partial class App : Application
 
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
+        // Fester Marker für den CI-Smoke-Test (StartupSmokeTests): Fenster-Titel/-Handles sind
+        // in der Runner-Session nicht zuverlässig auslesbar, die Log-Zeile ist es immer.
+        AppLog.Info("App", "Hauptfenster angezeigt");
 
         var shouldSkipKioskLock =
             Environment.GetEnvironmentVariable("LERNTOR_SKIP_LOCK") == "1" ||
