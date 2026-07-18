@@ -50,8 +50,11 @@ public sealed partial class ExerciseViewModel : ObservableObject
     public int DisplayIndex => CurrentIndex + 1;
     public bool IsLastQuestion => CurrentIndex >= _questions.Count - 1;
 
-    /// <summary>"Weiter" erst nach Antwort UND abgelaufener Mindest-Lernzeit.</summary>
-    public bool CanGoNext => _currentAnswered && LockSecondsRemaining <= 0;
+    /// <summary>"Weiter" erst nach Antwort UND abgelaufener Mindest-Lernzeit UND - bei falscher
+    /// Antwort - bestätigter Erklärung (Anti-Durchklick: das Feedback ist der eigentliche
+    /// Lernmoment und darf nicht ungelesen weggeklickt werden).</summary>
+    public bool CanGoNext => _currentAnswered && LockSecondsRemaining <= 0 &&
+        (CurrentQuestion is null || CurrentQuestion.IsCorrect || CurrentQuestion.ExplanationAcknowledged);
 
     /// <summary>Countdown-Hinweis nur zeigen, solange die Mindestzeit noch läuft.</summary>
     public bool ShowLockCountdown => LockSecondsRemaining > 0;
@@ -101,7 +104,14 @@ public sealed partial class ExerciseViewModel : ObservableObject
         LockSecondsRemaining = MinSecondsPerQuestion;
         _minTimeTimer.Start();
 
-        CurrentQuestion = new QuestionAnswerViewModel(_questions[CurrentIndex], _homeworkChat, OnAnswered);
+        CurrentQuestion = new QuestionAnswerViewModel(
+            _questions[CurrentIndex], _homeworkChat, OnAnswered,
+            requireExplanationAcknowledgment: true,
+            onExplanationAcknowledged: _ =>
+            {
+                OnPropertyChanged(nameof(CanGoNext));
+                NextCommand.NotifyCanExecuteChanged();
+            });
         OnPropertyChanged(nameof(DisplayIndex));
         OnPropertyChanged(nameof(IsLastQuestion));
         OnPropertyChanged(nameof(CanGoNext));

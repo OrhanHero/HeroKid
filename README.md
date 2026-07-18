@@ -149,9 +149,12 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    `MasteredPromptRepository`/`MasteredPromptEntity`/`SpacedRepetitionSchedule`.
    **Mindest-Lernzeit pro Aufgabe**: „Weiter" wird erst frei, wenn die Frage beantwortet ist UND ein
    20-Sekunden-Countdown abgelaufen ist (sichtbar unter dem Button) - gegen das beobachtete wilde
-   Durchklicken, nur um schnell zum Quiz zu kommen. Das Abschlussquiz hat bewusst keinen Countdown:
-   dort bestraft sich Raten von selbst (unter der eingestellten Schwelle beim ersten Versuch gibt es
-   eine Wiederholung, siehe unten).
+   Durchklicken, nur um schnell zum Quiz zu kommen. **Erklärung-gelesen-Pflicht bei Fehlern**:
+   nach einer falschen Antwort muss zusätzlich der Button „✔ Erklärung gelesen" gedrückt werden,
+   bevor „Weiter" freigegeben wird - das Feedback ist der eigentliche Lernmoment und darf nicht
+   ungelesen weggeklickt werden. Das Abschlussquiz hat bewusst weder Countdown noch
+   Bestätigungspflicht: dort bestraft sich Raten von selbst (unter der eingestellten Schwelle beim
+   ersten Versuch gibt es eine Wiederholung, siehe unten).
 6. **Abschlussquiz** – gemischte Fragen aus allen aktiven Fächern (Anzahl je Fach passt sich automatisch
    an, wie viele Fächer aktiv sind), Nachrichten-Verständnisfragen zählen NICHT mit (die werden nur im
    News-Bereich selbst gestellt). Erster Versuch am Tag: exakt **20 Fragen**, Bestehens-Schwelle ist im

@@ -149,6 +149,14 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Explanation]}"
                            Style="{StaticResource SubtitleText}" Margin="0,12,0,4" FontWeight="Bold" />
                 <TextBlock Text="{Binding Question.Explanation}" Style="{StaticResource BodyText}" />
+
+                <!-- Anti-Durchklick (nur Übungsteil, siehe QuestionAnswerViewModel): nach falscher
+                     Antwort muss die Erklärung aktiv bestätigt werden, erst dann wird "Weiter" frei. -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AcknowledgeExplanation]}"
+                        Style="{StaticResource RoundedButton}" FontSize="15" Padding="18,10" Margin="0,14,0,0"
+                        HorizontalAlignment="Left"
+                        Visibility="{Binding NeedsExplanationAcknowledgment, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding AcknowledgeExplanationCommand}" />
             </StackPanel>
         </StackPanel>
     </Border>

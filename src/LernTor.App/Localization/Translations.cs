@@ -156,6 +156,7 @@ public static class Translations
             ["Exercise_Correct"] = L("Richtig! Super gemacht! 🎉", "Doğru! Harikasın! 🎉"),
             ["Exercise_Incorrect"] = L("Nicht ganz richtig, aber weiter geht's!", "Tam doğru değil ama devam!"),
             ["Exercise_Explanation"] = L("Erklärung:", "Açıklama:"),
+            ["Exercise_AcknowledgeExplanation"] = L("✔ Erklärung gelesen", "✔ Açıklamayı okudum"),
             ["Exercise_ShowHint"] = L("💡 Tipp anzeigen", "💡 İpucu göster"),
             ["Exercise_AskAi"] = L("🤖 KI fragen", "🤖 Yapay zekaya sor"),
             ["Exercise_AiThinking"] = L(

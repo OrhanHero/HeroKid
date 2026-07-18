@@ -15,7 +15,9 @@ namespace LernTor.App.ViewModels;
 public sealed partial class QuestionAnswerViewModel : ObservableObject
 {
     private readonly Action<QuestionAnswerViewModel>? _onSubmitted;
+    private readonly Action<QuestionAnswerViewModel>? _onExplanationAcknowledged;
     private readonly IHomeworkHelpChatService _homeworkChat;
+    private readonly bool _requireExplanationAcknowledgment;
 
     public QuizQuestion Question { get; }
 
@@ -67,6 +69,32 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
 
     public string FinalGivenAnswer { get; private set; } = string.Empty;
 
+    // --- Anti-Durchklick (nur Übungsteil, siehe ExerciseViewModel): nach einer falschen Antwort
+    // muss die Erklärung aktiv bestätigt werden, bevor "Weiter" freigegeben wird - sonst wird
+    // das Feedback (der eigentliche Lernmoment) einfach weggeklickt. ---
+
+    /// <summary>Vom Kind bestätigt: "Erklärung gelesen". Gibt im Übungsteil "Weiter" frei.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NeedsExplanationAcknowledgment))]
+    private bool explanationAcknowledged;
+
+    /// <summary>Bestätigungs-Button nur zeigen, wenn der Host ihn verlangt (Übungsteil), die
+    /// Antwort falsch war und noch nicht bestätigt wurde.</summary>
+    public bool NeedsExplanationAcknowledgment =>
+        _requireExplanationAcknowledgment && IsSubmitted && !IsCorrect && !ExplanationAcknowledged;
+
+    [RelayCommand]
+    private void AcknowledgeExplanation()
+    {
+        if (ExplanationAcknowledged)
+        {
+            return;
+        }
+
+        ExplanationAcknowledged = true;
+        _onExplanationAcknowledged?.Invoke(this);
+    }
+
     private static readonly Random ShuffleRandom = new();
 
     // --- KI-Lernchat: Kinder können wie mit einem Taschenrechner zu jeder Aufgabe nachfragen ---
@@ -88,11 +116,15 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
     public QuestionAnswerViewModel(
         QuizQuestion question,
         IHomeworkHelpChatService homeworkChat,
-        Action<QuestionAnswerViewModel>? onSubmitted = null)
+        Action<QuestionAnswerViewModel>? onSubmitted = null,
+        bool requireExplanationAcknowledgment = false,
+        Action<QuestionAnswerViewModel>? onExplanationAcknowledged = null)
     {
         Question = question;
         _homeworkChat = homeworkChat;
         _onSubmitted = onSubmitted;
+        _requireExplanationAcknowledgment = requireExplanationAcknowledgment;
+        _onExplanationAcknowledged = onExplanationAcknowledged;
         DisplayOptions = question.Options.Count == 0
             ? question.Options
             : question.Options.OrderBy(_ => ShuffleRandom.Next()).ToList();
@@ -163,6 +195,7 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
         FinalGivenAnswer = answer;
         IsCorrect = Question.CheckAnswer(answer);
         IsSubmitted = true;
+        OnPropertyChanged(nameof(NeedsExplanationAcknowledgment));
         _onSubmitted?.Invoke(this);
     }
 

@@ -2,6 +2,7 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-17",
   "done": [
+    "Anti-Durchklick: nach falscher Antwort Pflicht-Button 'Erklaerung gelesen' (QuestionAnswerViewModel.requireExplanationAcknowledgment, nur Uebungsteil; Quiz bewusst frei) bevor Weiter freigeschaltet wird",
     "Adaptive Uebungsauswahl: AdaptiveTopicWeighting (Core, 1.0-3.0 nach Fehlerquote, min 3 Antworten) + Rejection-Sampling in ExerciseGeneratorBase.Generate (neuer optionaler topicWeights-Param) + MainViewModel.BuildTopicWeightsAsync (30-Tage-Fenster)",
     "UI-Smoke-Tests (tests/LernTor.UiTests, net8.0-windows): XamlLoadTests (jede parameterlose View + App-Ressourcen + Layout) + StartupSmokeTests (echte exe, LERNTOR_SKIP_LOCK=1, Hauptfenster-Check); eigener CI-Step in build.yml",
     "Tages-Zusammenfassung auf dem Freigeschaltet-Bildschirm: Aufgaben heute + Trefferquote (ActivityLog seit Mitternacht) + optionale 🔥-Serie; MainViewModel.BuildResultViewModelAsync",
