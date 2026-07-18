@@ -1,0 +1,79 @@
+<UserControl x:Class="LernTor.App.Views.KiBereichView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+
+        <!-- Lernphase: drei Module (Was ist KI? / KI im Alltag / Sicher mit KI) als Tabs -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding IsLearningPhase, Converter={StaticResource BoolToVis}}">
+            <StackPanel MaxWidth="900" HorizontalAlignment="Center" Margin="24,48,24,32">
+                <TextBlock Text="🤖" FontSize="44" TextAlignment="Center" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_KiWissen]}"
+                           Style="{StaticResource HeadlineText}" FontSize="34" TextAlignment="Center" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Ki_Intro]}"
+                           Style="{StaticResource BodyText}" FontSize="16" TextWrapping="Wrap"
+                           TextAlignment="Center" Margin="0,0,0,20" />
+
+                <!-- Modul-Tabs -->
+                <ItemsControl ItemsSource="{Binding Modules}" HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource TabPillButton}"
+                                    Command="{Binding DataContext.SelectModuleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Content>
+                                    <TextBlock>
+                                        <Run Text="{Binding Icon, Mode=OneWay}" />
+                                        <Run Text="{Binding Title, Mode=OneWay}" />
+                                    </TextBlock>
+                                </Button.Content>
+                                <Button.Tag>
+                                    <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                        <Binding />
+                                        <Binding Path="DataContext.SelectedModule" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                    </MultiBinding>
+                                </Button.Tag>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Abschnitte des gewählten Moduls -->
+                <ItemsControl ItemsSource="{Binding SelectedModule.Sections}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Heading}" Style="{StaticResource SubtitleText}"
+                                               FontWeight="Bold" FontSize="18" Margin="0,0,0,6" />
+                                    <TextBlock Text="{Binding Body}" Style="{StaticResource BodyText}"
+                                               FontSize="15" TextWrapping="Wrap" LineHeight="24" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Ki_StartQuestions]}"
+                        Style="{StaticResource RoundedButton}" FontSize="18" Padding="26,14"
+                        HorizontalAlignment="Center" Margin="0,10,0,0"
+                        Command="{Binding StartQuestionsCommand}" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Fragenphase: die KI-Checkliste läuft als ganz normale Übung (inneres ExerciseViewModel) -->
+        <Grid Visibility="{Binding IsQuestionPhase, Converter={StaticResource BoolToVis}}">
+            <ContentControl Content="{Binding Exercise}" />
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Ki_BackToModules]}"
+                    Style="{StaticResource TabPillButton}" FontSize="13"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,44,0,0"
+                    Command="{Binding BackToModulesCommand}" />
+        </Grid>
+    </Grid>
+</UserControl>

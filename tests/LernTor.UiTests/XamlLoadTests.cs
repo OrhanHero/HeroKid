@@ -45,6 +45,7 @@ public sealed class XamlLoadTests
         typeof(LernTor.App.Views.WritingView),
         typeof(LernTor.App.Views.NewsView),
         typeof(LernTor.App.Views.ExerciseView),
+        typeof(LernTor.App.Views.KiBereichView),
         typeof(LernTor.App.Views.FinalQuizView),
         typeof(LernTor.App.Views.ResultView),
         typeof(LernTor.App.Views.TypingDashboardView),

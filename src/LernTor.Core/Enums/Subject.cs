@@ -18,5 +18,8 @@ public enum Subject
     Kunst,
     Musik,
     Itg,
-    Tippen
+    Tippen,
+    /// <summary>KI-Bereich: KI verstehen und sicher nutzen (kein Rahmenlehrplan-Fach, bewusst
+    /// als eigener Modulbereich - am Ende angefügt, Persistenz erfolgt ohnehin als String).</summary>
+    KiWissen
 }

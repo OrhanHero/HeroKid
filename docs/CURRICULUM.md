@@ -241,6 +241,20 @@ Rahmenlehrplan" weiter unten).
 | Sichere Passwörter | Fake News erkennen |
 | Urheberrecht im Internet | Algorithmen-Grundbegriff |
 
+## KI-Bereich (`KiWissenGenerator.cs` + `KiContentService`)
+
+> Kein Rahmenlehrplan-Fach, sondern KI-/Medienkompetenz als eigener Modulbereich: erst drei
+> Lernmodule ("Was ist KI?", "KI im Alltag", "Sicher mit KI" - Texte in `KiContentService`,
+> DE/TR), dann die "KI-Checkliste" als normale Übung. Klasse 7 nutzt über die Übergangsregel
+> den Klasse-6-Pool. Distraktoren sind bewusst längen-balanciert
+> (siehe `scripts/check-answer-length-bias.py`).
+
+| Klasse 6 | Klasse 9 |
+|---|---|
+| Wie KI funktioniert | Halluzinationen und Fakten-Check |
+| KI im Alltag | Bias und Verantwortung |
+| KI-Checkliste: Sicher nutzen | Deepfakes und Datenschutz |
+
 ## News (`LernTor.News`)
 
 22 kuratierte, kostenlose RSS-Quellen (siehe `CuratedNewsFeeds.All` in `NewsFeedSource.cs`) -

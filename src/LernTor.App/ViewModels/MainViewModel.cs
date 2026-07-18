@@ -167,6 +167,9 @@ public sealed partial class MainViewModel : ObservableObject
             LearningStage.News => await BuildNewsViewModelAsync(),
             LearningStage.Abschlussquiz => await BuildFinalQuizViewModelAsync(),
             LearningStage.Freigeschaltet => await BuildResultViewModelAsync(passed: true, result: null),
+            // KI-Bereich: Lernmodule + Checkliste in eigener View; die Fragen laufen darin als
+            // ganz normales ExerciseViewModel (Fortschritt/Fehler-Kartei/Spaced Repetition inklusive).
+            LearningStage.KiWissen => new KiBereichViewModel(await BuildExerciseViewModelAsync(Subject.KiWissen)),
             _ when LearningStageSubjects.TryGetSubject(stage, out var subjectForStage) => await BuildExerciseViewModelAsync(subjectForStage),
             _ => CurrentViewModel
         };

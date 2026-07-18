@@ -16,8 +16,9 @@ public class QuizComposerTests
 
         var subjectsPresent = questions.Select(q => q.Subject).Distinct().ToList();
 
-        // Standard-Composer deckt 15 Fächer ab (alle außer News); jedes bekommt mindestens 1 Frage.
-        Assert.Equal(15, subjectsPresent.Count);
+        // Standard-Composer deckt 16 Fächer ab (alle außer News/Tippen, inkl. KI-Bereich);
+        // jedes bekommt mindestens 1 Frage.
+        Assert.Equal(16, subjectsPresent.Count);
         Assert.True(questions.Count > 0);
     }
 

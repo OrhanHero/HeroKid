@@ -125,6 +125,11 @@ public static class Translations
             ["Stage_Kunst"] = L("Kunst", "Sanat"),
             ["Stage_Musik"] = L("Musik", "Müzik"),
             ["Stage_Itg"] = L("Medienbildung (ITG)", "Medya Bilgisi (ITG)"),
+            ["Stage_KiWissen"] = L("KI-Bereich", "Yapay Zeka Bölümü"),
+            ["Ki_Intro"] = L("Hier lernst du, wie KI wirklich funktioniert - und wie du sie schlau und sicher nutzt. Lies die drei Module durch, dann zeigt die KI-Checkliste, was du drauf hast.",
+                "Burada yapay zekanın gerçekte nasıl çalıştığını ve onu akıllıca, güvenle nasıl kullanacağını öğrenirsin. Üç modülü oku, sonra kontrol listesi neler bildiğini gösterir."),
+            ["Ki_StartQuestions"] = L("Zur KI-Checkliste ✨", "Kontrol listesine geç ✨"),
+            ["Ki_BackToModules"] = L("Zurück zu den Modulen", "Modüllere geri dön"),
             ["Stage_Abschlussquiz"] = L("Abschlussquiz", "Bitiş Sınavı"),
 
             ["News_Loading"] = L("Nachrichten werden geladen…", "Haberler yükleniyor…"),

@@ -27,6 +27,7 @@ public enum LearningStage
     Kunst,
     Musik,
     Itg,
+    KiWissen,
     Abschlussquiz,
     Freigeschaltet
 }
