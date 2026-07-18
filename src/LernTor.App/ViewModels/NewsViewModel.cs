@@ -22,8 +22,9 @@ namespace LernTor.App.ViewModels;
 /// </summary>
 public sealed partial class NewsViewModel : ObservableObject
 {
-    /// <summary>Mindest-Lesezeit pro Artikel in Sekunden.</summary>
-    private const int MinSecondsPerArticle = 10;
+    /// <summary>Mindest-Lesezeit pro Artikel in Sekunden (pro Profil im Eltern-Bereich
+    /// einstellbar, siehe StudentProfile.NewsSecondsPerArticle).</summary>
+    private readonly int _minSecondsPerArticle;
 
     private readonly IReadOnlyList<NewsArticle> _articles;
     private readonly Action<NewsArticle, QuestionOutcome, QuizQuestion> _onArticleAnswered;
@@ -114,8 +115,10 @@ public sealed partial class NewsViewModel : ObservableObject
         Action<NewsArticle, QuestionOutcome, QuizQuestion> onArticleAnswered,
         Action onSectionCompleted,
         IHomeworkHelpChatService homeworkChat,
-        KidWeatherReport? weather = null)
+        KidWeatherReport? weather = null,
+        int minSecondsPerArticle = StudentProfile.DefaultNewsSecondsPerArticle)
     {
+        _minSecondsPerArticle = minSecondsPerArticle > 0 ? minSecondsPerArticle : StudentProfile.DefaultNewsSecondsPerArticle;
         Weather = weather;
         _articles = articles;
         _onArticleAnswered = onArticleAnswered;
@@ -193,7 +196,7 @@ public sealed partial class NewsViewModel : ObservableObject
 
         // Mindest-Lesezeit nur für noch offene Artikel; beim Wiederbesuch erledigter Artikel
         // wäre ein erneuter Countdown reine Navigations-Schikane.
-        LockSecondsRemaining = alreadyCompleted ? 0 : MinSecondsPerArticle;
+        LockSecondsRemaining = alreadyCompleted ? 0 : _minSecondsPerArticle;
         if (LockSecondsRemaining > 0)
         {
             _minTimeTimer.Start();

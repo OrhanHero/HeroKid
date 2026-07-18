@@ -254,7 +254,7 @@ public sealed partial class MainViewModel : ObservableObject
         var today = DateOnly.FromDateTime(DateTime.Now);
         var piece = ReadingContentProvider.GetForDate(today);
         var secondPiece = ReadingContentProvider.GetSecondForDate(today);
-        return new ReadingViewModel(piece, secondPiece, OnReadingCompleted, _tts);
+        return new ReadingViewModel(piece, secondPiece, OnReadingCompleted, _tts, CurrentProfile!.ReadingMinutes);
     }
 
     /// <summary>
@@ -399,7 +399,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         return new NewsViewModel(
             articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted,
-            _homeworkChat, weather);
+            _homeworkChat, weather, CurrentProfile!.NewsSecondsPerArticle);
     }
 
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)
@@ -487,7 +487,8 @@ public sealed partial class MainViewModel : ObservableObject
                 .OrderBy(_ => _random.Next()))
             .ToList();
 
-        return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject), _homeworkChat);
+        return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject), _homeworkChat,
+            CurrentProfile!.ExerciseSecondsPerQuestion);
     }
 
     private async void OnExerciseQuestionAnswered(Subject subject, QuestionOutcome outcome, QuizQuestion question)

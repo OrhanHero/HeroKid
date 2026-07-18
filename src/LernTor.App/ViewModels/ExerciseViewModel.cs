@@ -22,8 +22,9 @@ namespace LernTor.App.ViewModels;
 public sealed partial class ExerciseViewModel : ObservableObject
 {
     /// <summary>Mindestzeit pro Aufgabe in Sekunden - grob die Zeit, um eine kurze Frage samt
-    /// Erklärung tatsächlich zu lesen.</summary>
-    private const int MinSecondsPerQuestion = 5;
+    /// Erklärung tatsächlich zu lesen (pro Profil im Eltern-Bereich einstellbar, siehe
+    /// StudentProfile.ExerciseSecondsPerQuestion).</summary>
+    private readonly int _minSecondsPerQuestion;
 
     private readonly IReadOnlyList<QuizQuestion> _questions;
     private readonly Action<Subject, QuestionOutcome, QuizQuestion> _onQuestionAnswered;
@@ -64,8 +65,10 @@ public sealed partial class ExerciseViewModel : ObservableObject
         IReadOnlyList<QuizQuestion> questions,
         Action<Subject, QuestionOutcome, QuizQuestion> onQuestionAnswered,
         Action onSubjectCompleted,
-        IHomeworkHelpChatService homeworkChat)
+        IHomeworkHelpChatService homeworkChat,
+        int minSecondsPerQuestion = StudentProfile.DefaultExerciseSecondsPerQuestion)
     {
+        _minSecondsPerQuestion = minSecondsPerQuestion > 0 ? minSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion;
         Subject = subject;
         _questions = questions;
         _onQuestionAnswered = onQuestionAnswered;
@@ -101,7 +104,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
         }
 
         _currentAnswered = false;
-        LockSecondsRemaining = MinSecondsPerQuestion;
+        LockSecondsRemaining = _minSecondsPerQuestion;
         _minTimeTimer.Start();
 
         CurrentQuestion = new QuestionAnswerViewModel(

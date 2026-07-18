@@ -16,7 +16,7 @@ namespace LernTor.App.ViewModels;
 /// </summary>
 public sealed partial class ReadingViewModel : ObservableObject
 {
-    private static readonly TimeSpan MinimumDuration = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan DefaultMinimumDuration = TimeSpan.FromMinutes(StudentProfile.DefaultReadingMinutes);
 
     /// <summary>Tab-Kennungen - als Konstanten statt Enum, da sie direkt aus XAML als
     /// CommandParameter-Strings kommen und der EqualsToSelectedTag-Converter Strings vergleicht.</summary>
@@ -36,7 +36,7 @@ public sealed partial class ReadingViewModel : ObservableObject
     public ReadingPiece SecondPiece { get; }
 
     [ObservableProperty]
-    private TimeSpan remainingTime = MinimumDuration;
+    private TimeSpan remainingTime = DefaultMinimumDuration;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ContinueCommand))]
@@ -71,12 +71,17 @@ public sealed partial class ReadingViewModel : ObservableObject
 
     public string RemainingTimeDisplay => $"{(int)RemainingTime.TotalMinutes}:{RemainingTime.Seconds:00}";
 
-    public ReadingViewModel(ReadingPiece piece, ReadingPiece secondPiece, Action onCompleted, TextToSpeechService tts)
+    /// <param name="readingMinutes">Pflicht-Lesezeit in Minuten (pro Profil im Eltern-Bereich
+    /// einstellbar, siehe StudentProfile.ReadingMinutes); unplausible Werte fallen auf den
+    /// Standard zurück.</param>
+    public ReadingViewModel(ReadingPiece piece, ReadingPiece secondPiece, Action onCompleted, TextToSpeechService tts,
+        int readingMinutes = StudentProfile.DefaultReadingMinutes)
     {
         Piece = piece;
         SecondPiece = secondPiece;
         _onCompleted = onCompleted;
         _tts = tts;
+        RemainingTime = readingMinutes > 0 ? TimeSpan.FromMinutes(readingMinutes) : DefaultMinimumDuration;
         _tts.SpeakingChanged += OnSpeakingChanged;
 
         _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };

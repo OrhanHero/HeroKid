@@ -46,6 +46,28 @@ public sealed class StudentProfile
     /// </summary>
     public double QuizRetryThreshold { get; set; } = 0.25;
 
+    /// <summary>
+    /// Pflicht-Lesezeit des täglichen Vorlese-Abschnitts in Minuten, von den Eltern als Preset
+    /// (2/5/8/10 min) einstellbar - erst nach Ablauf wird "Weiter" nutzbar (ReadingViewModel).
+    /// </summary>
+    public int ReadingMinutes { get; set; } = DefaultReadingMinutes;
+
+    /// <summary>
+    /// Mindest-Lesezeit pro News-Artikel in Sekunden, von den Eltern als Preset (5/10/20/30 s)
+    /// einstellbar - solange sie läuft, bleibt die Antwort-Eingabe gesperrt (NewsViewModel).
+    /// </summary>
+    public int NewsSecondsPerArticle { get; set; } = DefaultNewsSecondsPerArticle;
+
+    /// <summary>
+    /// Mindestzeit pro Übungsaufgabe in den Fächern in Sekunden, von den Eltern als Preset
+    /// (3/5/10/15 s) einstellbar - verhindert Durchklicken ohne Lesen (ExerciseViewModel).
+    /// </summary>
+    public int ExerciseSecondsPerQuestion { get; set; } = DefaultExerciseSecondsPerQuestion;
+
+    public const int DefaultReadingMinutes = 5;
+    public const int DefaultNewsSecondsPerArticle = 10;
+    public const int DefaultExerciseSecondsPerQuestion = 5;
+
     public const string DefaultAvatar = "🧒";
 
     public static string NewId() => Guid.NewGuid().ToString("N");

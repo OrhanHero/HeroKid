@@ -118,6 +118,9 @@ public sealed class StudentProfileRepository
         double typingMinAccuracy,
         double quizFirstAttemptThreshold,
         double quizRetryThreshold,
+        int readingMinutes,
+        int newsSecondsPerArticle,
+        int exerciseSecondsPerQuestion,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -129,6 +132,9 @@ public sealed class StudentProfileRepository
         entity.TypingMinAccuracy = typingMinAccuracy;
         entity.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
         entity.QuizRetryThreshold = quizRetryThreshold;
+        entity.ReadingMinutes = readingMinutes;
+        entity.NewsSecondsPerArticle = newsSecondsPerArticle;
+        entity.ExerciseSecondsPerQuestion = exerciseSecondsPerQuestion;
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -143,6 +149,11 @@ public sealed class StudentProfileRepository
         TotalStars = entity.TotalStars,
         TypingMinAccuracy = entity.TypingMinAccuracy,
         QuizFirstAttemptThreshold = entity.QuizFirstAttemptThreshold,
-        QuizRetryThreshold = entity.QuizRetryThreshold
+        QuizRetryThreshold = entity.QuizRetryThreshold,
+        // Alt-Zeilen, deren Timer-Spalten erst per additivem Schema-Update (DEFAULT 0)
+        // entstanden sind, laufen mit den bisherigen fest verdrahteten Standardwerten weiter.
+        ReadingMinutes = entity.ReadingMinutes > 0 ? entity.ReadingMinutes : StudentProfile.DefaultReadingMinutes,
+        NewsSecondsPerArticle = entity.NewsSecondsPerArticle > 0 ? entity.NewsSecondsPerArticle : StudentProfile.DefaultNewsSecondsPerArticle,
+        ExerciseSecondsPerQuestion = entity.ExerciseSecondsPerQuestion > 0 ? entity.ExerciseSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion
     };
 }

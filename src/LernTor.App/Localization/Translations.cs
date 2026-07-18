@@ -337,6 +337,10 @@ public static class Translations
             ["Parent_Difficulty_Typing"] = L("Tipptrainer: Mindestgenauigkeit zum Bestehen", "Daktilo eğitimi: Geçmek için asgari doğruluk"),
             ["Parent_Difficulty_QuizFirst"] = L("Abschlussquiz: 1. Versuch", "Bitirme sınavı: 1. deneme"),
             ["Parent_Difficulty_QuizRetry"] = L("Abschlussquiz: 2. Versuch (Wiederholung)", "Bitirme sınavı: 2. deneme (tekrar)"),
+            ["Parent_Timer_Title"] = L("Zeiten (pro Profil)", "Süreler (profile özel)"),
+            ["Parent_Timer_Reading"] = L("Lesen: Pflicht-Lesezeit pro Tag", "Okuma: Günlük zorunlu okuma süresi"),
+            ["Parent_Timer_News"] = L("News: Mindest-Lesezeit pro Artikel", "Haberler: Makale başına asgari okuma süresi"),
+            ["Parent_Timer_Exercise"] = L("Fächer: Mindestzeit pro Aufgabe", "Dersler: Soru başına asgari süre"),
 
             ["Parent_Report_Title"] = L("Bericht: Stärken & Schwächen", "Rapor: Güçlü ve zayıf yönler"),
             ["Parent_Report_WeakTopics"] = L("Schwächste Themen (Brennpunkte):", "En zayıf konular (odak noktaları):"),

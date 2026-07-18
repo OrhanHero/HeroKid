@@ -13,4 +13,11 @@ public sealed class StudentProfileEntity
     public double TypingMinAccuracy { get; set; } = 0.25;
     public double QuizFirstAttemptThreshold { get; set; } = 0.5;
     public double QuizRetryThreshold { get; set; } = 0.25;
+
+    // Timer-Einstellungen (pro Profil, siehe StudentProfile). Beim additiven Schema-Update
+    // bekommen Alt-Zeilen DEFAULT 0 (SqliteSchemaUpdater) - 0/negativ wird deshalb beim
+    // Mapping im Repository als "nicht gesetzt -> Standardwert" interpretiert.
+    public int ReadingMinutes { get; set; } = 5;
+    public int NewsSecondsPerArticle { get; set; } = 10;
+    public int ExerciseSecondsPerQuestion { get; set; } = 5;
 }

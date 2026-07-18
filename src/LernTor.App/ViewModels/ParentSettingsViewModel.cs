@@ -437,6 +437,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         TypingMinAccuracyPercent = PercentFromFraction(value?.TypingMinAccuracy, 25);
         QuizFirstAttemptThresholdPercent = PercentFromFraction(value?.QuizFirstAttemptThreshold, 50);
         QuizRetryThresholdPercent = PercentFromFraction(value?.QuizRetryThreshold, 25);
+        ReadingMinutes = value?.ReadingMinutes ?? StudentProfile.DefaultReadingMinutes;
+        NewsSecondsPerArticle = value?.NewsSecondsPerArticle ?? StudentProfile.DefaultNewsSecondsPerArticle;
+        ExerciseSecondsPerQuestion = value?.ExerciseSecondsPerQuestion ?? StudentProfile.DefaultExerciseSecondsPerQuestion;
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -480,6 +483,39 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void SetQuizRetryThreshold(string percent)
     {
         QuizRetryThresholdPercent = int.TryParse(percent, out var parsed) ? parsed : 25;
+    }
+
+    // --- Timer pro Profil (Pflicht-Lesezeit, Mindestzeiten News/Übungen) - wie die
+    // Schwierigkeitsstufen als Presets, damit kein neuer Build nötig ist, um Zeiten anzupassen. ---
+
+    /// <summary>Pflicht-Lesezeit des Vorlese-Abschnitts in Minuten (Presets 2/5/8/10).</summary>
+    [ObservableProperty]
+    private int readingMinutes = StudentProfile.DefaultReadingMinutes;
+
+    /// <summary>Mindest-Lesezeit pro News-Artikel in Sekunden (Presets 5/10/20/30).</summary>
+    [ObservableProperty]
+    private int newsSecondsPerArticle = StudentProfile.DefaultNewsSecondsPerArticle;
+
+    /// <summary>Mindestzeit pro Übungsaufgabe in den Fächern in Sekunden (Presets 3/5/10/15).</summary>
+    [ObservableProperty]
+    private int exerciseSecondsPerQuestion = StudentProfile.DefaultExerciseSecondsPerQuestion;
+
+    [RelayCommand]
+    private void SetReadingMinutes(string minutes)
+    {
+        ReadingMinutes = int.TryParse(minutes, out var parsed) ? parsed : StudentProfile.DefaultReadingMinutes;
+    }
+
+    [RelayCommand]
+    private void SetNewsSecondsPerArticle(string seconds)
+    {
+        NewsSecondsPerArticle = int.TryParse(seconds, out var parsed) ? parsed : StudentProfile.DefaultNewsSecondsPerArticle;
+    }
+
+    [RelayCommand]
+    private void SetExerciseSecondsPerQuestion(string seconds)
+    {
+        ExerciseSecondsPerQuestion = int.TryParse(seconds, out var parsed) ? parsed : StudentProfile.DefaultExerciseSecondsPerQuestion;
     }
 
     private async Task ReloadActivityForSelectedProfileAsync()
@@ -644,11 +680,15 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             var quizFirstAttemptThreshold = QuizFirstAttemptThresholdPercent / 100.0;
             var quizRetryThreshold = QuizRetryThresholdPercent / 100.0;
 
-            await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold);
+            await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold,
+                ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion);
 
             SelectedProfile.TypingMinAccuracy = typingMinAccuracy;
             SelectedProfile.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
             SelectedProfile.QuizRetryThreshold = quizRetryThreshold;
+            SelectedProfile.ReadingMinutes = ReadingMinutes;
+            SelectedProfile.NewsSecondsPerArticle = NewsSecondsPerArticle;
+            SelectedProfile.ExerciseSecondsPerQuestion = ExerciseSecondsPerQuestion;
         }
 
         RequestClose?.Invoke();
