@@ -5,7 +5,8 @@ namespace LernTor.ContentGen.Generators;
 
 /// <summary>
 /// Türkisch-Aufgabengenerator für bilinguale/herkunftssprachliche Lerner: Zeitformen, Wortschatz,
-/// Ekler (Suffixe) für Klasse 6, sowie Satzglieder, Fiilimsi und Rechtschreibung für Klasse 9.
+/// Ekler (Suffixe) für Klasse 6, birleşik zamanlar, Deyimler/Atasözleri, Noktalama und Metin
+/// türleri für Klasse 7, sowie Satzglieder, Fiilimsi und Rechtschreibung für Klasse 9.
 /// </summary>
 public sealed class TurkishGenerator : ExerciseGeneratorBase
 {
@@ -24,6 +25,15 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
                 AileVeGunlukYasam,
                 OkulVeToplum,
                 TurkiyeKulturu
+            },
+            [GradeLevel.Klasse7] = new List<TopicFactory>
+            {
+                SimdikiZamaninHikayesi,
+                BelirsizGecmisZaman,
+                DeyimlerVeAtasozleri,
+                NoktalamaIsaretleri,
+                MetinTurleri,
+                MedyaVeIletisim
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -732,6 +742,270 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Options = optionen, CorrectAnswers = new[] { d.Almanca },
             Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
             HelpHint = "Meslek ve iş dünyasıyla ilgili kelimeler: iş başvurusu, özgeçmiş, iş görüşmesi, maaş, iş tecrübesi."
+        };
+    }
+
+    // ----- Klasse 7 -----
+
+    private static readonly (string Fiil, string Hikaye)[] SimdikiHikayeBeispiele =
+    {
+        ("gelmek", "geliyordu"), ("gitmek", "gidiyordu"), ("okumak", "okuyordu"),
+        ("yazmak", "yazıyordu"), ("oynamak", "oynuyordu"), ("koşmak", "koşuyordu"),
+        ("içmek", "içiyordu"), ("görmek", "görüyordu"), ("bilmek", "biliyordu"),
+        ("sevmek", "seviyordu"), ("gülmek", "gülüyordu"), ("ağlamak", "ağlıyordu"),
+        ("uyumak", "uyuyordu"), ("konuşmak", "konuşuyordu"), ("düşünmek", "düşünüyordu"),
+        ("beklemek", "bekliyordu"), ("çalışmak", "çalışıyordu"), ("dinlemek", "dinliyordu"),
+        ("anlamak", "anlıyordu"), ("yemek", "yiyordu")
+    };
+
+    private static QuizQuestion SimdikiZamaninHikayesi(Random r)
+    {
+        var v = SimdikiHikayeBeispiele[r.Next(SimdikiHikayeBeispiele.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Şimdiki Zamanın Hikâyesi (-yordu)", Type = QuestionType.OpenText,
+            Prompt = $"\"{v.Fiil}\" fiilinin (o için) şimdiki zamanın hikâyesi hâlini yaz. (Beispiel: gelmek -> geliyordu)",
+            CorrectAnswers = new[] { v.Hikaye },
+            Explanation = $"\"{v.Fiil}\" -> \"{v.Hikaye}\". Şimdiki zamanın hikâyesi (-yordu), geçmişte sürmekte olan bir işi anlatır - " +
+                          "Almanca karşılığı çoğu zaman Präteritum ya da \"war gerade dabei\" anlamıdır.",
+            HelpHint = "Şimdiki zamanın hikâyesi \"-yor\" ekinin üzerine \"-du\" getirilerek kurulur (geliyor + du = geliyordu)."
+        };
+    }
+
+    private static readonly (string Fiil, string Mis)[] BelirsizGecmisBeispiele =
+    {
+        ("gelmek", "gelmiş"), ("almak", "almış"), ("görmek", "görmüş"),
+        ("okumak", "okumuş"), ("yazmak", "yazmış"), ("gitmek", "gitmiş"),
+        ("içmek", "içmiş"), ("bilmek", "bilmiş"), ("sevmek", "sevmiş"),
+        ("gülmek", "gülmüş"), ("ağlamak", "ağlamış"), ("uyumak", "uyumuş"),
+        ("konuşmak", "konuşmuş"), ("düşünmek", "düşünmüş"), ("beklemek", "beklemiş"),
+        ("çalışmak", "çalışmış"), ("dinlemek", "dinlemiş"), ("anlamak", "anlamış"),
+        ("yemek", "yemiş"), ("oynamak", "oynamış")
+    };
+
+    private static QuizQuestion BelirsizGecmisZaman(Random r)
+    {
+        var v = BelirsizGecmisBeispiele[r.Next(BelirsizGecmisBeispiele.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Belirsiz Geçmiş Zaman (-miş'li geçmiş)", Type = QuestionType.OpenText,
+            Prompt = $"\"{v.Fiil}\" fiilinin (o için) -miş'li geçmiş zaman hâlini yaz.",
+            CorrectAnswers = new[] { v.Mis },
+            Explanation = $"\"{v.Fiil}\" -> \"{v.Mis}\". -miş'li geçmiş zaman, duyulan ya da sonradan fark edilen geçmişi anlatır " +
+                          "(başkasından duyduğumuz olaylar, masallar).",
+            HelpHint = "-miş'li geçmiş zaman eki (-miş/-mış/-muş/-müş) ünlü uyumuna göre değişir ve görülmeyen/duyulan geçmişi anlatır - masallar hep bu zamanla anlatılır."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DeyimAtasozuListe =
+    {
+        ("\"Göz kulak olmak\" deyimi ne anlama gelir?", new[] { "Birine ya da bir şeye dikkat etmek, korumak", "Gözlük takmak", "Yüksek sesle şarkı söylemek" }, "Birine ya da bir şeye dikkat etmek, korumak",
+            "\"Göz kulak olmak\" = auf jemanden/etwas aufpassen."),
+        ("\"Ağzı kulaklarına varmak\" deyimi ne anlama gelir?", new[] { "Çok sevinmek", "Çok yemek yemek", "Yüksek sesle bağırmak" }, "Çok sevinmek",
+            "\"Ağzı kulaklarına varmak\" = übers ganze Gesicht strahlen, sich sehr freuen."),
+        ("\"Burnu havada olmak\" deyimi ne anlama gelir?", new[] { "Kibirli olmak, kendini beğenmek", "Nezle olmak", "Uçakla seyahat etmek" }, "Kibirli olmak, kendini beğenmek",
+            "\"Burnu havada olmak\" = hochnäsig/eingebildet sein."),
+        ("\"Kulak misafiri olmak\" deyimi ne anlama gelir?", new[] { "Bir konuşmayı istemeden dinlemek", "Misafirliğe gitmek", "Kulaklık takmak" }, "Bir konuşmayı istemeden dinlemek",
+            "\"Kulak misafiri olmak\" = zufällig mithören."),
+        ("\"İki gözü iki çeşme\" deyimi ne anlama gelir?", new[] { "Çok ağlamak", "Çok iyi görmek", "Su içmek istemek" }, "Çok ağlamak",
+            "\"İki gözü iki çeşme (ağlamak)\" = bitterlich weinen."),
+        ("\"Kolları sıvamak\" deyimi ne anlama gelir?", new[] { "Bir işe hazırlanıp başlamak", "Kıyafet ütülemek", "Spor yapmak" }, "Bir işe hazırlanıp başlamak",
+            "\"Kolları sıvamak\" = die Ärmel hochkrempeln, sich an die Arbeit machen."),
+        ("\"Kafa yormak\" deyimi ne anlama gelir?", new[] { "Bir konu üzerinde çok düşünmek", "Başı ağrımak", "Uyuyakalmak" }, "Bir konu üzerinde çok düşünmek",
+            "\"Kafa yormak\" = sich über etwas den Kopf zerbrechen."),
+        ("\"Etekleri zil çalmak\" deyimi ne anlama gelir?", new[] { "Çok sevinçli olmak", "Müzik aleti çalmak", "Yeni kıyafet almak" }, "Çok sevinçli olmak",
+            "\"Etekleri zil çalmak\" = vor Freude strahlen."),
+        ("\"Gözden düşmek\" deyimi ne anlama gelir?", new[] { "Değerini, itibarını kaybetmek", "Merdivenden düşmek", "Gözlüğünü kaybetmek" }, "Değerini, itibarını kaybetmek",
+            "\"Gözden düşmek\" = an Ansehen verlieren, in Ungnade fallen."),
+        ("\"Pire için yorgan yakmak\" deyimi ne anlama gelir?", new[] { "Küçük bir sorun yüzünden büyük zarara yol açmak", "Kamp ateşi yakmak", "Evi temizlemek" }, "Küçük bir sorun yüzünden büyük zarara yol açmak",
+            "\"Pire için yorgan yakmak\" = wegen einer Kleinigkeit großen Schaden anrichten."),
+        ("\"Damlaya damlaya göl olur\" atasözü ne anlatır?", new[] { "Küçük birikimler zamanla büyük değer oluşturur", "Yağmurlu havalarda dışarı çıkılmaz", "Göller damlalardan oluşmaz" }, "Küçük birikimler zamanla büyük değer oluşturur",
+            "\"Damlaya damlaya göl olur\" = Kleinvieh macht auch Mist - kleine Ersparnisse summieren sich."),
+        ("\"Ağaç yaşken eğilir\" atasözü ne anlatır?", new[] { "Eğitim küçük yaşta verilmelidir", "Ağaçlar rüzgarda eğilir", "Yaşlı ağaçlar daha değerlidir" }, "Eğitim küçük yaşta verilmelidir",
+            "\"Ağaç yaşken eğilir\" = Was Hänschen nicht lernt, lernt Hans nimmermehr."),
+        ("\"Bir elin nesi var, iki elin sesi var\" atasözü ne anlatır?", new[] { "Birlikte çalışmak tek başına çalışmaktan iyidir", "Alkışlamak kibarlıktır", "İki el bir elden hızlıdır" }, "Birlikte çalışmak tek başına çalışmaktan iyidir",
+            "Bu atasözü iş birliğinin ve dayanışmanın gücünü anlatır."),
+        ("\"Sakla samanı, gelir zamanı\" atasözü ne anlatır?", new[] { "Bugün gereksiz görünen şey ileride gerekli olabilir", "Saman hayvanlar için önemlidir", "Eski eşyalar çöpe atılmalıdır" }, "Bugün gereksiz görünen şey ileride gerekli olabilir",
+            "Bu atasözü tutumlu olmayı ve ileriyi düşünmeyi öğütler."),
+        ("\"Dost kara günde belli olur\" atasözü ne anlatır?", new[] { "Gerçek dostluk zor zamanlarda anlaşılır", "Dostlar her gün görüşmelidir", "Karanlıkta dost seçilmez" }, "Gerçek dostluk zor zamanlarda anlaşılır",
+            "\"Dost kara günde belli olur\" = Freunde erkennt man in der Not."),
+        ("\"Vakit nakittir\" atasözü ne anlatır?", new[] { "Zaman çok değerlidir, boşa harcanmamalıdır", "Para biriktirmek zordur", "Saat almak gereklidir" }, "Zaman çok değerlidir, boşa harcanmamalıdır",
+            "\"Vakit nakittir\" = Zeit ist Geld."),
+        ("\"Ayağını yorganına göre uzat\" atasözü ne anlatır?", new[] { "İmkânlarına göre yaşamak gerekir", "Uyurken düzgün yatmak gerekir", "Büyük yorgan almak gerekir" }, "İmkânlarına göre yaşamak gerekir",
+            "Bu atasözü harcamalarını gelirine göre ayarlamayı öğütler."),
+        ("\"Ne ekersen onu biçersin\" atasözü ne anlatır?", new[] { "Yaptıklarının karşılığını görürsün", "Çiftçilik zor bir meslektir", "Her tohum aynı ürünü verir" }, "Yaptıklarının karşılığını görürsün",
+            "\"Ne ekersen onu biçersin\" = Wie man sät, so erntet man."),
+        ("\"Akıl akıldan üstündür\" atasözü ne anlatır?", new[] { "Başkalarına danışmak her zaman faydalıdır", "Bazı insanlar hiç düşünmez", "Zeki insanlar yalnız çalışır" }, "Başkalarına danışmak her zaman faydalıdır",
+            "Bu atasözü danışmanın ve farklı görüşler almanın değerini anlatır."),
+        ("\"Taşıma suyla değirmen dönmez\" atasözü ne anlatır?", new[] { "Bir iş dışarıdan gelen desteklerle uzun süre yürümez", "Değirmenler artık kullanılmıyor", "Su taşımak yorucudur" }, "Bir iş dışarıdan gelen desteklerle uzun süre yürümez",
+            "Bu atasözü kalıcı işlerin kendi kaynaklarıyla yürümesi gerektiğini anlatır.")
+    };
+
+    private static QuizQuestion DeyimlerVeAtasozleri(Random r)
+    {
+        var f = DeyimAtasozuListe[r.Next(DeyimAtasozuListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Deyimler ve Atasözleri", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Deyimler mecazlı kalıp sözlerdir (göz kulak olmak), atasözleri ise öğüt veren eski sözlerdir (damlaya damlaya göl olur)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NoktalamaListe =
+    {
+        ("Soru cümlelerinin sonuna hangi işaret konur?", new[] { "Soru işareti (?)", "Ünlem işareti (!)", "Nokta (.)" }, "Soru işareti (?)",
+            "Soru bildiren cümlelerin sonuna soru işareti konur: \"Okula geldin mi?\""),
+        ("Sevinç, korku ya da şaşkınlık bildiren cümlelerin sonuna hangi işaret konur?", new[] { "Ünlem işareti (!)", "Virgül (,)", "İki nokta (:)" }, "Ünlem işareti (!)",
+            "Güçlü duygu bildiren cümleler ünlem işaretiyle biter: \"Ne güzel bir gün!\""),
+        ("Tamamlanmış bir cümlenin sonuna hangi işaret konur?", new[] { "Nokta (.)", "Üç nokta (...)", "Noktalı virgül (;)" }, "Nokta (.)",
+            "Anlamca tamamlanmış cümleler nokta ile biter."),
+        ("Eş görevli kelimeleri ayırmak için hangi işaret kullanılır?", new[] { "Virgül (,)", "Kesme işareti (')", "Tırnak işareti (\" \")" }, "Virgül (,)",
+            "Sıralanan eş görevli kelimeler virgülle ayrılır: \"Elma, armut ve kiraz aldım.\""),
+        ("Açıklama ya da örnek vermeden önce hangi işaret kullanılır?", new[] { "İki nokta (:)", "Soru işareti (?)", "Ünlem işareti (!)" }, "İki nokta (:)",
+            "Açıklama veya örneklerden önce iki nokta konur: \"Şunları al: defter, kalem, silgi.\""),
+        ("Başkasından alınan sözler hangi işaret içinde gösterilir?", new[] { "Tırnak işareti (\" \")", "Virgül (,)", "Nokta (.)" }, "Tırnak işareti (\" \")",
+            "Alıntı sözler tırnak içinde yazılır: Öğretmen \"Yarın sınav var.\" dedi."),
+        ("Özel adlara gelen ekleri ayırmak için hangi işaret kullanılır?", new[] { "Kesme işareti (')", "Virgül (,)", "İki nokta (:)" }, "Kesme işareti (')",
+            "Özel adlara gelen çekim ekleri kesme işaretiyle ayrılır: \"Berlin'de\", \"Ali'nin\"."),
+        ("Tamamlanmamış, yarım bırakılan cümlelerin sonuna hangi işaret konur?", new[] { "Üç nokta (...)", "Nokta (.)", "Soru işareti (?)" }, "Üç nokta (...)",
+            "Yarım bırakılan ifadelerin sonunda üç nokta bulunur: \"Keşke o gün...\""),
+        ("\"Berlin_de yaşıyorum.\" cümlesinde boşluğa hangisi gelmelidir?", new[] { "Kesme işareti: Berlin'de", "Virgül: Berlin,de", "Hiçbir işaret gelmez: Berlinde" }, "Kesme işareti: Berlin'de",
+            "Berlin özel ad olduğu için ek, kesme işaretiyle ayrılır: \"Berlin'de\"."),
+        ("\"Yarın sınav var mı_\" cümlesinin sonuna hangi işaret gelmelidir?", new[] { "Soru işareti (?)", "Nokta (.)", "Ünlem işareti (!)" }, "Soru işareti (?)",
+            "\"mı/mi\" soru eki cümleyi soru yapar - sonuna soru işareti konur."),
+        ("\"Çantama defter_ kalem ve silgi koydum.\" cümlesinde boşluğa hangisi gelmelidir?", new[] { "Virgül (,)", "Nokta (.)", "İki nokta (:)" }, "Virgül (,)",
+            "Sıralanan eş görevli kelimeler (defter, kalem, silgi) virgülle ayrılır."),
+        ("\"İmdat_\" cümlesinin sonuna hangi işaret gelmelidir?", new[] { "Ünlem işareti (!)", "Soru işareti (?)", "Noktalı virgül (;)" }, "Ünlem işareti (!)",
+            "Seslenme ve yardım çağrıları ünlemle biter: \"İmdat!\""),
+        ("Konuşma metinlerinde satır başındaki konuşmaları göstermek için hangi işaret kullanılır?", new[] { "Konuşma çizgisi (-)", "Üç nokta (...)", "Kesme işareti (')" }, "Konuşma çizgisi (-)",
+            "Karşılıklı konuşmalarda satır başına konuşma çizgisi konur."),
+        ("\"Ali_nin çantası mavi.\" cümlesinde boşluğa hangisi gelmelidir?", new[] { "Kesme işareti: Ali'nin", "Virgül: Ali,nin", "İki nokta: Ali:nin" }, "Kesme işareti: Ali'nin",
+            "Özel ad olan \"Ali\"ye gelen ek kesme işaretiyle ayrılır."),
+        ("Cümle içinde arasöz ya da ek açıklama hangi işaretlerle gösterilebilir?", new[] { "Parantez ( ) ya da iki virgül arasında", "İki soru işareti arasında", "İki nokta üst üste arasında" }, "Parantez ( ) ya da iki virgül arasında",
+            "Ek açıklamalar parantez içinde ya da iki virgül arasında verilir."),
+        ("Tarihlerin gün, ay ve yıl bölümleri arasında hangi işaret kullanılır?", new[] { "Nokta (.)", "Virgül (,)", "Noktalı virgül (;)" }, "Nokta (.)",
+            "Tarihler nokta ile yazılır: 23.04.1920."),
+        ("Sıra bildiren sayılardan sonra hangi işaret konur?", new[] { "Nokta (.)", "Ünlem işareti (!)", "Tırnak işareti (\" \")" }, "Nokta (.)",
+            "Sıra sayılarından sonra nokta konur: \"3. kat\" (üçüncü kat demektir)."),
+        ("Virgülle ayrılmış örnekleri farklı gruplara ayırmak için hangi işaret kullanılır?", new[] { "Noktalı virgül (;)", "Ünlem işareti (!)", "Kesme işareti (')" }, "Noktalı virgül (;)",
+            "Gruplar noktalı virgülle ayrılır: \"Elma, armut; ıspanak, pırasa aldım.\""),
+        ("Kısaltmalardan sonra genellikle hangi işaret kullanılır?", new[] { "Nokta (.)", "Soru işareti (?)", "Üç nokta (...)" }, "Nokta (.)",
+            "Çoğu kısaltmadan sonra nokta konur: \"Dr.\", \"Prof.\", \"vb.\""),
+        ("\"Öğretmen şunları söyledi_ Yarın gezi var.\" cümlesinde boşluğa hangisi gelmelidir?", new[] { "İki nokta (:)", "Virgül (,)", "Soru işareti (?)" }, "İki nokta (:)",
+            "Aktarılacak sözden önce iki nokta konur: \"Öğretmen şunları söyledi: Yarın gezi var.\"")
+    };
+
+    private static QuizQuestion NoktalamaIsaretleri(Random r)
+    {
+        var f = NoktalamaListe[r.Next(NoktalamaListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Noktalama İşaretleri", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nokta = cümle sonu, soru işareti = soru, ünlem = güçlü duygu, virgül = sıralama, kesme işareti = özel ada gelen ek (Berlin'de), iki nokta = açıklama öncesi."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MetinTurleriListe =
+    {
+        ("Olağanüstü olayların ve kahramanların anlatıldığı, \"bir varmış bir yokmuş\" diye başlayan metin türü hangisidir?", new[] { "Masal", "Haber yazısı", "Günlük" }, "Masal",
+            "Masallar olağanüstü olayları anlatır ve -miş'li geçmiş zamanla kurulur."),
+        ("Kahramanları genellikle hayvanlar olan ve ders veren kısa metin türü hangisidir?", new[] { "Fabl", "Biyografi", "Anı" }, "Fabl",
+            "Fabllarda konuşan hayvanlar üzerinden ahlaki bir ders verilir (La Fontaine, Ezop)."),
+        ("Bir kişinin hayatını başka birinin anlattığı metin türü hangisidir?", new[] { "Biyografi", "Otobiyografi", "Masal" }, "Biyografi",
+            "Biyografi bir kişinin hayatını BAŞKASININ kaleminden anlatır."),
+        ("Bir kişinin KENDİ hayatını anlattığı metin türü hangisidir?", new[] { "Otobiyografi", "Biyografi", "Fabl" }, "Otobiyografi",
+            "Otobiyografide yazar kendi hayatını anlatır."),
+        ("Günü gününe yazılan, tarih atılan kişisel metin türü hangisidir?", new[] { "Günlük", "Haber yazısı", "Deneme" }, "Günlük",
+            "Günlük (Tagebuch), yaşananların günü gününe, tarih atılarak yazılmasıdır."),
+        ("Yaşanmış olayların üzerinden zaman geçtikten sonra anlatıldığı metin türü hangisidir?", new[] { "Anı (Hatıra)", "Günlük", "Masal" }, "Anı (Hatıra)",
+            "Anı, geçmişte yaşananların sonradan hatırlanarak yazılmasıdır - günlükten farkı budur."),
+        ("Güncel olayları okuyucuya nesnel biçimde aktaran metin türü hangisidir?", new[] { "Haber yazısı", "Şiir", "Fabl" }, "Haber yazısı",
+            "Haber yazısı 5N1K sorularına (ne, nerede, ne zaman, nasıl, neden, kim) cevap verir."),
+        ("Duygu ve düşüncelerin dizeler hâlinde, ahenkli biçimde anlatıldığı tür hangisidir?", new[] { "Şiir", "Roman", "Haber yazısı" }, "Şiir",
+            "Şiir dizelerden oluşur; ölçü, uyak ve ahenk önemlidir."),
+        ("Sahnede oynanmak için yazılan, karşılıklı konuşmalara dayanan tür hangisidir?", new[] { "Tiyatro", "Günlük", "Biyografi" }, "Tiyatro",
+            "Tiyatro metinleri sahnelenmek için yazılır ve diyaloglardan oluşur."),
+        ("Uzun, geniş kadrolu ve ayrıntılı olay örgüsüne sahip kurmaca tür hangisidir?", new[] { "Roman", "Kısa hikâye", "Haber yazısı" }, "Roman",
+            "Roman uzun soluklu bir kurmaca türüdür; çok sayıda kişi ve olay barındırır."),
+        ("Yazarın bir konudaki kişisel görüşlerini kanıtlama kaygısı olmadan anlattığı tür hangisidir?", new[] { "Deneme", "Haber yazısı", "Masal" }, "Deneme",
+            "Denemede yazar düşüncelerini serbestçe, sohbet havasında anlatır."),
+        ("Bir milletin kahramanlıklarını anlatan çok eski, uzun manzum metin türü hangisidir?", new[] { "Destan", "Günlük", "Deneme" }, "Destan",
+            "Destanlar (Ergenekon, Oğuz Kağan) milletlerin kahramanlık öykülerini anlatır."),
+        ("Halk arasında anlatılan, gerçek olduğuna inanılan olağanüstü öyküler hangi türe girer?", new[] { "Efsane", "Biyografi", "Haber yazısı" }, "Efsane",
+            "Efsaneler gerçek olduğuna inanılan, kuşaktan kuşağa aktarılan anlatılardır."),
+        ("Kısa, yoğun ve tek bir olay çevresinde gelişen kurmaca tür hangisidir?", new[] { "Hikâye (öykü)", "Roman", "Destan" }, "Hikâye (öykü)",
+            "Hikâye romandan kısadır; az kişi, tek olay ve dar zaman vardır."),
+        ("Birine duygu, düşünce ve haber iletmek için yazılan metin türü hangisidir?", new[] { "Mektup", "Fabl", "Destan" }, "Mektup",
+            "Mektup, uzaktaki birine hitap ederek yazılan kişisel bir metindir."),
+        ("Masallar hangi zaman kipiyle anlatılır?", new[] { "-miş'li geçmiş zaman", "Şimdiki zaman", "Gelecek zaman" }, "-miş'li geçmiş zaman",
+            "Masallar duyulan geçmiş zamanla anlatılır: \"Bir varmış, bir yokmuş...\""),
+        ("Haber yazısının cevap vermesi beklenen sorular hangileridir?", new[] { "5N1K (ne, nerede, ne zaman, nasıl, neden, kim)", "Sadece \"kim?\"", "Sadece \"neden?\"" }, "5N1K (ne, nerede, ne zaman, nasıl, neden, kim)",
+            "İyi bir haber 5N1K sorularının hepsine cevap verir."),
+        ("Şiirde dize sonlarındaki ses benzerliğine ne denir?", new[] { "Uyak (kafiye)", "Paragraf", "Özet" }, "Uyak (kafiye)",
+            "Uyak (kafiye), dize sonlarındaki ses benzerliğidir ve şiire ahenk katar."),
+        ("Bir metnin türünü belirlerken öncelikle neye bakılır?", new[] { "Metnin amacına, biçimine ve anlatım özelliklerine", "Sadece metnin uzunluğuna", "Sadece yazarın adına" }, "Metnin amacına, biçimine ve anlatım özelliklerine",
+            "Tür belirlenirken amaç (bilgilendirme/duygulandırma), biçim (dize/düzyazı) ve anlatım incelenir."),
+        ("Fabl ile masal arasındaki en önemli fark nedir?", new[] { "Fablda kahramanlar hayvanlardır ve açık bir ders vardır", "Masallar her zaman gerçektir", "Fabllar çok uzundur" }, "Fablda kahramanlar hayvanlardır ve açık bir ders vardır",
+            "Fablın kahramanları insan gibi davranan hayvanlardır ve sonunda ders (kıssadan hisse) verilir.")
+    };
+
+    private static QuizQuestion MetinTurleri(Random r)
+    {
+        var f = MetinTurleriListe[r.Next(MetinTurleriListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Metin Türleri", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Masal = olağanüstü + -miş'li geçmiş, fabl = hayvanlar + ders, günlük = günü gününe, anı = sonradan, haber = 5N1K, şiir = dize/uyak."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] MedyaIletisimListe =
+    {
+        ("gazete", "Zeitung", new[] { "Buch", "Brief", "Heft" }),
+        ("dergi", "Zeitschrift", new[] { "Wörterbuch", "Plakat", "Rechnung" }),
+        ("haber", "Nachricht", new[] { "Werbung", "Roman", "Gedicht" }),
+        ("ekran", "Bildschirm", new[] { "Tastatur", "Drucker", "Lautsprecher" }),
+        ("şifre", "Passwort", new[] { "Benutzername", "Adresse", "Unterschrift" }),
+        ("kullanıcı", "Nutzer", new[] { "Verkäufer", "Nachbar", "Schüler" }),
+        ("bağlantı", "Verbindung", new[] { "Trennung", "Rechnung", "Sendungssprecher" }),
+        ("canlı yayın", "Live-Sendung", new[] { "Wiederholung", "Werbepause", "Aufzeichnung von gestern" }),
+        ("reklam", "Werbung", new[] { "Nachrichtensendung", "Wettervorhersage", "Dokumentation" }),
+        ("belgesel", "Dokumentarfilm", new[] { "Zeichentrickfilm", "Quizshow", "Seifenoper" }),
+        ("manşet", "Schlagzeile", new[] { "Fußnote", "Inhaltsverzeichnis", "Impressum" }),
+        ("muhabir", "Reporter", new[] { "Schauspieler", "Zuschauer", "Verleger" }),
+        ("izleyici", "Zuschauer", new[] { "Moderator", "Kameramann", "Regisseur" }),
+        ("okuyucu", "Leser", new[] { "Autor", "Drucker", "Verkäufer" }),
+        ("yorum", "Kommentar", new[] { "Überschrift", "Seitenzahl", "Anzeige" }),
+        ("paylaşmak", "teilen", new[] { "löschen", "drucken", "kaufen" }),
+        ("indirmek", "herunterladen", new[] { "hochladen", "ausschalten", "verkaufen" }),
+        ("yüklemek", "hochladen", new[] { "herunterladen", "abschreiben", "ausleihen" }),
+        ("kaynak", "Quelle", new[] { "Meinung", "Gerücht", "Werbespot" }),
+        ("sosyal medya", "soziale Medien", new[] { "Tageszeitung", "Radiosender", "Telefonbuch" })
+    };
+
+    private static QuizQuestion MedyaVeIletisim(Random r)
+    {
+        var d = MedyaIletisimListe[r.Next(MedyaIletisimListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Medya ve İletişim – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" kelimesinin Almancası hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Medya ve iletişim kelimeleri: gazete, haber, manşet, muhabir, kaynak, paylaşmak, indirmek/yüklemek."
         };
     }
 }

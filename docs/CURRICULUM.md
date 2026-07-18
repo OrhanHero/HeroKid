@@ -68,18 +68,18 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## Türkisch (`TurkishGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Şimdiki Zaman (Präsens) | Cümlenin Ögeleri (Satzglieder) |
-| Geçmiş Zaman (Präteritum/-di'li geçmiş) | Gelecek Zaman (Futur) |
-| Eş Anlamlı Kelimeler (Synonyme) | Yazım Kuralları (Rechtschreibung) |
-| Zıt Anlamlı Kelimeler (Antonyme) | Fiilimsi (Partizip/Verbalnomen) |
-| Doğa ve Çevre (Natur und Umwelt) – Wortschatz | Kimlik ve Gelecek (Identität und Zukunft) – Wortschatz |
-| Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
-| Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | Türkiye'nin Coğrafyası (Geografie der Türkei) |
-| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | Alltag, Konsum und türkische Kultur – Wortschatz |
-| | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
-| | Schule, Ausbildung und Berufswelt – Wortschatz |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Şimdiki Zaman (Präsens) | Şimdiki Zamanın Hikâyesi (-yordu) | Cümlenin Ögeleri (Satzglieder) |
+| Geçmiş Zaman (Präteritum/-di'li geçmiş) | Belirsiz Geçmiş Zaman (-miş'li geçmiş) | Gelecek Zaman (Futur) |
+| Eş Anlamlı Kelimeler (Synonyme) | Deyimler ve Atasözleri | Yazım Kuralları (Rechtschreibung) |
+| Zıt Anlamlı Kelimeler (Antonyme) | Noktalama İşaretleri | Fiilimsi (Partizip/Verbalnomen) |
+| Doğa ve Çevre (Natur und Umwelt) – Wortschatz | Metin Türleri (Textsorten) | Kimlik ve Gelecek (Identität und Zukunft) – Wortschatz |
+| Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Medya ve İletişim – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
+| Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | | Türkiye'nin Coğrafyası (Geografie der Türkei) |
+| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | | Alltag, Konsum und türkische Kultur – Wortschatz |
+| | | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
+| | | Schule, Ausbildung und Berufswelt – Wortschatz |
 
 ## Physik (`PhysikGenerator.cs`)
 

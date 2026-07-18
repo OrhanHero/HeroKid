@@ -97,4 +97,13 @@ public class MathGeneratorTests
         Assert.Equal(12, questions.Count);
         Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
+
+    [Fact]
+    public void Tuerkisch_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
+    {
+        var questions = new TurkishGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));
+
+        Assert.Equal(12, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+    }
 }

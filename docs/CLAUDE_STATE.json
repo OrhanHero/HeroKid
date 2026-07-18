@@ -2,6 +2,7 @@
   "purpose": "Kurzzeitgedächtnis für Claude-Sessions. Nach jedem erledigten Schritt aktualisieren. Langfassung: docs/STATUS-REPORT.md",
   "updated": "2026-07-18",
   "done": [
+    "Klasse-7-Sprint Teil 4 (Tuerkisch): 6 Themen im TurkishGenerator (Simdiki zamanin hikayesi, -mis'li gecmis, Deyimler/Atasozleri, Noktalama, Metin turleri, Medya-Wortschatz), je ~20 kuratierte Fragen; OFFEN: die uebrigen 11 Faecher, danach Klasse 8/10",
     "Timer-Settings im Eltern-Bereich (pro Profil, additive DB-Spalten, kein Build noetig): Lesen-Pflichtzeit (2/5/8/10 min), News-Mindestzeit pro Artikel (5/10/20/30 s), Faecher-Mindestzeit pro Aufgabe (3/5/10/15 s); Alt-Zeilen mit 0 (Schema-Update DEFAULT 0) fallen im Repository-Mapping auf 5min/10s/5s zurueck - Tests: StudentProfileRepositoryTests",
     "Klasse-7-Sprint Teil 3 (Englisch, CI-verifiziert f699d62): 6 Themen im EnglischGenerator (Past Progressive, going-to/will-Future, Comparison, some/any-much/many, Freizeit/Reisen, UK-Landeskunde), je ~20 kuratierte Fragen; OFFEN: die uebrigen 12 Faecher (Tuerkisch als naechstes Kernfach), danach Klasse 8/10",
     "Klasse-7-Sprint Teil 2 (Deutsch): 6 Themen im GermanGenerator (Konjunktiv/indirekte Rede, Adverbialsaetze, Sprachliche Bilder, Inhaltsangabe, Argumentieren, Kurzgeschichten), je ~20 kuratierte Fragen; Fallback-Test auf MusikGenerator umgestellt",
