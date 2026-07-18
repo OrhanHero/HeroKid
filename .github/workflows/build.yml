@@ -35,6 +35,17 @@ jobs:
         # die kein Unit-Test abdecken kann - siehe tests/LernTor.UiTests.
         run: dotnet test tests/LernTor.UiTests/LernTor.UiTests.csproj --configuration Release --no-build --verbosity normal
 
+      - name: Python für Content-Checks einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Längen-Bias-Wächter (Distraktoren dürfen nicht "richtig = längste Option" verraten)
+        # Kinder lernen sonst schnell "nimm die längste Antwort" statt den Inhalt zu lesen -
+        # siehe scripts/check-answer-length-bias.py. Schwelle 60% pro Generator, Zielwert der
+        # Nachbesserungen liegt bei ~35% (nahe Zufallserwartung).
+        run: python scripts/check-answer-length-bias.py
+
       - name: Self-contained Windows-Build veröffentlichen
         # Identische Flags wie der dokumentierte Release-Build (docs/BUILD.md), damit das
         # CI-Artefakt wirklich dem entspricht, was auch installiert wird: Single-File +
