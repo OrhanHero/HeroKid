@@ -970,6 +970,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             System.Windows.MessageBoxButton.OK,
             System.Windows.MessageBoxImage.Information);
 
+        // Vor jedem beabsichtigten Beenden zuerst entsperren - MainWindow verweigert das
+        // Schließen sonst (Schutz gegen den Alt+Tab-"X"-Button, siehe MainWindow_Closing).
+        _kioskLock.Unlock();
         System.Windows.Application.Current.Shutdown();
     }
 
@@ -1066,6 +1069,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             System.Windows.MessageBoxButton.OK,
             System.Windows.MessageBoxImage.Information);
 
+        // Vor jedem beabsichtigten Beenden zuerst entsperren - MainWindow verweigert das
+        // Schließen sonst (Schutz gegen den Alt+Tab-"X"-Button, siehe MainWindow_Closing).
+        _kioskLock.Unlock();
         System.Windows.Application.Current.Shutdown();
     }
 

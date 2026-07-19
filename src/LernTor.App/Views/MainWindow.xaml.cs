@@ -39,6 +39,32 @@ public partial class MainWindow : Window
         _foregroundWatchdog.Start();
 
         Closed += (_, _) => _foregroundWatchdog.Stop();
+        Closing += MainWindow_Closing;
+    }
+
+    /// <summary>
+    /// Verhindert das eigentliche Schließen, solange der Kiosk gesperrt ist - unabhängig davon,
+    /// WIE der Schließen-Befehl ausgelöst wurde. Realer Bug: Windows 11 zeigt im Alt+Tab-
+    /// Umschalter ein "X" direkt auf jeder Fenster-Kachel, mit dem sich ein Fenster schließen
+    /// lässt, OHNE dass zuvor überhaupt zu ihm gewechselt wird - der Keyboard-Hook (der nur
+    /// Tastendrücke abfängt) und der Foreground-Watchdog (der nur den Fokus zurückholt) greifen
+    /// hier beide nicht, weil kein Tastendruck und kein Fokuswechsel involviert ist, sondern ein
+    /// direkter WM_CLOSE. Legitime Beendigungen (Freischaltung nach bestandenem Quiz, Eltern-
+    /// Bereich-Sofortentsperrung, Werkseinstellungen, Sicherung wiederherstellen) rufen VOR
+    /// Application.Shutdown() immer erst KioskLockService.Unlock() auf - IsLocked ist dann schon
+    /// false und diese Fälle werden hier nicht blockiert.
+    /// </summary>
+    private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (!_kioskLockService.IsLocked)
+        {
+            return;
+        }
+
+        e.Cancel = true;
+        Topmost = false;
+        Topmost = true;
+        Activate();
     }
 
     private void ReclaimForegroundIfEscaped()

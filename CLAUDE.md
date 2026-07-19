@@ -187,7 +187,14 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   whenever the foreground window belongs to a **different process** — this catches Alt+Tab, Win+D,
   taskbar clicks, etc. regardless of whether the keyboard hook caught the specific key combo. It
   compares process IDs (not window handles) so the Eltern-Bereich window (same process) is left
-  alone.
+  alone. **Neither of those stopped the app from actually closing**, though: Windows 11's Alt+Tab
+  switcher renders a close ("X") button directly on each window's thumbnail, letting a child close
+  LernTor via a plain `WM_CLOSE` without any key combo or focus change involved — invisible to both
+  measures above. `MainWindow.Closing` therefore cancels the close outright whenever
+  `KioskLockService.IsLocked` is still true. Every intentional shutdown path (daily unlock,
+  Eltern-Bereich-Sofortentsperrung, Werkseinstellungen, Sicherung wiederherstellen) must call
+  `KioskLockService.Unlock()` *before* `Application.Current.Shutdown()` — forgetting that on a new
+  shutdown path makes `MainWindow.Closing` block it.
 - Enum values serialized via `System.Text.Json` default to numeric encoding — reordering/adding
   enum members then silently reinterprets old saved data. `LernTor.Data.JsonOptions.Default`
   (a shared `JsonSerializerOptions` with `JsonStringEnumConverter`) is used for anything persisting

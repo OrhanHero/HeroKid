@@ -634,6 +634,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void OnUnlockConfirmed()
     {
+        // _kioskLock.Unlock() ist zu diesem Zeitpunkt bereits gelaufen (siehe oben, sobald
+        // Progress.IsUnlocked wahr wird) - MainWindow verweigert das Schließen sonst
+        // (Schutz gegen den Alt+Tab-"X"-Button, siehe MainWindow_Closing).
         System.Windows.Application.Current.Shutdown();
     }
 }
