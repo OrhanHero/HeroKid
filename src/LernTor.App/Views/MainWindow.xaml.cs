@@ -1,15 +1,71 @@
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 using LernTor.App.ViewModels;
+using LernTor.Security;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LernTor.App.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow(MainViewModel viewModel)
+    [DllImport("user32.dll")]
+    private static extern nint GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(nint hWnd, out uint lpdwProcessId);
+
+    private readonly KioskLockService _kioskLockService;
+    private readonly DispatcherTimer _foregroundWatchdog;
+
+    public MainWindow(MainViewModel viewModel, KioskLockService kioskLockService)
     {
         InitializeComponent();
         DataContext = viewModel;
+        _kioskLockService = kioskLockService;
+
+        // Zweite, unabhängige Verteidigungslinie neben KioskKeyboardHook (WH_KEYBOARD_LL):
+        // Kinder kommen z.B. über Alt+Tab (oder andere Wege, die der Keyboard-Hook auf
+        // einzelnen Rechnern nicht abfängt - Gruppenrichtlinie/Timing/Edge-Cases) aus dem
+        // Vollbild heraus. Statt jede denkbare Tastenkombination einzeln zu jagen, holt dieser
+        // Watchdog das Fenster alle 300ms zurück in den Vordergrund, sobald der Fokus bei
+        // einem FREMDEN Prozess liegt - der Eltern-Bereich (selbe Prozess-ID, eigenes Fenster)
+        // bleibt davon unberührt, sonst könnten Eltern ihr eigenes Fenster nicht bedienen.
+        _foregroundWatchdog = new DispatcherTimer(DispatcherPriority.Background)
+        {
+            Interval = TimeSpan.FromMilliseconds(300)
+        };
+        _foregroundWatchdog.Tick += (_, _) => ReclaimForegroundIfEscaped();
+        _foregroundWatchdog.Start();
+
+        Closed += (_, _) => _foregroundWatchdog.Stop();
+    }
+
+    private void ReclaimForegroundIfEscaped()
+    {
+        if (!_kioskLockService.IsLocked)
+        {
+            return;
+        }
+
+        var foreground = GetForegroundWindow();
+        if (foreground == nint.Zero)
+        {
+            return;
+        }
+
+        GetWindowThreadProcessId(foreground, out var foregroundProcessId);
+        if (foregroundProcessId == (uint)Environment.ProcessId)
+        {
+            // Fokus liegt bereits bei uns oder einem eigenen Fenster (z.B. Eltern-Bereich) - nichts zu tun.
+            return;
+        }
+
+        // Topmost aus/an erzwingt einen frischen Z-Order-Wechsel (reines Activate() reicht bei
+        // manchen fremden Vordergrund-Fenstern - z.B. dem Alt+Tab-Task-Switcher - nicht aus).
+        Topmost = false;
+        Topmost = true;
+        Activate();
     }
 
     private void ParentAccessButton_Click(object sender, RoutedEventArgs e)

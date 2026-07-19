@@ -180,6 +180,14 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   Group Policy/antivirus can deny the `DisableTaskMgr` registry write on some machines. Each
   measure (keyboard hook, task-manager policy) is attempted independently and failures are
   collected as warnings, not thrown.
+- The `WH_KEYBOARD_LL` hook (`KioskKeyboardHook`) that blocks Win/Alt+Tab/Alt+Esc/Ctrl+Esc/Alt+F4
+  is not 100% reliable on every machine (timing, Group Policy, edge cases) — kids escaping the
+  kiosk via Alt+Tab was a real bug. `MainWindow` therefore runs a second, independent line of
+  defense: a `DispatcherTimer` polling `GetForegroundWindow()` every 300ms that reclaims focus
+  whenever the foreground window belongs to a **different process** — this catches Alt+Tab, Win+D,
+  taskbar clicks, etc. regardless of whether the keyboard hook caught the specific key combo. It
+  compares process IDs (not window handles) so the Eltern-Bereich window (same process) is left
+  alone.
 - Enum values serialized via `System.Text.Json` default to numeric encoding — reordering/adding
   enum members then silently reinterprets old saved data. `LernTor.Data.JsonOptions.Default`
   (a shared `JsonSerializerOptions` with `JsonStringEnumConverter`) is used for anything persisting
