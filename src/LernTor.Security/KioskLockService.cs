@@ -1,9 +1,12 @@
 namespace LernTor.Security;
 
 /// <summary>
-/// Fasst alle Soft-Lock-Maßnahmen zusammen: Keyboard-Hook (Win-Taste/Alt+Tab/Ctrl+Esc)
-/// + Task-Manager-Registry-Sperre. Fensterbezogene Maßnahmen (Vollbild, Topmost, kein
-/// Fensterrahmen) werden im WPF-Fenster selbst gesetzt (LernTor.App/Views/MainWindow).
+/// Fasst alle Soft-Lock-Maßnahmen zusammen: Keyboard-Hook (Win-Taste/Alt+Tab/Win+Tab/Ctrl+Esc)
+/// + Task-Manager-Registry-Sperre + Windows-Tasten-Hotkey-Richtlinie (NoWinKeys - zusätzliche
+/// Absicherung gegen Win+Tab/Aufgabenansicht/virtuelle Desktops auf Shell-Ebene, siehe
+/// WindowsHotkeyPolicy). Fensterbezogene Maßnahmen (Vollbild, Topmost, kein Fensterrahmen,
+/// Fokus-Watchdog, Schließen-Sperre) werden im WPF-Fenster selbst gesetzt
+/// (LernTor.App/Views/MainWindow).
 ///
 /// Jede Maßnahme wird unabhängig von den anderen versucht: Auf manchen Rechnern verweigert
 /// Gruppenrichtlinie/Virenschutz den Registry-Zugriff für die Task-Manager-Sperre (dieser
@@ -16,6 +19,7 @@ public sealed class KioskLockService : IDisposable
     private readonly KioskKeyboardHook _keyboardHook = new();
     private bool _isLocked;
     private bool _taskManagerPolicyActive;
+    private bool _windowsHotkeyPolicyActive;
 
     public bool IsLocked => _isLocked;
 
@@ -50,6 +54,16 @@ public sealed class KioskLockService : IDisposable
             warnings.Add($"Task-Manager-Sperre konnte nicht aktiviert werden (Gruppenrichtlinie/Virenschutz?): {ex.Message}");
         }
 
+        try
+        {
+            WindowsHotkeyPolicy.Disable();
+            _windowsHotkeyPolicyActive = true;
+        }
+        catch (Exception ex)
+        {
+            warnings.Add($"Windows-Tasten-Sperre (Win+Tab/D/E/R/X) konnte nicht aktiviert werden (Gruppenrichtlinie/Virenschutz?): {ex.Message}");
+        }
+
         Warnings = warnings;
         _isLocked = true;
     }
@@ -76,6 +90,19 @@ public sealed class KioskLockService : IDisposable
             {
                 TaskManagerPolicy.Enable();
                 _taskManagerPolicyActive = false;
+            }
+            catch
+            {
+                // Siehe oben.
+            }
+        }
+
+        if (_windowsHotkeyPolicyActive)
+        {
+            try
+            {
+                WindowsHotkeyPolicy.Enable();
+                _windowsHotkeyPolicyActive = false;
             }
             catch
             {

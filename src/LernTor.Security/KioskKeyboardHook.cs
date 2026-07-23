@@ -3,11 +3,22 @@ using System.Runtime.InteropServices;
 namespace LernTor.Security;
 
 /// <summary>
-/// Globaler Low-Level-Keyboard-Hook (WH_KEYBOARD_LL), der die Windows-Taste, Alt+Tab,
-/// Strg+Esc und Alt+Esc unterdrückt, solange der Kiosk-Modus aktiv ist.
+/// Globaler Low-Level-Keyboard-Hook (WH_KEYBOARD_LL), der die Windows-Taste (allein und in
+/// Kombination), Alt+Tab, Strg+Esc und Alt+Esc unterdrückt, solange der Kiosk-Modus aktiv ist.
 /// Wichtig: Strg+Alt+Entf (Secure Attention Sequence) kann von KEINER Anwendung im
 /// User-Modus abgefangen werden – das ist ein bewusster OS-Schutz von Windows.
 /// Als Gegenmaßnahme dafür wird zusätzlich <see cref="TaskManagerPolicy"/> gesetzt.
+///
+/// <para><b>Win-Tasten-Kombinationen (Win+Tab/D/E/R/X/I, Strg+Win+D/F4/Pfeiltasten):</b> Ein
+/// realer Bug zeigte, dass Kinder über Win+Tab die Aufgabenansicht öffneten und darüber einen
+/// NEUEN virtuellen Desktop anlegten - auf dem die Kiosk-App gar nicht läuft, also voller
+/// PC-Zugriff. Das bloße Verschlucken des Win-Tasten-Drucks selbst (<c>isWindowsKey</c>) reicht
+/// dafür NICHT: Windows verfolgt den physischen Tastenzustand unabhängig von verschluckten
+/// Nachrichten weiter (<see cref="GetAsyncKeyState"/> bleibt "gedrückt"), und die Shell erkennt
+/// die Win+Taste-Kombination trotzdem. Deshalb wird der Win-Tasten-Zustand hier zusätzlich
+/// GEPRÜFT (wie schon für Alt/Strg) und jede bekannte Kombination einzeln blockiert. Als weitere,
+/// unabhängige Absicherung setzt <see cref="KioskLockService"/> zusätzlich die
+/// <c>NoWinKeys</c>-Gruppenrichtlinie (siehe <see cref="WindowsHotkeyPolicy"/>).</para>
 /// </summary>
 public sealed class KioskKeyboardHook : IDisposable
 {
@@ -22,6 +33,13 @@ public sealed class KioskKeyboardHook : IDisposable
     private const int VK_MENU = 0x12; // Alt
     private const int VK_CONTROL = 0x11;
     private const int VK_F4 = 0x73;
+    private const int VK_LEFT = 0x25;
+    private const int VK_RIGHT = 0x27;
+    private const int VK_D = 0x44;
+    private const int VK_E = 0x45;
+    private const int VK_R = 0x52;
+    private const int VK_X = 0x58;
+    private const int VK_I = 0x49;
 
     private delegate nint LowLevelKeyboardProc(int nCode, nint wParam, nint lParam);
 
@@ -87,6 +105,7 @@ public sealed class KioskKeyboardHook : IDisposable
             int vkCode = Marshal.ReadInt32(lParam);
             bool altPressed = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
             bool ctrlPressed = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+            bool winPressed = (GetAsyncKeyState(VK_LWIN) & 0x8000) != 0 || (GetAsyncKeyState(VK_RWIN) & 0x8000) != 0;
 
             bool isWindowsKey = vkCode is VK_LWIN or VK_RWIN;
             bool isAltTab = altPressed && vkCode == VK_TAB;
@@ -94,7 +113,15 @@ public sealed class KioskKeyboardHook : IDisposable
             bool isCtrlEsc = ctrlPressed && vkCode == VK_ESCAPE;
             bool isAltF4 = altPressed && vkCode == VK_F4;
 
-            if (isWindowsKey || isAltTab || isAltEsc || isCtrlEsc || isAltF4)
+            // Win+Tab (Aufgabenansicht/virtuelle Desktops), Win+Strg+D (neuer Desktop direkt),
+            // Win+Strg+Pfeiltasten (Desktop wechseln), Win+Strg+F4 (Desktop schließen),
+            // Win+D (Desktop anzeigen), Win+E (Explorer), Win+R (Ausführen-Dialog: Kommandozeile!),
+            // Win+X (Schnellzugriffsmenü: u.a. PowerShell/Terminal!), Win+I (Einstellungen).
+            // Win+L (Sperren) bleibt bewusst erlaubt - sperrt nur, gibt keinen PC-Zugriff frei.
+            bool isWinCombo = winPressed && vkCode is VK_TAB or VK_D or VK_E or VK_R or VK_X or VK_I
+                or VK_LEFT or VK_RIGHT or VK_F4;
+
+            if (isWindowsKey || isAltTab || isAltEsc || isCtrlEsc || isAltF4 || isWinCombo)
             {
                 // Taste verschlucken statt weiterzuleiten -> Windows reagiert nicht darauf.
                 return (nint)1;

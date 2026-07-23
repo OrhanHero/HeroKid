@@ -195,6 +195,17 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   Eltern-Bereich-Sofortentsperrung, Werkseinstellungen, Sicherung wiederherstellen) must call
   `KioskLockService.Unlock()` *before* `Application.Current.Shutdown()` — forgetting that on a new
   shutdown path makes `MainWindow.Closing` block it.
+- Blocking the bare Windows key (`isWindowsKey` in `KioskKeyboardHook`) does **not** block Win+combo
+  shortcuts — a real bug let kids open Task View via Win+Tab and create a brand-new virtual
+  desktop (LernTor doesn't exist there → full unrestricted PC access). Swallowing the Win keydown
+  message doesn't stop Windows from tracking the key as physically held (`GetAsyncKeyState` still
+  reports it down), so the shell recognizes the combo anyway — the hook now explicitly checks
+  `winPressed` (like `altPressed`/`ctrlPressed`) and blocks Win+Tab/D/E/R/X/I and
+  Win+Ctrl+Left/Right/F4 (virtual-desktop switch/close) individually. As a second, independent
+  layer (some Win+combos, especially Task View, are recognized by the shell in ways a low-level
+  hook alone can't reliably catch on every Windows build), `KioskLockService` also sets the
+  `NoWinKeys` registry policy (`WindowsHotkeyPolicy`, same pattern as `TaskManagerPolicy`/
+  `DisableTaskMgr`) for the duration of the lock.
 - Enum values serialized via `System.Text.Json` default to numeric encoding — reordering/adding
   enum members then silently reinterprets old saved data. `LernTor.Data.JsonOptions.Default`
   (a shared `JsonSerializerOptions` with `JsonStringEnumConverter`) is used for anything persisting
