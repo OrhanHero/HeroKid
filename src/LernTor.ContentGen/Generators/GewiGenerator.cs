@@ -15,6 +15,7 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Epochen, Himmelsrichtungen, Kinderrechte, Ernaehrung, WasserAlsRessource, StadtUndVielfalt, EuropaGrenzenlos, TourismusUndMobilitaet, DemokratieUndMitbestimmung },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { ArmutUndGerechtigkeit, EuropaUndEU, MigrationUndVielfalt, KonsumUndVerantwortung, MedienUndDigitalesLeben, NachhaltigkeitUndKlima },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Grundgesetz, Wirtschaftskreislauf, MedienGesellschaft }
         };
 
@@ -689,6 +690,340 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
             Topic = "Medien und Gesellschaft", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Medien gelten als \"vierte Gewalt\": sie informieren und kontrollieren Politik - deshalb vor dem Teilen immer Quelle und Fakten prüfen."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort (siehe
+    // scripts/check-answer-length-bias.py).
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArmutUndGerechtigkeitListe =
+    {
+        ("Was bedeutet relative Armut in Deutschland?", new[] { "Weniger als 60 Prozent des mittleren Einkommens", "Kein Zugang zu sauberem Trinkwasser", "Überhaupt kein eigenes Einkommen" }, "Weniger als 60 Prozent des mittleren Einkommens",
+            "Relative Armut misst, ob jemand am üblichen Leben teilhaben kann."),
+        ("Was ist absolute Armut?", new[] { "Grundbedürfnisse wie Essen und Obdach sind nicht gedeckt", "Ein Einkommen unter dem Landesdurchschnitt (was so in der Praxis nicht zutrifft)", "Kein eigenes Auto zu besitzen" }, "Grundbedürfnisse wie Essen und Obdach sind nicht gedeckt",
+            "Sie betrifft weltweit vor allem Menschen im globalen Süden."),
+        ("Was erhöht das Armutsrisiko in Deutschland besonders?", new[] { "Alleinerziehend sein oder ohne Berufsabschluss", "In einer Großstadt zu wohnen", "Mehr als zwei Geschwister zu haben" }, "Alleinerziehend sein oder ohne Berufsabschluss",
+            "Auch Langzeitarbeitslosigkeit erhöht das Risiko deutlich."),
+        ("Warum ist Bildung für Lebenschancen so wichtig?", new[] { "Sie beeinflusst Beruf, Einkommen und Teilhabe", "Sie ist gesetzlich vorgeschrieben", "Sie verkürzt die Arbeitszeit" }, "Sie beeinflusst Beruf, Einkommen und Teilhabe",
+            "In Deutschland hängt Bildungserfolg noch stark vom Elternhaus ab."),
+        ("Was bedeutet Chancengleichheit?", new[] { "Alle sollen unabhängig von der Herkunft die gleichen Möglichkeiten haben", "Alle sollen am Ende gleich viel verdienen - eine verbreitete, aber falsche Annahme", "Alle müssen denselben Beruf ergreifen" }, "Alle sollen unabhängig von der Herkunft die gleichen Möglichkeiten haben",
+            "Ganztagsschulen und Förderprogramme sollen dazu beitragen."),
+        ("Was ist der Sozialstaat?", new[] { "Ein Staat, der seine Bürger sozial absichert", "Ein Staat ohne jede Steuererhebung", "Ein Staat mit reiner Planwirtschaft, was einer genaueren Pruefung nicht standhaelt" }, "Ein Staat, der seine Bürger sozial absichert",
+            "Das Sozialstaatsprinzip steht im Grundgesetz."),
+        ("Welche Zweige umfasst die Sozialversicherung?", new[] { "Kranken-, Renten-, Pflege-, Unfall- und Arbeitslosenversicherung", "Nur Kranken- und Rentenversicherung, obwohl das auf den ersten Blick plausibel klingt", "Haftpflicht und Hausratversicherung" }, "Kranken-, Renten-, Pflege-, Unfall- und Arbeitslosenversicherung",
+            "Sie beruht auf dem Solidarprinzip: Alle zahlen ein, Bedürftige erhalten Leistungen."),
+        ("Was bedeutet das Solidarprinzip?", new[] { "Starke Schultern tragen mehr als schwache", "Jeder zahlt genau denselben Betrag, was die eigentliche Bedeutung des Begriffs verfehlt", "Nur Kranke zahlen Beiträge" }, "Starke Schultern tragen mehr als schwache",
+            "Die Beiträge richten sich nach dem Einkommen, die Leistungen nach dem Bedarf."),
+        ("Wozu dient der Mindestlohn?", new[] { "Er sichert eine Lohnuntergrenze für alle Beschäftigten", "Er legt das Höchstgehalt fest und deshalb hier nicht zutrifft", "Er gilt nur für Auszubildende" }, "Er sichert eine Lohnuntergrenze für alle Beschäftigten",
+            "Er soll verhindern, dass Menschen trotz Vollzeitarbeit arm bleiben."),
+        ("Was ist die Tafel?", new[] { "Eine Einrichtung, die Lebensmittel an Bedürftige verteilt", "Eine staatliche Behörde für Sozialhilfe", "Ein Beratungsdienst für Schulden" }, "Eine Einrichtung, die Lebensmittel an Bedürftige verteilt",
+            "Sie rettet zugleich Lebensmittel, die sonst weggeworfen würden."),
+        ("Was zeigt die Einkommensverteilung in Deutschland?", new[] { "Der Wohlstand ist ungleich verteilt", "Alle verdienen ungefähr gleich viel", "Die Unterschiede sind gesetzlich verboten" }, "Der Wohlstand ist ungleich verteilt",
+            "Die reichsten zehn Prozent besitzen einen Großteil des Vermögens."),
+        ("Was ist Kinderarmut?", new[] { "Kinder in Haushalten mit sehr geringem Einkommen", "Kinder ohne eigenes Taschengeld, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Kinder ohne Smartphone" }, "Kinder in Haushalten mit sehr geringem Einkommen",
+            "In manchen Berliner Bezirken ist mehr als jedes dritte Kind betroffen."),
+        ("Warum ist Armut nicht nur eine Frage des Geldes?", new[] { "Sie beschränkt auch Teilhabe, Gesundheit und Bildung", "Sie betrifft ausschließlich die Ernährung", "Sie ist nur ein statistisches Problem" }, "Sie beschränkt auch Teilhabe, Gesundheit und Bildung",
+            "Wer nicht mitfahren kann auf Klassenfahrt, ist auch sozial ausgeschlossen."),
+        ("Was ist ein Bildungs- und Teilhabepaket?", new[] { "Staatliche Zuschüsse für Schulbedarf und Freizeit", "Ein Schulbuchverleih für alle Kinder", "Ein Programm für Hochbegabte" }, "Staatliche Zuschüsse für Schulbedarf und Freizeit",
+            "Es soll Kindern aus armen Familien Ausflüge und Vereinsbeiträge ermöglichen."),
+        ("Was versteht man unter dem globalen Süden?", new[] { "Wirtschaftlich benachteiligte Weltregionen", "Alle Länder südlich des Äquators", "Die südlichen EU-Staaten" }, "Wirtschaftlich benachteiligte Weltregionen",
+            "Der Begriff ersetzt das wertende Wort Entwicklungsländer."),
+        ("Was sind die Nachhaltigkeitsziele der Vereinten Nationen?", new[] { "17 globale Ziele bis 2030 für eine gerechtere Welt", "Ein Klimaabkommen einzelner Staaten", "Handelsregeln der Welthandelsorganisation" }, "17 globale Ziele bis 2030 für eine gerechtere Welt",
+            "Ziel eins lautet: Armut in jeder Form beenden."),
+        ("Was ist fairer Handel?", new[] { "Handel mit garantierten Mindestpreisen für Erzeuger", "Handel ganz ohne Zwischenhändler", "Handel nur innerhalb Europas" }, "Handel mit garantierten Mindestpreisen für Erzeuger",
+            "So sollen Bauern im globalen Süden verlässlich planen können."),
+        ("Woran erkennt man fair gehandelte Produkte?", new[] { "An anerkannten Siegeln auf der Verpackung", "Am deutlich höheren Preis allein", "An der Herkunft aus Europa" }, "An anerkannten Siegeln auf der Verpackung",
+            "Siegel sind aber unterschiedlich streng - genaues Hinsehen lohnt sich."),
+        ("Was ist Mikrokredit?", new[] { "Ein Kleinkredit für Existenzgründungen", "Ein Kredit für Großkonzerne", "Ein zinsloses Darlehen vom Staat" }, "Ein Kleinkredit für Existenzgründungen",
+            "Kleine Summen ermöglichen etwa den Kauf einer Nähmaschine."),
+        ("Warum ist Armutsbekämpfung eine gemeinsame Aufgabe?", new[] { "Ursachen und Folgen wirken weltweit zusammen", "Sie betrifft nur einzelne Staaten", "Nur Wohlfahrtsverbände sind zuständig, auch wenn das manche zunaechst vermuten wuerden" }, "Ursachen und Folgen wirken weltweit zusammen",
+            "Handel, Klimawandel und Konflikte hängen eng miteinander zusammen.")
+    };
+
+    private static QuizQuestion ArmutUndGerechtigkeit(Random r)
+    {
+        var f = ArmutUndGerechtigkeitListe[r.Next(ArmutUndGerechtigkeitListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Armut und Gerechtigkeit", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Relative Armut = unter 60% des mittleren Einkommens. Sozialstaat und Solidarprinzip: alle zahlen ein, Bedürftige erhalten. Chancengleichheit hängt in Deutschland noch stark vom Elternhaus ab."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EuropaUndEUListe =
+    {
+        ("Wie viele Mitgliedstaaten hat die Europäische Union derzeit?", new[] { "27 Staaten", "15 Staaten", "50 Staaten" }, "27 Staaten",
+            "Nach dem Austritt Großbritanniens 2020 sind es 27."),
+        ("Was ist der Binnenmarkt der EU?", new[] { "Freier Verkehr von Waren, Personen, Dienstleistungen und Kapital", "Ein gemeinsamer Militärverband, was bei genauerem Hinsehen nicht stimmt (was so in der Praxis nicht zutrifft)", "Eine gemeinsame Steuerbehörde" }, "Freier Verkehr von Waren, Personen, Dienstleistungen und Kapital",
+            "Diese vier Grundfreiheiten sind der Kern der Union."),
+        ("Was regelt das Schengener Abkommen?", new[] { "Wegfall der Grenzkontrollen zwischen Mitgliedstaaten", "Die gemeinsame Währung", "Die Verteilung der Agrarhilfen - eine verbreitete, aber falsche Annahme" }, "Wegfall der Grenzkontrollen zwischen Mitgliedstaaten",
+            "Man kann von Berlin bis Lissabon ohne Passkontrolle reisen."),
+        ("Welche Währung nutzen die meisten EU-Staaten?", new[] { "Den Euro", "Den Schweizer Franken", "Das britische Pfund" }, "Den Euro",
+            "20 der 27 Mitgliedstaaten bilden die Eurozone."),
+        ("Welchen Vorteil bringt eine gemeinsame Währung?", new[] { "Kein Umtausch und leichter Preisvergleich", "Höhere Zinsen für alle Sparer", "Niedrigere Steuern in allen Ländern" }, "Kein Umtausch und leichter Preisvergleich",
+            "Nachteil: Ein Land kann seine Währung nicht mehr eigenständig anpassen."),
+        ("Wer wählt das Europäische Parlament?", new[] { "Die Bürgerinnen und Bürger der Mitgliedstaaten", "Die nationalen Regierungen", "Die EU-Kommission" }, "Die Bürgerinnen und Bürger der Mitgliedstaaten",
+            "Es ist das einzige direkt gewählte EU-Organ."),
+        ("Welche Aufgabe hat die Europäische Kommission?", new[] { "Sie schlägt Gesetze vor und führt sie aus", "Sie spricht Recht bei Streitfällen", "Sie wählt den EU-Ratspräsidenten" }, "Sie schlägt Gesetze vor und führt sie aus",
+            "Man nennt sie deshalb auch die Regierung der EU."),
+        ("Was war die ursprüngliche Idee der europäischen Einigung?", new[] { "Frieden durch wirtschaftliche Verflechtung sichern", "Einen gemeinsamen Staat zu gründen", "Eine Militärallianz gegen den Osten, was einer genaueren Pruefung nicht standhaelt" }, "Frieden durch wirtschaftliche Verflechtung sichern",
+            "Wer gemeinsam Kohle und Stahl verwaltet, führt keinen Krieg gegeneinander."),
+        ("Was war die Montanunion?", new[] { "Der Vorläufer der EU für Kohle und Stahl", "Ein Bündnis der Bergarbeitergewerkschaften", "Ein Handelsabkommen mit den USA" }, "Der Vorläufer der EU für Kohle und Stahl",
+            "1951 gegründet - beides waren die Rohstoffe der Rüstungsindustrie."),
+        ("Was bedeutet das Erasmus-Programm?", new[] { "Austauschprogramm für Studierende und Schüler", "Ein Stipendium für Spitzensportler, obwohl das auf den ersten Blick plausibel klingt", "Ein Förderprogramm für Landwirte" }, "Austauschprogramm für Studierende und Schüler",
+            "Millionen junger Menschen haben damit im Ausland gelernt."),
+        ("Was ist ein EU-Beitrittskandidat?", new[] { "Ein Staat, der aufgenommen werden möchte und geprüft wird", "Ein Staat, der bereits Mitglied ist, was die eigentliche Bedeutung des Begriffs verfehlt", "Ein Staat, der austreten will" }, "Ein Staat, der aufgenommen werden möchte und geprüft wird",
+            "Beitrittsländer müssen Rechtsstaat, Demokratie und Marktwirtschaft nachweisen."),
+        ("Welche Kriterien muss ein Beitrittsland erfüllen?", new[] { "Demokratie, Rechtsstaatlichkeit und Marktwirtschaft", "Eine Mindesteinwohnerzahl", "Mitgliedschaft in der NATO" }, "Demokratie, Rechtsstaatlichkeit und Marktwirtschaft",
+            "Diese Kopenhagener Kriterien wurden 1993 festgelegt."),
+        ("Was bedeutet Subsidiarität in der EU?", new[] { "Entscheidungen möglichst auf der untersten geeigneten Ebene", "Alle Entscheidungen trifft Brüssel", "Jedes Land entscheidet völlig allein und deshalb hier nicht zutrifft" }, "Entscheidungen möglichst auf der untersten geeigneten Ebene",
+            "Die EU handelt nur, wenn sie es besser kann als die Mitgliedstaaten."),
+        ("Was ist der Brexit?", new[] { "Der Austritt Großbritanniens aus der EU", "Ein Handelsabkommen mit Norwegen", "Die Einführung des Euro in Britannien, was so nicht korrekt ist" }, "Der Austritt Großbritanniens aus der EU",
+            "2016 im Referendum beschlossen, 2020 vollzogen."),
+        ("Welche Folgen hatte der Brexit für Reisende?", new[] { "Wieder Grenzkontrollen und neue Zollregeln", "Keinerlei praktische Veränderungen", "Eine gemeinsame Währung mit der EU" }, "Wieder Grenzkontrollen und neue Zollregeln",
+            "Auch Studium und Arbeiten wurden bürokratischer."),
+        ("Was fördert die EU-Regionalpolitik?", new[] { "Den Ausgleich zwischen reicheren und ärmeren Regionen", "Ausschließlich große Konzerne - eine haeufige, aber unzutreffende Vorstellung", "Den Bau von Militäranlagen" }, "Den Ausgleich zwischen reicheren und ärmeren Regionen",
+            "Auch in Brandenburg wurden Projekte mit EU-Mitteln finanziert."),
+        ("Warum ist die EU auch umstritten?", new[] { "Kritik an Bürokratie und Ferne von den Bürgern", "Weil sie keine Gesetze erlassen darf", "Weil sie nur aus drei Ländern besteht, auch wenn das manche zunaechst vermuten wuerden" }, "Kritik an Bürokratie und Ferne von den Bürgern",
+            "Befürworter verweisen auf Frieden, Freizügigkeit und Wirtschaftskraft."),
+        ("Was bedeutet Freizügigkeit in der EU?", new[] { "Das Recht, in jedem Mitgliedstaat zu leben und zu arbeiten", "Freier Eintritt in alle Museen", "Kostenlose Bahnfahrten für Jugendliche" }, "Das Recht, in jedem Mitgliedstaat zu leben und zu arbeiten",
+            "Sie gilt als eine der wichtigsten Errungenschaften der Union."),
+        ("Welche Rolle spielt die EU im Klimaschutz?", new[] { "Sie setzt gemeinsame Klimaziele für alle Mitglieder", "Sie überlässt das Thema den Einzelstaaten, was bei genauerem Hinsehen nicht stimmt", "Sie fördert vor allem Kohlekraftwerke" }, "Sie setzt gemeinsame Klimaziele für alle Mitglieder",
+            "Der Green Deal sieht Klimaneutralität bis 2050 vor."),
+        ("Warum ist Europa für Berlin besonders wichtig?", new[] { "Die Stadt lebt von Austausch, Handel und Zuwanderung", "Berlin ist Sitz der EU-Kommission (was so in der Praxis nicht zutrifft)", "Berlin erhält keine EU-Mittel" }, "Die Stadt lebt von Austausch, Handel und Zuwanderung",
+            "Menschen aus über 190 Nationen leben hier zusammen.")
+    };
+
+    private static QuizQuestion EuropaUndEU(Random r)
+    {
+        var f = EuropaUndEUListe[r.Next(EuropaUndEUListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Europa und die Europäische Union", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "EU: 27 Staaten, Binnenmarkt mit vier Grundfreiheiten, Schengen (keine Grenzkontrollen), Euro in 20 Staaten. Ursprung: Frieden durch wirtschaftliche Verflechtung (Montanunion 1951)."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MigrationUndVielfaltListe =
+    {
+        ("Was versteht man unter Migration?", new[] { "Menschen verlegen ihren Lebensmittelpunkt dauerhaft", "Reisen in den Urlaub", "Der Wechsel des Arbeitsplatzes im selben Ort - eine verbreitete, aber falsche Annahme" }, "Menschen verlegen ihren Lebensmittelpunkt dauerhaft",
+            "Migration gab es zu allen Zeiten und in alle Richtungen."),
+        ("Was ist der Unterschied zwischen Migranten und Geflüchteten?", new[] { "Geflüchtete verlassen ihr Land aus Zwang", "Migranten haben keinen Pass, was einer genaueren Pruefung nicht standhaelt", "Es gibt keinen Unterschied" }, "Geflüchtete verlassen ihr Land aus Zwang",
+            "Krieg, Verfolgung und Not lassen ihnen keine echte Wahl."),
+        ("Was sind Push-Faktoren?", new[] { "Gründe, die Menschen aus einem Land drängen", "Anreize eines Ziellandes, obwohl das auf den ersten Blick plausibel klingt", "Kosten einer Reise" }, "Gründe, die Menschen aus einem Land drängen",
+            "Krieg, Armut, Verfolgung und Umweltkatastrophen gehören dazu."),
+        ("Was sind Pull-Faktoren?", new[] { "Gründe, die ein Zielland attraktiv machen", "Hindernisse an der Grenze, was die eigentliche Bedeutung des Begriffs verfehlt", "Kosten für Schleuser" }, "Gründe, die ein Zielland attraktiv machen",
+            "Arbeit, Sicherheit, Bildung und Familie zählen dazu."),
+        ("Wer waren die Gastarbeiter in Deutschland?", new[] { "Angeworbene Arbeitskräfte ab den 1950er Jahren", "Saisonarbeiter aus der Landwirtschaft und deshalb hier nicht zutrifft", "Diplomaten aus dem Ausland" }, "Angeworbene Arbeitskräfte ab den 1950er Jahren",
+            "Anwerbeabkommen bestanden unter anderem mit Italien, Griechenland und der Türkei."),
+        ("Wann wurde das Anwerbeabkommen mit der Türkei geschlossen?", new[] { "1961", "1945", "1990" }, "1961",
+            "Viele Familien in Berlin haben ihre Geschichte in dieser Zeit."),
+        ("Warum blieben viele Gastarbeiter dauerhaft?", new[] { "Sie bauten hier ihr Leben und ihre Familien auf", "Die Rückreise war gesetzlich verboten", "Sie hatten ihre Pässe verloren" }, "Sie bauten hier ihr Leben und ihre Familien auf",
+            "Der Satz lautet oft: Man rief Arbeitskräfte, und es kamen Menschen."),
+        ("Was bedeutet Integration?", new[] { "Gleichberechtigte Teilhabe am gesellschaftlichen Leben", "Vollständige Aufgabe der eigenen Kultur, was so nicht korrekt ist", "Getrenntes Leben nebeneinander" }, "Gleichberechtigte Teilhabe am gesellschaftlichen Leben",
+            "Integration ist eine wechselseitige Aufgabe, nicht nur eine Bringschuld."),
+        ("Was unterscheidet Integration von Assimilation?", new[] { "Bei Assimilation soll man die Herkunftskultur aufgeben", "Integration bedeutet Abschottung", "Beide Begriffe sind gleichbedeutend - eine haeufige, aber unzutreffende Vorstellung" }, "Bei Assimilation soll man die Herkunftskultur aufgeben",
+            "Integration erlaubt mehrfache Zugehörigkeit."),
+        ("Was ist eine plurale Gesellschaft?", new[] { "Eine Gesellschaft mit vielfältigen Lebensweisen", "Eine Gesellschaft mit nur einer Religion, auch wenn das manche zunaechst vermuten wuerden", "Eine Gesellschaft ohne Zuwanderung" }, "Eine Gesellschaft mit vielfältigen Lebensweisen",
+            "Berlin ist ein typisches Beispiel für Vielfalt in einer Stadt."),
+        ("Was ist Mehrsprachigkeit für Kinder?", new[] { "Ein Vorteil für Denken und spätere Berufe", "Ein Nachteil für die Schulnoten, was bei genauerem Hinsehen nicht stimmt", "Ein rein privates Thema" }, "Ein Vorteil für Denken und spätere Berufe",
+            "Wer zwei Sprachen sicher beherrscht, lernt weitere leichter."),
+        ("Was regelt das Asylrecht im Grundgesetz?", new[] { "Politisch Verfolgte genießen Asyl", "Jeder darf einwandern", "Asyl gilt nur für Europäer (was so in der Praxis nicht zutrifft)" }, "Politisch Verfolgte genießen Asyl",
+            "Artikel 16a ist eine Lehre aus der NS-Zeit, als Deutsche selbst flüchten mussten."),
+        ("Was ist die Genfer Flüchtlingskonvention?", new[] { "Ein internationaler Vertrag zum Schutz Geflüchteter", "Ein Handelsabkommen der Schweiz", "Eine Regelung für Arbeitsmigration - eine verbreitete, aber falsche Annahme" }, "Ein internationaler Vertrag zum Schutz Geflüchteter",
+            "Sie verbietet die Rückschiebung in Verfolgerstaaten."),
+        ("Was bedeutet Diskriminierung?", new[] { "Benachteiligung wegen zugeschriebener Merkmale", "Jede Form von Kritik", "Ungleiche Bezahlung nach Leistung, was einer genaueren Pruefung nicht standhaelt" }, "Benachteiligung wegen zugeschriebener Merkmale",
+            "Herkunft, Religion, Geschlecht oder Behinderung dürfen kein Nachteil sein."),
+        ("Was schützt das Allgemeine Gleichbehandlungsgesetz?", new[] { "Vor Benachteiligung in Arbeit und Alltag", "Vor zu hohen Mieten", "Vor Steuererhöhungen, obwohl das auf den ersten Blick plausibel klingt" }, "Vor Benachteiligung in Arbeit und Alltag",
+            "Es gilt zum Beispiel bei Bewerbungen und Wohnungssuche."),
+        ("Was ist ein Vorurteil?", new[] { "Ein Urteil ohne eigene Prüfung der Sachlage", "Eine gut begründete Meinung", "Ein Gerichtsurteil vor der Verhandlung, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Ein Urteil ohne eigene Prüfung der Sachlage",
+            "Vorurteile halten sich hartnäckig, weil man sie selten überprüft."),
+        ("Wie kann man Vorurteile abbauen?", new[] { "Durch persönliche Begegnung und gemeinsame Erfahrungen", "Durch strikte Trennung der Gruppen", "Durch Ignorieren des Themas" }, "Durch persönliche Begegnung und gemeinsame Erfahrungen",
+            "Gemeinsame Ziele im Sport oder Projekt wirken besonders gut."),
+        ("Was bedeutet Staatsbürgerschaft?", new[] { "Die rechtliche Zugehörigkeit zu einem Staat", "Der Wohnort einer Person", "Die Sprache, die jemand spricht und deshalb hier nicht zutrifft" }, "Die rechtliche Zugehörigkeit zu einem Staat",
+            "Mit ihr sind Rechte wie das Wahlrecht verbunden."),
+        ("Wie verändert Zuwanderung eine Stadt?", new[] { "Sie prägt Sprache, Essen, Musik und Wirtschaft", "Sie hat kaum sichtbare Auswirkungen", "Sie betrifft nur einzelne Stadtteile, was so nicht korrekt ist" }, "Sie prägt Sprache, Essen, Musik und Wirtschaft",
+            "Der Döner ist in Berlin erfunden worden - ein Beispiel unter vielen."),
+        ("Warum ist Zuwanderung für Deutschland wirtschaftlich wichtig?", new[] { "Die Bevölkerung altert und Fachkräfte fehlen", "Sie senkt automatisch alle Preise", "Sie ersetzt die Sozialversicherung - eine haeufige, aber unzutreffende Vorstellung" }, "Die Bevölkerung altert und Fachkräfte fehlen",
+            "Ohne Zuwanderung würde die Zahl der Erwerbstätigen deutlich sinken.")
+    };
+
+    private static QuizQuestion MigrationUndVielfalt(Random r)
+    {
+        var f = MigrationUndVielfaltListe[r.Next(MigrationUndVielfaltListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Migration und Vielfalt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Push-Faktoren drängen aus dem Land, Pull-Faktoren ziehen ins Zielland. Anwerbeabkommen mit der Türkei 1961. Integration = gleichberechtigte Teilhabe, nicht Aufgabe der Herkunftskultur."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KonsumUndVerantwortungListe =
+    {
+        ("Was bedeutet nachhaltiger Konsum?", new[] { "Kaufentscheidungen mit Blick auf Umwelt und Zukunft", "Möglichst günstig einkaufen", "Nur regionale Produkte kaufen, auch wenn das manche zunaechst vermuten wuerden" }, "Kaufentscheidungen mit Blick auf Umwelt und Zukunft",
+            "Es geht darum, Ressourcen so zu nutzen, dass auch spätere Generationen leben können."),
+        ("Was ist ein ökologischer Fußabdruck?", new[] { "Ein Maß für den Ressourcenverbrauch einer Person", "Die Schuhgröße im Umweltschutz", "Die Fläche eines Naturschutzgebiets, was bei genauerem Hinsehen nicht stimmt" }, "Ein Maß für den Ressourcenverbrauch einer Person",
+            "Er zeigt, wie viele Erden nötig wären, wenn alle so lebten."),
+        ("Was verursacht bei Kleidung die meisten Umweltschäden?", new[] { "Massenproduktion mit hohem Wasser- und Chemieeinsatz", "Der Transport im Handgepäck", "Das Waschen bei 30 Grad" }, "Massenproduktion mit hohem Wasser- und Chemieeinsatz",
+            "Für eine Jeans werden mehrere tausend Liter Wasser benötigt."),
+        ("Was ist Fast Fashion?", new[] { "Billige Mode in schnellen Kollektionswechseln", "Besonders schnell gelieferte Kleidung (was so in der Praxis nicht zutrifft)", "Sportkleidung für Wettkämpfe" }, "Billige Mode in schnellen Kollektionswechseln",
+            "Kurze Nutzungsdauer und viel Abfall sind die Kehrseite."),
+        ("Was bedeutet geplante Obsoleszenz?", new[] { "Produkte werden absichtlich kurzlebig gebaut", "Produkte werden ständig verbessert", "Alte Produkte werden zurückgekauft" }, "Produkte werden absichtlich kurzlebig gebaut",
+            "Der Vorwurf ist umstritten, doch Reparierbarkeit ist oft bewusst schlecht."),
+        ("Was ist das Recht auf Reparatur?", new[] { "Hersteller müssen Ersatzteile und Anleitungen bereitstellen", "Jeder darf fremde Geräte reparieren - eine verbreitete, aber falsche Annahme", "Reparaturen sind immer kostenlos" }, "Hersteller müssen Ersatzteile und Anleitungen bereitstellen",
+            "Die EU stärkt dieses Recht, um Elektroschrott zu verringern."),
+        ("Warum ist Elektroschrott ein Problem?", new[] { "Er enthält Giftstoffe und wertvolle Rohstoffe", "Er nimmt nur viel Platz weg", "Er verrottet zu schnell" }, "Er enthält Giftstoffe und wertvolle Rohstoffe",
+            "Vieles landet ungesichert im globalen Süden."),
+        ("Was ist Kreislaufwirtschaft?", new[] { "Materialien möglichst dauerhaft im Kreislauf halten", "Wirtschaft mit ständigem Wachstum, was einer genaueren Pruefung nicht standhaelt", "Handel nur im eigenen Land" }, "Materialien möglichst dauerhaft im Kreislauf halten",
+            "Statt Wegwerfen: reparieren, wiederverwenden, recyceln."),
+        ("Was steht in der Abfallhierarchie an erster Stelle?", new[] { "Abfall vermeiden", "Abfall recyceln", "Abfall verbrennen" }, "Abfall vermeiden",
+            "Vermeiden ist besser als jede noch so gute Verwertung."),
+        ("Was ist Greenwashing?", new[] { "Werbung, die ein Produkt grüner darstellt als es ist", "Das Reinigen von Verpackungen", "Ein Verfahren zur Wasseraufbereitung, obwohl das auf den ersten Blick plausibel klingt" }, "Werbung, die ein Produkt grüner darstellt als es ist",
+            "Vage Begriffe wie klimafreundlich ohne Beleg sind ein Warnsignal."),
+        ("Wie erkennt man verlässliche Umweltsiegel?", new[] { "Unabhängige Prüfung und klare Kriterien", "Besonders grüne Farbgestaltung, was die eigentliche Bedeutung des Begriffs verfehlt", "Aufdruck des Herstellernamens" }, "Unabhängige Prüfung und klare Kriterien",
+            "Blauer Engel und EU-Ecolabel sind Beispiele geprüfter Siegel."),
+        ("Was bedeutet Regionalität beim Einkauf?", new[] { "Kurze Transportwege und Stärkung der Region", "Produkte aus dem eigenen Garten", "Waren aus dem gesamten EU-Raum" }, "Kurze Transportwege und Stärkung der Region",
+            "Saisonale und regionale Ware spart oft Energie - aber nicht immer."),
+        ("Warum ist Saisonalität wichtig?", new[] { "Ungeheizte Freilandware braucht weniger Energie", "Saisonware schmeckt immer besser", "Saisonware ist immer billiger" }, "Ungeheizte Freilandware braucht weniger Energie",
+            "Tomaten im Winter aus dem beheizten Gewächshaus sind besonders aufwendig."),
+        ("Was ist ein Impulskauf?", new[] { "Ein ungeplanter, spontaner Kauf", "Ein Kauf nach längerem Preisvergleich", "Ein Kauf auf Rechnung" }, "Ein ungeplanter, spontaner Kauf",
+            "Werbung und Ladengestaltung sind gezielt darauf ausgerichtet."),
+        ("Wie beeinflusst Werbung Kaufentscheidungen?", new[] { "Sie weckt Wünsche und verknüpft Produkte mit Gefühlen", "Sie informiert rein sachlich über Produkte und deshalb hier nicht zutrifft", "Sie hat kaum messbare Wirkung" }, "Sie weckt Wünsche und verknüpft Produkte mit Gefühlen",
+            "Wer die Mechanismen kennt, entscheidet bewusster."),
+        ("Was ist Influencer-Marketing?", new[] { "Werbung durch Personen mit großer Online-Reichweite", "Werbung ausschließlich im Fernsehen, was so nicht korrekt ist", "Werbung durch Verbraucherzentralen" }, "Werbung durch Personen mit großer Online-Reichweite",
+            "Bezahlte Beiträge müssen als Werbung gekennzeichnet sein."),
+        ("Was ist ein Haushaltsbudget?", new[] { "Ein Plan für Einnahmen und Ausgaben", "Das Geld auf dem Sparkonto", "Die monatliche Miete" }, "Ein Plan für Einnahmen und Ausgaben",
+            "Wer aufschreibt, wofür Geld ausgegeben wird, behält den Überblick."),
+        ("Was ist die Schuldenfalle bei jungen Menschen?", new[] { "Ratenkäufe und Abos übersteigen das Einkommen", "Zu hohe Sparraten", "Zu viel Bargeld im Portemonnaie - eine haeufige, aber unzutreffende Vorstellung" }, "Ratenkäufe und Abos übersteigen das Einkommen",
+            "Buy-now-pay-later-Angebote verschleiern die tatsächlichen Kosten."),
+        ("Was ist ein Widerrufsrecht?", new[] { "Online-Käufe können 14 Tage zurückgegeben werden", "Jeder Kauf kann jederzeit rückgängig gemacht werden", "Es gilt nur im Ladengeschäft" }, "Online-Käufe können 14 Tage zurückgegeben werden",
+            "Im Laden gibt es dagegen kein gesetzliches Rückgaberecht."),
+        ("Warum haben Verbraucher Marktmacht?", new[] { "Kaufentscheidungen steuern das Angebot", "Sie können Preise selbst festlegen, auch wenn das manche zunaechst vermuten wuerden", "Sie kontrollieren die Produktion" }, "Kaufentscheidungen steuern das Angebot",
+            "Was gekauft wird, wird produziert - auch das ist eine Form von Einfluss.")
+    };
+
+    private static QuizQuestion KonsumUndVerantwortung(Random r)
+    {
+        var f = KonsumUndVerantwortungListe[r.Next(KonsumUndVerantwortungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Konsum und Verantwortung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nachhaltiger Konsum: ökologischer Fußabdruck, Fast Fashion, Kreislaufwirtschaft. Abfallhierarchie: vermeiden vor verwerten. Greenwashing erkennen: geprüfte Siegel statt vager Begriffe."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MedienUndDigitalesLebenListe =
+    {
+        ("Was bedeutet Medienkompetenz?", new[] { "Medien verstehen, kritisch nutzen und selbst gestalten", "Möglichst viele Geräte besitzen", "Schnell tippen können" }, "Medien verstehen, kritisch nutzen und selbst gestalten",
+            "Dazu gehört auch, Quellen und Absichten einzuschätzen."),
+        ("Was sind Fake News?", new[] { "Bewusst verbreitete Falschmeldungen", "Nachrichten mit Rechtschreibfehlern", "Meinungsbeiträge in Zeitungen" }, "Bewusst verbreitete Falschmeldungen",
+            "Sie zielen meist auf Empörung, Klicks oder politische Wirkung."),
+        ("Wie prüft man eine Nachricht?", new[] { "Quelle, Datum und weitere seriöse Berichte prüfen", "Auf die Anzahl der Likes achten", "Der Überschrift vertrauen" }, "Quelle, Datum und weitere seriöse Berichte prüfen",
+            "Alte Bilder in neuem Zusammenhang sind ein häufiger Trick."),
+        ("Was ist ein Impressum?", new[] { "Die Pflichtangabe, wer für eine Seite verantwortlich ist", "Ein Verzeichnis aller Artikel", "Die Datenschutzerklärung" }, "Die Pflichtangabe, wer für eine Seite verantwortlich ist",
+            "Fehlt es, ist Vorsicht geboten - seriöse Seiten haben eines."),
+        ("Was unterscheidet Nachricht und Kommentar?", new[] { "Die Nachricht informiert, der Kommentar bewertet", "Der Kommentar ist immer länger", "Beide sind identisch aufgebaut" }, "Die Nachricht informiert, der Kommentar bewertet",
+            "Seriöse Medien kennzeichnen Meinungsbeiträge klar."),
+        ("Was ist eine Filterblase?", new[] { "Man sieht überwiegend Inhalte der eigenen Sicht", "Ein technischer Schutz vor Viren", "Eine Funktion zum Sperren von Werbung, was bei genauerem Hinsehen nicht stimmt" }, "Man sieht überwiegend Inhalte der eigenen Sicht",
+            "Algorithmen verstärken, was ohnehin gefällt."),
+        ("Was ist eine Echokammer?", new[] { "Ein Umfeld, in dem die eigene Meinung ständig bestätigt wird", "Ein Raum mit gutem Klang", "Eine Chatgruppe mit vielen Mitgliedern" }, "Ein Umfeld, in dem die eigene Meinung ständig bestätigt wird",
+            "Widerspruch dringt kaum noch durch - das verhärtet Positionen."),
+        ("Was ist Cybermobbing?", new[] { "Wiederholtes Bloßstellen oder Bedrohen im Netz", "Ein einmaliger Streit im Chat", "Kritik an einem Beitrag" }, "Wiederholtes Bloßstellen oder Bedrohen im Netz",
+            "Es wirkt besonders stark, weil es rund um die Uhr weitergeht."),
+        ("Was sollte man bei Cybermobbing tun?", new[] { "Beweise sichern, blockieren und Hilfe holen", "Zurückbeleidigen und mitmachen (was so in der Praxis nicht zutrifft)", "Alles ignorieren und löschen" }, "Beweise sichern, blockieren und Hilfe holen",
+            "Screenshots sind wichtig, um später etwas nachweisen zu können."),
+        ("Was ist das Recht am eigenen Bild?", new[] { "Fotos von Personen brauchen deren Einwilligung", "Jedes Foto darf frei geteilt werden - eine verbreitete, aber falsche Annahme", "Nur Prominente sind geschützt" }, "Fotos von Personen brauchen deren Einwilligung",
+            "Das gilt auch für Klassenfotos und Videos in Chatgruppen."),
+        ("Was sind personenbezogene Daten?", new[] { "Angaben, die eine Person identifizierbar machen", "Nur der vollständige Name", "Ausschließlich biometrische Daten" }, "Angaben, die eine Person identifizierbar machen",
+            "Auch Standort, Fotos und IP-Adresse gehören dazu."),
+        ("Was regelt die Datenschutz-Grundverordnung?", new[] { "Den Umgang mit personenbezogenen Daten in der EU", "Die Preise für Internetzugänge, was einer genaueren Pruefung nicht standhaelt", "Die Inhalte sozialer Netzwerke" }, "Den Umgang mit personenbezogenen Daten in der EU",
+            "Sie gibt Rechte auf Auskunft und Löschung."),
+        ("Was ist ein sicheres Passwort?", new[] { "Lang, einmalig und nicht zu erraten", "Der eigene Geburtstag", "Ein kurzes Wort mit Zahl, obwohl das auf den ersten Blick plausibel klingt" }, "Lang, einmalig und nicht zu erraten",
+            "Ein Passwortmanager hilft, für jeden Dienst ein eigenes zu nutzen."),
+        ("Was ist Zwei-Faktor-Authentifizierung?", new[] { "Zusätzliche Bestätigung neben dem Passwort", "Zwei Passwörter hintereinander, was die eigentliche Bedeutung des Begriffs verfehlt", "Ein zweites Benutzerkonto" }, "Zusätzliche Bestätigung neben dem Passwort",
+            "Selbst ein gestohlenes Passwort reicht Angreifern dann nicht."),
+        ("Was ist Phishing?", new[] { "Täuschende Nachrichten zum Abgreifen von Zugangsdaten", "Werbung in sozialen Netzwerken und deshalb hier nicht zutrifft", "Ein Datenverlust durch Defekt" }, "Täuschende Nachrichten zum Abgreifen von Zugangsdaten",
+            "Typisch sind Zeitdruck, Drohungen und gefälschte Absender."),
+        ("Wie erkennt man Phishing-Mails?", new[] { "Dringlichkeit, seltsame Links und Absenderadressen", "Immer an Rechtschreibfehlern, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "An fehlenden Bildern" }, "Dringlichkeit, seltsame Links und Absenderadressen",
+            "Im Zweifel nie auf Links klicken, sondern die Seite selbst aufrufen."),
+        ("Was ist Pressefreiheit?", new[] { "Medien dürfen ohne staatliche Zensur berichten", "Zeitungen sind kostenlos", "Jeder darf alles veröffentlichen, auch wenn das manche zunaechst vermuten wuerden" }, "Medien dürfen ohne staatliche Zensur berichten",
+            "Sie steht im Grundgesetz und ist Voraussetzung für Demokratie."),
+        ("Warum braucht Demokratie freie Medien?", new[] { "Bürger brauchen Informationen für Entscheidungen", "Damit Politiker bekannter werden", "Zur Unterhaltung am Abend" }, "Bürger brauchen Informationen für Entscheidungen",
+            "Medien kontrollieren zugleich die Mächtigen - man nennt sie vierte Gewalt."),
+        ("Was ist der öffentlich-rechtliche Rundfunk?", new[] { "Beitragsfinanzierte Sender mit Informationsauftrag", "Werbefinanzierte Privatsender, was bei genauerem Hinsehen nicht stimmt", "Staatlich gelenkte Medien" }, "Beitragsfinanzierte Sender mit Informationsauftrag",
+            "Die Finanzierung soll Unabhängigkeit von Werbekunden sichern."),
+        ("Was bedeutet Bildschirmzeit bewusst gestalten?", new[] { "Nutzung planen statt sich treiben zu lassen", "Geräte vollständig abzuschaffen (was so in der Praxis nicht zutrifft)", "Nur abends online zu sein" }, "Nutzung planen statt sich treiben zu lassen",
+            "Feste Pausen und medienfreie Zeiten helfen beim Schlaf und Lernen.")
+    };
+
+    private static QuizQuestion MedienUndDigitalesLeben(Random r)
+    {
+        var f = MedienUndDigitalesLebenListe[r.Next(MedienUndDigitalesLebenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Medien und digitales Leben", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Medienkompetenz: Quelle, Datum und Impressum prüfen. Nachricht informiert, Kommentar bewertet. Filterblase/Echokammer verstärken die eigene Sicht. Recht am eigenen Bild, sichere Passwörter, Phishing."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NachhaltigkeitUndKlimaListe =
+    {
+        ("Was bedeutet Nachhaltigkeit?", new[] { "Heute so leben, dass auch künftige Generationen können", "Möglichst wenig Geld ausgeben", "Immer nur regionale Produkte kaufen - eine verbreitete, aber falsche Annahme" }, "Heute so leben, dass auch künftige Generationen können",
+            "Der Begriff stammt ursprünglich aus der Forstwirtschaft."),
+        ("Welche drei Dimensionen hat Nachhaltigkeit?", new[] { "Ökologie, Ökonomie und Soziales", "Luft, Wasser und Boden", "Vergangenheit, Gegenwart und Zukunft" }, "Ökologie, Ökonomie und Soziales",
+            "Nur wenn alle drei zusammenspielen, ist Entwicklung dauerhaft tragfähig."),
+        ("Was ist der Treibhauseffekt?", new[] { "Gase halten Wärmestrahlung in der Atmosphäre zurück", "Die Sonne strahlt stärker als früher, was einer genaueren Pruefung nicht standhaelt", "Die Erdachse hat sich verschoben" }, "Gase halten Wärmestrahlung in der Atmosphäre zurück",
+            "Der natürliche Effekt macht Leben möglich, der zusätzliche heizt auf."),
+        ("Welches Gas trägt am meisten zum menschengemachten Klimawandel bei?", new[] { "Kohlenstoffdioxid", "Sauerstoff", "Stickstoff" }, "Kohlenstoffdioxid",
+            "Es entsteht vor allem beim Verbrennen von Kohle, Öl und Gas."),
+        ("Was ist das Pariser Klimaabkommen?", new[] { "Ein Vertrag zur Begrenzung der Erderwärmung", "Ein Handelsabkommen der EU", "Ein Vertrag über Atomwaffen" }, "Ein Vertrag zur Begrenzung der Erderwärmung",
+            "2015 beschlossen: möglichst unter 1,5 Grad Erwärmung bleiben."),
+        ("Welche Folgen des Klimawandels sind bereits spürbar?", new[] { "Hitzewellen, Dürren und Starkregen", "Kältere Sommer in Europa", "Weniger Extremwetter weltweit, obwohl das auf den ersten Blick plausibel klingt" }, "Hitzewellen, Dürren und Starkregen",
+            "Auch in Brandenburg nehmen Waldbrände und Trockenheit zu."),
+        ("Was sind erneuerbare Energien?", new[] { "Quellen, die sich laufend erneuern", "Besonders billige Energieformen, was die eigentliche Bedeutung des Begriffs verfehlt", "Energie aus Kernspaltung" }, "Quellen, die sich laufend erneuern",
+            "Sonne, Wind, Wasser und Biomasse gehören dazu."),
+        ("Was ist ein Problem bei Wind- und Solarenergie?", new[] { "Die Erzeugung schwankt mit dem Wetter", "Sie erzeugen zu viel Abwärme", "Sie brauchen sehr viel Wasser und deshalb hier nicht zutrifft" }, "Die Erzeugung schwankt mit dem Wetter",
+            "Deshalb sind Speicher und ein gutes Netz so wichtig."),
+        ("Was bedeutet Energiewende?", new[] { "Umstieg von fossilen auf erneuerbare Energien", "Verzicht auf jede Energie", "Rückkehr zur Kohleverstromung, was so nicht korrekt ist" }, "Umstieg von fossilen auf erneuerbare Energien",
+            "Sie betrifft Strom, Wärme und Verkehr gleichermaßen."),
+        ("Warum ist der Verkehrssektor beim Klimaschutz schwierig?", new[] { "Die Emissionen sinken dort kaum", "Es gibt zu wenige Straßen", "Autos werden immer kleiner - eine haeufige, aber unzutreffende Vorstellung" }, "Die Emissionen sinken dort kaum",
+            "Mehr und schwerere Fahrzeuge gleichen technische Fortschritte wieder aus."),
+        ("Was ist Umweltverbund im Verkehr?", new[] { "Zu Fuß gehen, Rad fahren und Öffentliche nutzen", "Ein Zusammenschluss von Autoherstellern, auch wenn das manche zunaechst vermuten wuerden", "Ein Verbund von Naturschutzgebieten" }, "Zu Fuß gehen, Rad fahren und Öffentliche nutzen",
+            "In Städten wie Berlin ist das oft auch die schnellste Variante."),
+        ("Was ist Flächenversiegelung?", new[] { "Böden werden mit Beton und Asphalt bedeckt", "Der Schutz von Ackerflächen", "Das Abdecken von Feldern im Winter" }, "Böden werden mit Beton und Asphalt bedeckt",
+            "Versiegelte Flächen können kein Regenwasser aufnehmen - Überflutungsgefahr steigt."),
+        ("Warum sind Stadtbäume für das Klima wichtig?", new[] { "Sie spenden Schatten und kühlen durch Verdunstung", "Sie erzeugen Strom aus Sonnenlicht", "Sie speichern Regenwasser für Haushalte" }, "Sie spenden Schatten und kühlen durch Verdunstung",
+            "In Hitzesommern kann der Unterschied mehrere Grad betragen."),
+        ("Was ist eine Hitzeinsel?", new[] { "Ein Stadtgebiet, das deutlich wärmer ist als das Umland", "Eine Insel im Mittelmeer", "Ein beheiztes Gewächshaus" }, "Ein Stadtgebiet, das deutlich wärmer ist als das Umland",
+            "Beton und Asphalt speichern Wärme und geben sie nachts ab."),
+        ("Was ist Biodiversität?", new[] { "Die Vielfalt der Arten und Lebensräume", "Die Menge an Bäumen im Wald", "Der Anteil an Biolebensmitteln" }, "Die Vielfalt der Arten und Lebensräume",
+            "Je vielfältiger ein System, desto widerstandsfähiger ist es."),
+        ("Warum ist Artensterben ein Problem für Menschen?", new[] { "Ökosysteme liefern Nahrung, Wasser und Bestäubung", "Es beeinträchtigt nur den Tourismus, was bei genauerem Hinsehen nicht stimmt", "Es hat keine praktischen Folgen" }, "Ökosysteme liefern Nahrung, Wasser und Bestäubung",
+            "Ohne Insekten wären viele Nahrungspflanzen nicht bestäubt."),
+        ("Was ist virtuelles Wasser?", new[] { "Wasser, das zur Herstellung eines Produkts nötig war", "Wasser in digitalen Simulationen", "Regenwasser in Zisternen" }, "Wasser, das zur Herstellung eines Produkts nötig war",
+            "In einer Tasse Kaffee stecken rund 140 Liter virtuelles Wasser."),
+        ("Was bedeutet Suffizienz im Umweltschutz?", new[] { "Weniger verbrauchen statt nur effizienter werden", "Technik immer weiter verbessern (was so in der Praxis nicht zutrifft)", "Produkte durch andere ersetzen" }, "Weniger verbrauchen statt nur effizienter werden",
+            "Das sparsamste Gerät ist immer noch das, das man nicht kauft."),
+        ("Was ist der Rebound-Effekt?", new[] { "Effizienzgewinne werden durch Mehrverbrauch aufgezehrt", "Ein Preisanstieg nach Rabatten", "Der Rückgang von Emissionen" }, "Effizienzgewinne werden durch Mehrverbrauch aufgezehrt",
+            "Sparsamere Autos werden oft größer und mehr gefahren."),
+        ("Was kann eine einzelne Person zum Klimaschutz beitragen?", new[] { "Energie, Verkehr und Konsum bewusst gestalten", "Nichts, das ist reine Politiksache", "Ausschließlich Müll trennen" }, "Energie, Verkehr und Konsum bewusst gestalten",
+            "Wirksam wird es zusätzlich durch Mitgestaltung und politische Beteiligung.")
+    };
+
+    private static QuizQuestion NachhaltigkeitUndKlima(Random r)
+    {
+        var f = NachhaltigkeitUndKlimaListe[r.Next(NachhaltigkeitUndKlimaListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Nachhaltigkeit und Klima", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Drei Dimensionen: Ökologie, Ökonomie, Soziales. Treibhauseffekt durch CO2 aus fossilen Brennstoffen. Pariser Abkommen: möglichst unter 1,5 Grad. Suffizienz schlägt reine Effizienz (Rebound-Effekt)."
         };
     }
 }

@@ -3,7 +3,8 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Geschichte nach Berliner Rahmenlehrplan, Klasse 6 (Epochenüberblick) und Klasse 9 (vertieft, 20. Jahrhundert).</summary>
+/// <summary>Geschichte nach Berliner Rahmenlehrplan, Klasse 6 (Epochenüberblick), Klasse 7
+/// (Mittelalter bis Industrialisierung) und Klasse 9 (vertieft, 20. Jahrhundert).</summary>
 public sealed class GeschichteGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Geschichte;
@@ -12,6 +13,7 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Epochenueberblick, ArmutUndReichtumMigration, JudenChristenMuslime },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MittelalterLebenswelten, EntdeckungenUndKolonialismus, ReformationK7, AbsolutismusK7, FranzoesischeRevolutionK7, IndustrialisierungK7 },
             [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg, FeindbilderUndPropaganda }
         };
 
@@ -572,6 +574,345 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
             Topic = "Feindbilder und Propaganda", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Propaganda vereinfacht und manipuliert gezielt (z.B. NS-Propaganda unter Goebbels, gegenseitige Feindbilder im Kalten Krieg) - Dehumanisierung senkt moralische Hemmschwellen; Quellenkritik ist der wichtigste Schutz davor."
+        };
+    }
+
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort (siehe
+    // scripts/check-answer-length-bias.py).
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MittelalterLebensweltenListe =
+    {
+        ("Wie war die mittelalterliche Ständegesellschaft aufgebaut?", new[] { "Klerus, Adel und Bauern mit festen Aufgaben", "Alle Menschen hatten die gleichen Rechte", "Nur Reiche und Arme ohne weitere Ordnung" }, "Klerus, Adel und Bauern mit festen Aufgaben",
+            "Der Stand war meist von Geburt an festgelegt: beten, kämpfen, arbeiten."),
+        ("Was bedeutete Grundherrschaft?", new[] { "Bauern bewirtschafteten fremdes Land gegen Abgaben", "Bauern besaßen ihr Land vollständig selbst", "Der König verwaltete jedes Feld persönlich" }, "Bauern bewirtschafteten fremdes Land gegen Abgaben",
+            "Der Grundherr bot Schutz, dafür leisteten die Bauern Abgaben und Frondienste."),
+        ("Was war ein Frondienst?", new[] { "Unbezahlte Arbeit für den Grundherrn", "Eine Abgabe in Form von Getreide", "Ein Gebet für den Landesherrn" }, "Unbezahlte Arbeit für den Grundherrn",
+            "Die Bauern mussten mehrere Tage im Jahr auf dem Land des Herrn arbeiten."),
+        ("Was versteht man unter dem Lehnswesen?", new[] { "Land gegen Treue und Gefolgschaft", "Ein Handelssystem zwischen Städten", "Eine Form der Kirchensteuer" }, "Land gegen Treue und Gefolgschaft",
+            "Der König vergab Lehen an Adlige, die ihm dafür mit Waffen dienten."),
+        ("Warum zogen im Mittelalter viele Menschen in die Städte?", new[] { "Dort winkten Freiheit und bessere Verdienstmöglichkeiten", "Die Städte waren deutlich sauberer als das Land (was so in der Praxis nicht zutrifft)", "In den Städten gab es keine Steuern" }, "Dort winkten Freiheit und bessere Verdienstmöglichkeiten",
+            "Der Spruch lautete: Stadtluft macht frei - nach Jahr und Tag war man kein Höriger mehr."),
+        ("Was bedeutete der Satz 'Stadtluft macht frei'?", new[] { "Nach einem Jahr in der Stadt war man kein Leibeigener mehr", "In Städten war die Luft besonders gesund", "Stadtbewohner mussten keine Abgaben zahlen" }, "Nach einem Jahr in der Stadt war man kein Leibeigener mehr",
+            "Diese Regel lockte viele Landflüchtige in die wachsenden Städte."),
+        ("Was war eine Zunft?", new[] { "Ein Zusammenschluss von Handwerkern eines Berufs", "Eine Versammlung aller Stadtbewohner", "Eine kirchliche Bruderschaft für Arme - eine verbreitete, aber falsche Annahme" }, "Ein Zusammenschluss von Handwerkern eines Berufs",
+            "Zünfte regelten Ausbildung, Qualität, Preise und die Zahl der Betriebe."),
+        ("Welche Stufen durchlief ein Handwerker?", new[] { "Lehrling, Geselle, Meister", "Schüler, Student, Professor", "Knecht, Bauer, Grundherr" }, "Lehrling, Geselle, Meister",
+            "Erst das Meisterstück berechtigte zur Eröffnung einer eigenen Werkstatt."),
+        ("Welche Aufgabe hatten Klöster im Mittelalter?", new[] { "Sie waren Zentren für Bildung, Pflege und Landwirtschaft", "Sie dienten ausschließlich dem stillen Gebet, was einer genaueren Pruefung nicht standhaelt", "Sie waren Festungen zur Verteidigung" }, "Sie waren Zentren für Bildung, Pflege und Landwirtschaft",
+            "Mönche schrieben Bücher ab, versorgten Kranke und bewirtschafteten großes Land."),
+        ("Warum waren Klöster für die Überlieferung von Wissen wichtig?", new[] { "Mönche schrieben Bücher mühsam von Hand ab", "Klöster besaßen die ersten Druckerpressen", "Nur dort durfte überhaupt gelesen werden" }, "Mönche schrieben Bücher mühsam von Hand ab",
+            "Ohne diese Abschriften wäre viel antikes Wissen verloren gegangen."),
+        ("Was war die Hanse?", new[] { "Ein Städtebund für Handel und Schutz", "Ein Ritterorden gegen die Ungarn", "Eine Versammlung deutscher Fürsten" }, "Ein Städtebund für Handel und Schutz",
+            "Lübeck war das Zentrum; die Hanse beherrschte den Handel an Nord- und Ostsee."),
+        ("Wodurch wurde eine mittelalterliche Stadt geschützt?", new[] { "Durch Mauern, Tore und Wachtürme", "Durch stehende Söldnerheere", "Durch Verträge mit dem Papst" }, "Durch Mauern, Tore und Wachtürme",
+            "Die Stadtmauer bestimmte auch, wie eng die Häuser gebaut werden mussten."),
+        ("Welche Folgen hatte die Pest um 1350 in Europa?", new[] { "Etwa ein Drittel der Bevölkerung starb", "Die Bevölkerung wuchs stark an", "Nur wenige Dörfer waren betroffen" }, "Etwa ein Drittel der Bevölkerung starb",
+            "Der Arbeitskräftemangel danach schwächte die Grundherrschaft spürbar."),
+        ("Warum breitete sich die Pest so schnell aus?", new[] { "Enge Städte, schlechte Hygiene und Handelswege", "Weil sie über die Luft aus Asien wehte, obwohl das auf den ersten Blick plausibel klingt", "Weil die Menschen zu viel Fleisch aßen" }, "Enge Städte, schlechte Hygiene und Handelswege",
+            "Ratten und Flöhe reisten mit den Handelsschiffen mit."),
+        ("Wer wurde während der Pest oft zu Unrecht beschuldigt?", new[] { "Jüdische Gemeinden wurden verfolgt", "Ausschließlich die Ärzte der Städte", "Die Kaufleute der Hansestädte" }, "Jüdische Gemeinden wurden verfolgt",
+            "Sündenbock-Denken führte zu Pogromen - ein wichtiges Thema bis heute."),
+        ("Was war ein Ritter?", new[] { "Ein adliger Krieger zu Pferd im Dienst eines Herrn", "Ein wohlhabender Kaufmann der Stadt, was die eigentliche Bedeutung des Begriffs verfehlt", "Ein Beamter des Königs für Steuern" }, "Ein adliger Krieger zu Pferd im Dienst eines Herrn",
+            "Die teure Ausrüstung konnte sich nur der Adel leisten."),
+        ("Was gehörte zum Rittertum als Ideal?", new[] { "Treue, Tapferkeit und Schutz der Schwachen", "Reichtum, Handel und weite Reisen und deshalb hier nicht zutrifft", "Bildung, Schreiben und Rechnen" }, "Treue, Tapferkeit und Schutz der Schwachen",
+            "Die Wirklichkeit sah oft anders aus als dieses höfische Ideal."),
+        ("Was waren die Kreuzzüge?", new[] { "Kriegszüge in den Nahen Osten mit religiöser Begründung", "Handelsreisen der Hanse nach Osten", "Pilgerfahrten ohne jede Bewaffnung" }, "Kriegszüge in den Nahen Osten mit religiöser Begründung",
+            "Neben dem Glauben spielten Macht, Land und Handelswege eine große Rolle."),
+        ("Welche Folge hatten die Kreuzzüge für Europa?", new[] { "Verstärkter Austausch von Waren und Wissen", "Ein sofortiges Ende aller Kriege", "Die Abschaffung der Ständeordnung" }, "Verstärkter Austausch von Waren und Wissen",
+            "Gewürze, Zahlensysteme und antike Texte kamen so nach Europa."),
+        ("Warum ist das Mittelalter mehr als 'dunkle Zeit'?", new[] { "Es brachte Städte, Universitäten und technische Erfindungen", "Es gab damals überhaupt keine Konflikte", "Alle Menschen lebten in großem Wohlstand, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung" }, "Es brachte Städte, Universitäten und technische Erfindungen",
+            "Wassermühle, Brille und Buchdruck stammen aus dieser Epoche.")
+    };
+
+    private static QuizQuestion MittelalterLebenswelten(Random r)
+    {
+        var f = MittelalterLebensweltenListe[r.Next(MittelalterLebensweltenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Mittelalter: Lebenswelten", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ständegesellschaft: Klerus (beten), Adel (kämpfen), Bauern (arbeiten). Grundherrschaft = Land gegen Abgaben und Frondienst. Stadtluft macht frei. Zünfte regelten das Handwerk."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EntdeckungenUndKolonialismusListe =
+    {
+        ("Warum suchten Europäer um 1500 neue Seewege nach Indien?", new[] { "Der Landweg war teuer und von anderen kontrolliert", "Sie wollten die Erdkugel wissenschaftlich vermessen", "Sie suchten neue Fischgründe im Atlantik" }, "Der Landweg war teuer und von anderen kontrolliert",
+            "Gewürze und Seide waren begehrt, doch Zwischenhändler verteuerten sie stark."),
+        ("Welche Erfindungen ermöglichten die weiten Seefahrten?", new[] { "Kompass, Astrolabium und bessere Schiffstypen", "Dampfmaschine und Eisenrumpf", "Funkgerät und Seekarten aus Papier, auch wenn das manche zunaechst vermuten wuerden" }, "Kompass, Astrolabium und bessere Schiffstypen",
+            "Die Karavelle konnte auch gegen den Wind kreuzen."),
+        ("Was entdeckte Kolumbus 1492 tatsächlich?", new[] { "Inseln vor Amerika, die er für Indien hielt", "Den Seeweg nach Indien um Afrika, was bei genauerem Hinsehen nicht stimmt", "Den australischen Kontinent" }, "Inseln vor Amerika, die er für Indien hielt",
+            "Deshalb heißen die Ureinwohner bis heute fälschlich 'Indianer'."),
+        ("Warum spricht man heute lieber von 'Eroberung' als von 'Entdeckung'?", new[] { "Die Gebiete waren längst besiedelt", "Die Seefahrer kamen nur zufällig an", "Der Begriff Entdeckung ist zu lang" }, "Die Gebiete waren längst besiedelt",
+            "Aus Sicht der dort lebenden Menschen war es eine Invasion, keine Entdeckung."),
+        ("Wer umsegelte als Erster die Erde?", new[] { "Die Expedition Magellans", "Christoph Kolumbus persönlich", "Vasco da Gama auf dem Rückweg" }, "Die Expedition Magellans",
+            "Magellan selbst starb unterwegs; nur ein Schiff kehrte 1522 zurück."),
+        ("Was waren die Konquistadoren?", new[] { "Spanische Eroberer in Mittel- und Südamerika", "Portugiesische Kartenzeichner (was so in der Praxis nicht zutrifft)", "Händler der Hansestädte" }, "Spanische Eroberer in Mittel- und Südamerika",
+            "Cortés und Pizarro zerstörten die Reiche der Azteken und Inka."),
+        ("Warum unterlagen die Azteken und Inka so schnell?", new[] { "Waffen, Bündnisse und eingeschleppte Krankheiten", "Sie hatten keine eigene Organisation", "Sie waren zahlenmäßig weit unterlegen - eine verbreitete, aber falsche Annahme" }, "Waffen, Bündnisse und eingeschleppte Krankheiten",
+            "Pocken und Masern töteten mehr Menschen als alle Kämpfe zusammen."),
+        ("Was bedeutet der Begriff Kolonie?", new[] { "Ein von einem fremden Staat beherrschtes Gebiet", "Eine freiwillige Städtepartnerschaft, was einer genaueren Pruefung nicht standhaelt", "Ein Handelsposten ohne Herrschaft" }, "Ein von einem fremden Staat beherrschtes Gebiet",
+            "Die Kolonialmacht bestimmte Verwaltung, Wirtschaft und oft die Sprache."),
+        ("Was war der Dreieckshandel?", new[] { "Waren nach Afrika, Versklavte nach Amerika, Rohstoffe nach Europa", "Handel zwischen drei europäischen Städten, obwohl das auf den ersten Blick plausibel klingt", "Ein Tauschsystem innerhalb Afrikas" }, "Waren nach Afrika, Versklavte nach Amerika, Rohstoffe nach Europa",
+            "Millionen Menschen wurden auf dieser Route verschleppt."),
+        ("Wie viele Menschen wurden schätzungsweise nach Amerika verschleppt?", new[] { "Etwa zwölf Millionen", "Etwa zehntausend", "Etwa hunderttausend" }, "Etwa zwölf Millionen",
+            "Viele starben schon während der Überfahrt unter grausamen Bedingungen."),
+        ("Was verstand man unter Plantagenwirtschaft?", new[] { "Großbetriebe für ein Exportprodukt mit Zwangsarbeit", "Kleine Familienbetriebe mit Mischanbau", "Staatliche Versuchsfelder für Forschung" }, "Großbetriebe für ein Exportprodukt mit Zwangsarbeit",
+            "Zucker, Baumwolle und Tabak wurden für den europäischen Markt angebaut."),
+        ("Welche Pflanzen kamen aus Amerika nach Europa?", new[] { "Kartoffel, Mais, Tomate und Kakao", "Weizen, Reis und Olive", "Apfel, Birne und Kirsche" }, "Kartoffel, Mais, Tomate und Kakao",
+            "Die Kartoffel half später, Hungersnöte in Europa zu mildern."),
+        ("Was brachten die Europäer nach Amerika?", new[] { "Pferde, Rinder und tödliche Krankheiten", "Ausschließlich technische Geräte", "Nur religiöse Bücher" }, "Pferde, Rinder und tödliche Krankheiten",
+            "Man nennt diesen wechselseitigen Austausch den Kolumbianischen Austausch."),
+        ("Wie rechtfertigten Europäer die Kolonialherrschaft damals?", new[] { "Mit angeblicher Überlegenheit und Missionsauftrag", "Mit wissenschaftlichen Beweisen", "Mit Verträgen der Vereinten Nationen" }, "Mit angeblicher Überlegenheit und Missionsauftrag",
+            "Diese rassistischen Begründungen wirken bis in heutige Vorurteile nach."),
+        ("Welche Rolle spielte Silber aus Amerika für Spanien?", new[] { "Es machte Spanien kurzzeitig sehr mächtig", "Es blieb vollständig in den Kolonien, was die eigentliche Bedeutung des Begriffs verfehlt", "Es wurde sofort an England verkauft" }, "Es machte Spanien kurzzeitig sehr mächtig",
+            "Langfristig führte die Silberflut jedoch zu starker Geldentwertung."),
+        ("Was war der Sklavenhandel für europäische Hafenstädte?", new[] { "Eine wichtige Quelle des Reichtums", "Ein wirtschaftlich unbedeutendes Geschäft", "Eine rein staatliche Aufgabe" }, "Eine wichtige Quelle des Reichtums",
+            "Städte wie Liverpool und Nantes wuchsen dadurch stark."),
+        ("Wann wurde der Sklavenhandel in Europa verboten?", new[] { "Im Lauf des 19. Jahrhunderts", "Schon im 16. Jahrhundert", "Erst nach 1945" }, "Im Lauf des 19. Jahrhunderts",
+            "Großbritannien verbot ihn 1807, die Sklaverei selbst folgte später."),
+        ("Warum ist Kolonialgeschichte heute noch wichtig?", new[] { "Sie prägt Grenzen, Sprachen und Ungleichheiten bis heute", "Sie ist nur für Historiker interessant und deshalb hier nicht zutrifft", "Sie hat keine Folgen mehr" }, "Sie prägt Grenzen, Sprachen und Ungleichheiten bis heute",
+            "Viele Konflikte gehen auf willkürlich gezogene Kolonialgrenzen zurück."),
+        ("Was fordert die Debatte um Raubkunst?", new[] { "Rückgabe geraubter Objekte an die Herkunftsländer", "Verkauf aller Museumsstücke", "Zerstörung kolonialer Sammlungen, was so nicht korrekt ist" }, "Rückgabe geraubter Objekte an die Herkunftsländer",
+            "Auch Berliner Museen prüfen die Herkunft ihrer Sammlungen."),
+        ("Was ist eine Quelle in der Geschichtswissenschaft?", new[] { "Ein Überrest oder Bericht aus der untersuchten Zeit", "Ein modernes Schulbuch zum Thema", "Die Meinung eines heutigen Experten - eine haeufige, aber unzutreffende Vorstellung" }, "Ein Überrest oder Bericht aus der untersuchten Zeit",
+            "Quellen müssen immer auf Herkunft und Absicht geprüft werden.")
+    };
+
+    private static QuizQuestion EntdeckungenUndKolonialismus(Random r)
+    {
+        var f = EntdeckungenUndKolonialismusListe[r.Next(EntdeckungenUndKolonialismusListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Entdeckungen und Kolonialismus", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ab 1492 Eroberung statt Entdeckung - die Gebiete waren besiedelt. Dreieckshandel: Waren nach Afrika, versklavte Menschen nach Amerika, Rohstoffe nach Europa. Krankheiten töteten mehr als Waffen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ReformationK7Liste =
+    {
+        ("Womit begann die Reformation 1517?", new[] { "Mit Luthers 95 Thesen gegen den Ablasshandel", "Mit der Krönung Karls des Großen, auch wenn das manche zunaechst vermuten wuerden", "Mit der Erfindung des Buchdrucks" }, "Mit Luthers 95 Thesen gegen den Ablasshandel",
+            "Luther kritisierte, dass man sich Sündenvergebung nicht kaufen kann."),
+        ("Was war ein Ablassbrief?", new[] { "Ein gekauftes Versprechen auf Sündenerlass", "Eine Erlaubnis zum Bibeldruck", "Ein Freibrief für Handelsreisen" }, "Ein gekauftes Versprechen auf Sündenerlass",
+            "Mit den Einnahmen wurde unter anderem der Petersdom finanziert."),
+        ("Warum verbreiteten sich Luthers Thesen so schnell?", new[] { "Der Buchdruck machte Vervielfältigung billig", "Reisende Mönche trugen sie mündlich weiter", "Der Kaiser ließ sie öffentlich verlesen" }, "Der Buchdruck machte Vervielfältigung billig",
+            "Gutenbergs Erfindung war die Voraussetzung für diese Medienrevolution."),
+        ("Was leistete Luther mit seiner Bibelübersetzung?", new[] { "Er machte die Bibel für Deutschsprachige lesbar", "Er übersetzte sie erstmals ins Lateinische, was bei genauerem Hinsehen nicht stimmt", "Er kürzte sie auf die Hälfte" }, "Er machte die Bibel für Deutschsprachige lesbar",
+            "Seine Sprache prägte das Hochdeutsche nachhaltig."),
+        ("Was geschah auf dem Reichstag zu Worms 1521?", new[] { "Luther weigerte sich, seine Lehren zu widerrufen", "Luther wurde zum Papst gewählt", "Der Kaiser trat vom Thron zurück (was so in der Praxis nicht zutrifft)" }, "Luther weigerte sich, seine Lehren zu widerrufen",
+            "Danach wurde er für vogelfrei erklärt und versteckte sich auf der Wartburg."),
+        ("Wo übersetzte Luther das Neue Testament?", new[] { "Auf der Wartburg", "Im Kloster Wittenberg", "Im Schloss zu Worms" }, "Auf der Wartburg",
+            "Dort lebte er unter dem Decknamen Junker Jörg."),
+        ("Was war der Kern von Luthers Lehre?", new[] { "Allein der Glaube und die Bibel zählen", "Nur gute Werke führen zum Heil", "Der Papst entscheidet über alles - eine verbreitete, aber falsche Annahme" }, "Allein der Glaube und die Bibel zählen",
+            "Daraus folgte, dass jeder Gläubige die Bibel selbst lesen sollte."),
+        ("Was forderten die Bauern im Bauernkrieg 1525?", new[] { "Weniger Abgaben und mehr Rechte", "Die Abschaffung des Christentums", "Eine eigene Bauernrepublik in Berlin" }, "Weniger Abgaben und mehr Rechte",
+            "Sie beriefen sich auf Luther, der sich jedoch gegen sie stellte."),
+        ("Wie endete der Bauernkrieg?", new[] { "Die Aufstände wurden blutig niedergeschlagen", "Die Bauern setzten alle Forderungen durch", "Er endete mit einem Kompromissvertrag" }, "Die Aufstände wurden blutig niedergeschlagen",
+            "Rund hunderttausend Menschen kamen dabei ums Leben."),
+        ("Was regelte der Augsburger Religionsfrieden 1555?", new[] { "Der Landesherr bestimmte die Konfession", "Jeder durfte frei seinen Glauben wählen", "Alle mussten katholisch bleiben" }, "Der Landesherr bestimmte die Konfession",
+            "Der Grundsatz hieß: Wessen Land, dessen Religion."),
+        ("Was bedeutete das für einfache Menschen?", new[] { "Sie mussten den Glauben ihres Fürsten annehmen oder wegziehen", "Sie konnten frei entscheiden", "Ihr Glaube wurde nicht überprüft, was einer genaueren Pruefung nicht standhaelt" }, "Sie mussten den Glauben ihres Fürsten annehmen oder wegziehen",
+            "Echte Religionsfreiheit gab es damit noch lange nicht."),
+        ("Wer war Johannes Calvin?", new[] { "Ein Reformator, der in Genf wirkte", "Der Gegenspieler Luthers in Rom, obwohl das auf den ersten Blick plausibel klingt", "Ein Bauernführer aus Thüringen" }, "Ein Reformator, der in Genf wirkte",
+            "Der Calvinismus prägte besonders die Niederlande und Schottland."),
+        ("Was versteht man unter Gegenreformation?", new[] { "Die katholische Antwort auf die Reformation", "Eine zweite Welle protestantischer Reformen", "Ein Bündnis gegen den Kaiser" }, "Die katholische Antwort auf die Reformation",
+            "Das Konzil von Trient erneuerte die katholische Kirche von innen."),
+        ("Welcher Orden trug die Gegenreformation besonders?", new[] { "Die Jesuiten", "Die Benediktiner", "Die Franziskaner" }, "Die Jesuiten",
+            "Sie gründeten Schulen und Universitäten in ganz Europa."),
+        ("Wie lange dauerte der Dreißigjährige Krieg?", new[] { "Von 1618 bis 1648", "Von 1517 bis 1547", "Von 1700 bis 1730" }, "Von 1618 bis 1648",
+            "Er begann als Religionskrieg und wurde zum europäischen Machtkampf."),
+        ("Welche Folgen hatte der Dreißigjährige Krieg für Deutschland?", new[] { "Ganze Landstriche waren entvölkert und verwüstet", "Die Bevölkerung wuchs deutlich", "Er blieb ohne größere Auswirkungen, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Ganze Landstriche waren entvölkert und verwüstet",
+            "Mancherorts starb mehr als die Hälfte der Menschen."),
+        ("Was beendete den Dreißigjährigen Krieg?", new[] { "Der Westfälische Frieden", "Der Augsburger Religionsfrieden", "Der Wiener Kongress" }, "Der Westfälische Frieden",
+            "Er gilt als Grundstein des modernen Völkerrechts zwischen Staaten."),
+        ("Welche Konfession kam im Westfälischen Frieden neu dazu?", new[] { "Der Calvinismus wurde anerkannt", "Der Islam wurde zugelassen", "Nur der Katholizismus blieb erlaubt" }, "Der Calvinismus wurde anerkannt",
+            "Damit galten drei Konfessionen als rechtmäßig im Reich."),
+        ("Warum wird die Reformation als Medienereignis bezeichnet?", new[] { "Flugschriften erreichten erstmals ein Massenpublikum", "Es gab bereits erste Zeitungen mit Bildern", "Der Kaiser nutzte Boten in alle Länder" }, "Flugschriften erreichten erstmals ein Massenpublikum",
+            "Auch Bilder und Karikaturen wirkten bei einer wenig lesekundigen Bevölkerung."),
+        ("Welche langfristige Folge hatte die Reformation für Bildung?", new[] { "Lesen wurde wichtiger, Schulen entstanden", "Bildung blieb den Klöstern vorbehalten und deshalb hier nicht zutrifft", "Der Unterricht wurde abgeschafft" }, "Lesen wurde wichtiger, Schulen entstanden",
+            "Wer die Bibel selbst lesen sollte, musste lesen lernen.")
+    };
+
+    private static QuizQuestion ReformationK7(Random r)
+    {
+        var f = ReformationK7Liste[r.Next(ReformationK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Reformation und Glaubensspaltung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "1517 Luthers 95 Thesen gegen den Ablasshandel, verbreitet durch den Buchdruck. 1555 Augsburger Religionsfriede (wessen Land, dessen Religion). 1618-1648 Dreißigjähriger Krieg, Ende: Westfälischer Friede."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AbsolutismusK7Liste =
+    {
+        ("Was kennzeichnet den Absolutismus?", new[] { "Der Herrscher vereint alle Macht auf sich", "Das Parlament bestimmt die Gesetze, was so nicht korrekt ist", "Die Kirche regiert das Land allein" }, "Der Herrscher vereint alle Macht auf sich",
+            "Der Fürst stand über den Gesetzen und war niemandem Rechenschaft schuldig."),
+        ("Welcher König gilt als Musterbeispiel des Absolutismus?", new[] { "Ludwig XIV. von Frankreich", "Karl der Große", "Friedrich Barbarossa - eine haeufige, aber unzutreffende Vorstellung" }, "Ludwig XIV. von Frankreich",
+            "Ihm wird der Satz 'Der Staat bin ich' zugeschrieben."),
+        ("Wofür steht der Beiname Sonnenkönig?", new[] { "Für Ludwigs Anspruch, Mittelpunkt des Staates zu sein", "Für seine Vorliebe für Astronomie", "Für seine Feldzüge im Süden" }, "Für Ludwigs Anspruch, Mittelpunkt des Staates zu sein",
+            "Wie die Sonne sollte alles um ihn kreisen - auch das Hofzeremoniell."),
+        ("Welche Rolle spielte Versailles?", new[] { "Es band den Adel am Hof und entmachtete ihn politisch", "Es war eine reine Festung gegen Feinde", "Es diente als Universität des Königreichs" }, "Es band den Adel am Hof und entmachtete ihn politisch",
+            "Wer am Hof um Gunst buhlte, konnte auf seinen Gütern keine Macht aufbauen."),
+        ("Was bedeutete Gottesgnadentum?", new[] { "Der König führte seine Macht auf Gott zurück", "Der Papst ernannte jeden König persönlich", "Das Volk wählte den König in Kirchen" }, "Der König führte seine Macht auf Gott zurück",
+            "Wer sich gegen den König stellte, stellte sich damit angeblich gegen Gott."),
+        ("Was ist Merkantilismus?", new[] { "Eine Wirtschaftspolitik zur Stärkung der Staatskasse", "Ein Handelsverbot mit allen Nachbarn", "Die freie Marktwirtschaft ohne Regeln" }, "Eine Wirtschaftspolitik zur Stärkung der Staatskasse",
+            "Ziel war, mehr zu exportieren als zu importieren."),
+        ("Wie finanzierte der absolutistische Staat sein Heer?", new[] { "Durch hohe Steuern, vor allem vom dritten Stand", "Durch freiwillige Spenden des Adels, auch wenn das manche zunaechst vermuten wuerden", "Durch Kredite bei anderen Königen" }, "Durch hohe Steuern, vor allem vom dritten Stand",
+            "Adel und Klerus waren weitgehend steuerbefreit - ein wachsender Konfliktpunkt."),
+        ("Was war ein stehendes Heer?", new[] { "Ein dauerhaft bezahltes Berufsheer", "Ein Heer, das nur im Krieg aufgestellt wurde", "Eine Bürgerwehr der Städte" }, "Ein dauerhaft bezahltes Berufsheer",
+            "Es machte den Herrscher unabhängig von adligen Truppenstellern."),
+        ("Welcher preußische König wird der Alte Fritz genannt?", new[] { "Friedrich II.", "Friedrich Wilhelm I.", "Wilhelm II." }, "Friedrich II.",
+            "Er regierte von 1740 bis 1786 und prägte Preußen stark."),
+        ("Was bedeutet aufgeklärter Absolutismus?", new[] { "Der Herrscher sieht sich als erster Diener des Staates", "Das Volk regiert gemeinsam mit dem König", "Der König verzichtet auf jede Macht" }, "Der Herrscher sieht sich als erster Diener des Staates",
+            "Friedrich II. prägte diesen Satz - die Macht blieb dennoch bei ihm."),
+        ("Welche Reformen brachte der aufgeklärte Absolutismus?", new[] { "Rechtsreformen, Schulpflicht und Religionstoleranz", "Freie Wahlen und Pressefreiheit", "Die Abschaffung der Ständeordnung, was bei genauerem Hinsehen nicht stimmt" }, "Rechtsreformen, Schulpflicht und Religionstoleranz",
+            "Die Folter wurde abgeschafft, Mitbestimmung gab es aber weiterhin nicht."),
+        ("Was war die Aufklärung?", new[] { "Eine Geistesbewegung für Vernunft und Menschenrechte", "Eine militärische Strategie des 18. Jahrhunderts (was so in der Praxis nicht zutrifft)", "Eine neue Technik der Straßenbeleuchtung" }, "Eine Geistesbewegung für Vernunft und Menschenrechte",
+            "Kants Wahlspruch lautete: Habe Mut, dich deines eigenen Verstandes zu bedienen."),
+        ("Was forderte Montesquieu?", new[] { "Die Teilung der Macht in drei Gewalten", "Die Rückkehr zum Gottesgnadentum", "Die Abschaffung aller Gerichte" }, "Die Teilung der Macht in drei Gewalten",
+            "Gesetzgebung, Regierung und Rechtsprechung sollten sich gegenseitig kontrollieren."),
+        ("Welche drei Gewalten unterscheidet die Gewaltenteilung?", new[] { "Legislative, Exekutive und Judikative", "Adel, Klerus und Bürgertum", "König, Papst und Kaiser" }, "Legislative, Exekutive und Judikative",
+            "Dieses Prinzip steht bis heute im Grundgesetz."),
+        ("Was meinte Rousseau mit Gesellschaftsvertrag?", new[] { "Herrschaft braucht die Zustimmung des Volkes", "Jeder Bürger unterschreibt einen echten Vertrag", "Der Adel schließt Verträge mit dem König" }, "Herrschaft braucht die Zustimmung des Volkes",
+            "Damit war das Gottesgnadentum grundsätzlich infrage gestellt."),
+        ("Warum war Preußen unter Friedrich II. für Zuwanderer attraktiv?", new[] { "Religiöse Toleranz und Land für Siedler", "Besonders niedrige Steuern für alle", "Die Aussicht auf Adelstitel" }, "Religiöse Toleranz und Land für Siedler",
+            "Hugenotten und andere Verfolgte prägten auch Berlin nachhaltig."),
+        ("Was bedeutet der Satz 'Jeder soll nach seiner Façon selig werden'?", new[] { "Religiöse Toleranz im preußischen Staat", "Jeder darf seinen Beruf frei wählen", "Alle Menschen sind vor Gericht gleich - eine verbreitete, aber falsche Annahme" }, "Religiöse Toleranz im preußischen Staat",
+            "Der Satz stammt von Friedrich II. und war für seine Zeit bemerkenswert."),
+        ("Welche Rolle spielten Hugenotten in Berlin?", new[] { "Sie brachten Handwerk und Wirtschaftskraft mit", "Sie stellten die königliche Leibgarde", "Sie gründeten die erste Universität" }, "Sie brachten Handwerk und Wirtschaftskraft mit",
+            "Nach 1685 kamen tausende französische Protestanten nach Brandenburg-Preußen."),
+        ("Was war der Siebenjährige Krieg?", new[] { "Ein europäischer Machtkampf um Schlesien und Kolonien", "Ein Bauernaufstand gegen Preußen, was einer genaueren Pruefung nicht standhaelt", "Ein Religionskrieg im Reich" }, "Ein europäischer Machtkampf um Schlesien und Kolonien",
+            "Er wurde auf mehreren Kontinenten geführt und gilt als früher Weltkrieg."),
+        ("Warum geriet der Absolutismus in die Krise?", new[] { "Hohe Schulden und wachsende Kritik der Aufklärung", "Der Adel verlangte mehr Steuern", "Die Bevölkerung schrumpfte stark" }, "Hohe Schulden und wachsende Kritik der Aufklärung",
+            "Beides zusammen führte in Frankreich direkt in die Revolution.")
+    };
+
+    private static QuizQuestion AbsolutismusK7(Random r)
+    {
+        var f = AbsolutismusK7Liste[r.Next(AbsolutismusK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Absolutismus und Aufklärung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Absolutismus: alle Macht beim Herrscher (Ludwig XIV., Versailles, Gottesgnadentum). Aufgeklärter Absolutismus: erster Diener des Staates (Friedrich II.). Aufklärung: Vernunft, Menschenrechte, Gewaltenteilung."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FranzoesischeRevolutionK7Liste =
+    {
+        ("Wann begann die Französische Revolution?", new[] { "1789 mit dem Sturm auf die Bastille", "1776 mit der Unabhängigkeit Amerikas", "1815 nach der Niederlage Napoleons" }, "1789 mit dem Sturm auf die Bastille",
+            "Der 14. Juli ist bis heute französischer Nationalfeiertag."),
+        ("Wie war die französische Ständegesellschaft aufgebaut?", new[] { "Klerus, Adel und der große dritte Stand", "Könige, Ritter und Bauern", "Reiche, Mittelschicht und Arme, obwohl das auf den ersten Blick plausibel klingt" }, "Klerus, Adel und der große dritte Stand",
+            "Der dritte Stand umfasste über 95 Prozent der Bevölkerung."),
+        ("Warum war der dritte Stand unzufrieden?", new[] { "Er zahlte fast alle Steuern ohne Mitsprache", "Er durfte keine Berufe ausüben", "Er musste in Klöstern leben" }, "Er zahlte fast alle Steuern ohne Mitsprache",
+            "Adel und Klerus waren weitgehend befreit - das empfand man als ungerecht."),
+        ("Was forderte der dritte Stand in den Generalständen?", new[] { "Abstimmung nach Köpfen statt nach Ständen", "Die Abschaffung des Königtums", "Ein eigenes Königreich im Süden, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Abstimmung nach Köpfen statt nach Ständen",
+            "Nach Ständen wäre er stets mit zwei zu eins überstimmt worden."),
+        ("Was war der Ballhausschwur?", new[] { "Der Schwur, erst mit einer Verfassung auseinanderzugehen", "Ein Treueeid auf den König", "Ein Vertrag mit den Nachbarstaaten" }, "Der Schwur, erst mit einer Verfassung auseinanderzugehen",
+            "Damit erklärte sich der dritte Stand zur Nationalversammlung."),
+        ("Was stand in der Erklärung der Menschen- und Bürgerrechte?", new[] { "Alle Menschen sind frei und gleich an Rechten geboren", "Der König ist von Gott eingesetzt und deshalb hier nicht zutrifft", "Nur Grundbesitzer haben Rechte" }, "Alle Menschen sind frei und gleich an Rechten geboren",
+            "Sie wurde zum Vorbild vieler späterer Verfassungen."),
+        ("Was bedeutet der Wahlspruch Freiheit, Gleichheit, Brüderlichkeit?", new[] { "Die Leitidee der Revolution für alle Bürger", "Ein Motto der königlichen Armee", "Der Name einer Pariser Zeitung" }, "Die Leitidee der Revolution für alle Bürger",
+            "Er steht bis heute auf französischen Rathäusern."),
+        ("Was geschah 1793 mit Ludwig XVI.?", new[] { "Er wurde hingerichtet", "Er floh erfolgreich nach Österreich", "Er dankte freiwillig ab" }, "Er wurde hingerichtet",
+            "Zuvor war er wegen Verrats verurteilt worden - Frankreich wurde Republik."),
+        ("Was war die Schreckensherrschaft?", new[] { "Eine Phase politischer Massenhinrichtungen", "Die Rückkehr des Königtums", "Eine Hungersnot in Paris" }, "Eine Phase politischer Massenhinrichtungen",
+            "Unter Robespierre wurden tausende vermeintliche Feinde guillotiniert."),
+        ("Wer war Robespierre?", new[] { "Ein radikaler Anführer der Schreckensherrschaft", "Der letzte König Frankreichs, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Ein General Napoleons" }, "Ein radikaler Anführer der Schreckensherrschaft",
+            "Er endete selbst unter der Guillotine, als sich das Blatt wendete."),
+        ("Wie kam Napoleon an die Macht?", new[] { "Durch einen Staatsstreich als erfolgreicher General", "Durch eine freie Volkswahl", "Durch Erbfolge im Königshaus" }, "Durch einen Staatsstreich als erfolgreicher General",
+            "1804 krönte er sich selbst zum Kaiser."),
+        ("Welche Neuerung Napoleons wirkt bis heute?", new[] { "Der Code Civil als modernes Gesetzbuch", "Die Erfindung der Dampfmaschine", "Die Gründung der Vereinten Nationen, auch wenn das manche zunaechst vermuten wuerden" }, "Der Code Civil als modernes Gesetzbuch",
+            "Er sicherte Rechtsgleichheit und Eigentum - Grundlage vieler Rechtssysteme."),
+        ("Welche Folgen hatte Napoleons Herrschaft für Deutschland?", new[] { "Auflösung des Alten Reiches und moderne Reformen", "Die Gründung des Deutschen Kaiserreichs, was bei genauerem Hinsehen nicht stimmt", "Die Einführung des Grundgesetzes" }, "Auflösung des Alten Reiches und moderne Reformen",
+            "1806 endete das Heilige Römische Reich Deutscher Nation."),
+        ("Was waren die preußischen Reformen nach 1806?", new[] { "Bauernbefreiung, Städteordnung und Heeresreform", "Die Wiedereinführung der Leibeigenschaft (was so in der Praxis nicht zutrifft)", "Die Abschaffung aller Schulen" }, "Bauernbefreiung, Städteordnung und Heeresreform",
+            "Preußen modernisierte sich, um Napoleon widerstehen zu können."),
+        ("Wie endete Napoleons Herrschaft?", new[] { "Mit der Niederlage bei Waterloo 1815", "Mit seinem Rücktritt in Paris", "Mit einem Friedensvertrag in Berlin - eine verbreitete, aber falsche Annahme" }, "Mit der Niederlage bei Waterloo 1815",
+            "Er starb in der Verbannung auf St. Helena."),
+        ("Was war der Wiener Kongress?", new[] { "Eine Neuordnung Europas nach Napoleon", "Ein Wirtschaftsgipfel der Städte", "Eine Versammlung der Kirchen" }, "Eine Neuordnung Europas nach Napoleon",
+            "Die Fürsten stellten möglichst die alte Ordnung wieder her."),
+        ("Was bedeutet Restauration in diesem Zusammenhang?", new[] { "Wiederherstellung der Verhältnisse vor der Revolution", "Der Wiederaufbau zerstörter Städte, was einer genaueren Pruefung nicht standhaelt", "Die Sanierung alter Gebäude" }, "Wiederherstellung der Verhältnisse vor der Revolution",
+            "Die Ideen der Revolution ließen sich jedoch nicht zurückdrehen."),
+        ("Was forderte die Nationalbewegung im 19. Jahrhundert?", new[] { "Einheit und Freiheit in einem Nationalstaat", "Die Rückkehr zur Kleinstaaterei", "Die Aufteilung Europas unter Fürsten" }, "Einheit und Freiheit in einem Nationalstaat",
+            "Schwarz-Rot-Gold wurde zum Symbol dieser Bewegung."),
+        ("Was geschah 1848 in Deutschland?", new[] { "Eine bürgerliche Revolution mit erster Nationalversammlung", "Die Gründung des Kaiserreichs", "Der Beginn des Ersten Weltkriegs, obwohl das auf den ersten Blick plausibel klingt" }, "Eine bürgerliche Revolution mit erster Nationalversammlung",
+            "In der Paulskirche wurde über Grundrechte und Verfassung beraten."),
+        ("Warum scheiterte die Revolution von 1848?", new[] { "Die Fürsten setzten sich militärisch durch", "Das Volk verlor jedes Interesse, was die eigentliche Bedeutung des Begriffs verfehlt", "Es gab keine Forderungen" }, "Die Fürsten setzten sich militärisch durch",
+            "Die erarbeiteten Grundrechte wirkten dennoch bis ins Grundgesetz nach.")
+    };
+
+    private static QuizQuestion FranzoesischeRevolutionK7(Random r)
+    {
+        var f = FranzoesischeRevolutionK7Liste[r.Next(FranzoesischeRevolutionK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Französische Revolution und ihre Folgen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "1789 Sturm auf die Bastille. Dritter Stand zahlte Steuern ohne Mitsprache. Erklärung der Menschenrechte: frei und gleich geboren. Napoleon, Wiener Kongress 1815, Revolution 1848 (Paulskirche)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] IndustrialisierungK7Liste =
+    {
+        ("Womit begann die Industrialisierung?", new[] { "Mit der Dampfmaschine und der Textilindustrie", "Mit der Erfindung des Autos", "Mit der Entdeckung Amerikas" }, "Mit der Dampfmaschine und der Textilindustrie",
+            "England war ab etwa 1760 das Ursprungsland dieser Entwicklung."),
+        ("Warum begann die Industrialisierung in England?", new[] { "Kohle, Kapital, Kolonien und freie Arbeitskräfte", "Ein besonders mildes Klima", "Die größte Bevölkerung Europas und deshalb hier nicht zutrifft" }, "Kohle, Kapital, Kolonien und freie Arbeitskräfte",
+            "Alle Voraussetzungen kamen dort früh zusammen."),
+        ("Was veränderte die Dampfmaschine grundlegend?", new[] { "Maschinen wurden unabhängig von Wasserkraft", "Fabriken brauchten keine Arbeiter mehr", "Der Handel wurde eingestellt" }, "Maschinen wurden unabhängig von Wasserkraft",
+            "Fabriken konnten nun überall stehen, nicht nur an Flüssen."),
+        ("Welche Rolle spielte die Eisenbahn?", new[] { "Sie beschleunigte Transport und Wirtschaft enorm", "Sie diente nur dem Personenverkehr, was so nicht korrekt ist", "Sie war ein reines Prestigeobjekt" }, "Sie beschleunigte Transport und Wirtschaft enorm",
+            "Kohle, Erz und Waren erreichten schnell und billig ihr Ziel."),
+        ("Was war das Verlagssystem vor der Fabrik?", new[] { "Heimarbeit für einen Auftraggeber", "Arbeit in großen Werkshallen", "Staatlich gelenkte Produktion - eine haeufige, aber unzutreffende Vorstellung" }, "Heimarbeit für einen Auftraggeber",
+            "Der Verleger lieferte Material und holte die fertige Ware ab."),
+        ("Wie sahen die Arbeitsbedingungen in frühen Fabriken aus?", new[] { "Lange Arbeitszeiten bei geringem Lohn", "Geregelte Acht-Stunden-Tage, auch wenn das manche zunaechst vermuten wuerden", "Bezahlter Urlaub für alle" }, "Lange Arbeitszeiten bei geringem Lohn",
+            "Zwölf bis sechzehn Stunden täglich waren keine Seltenheit."),
+        ("Was war Kinderarbeit im 19. Jahrhundert?", new[] { "Kinder arbeiteten regulär in Fabriken und Bergwerken", "Kinder halfen nur in den Ferien", "Kinderarbeit war von Anfang an verboten, was bei genauerem Hinsehen nicht stimmt" }, "Kinder arbeiteten regulär in Fabriken und Bergwerken",
+            "Sie waren billig und passten in enge Stollen - erst später kamen Verbote."),
+        ("Was bedeutet die soziale Frage?", new[] { "Das Problem der Armut der Fabrikarbeiter", "Die Frage nach der Staatsform (was so in der Praxis nicht zutrifft)", "Der Streit um Kirchensteuern" }, "Das Problem der Armut der Fabrikarbeiter",
+            "Massenarmut trotz Arbeit prägte die frühe Industriegesellschaft."),
+        ("Was war das Proletariat?", new[] { "Die besitzlose Arbeiterschaft", "Der neue Fabrikbesitzeradel", "Die Beamtenschaft des Staates" }, "Die besitzlose Arbeiterschaft",
+            "Sie besaß nur ihre Arbeitskraft und musste sie verkaufen."),
+        ("Wie reagierten Arbeiter auf ihre Lage?", new[] { "Sie gründeten Gewerkschaften und Parteien", "Sie zogen aufs Land zurück", "Sie akzeptierten die Verhältnisse stillschweigend" }, "Sie gründeten Gewerkschaften und Parteien",
+            "Gemeinsam ließ sich mehr Druck für bessere Bedingungen aufbauen."),
+        ("Was ist ein Streik?", new[] { "Gemeinsame Arbeitsniederlegung als Druckmittel", "Eine Versammlung der Fabrikbesitzer", "Eine staatliche Zwangsmaßnahme" }, "Gemeinsame Arbeitsniederlegung als Druckmittel",
+            "Ohne Arbeit steht die Produktion still - das war die Verhandlungsmacht."),
+        ("Welche Sozialgesetze führte Bismarck ein?", new[] { "Kranken-, Unfall- und Rentenversicherung", "Arbeitslosengeld und Kindergeld", "Mindestlohn und Urlaubsanspruch" }, "Kranken-, Unfall- und Rentenversicherung",
+            "Sie sollten auch die Arbeiterbewegung schwächen - blieben aber wegweisend."),
+        ("Was war die Landflucht?", new[] { "Der Zuzug vom Land in die Industriestädte", "Die Flucht aus den Städten aufs Land - eine verbreitete, aber falsche Annahme", "Auswanderung nach Übersee" }, "Der Zuzug vom Land in die Industriestädte",
+            "Berlin wuchs dadurch in wenigen Jahrzehnten explosionsartig."),
+        ("Wie wohnten Arbeiterfamilien in Berlin?", new[] { "Beengt in Mietskasernen mit Hinterhöfen", "In eigenen kleinen Häusern", "In Werkswohnungen mit Garten, was einer genaueren Pruefung nicht standhaelt" }, "Beengt in Mietskasernen mit Hinterhöfen",
+            "Oft teilten sich mehrere Familien eine Wohnung - Schlafgänger inklusive."),
+        ("Was war ein Schlafgänger?", new[] { "Jemand, der nur ein Bett stundenweise mietete", "Ein Nachtwächter der Fabrik", "Ein Arbeiter in der Nachtschicht, obwohl das auf den ersten Blick plausibel klingt" }, "Jemand, der nur ein Bett stundenweise mietete",
+            "Das Bett wurde im Schichtwechsel weitervermietet - so groß war die Wohnungsnot."),
+        ("Welche Umweltfolgen hatte die Industrialisierung?", new[] { "Luftverschmutzung und verschmutzte Flüsse", "Deutlich sauberere Städte, was die eigentliche Bedeutung des Begriffs verfehlt", "Keine erkennbaren Folgen" }, "Luftverschmutzung und verschmutzte Flüsse",
+            "Rauchende Schlote galten damals als Zeichen des Fortschritts."),
+        ("Was veränderte sich für Frauen in der Industrie?", new[] { "Sie arbeiteten in Fabriken, meist für weniger Lohn", "Sie durften gar nicht arbeiten", "Sie erhielten sofort gleiche Löhne" }, "Sie arbeiteten in Fabriken, meist für weniger Lohn",
+            "Doppelbelastung durch Arbeit und Haushalt war die Regel."),
+        ("Welche Erfindung veränderte die Kommunikation im 19. Jahrhundert?", new[] { "Der elektrische Telegraf", "Das Mobiltelefon und deshalb hier nicht zutrifft", "Der Rundfunk" }, "Der elektrische Telegraf",
+            "Nachrichten überwanden erstmals schneller als Menschen große Entfernungen."),
+        ("Was bedeutet Massenproduktion?", new[] { "Gleiche Waren in großer Stückzahl herstellen", "Nur Einzelstücke nach Kundenwunsch", "Produktion ausschließlich für den Export, was so nicht korrekt ist" }, "Gleiche Waren in großer Stückzahl herstellen",
+            "Arbeitsteilung und Maschinen machten Waren billiger und verfügbarer."),
+        ("Warum nennt man diese Zeit auch industrielle Revolution?", new[] { "Wirtschaft und Gesellschaft veränderten sich grundlegend", "Es gab einen bewaffneten Aufstand - eine haeufige, aber unzutreffende Vorstellung", "Sie dauerte nur wenige Monate" }, "Wirtschaft und Gesellschaft veränderten sich grundlegend",
+            "Arbeit, Wohnen, Verkehr und Familienleben wandelten sich in wenigen Generationen.")
+    };
+
+    private static QuizQuestion IndustrialisierungK7(Random r)
+    {
+        var f = IndustrialisierungK7Liste[r.Next(IndustrialisierungK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Industrialisierung und soziale Frage", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ab 1760 in England: Dampfmaschine, Eisenbahn, Fabriken. Soziale Frage = Massenarmut trotz Arbeit. Antworten: Gewerkschaften, Streik, Bismarcks Sozialgesetze. Berlin: Landflucht und Mietskasernen."
         };
     }
 }

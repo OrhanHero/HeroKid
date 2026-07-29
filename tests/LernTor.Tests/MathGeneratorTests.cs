@@ -99,6 +99,24 @@ public class MathGeneratorTests
     }
 
     [Fact]
+    public void Gewi_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
+    {
+        var questions = new GewiGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));
+
+        Assert.Equal(12, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+    }
+
+    [Fact]
+    public void Geschichte_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
+    {
+        var questions = new GeschichteGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));
+
+        Assert.Equal(12, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+    }
+
+    [Fact]
     public void Chemie_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
     {
         var questions = new ChemieGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));

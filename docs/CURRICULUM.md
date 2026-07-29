@@ -144,17 +144,17 @@ Rahmenlehrplan" weiter unten).
 
 ## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Geschichtliche Epochen | Grundgesetz |
-| Kartenkunde und Himmelsrichtungen | Wirtschaftskreislauf |
-| Kinderrechte | Medien und Gesellschaft |
-| Ernährung – wie werden Menschen satt? | |
-| Wasser – nur Natur oder in Menschenhand? | |
-| Stadt und städtische Vielfalt | |
-| Europa – grenzenlos? | |
-| Tourismus und Mobilität – schneller, weiter, klüger? | |
-| Demokratie und Mitbestimmung | |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Geschichtliche Epochen | Armut und Gerechtigkeit | Grundgesetz |
+| Kartenkunde und Himmelsrichtungen | Europa und die Europäische Union | Wirtschaftskreislauf |
+| Kinderrechte | Migration und Vielfalt | Medien und Gesellschaft |
+| Ernährung – wie werden Menschen satt? | Konsum und Verantwortung |  |
+| Wasser – nur Natur oder in Menschenhand? | Medien und digitales Leben |  |
+| Stadt und städtische Vielfalt | Nachhaltigkeit und Klima |  |
+| Europa – grenzenlos? |  |  |
+| Tourismus und Mobilität – schneller, weiter, klüger? |  |  |
+| Demokratie und Mitbestimmung |  |  |
 
 ## Politik (`PolitikGenerator.cs`)
 
@@ -223,15 +223,15 @@ Rahmenlehrplan" weiter unten).
 
 ## Geschichte (`GeschichteGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Epochenüberblick: Mittelalter, Frühe Neuzeit, Revolutionen | Demokratie und Diktatur |
-| Armut und Reichtum, Migrationen | Der Kalte Krieg und die geteilte Welt |
-| Juden, Christen und Muslime | Konflikte und Konfliktlösungen |
-| | Europa in der Welt |
-| | Völkermorde und Massengewalt |
-| | Die Welt nach dem Kalten Krieg (1989-1991) |
-| | Feindbilder und Propaganda |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Epochenüberblick: Mittelalter, Frühe Neuzeit, Revolutionen | Mittelalter: Lebenswelten | Demokratie und Diktatur |
+| Armut und Reichtum, Migrationen | Entdeckungen und Kolonialismus | Der Kalte Krieg und die geteilte Welt |
+| Juden, Christen und Muslime | Reformation und Glaubensspaltung | Konflikte und Konfliktlösungen |
+|  | Absolutismus und Aufklärung | Europa in der Welt |
+|  | Französische Revolution und ihre Folgen | Völkermorde und Massengewalt |
+|  | Industrialisierung und soziale Frage | Die Welt nach dem Kalten Krieg (1989-1991) |
+|  |  | Feindbilder und Propaganda |
 
 ## Medienbildung / ITG (`ItgGenerator.cs`)
 
