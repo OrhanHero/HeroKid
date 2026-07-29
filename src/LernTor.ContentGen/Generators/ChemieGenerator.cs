@@ -3,7 +3,9 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Chemie nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen) und Klasse 9 (vertieft).</summary>
+/// <summary>Chemie nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen), Klasse 7 (Aufbau:
+/// Stoffeigenschaften, Stofftrennung, chemische Reaktion, Luft und Verbrennung, Wasser als
+/// Lösungsmittel, Metalle und Korrosion) und Klasse 9 (vertieft).</summary>
 public sealed class ChemieGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Chemie;
@@ -12,6 +14,7 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { StoffeTrennen, Verbrennung, SaeurenLaugen, MetalleEigenschaften, StoffeImAlltag, PeriodensystemGrundlagen, Gase, Wasser, Salze },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { StoffeUndEigenschaften, StofftrennungK7, ChemischeReaktionK7, LuftUndVerbrennung, WasserAlsLoesungsmittel, MetalleUndKorrosion },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Atommodell, ChemischeReaktion, Periodensystem, Stoechiometrie, SaeureBaseVertieft, Kohlenwasserstoffe, Alkohole, OrganischeSaeuren, Ester }
         };
 
@@ -1023,6 +1026,346 @@ public sealed class ChemieGenerator : ExerciseGeneratorBase
             Topic = "Salze – Gegensätze ziehen sich an", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Salze wie Kochsalz bestehen aus entgegengesetzt geladenen Teilchen (Ionen), die sich anziehen; sie lösen sich in Wasser auf und bilden beim Verdunsten wieder Kristalle."
+        };
+    }
+
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort (siehe
+    // scripts/check-answer-length-bias.py).
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StoffeigenschaftenListe =
+    {
+        ("Was versteht man unter einem Reinstoff?", new[] { "Ein Stoff aus nur einer einzigen Stoffart", "Ein besonders sauberer, gereinigter Stoff", "Ein Stoff ohne jede Farbe und Geruch" }, "Ein Stoff aus nur einer einzigen Stoffart",
+            "Destilliertes Wasser und reines Kupfer sind Reinstoffe; Leitungswasser ist ein Gemisch."),
+        ("Was ist ein Stoffgemisch?", new[] { "Mehrere Reinstoffe nebeneinander vermischt", "Ein Stoff, der sich chemisch verändert hat", "Ein Stoff mit besonders vielen Atomen" }, "Mehrere Reinstoffe nebeneinander vermischt",
+            "Im Gemisch behalten die Bestandteile ihre Eigenschaften und lassen sich wieder trennen."),
+        ("Was ist die Dichte eines Stoffes?", new[] { "Masse geteilt durch Volumen", "Masse mal Volumen", "Gewicht geteilt durch Fläche" }, "Masse geteilt durch Volumen",
+            "Die Dichte ist eine Stoffeigenschaft: Eisen hat 7,9 g/cm³, Wasser rund 1 g/cm³."),
+        ("Warum schwimmt Holz auf Wasser?", new[] { "Seine Dichte ist kleiner als die von Wasser", "Es ist leichter als jeder andere Stoff (was so in der Praxis nicht zutrifft)", "Es nimmt zunächst kein Wasser auf" }, "Seine Dichte ist kleiner als die von Wasser",
+            "Nicht das Gewicht entscheidet, sondern die Dichte im Vergleich zur Flüssigkeit."),
+        ("Was ist der Schmelzpunkt eines Stoffes?", new[] { "Die Temperatur beim Übergang fest zu flüssig", "Die Temperatur beim Übergang flüssig zu gasförmig", "Die höchste Temperatur, die ein Stoff verträgt" }, "Die Temperatur beim Übergang fest zu flüssig",
+            "Reinstoffe haben feste Schmelz- und Siedepunkte - ein wichtiges Erkennungsmerkmal."),
+        ("Wie erkennt man an Schmelz- und Siedepunkt einen Reinstoff?", new[] { "Sie liegen bei genau einer festen Temperatur", "Sie liegen immer sehr weit auseinander - eine verbreitete, aber falsche Annahme", "Sie ändern sich bei jeder Messung" }, "Sie liegen bei genau einer festen Temperatur",
+            "Gemische schmelzen und sieden dagegen über einen ganzen Temperaturbereich hinweg."),
+        ("Was bedeutet Löslichkeit?", new[] { "Wie viel Stoff sich in einer Flüssigkeit lösen lässt", "Wie schnell ein Stoff schmilzt", "Wie leicht sich ein Stoff verformen lässt, was einer genaueren Pruefung nicht standhaelt" }, "Wie viel Stoff sich in einer Flüssigkeit lösen lässt",
+            "Die Löslichkeit hängt stark von der Temperatur ab - warmes Wasser löst meist mehr."),
+        ("Was ist eine gesättigte Lösung?", new[] { "Es lässt sich kein weiterer Stoff mehr lösen", "Sie enthält genau die Hälfte der möglichen Menge", "Sie ist besonders stark verdünnt" }, "Es lässt sich kein weiterer Stoff mehr lösen",
+            "Weiterer Zucker bleibt dann als Bodensatz liegen."),
+        ("Warum löst sich Zucker in warmem Tee schneller?", new[] { "Die Teilchen bewegen sich bei Wärme schneller", "Warmes Wasser ist chemisch aggressiver", "Zucker schmilzt im warmen Tee" }, "Die Teilchen bewegen sich bei Wärme schneller",
+            "Mehr Bewegung bedeutet mehr Zusammenstöße - das Lösen geht schneller."),
+        ("Welche Eigenschaft ist typisch für Metalle?", new[] { "Sie leiten Wärme und Strom gut", "Sie sind grundsätzlich durchsichtig", "Sie lösen sich leicht in Wasser" }, "Sie leiten Wärme und Strom gut",
+            "Metalle glänzen zudem und lassen sich verformen, ohne zu zerbrechen."),
+        ("Was sagt der Aggregatzustand über einen Stoff aus?", new[] { "Ob er fest, flüssig oder gasförmig vorliegt", "Aus welchen Atomen er besteht", "Wie stark er sich elektrisch auflädt, obwohl das auf den ersten Blick plausibel klingt" }, "Ob er fest, flüssig oder gasförmig vorliegt",
+            "Der Zustand hängt von Temperatur und Druck ab, nicht von der Stoffart allein."),
+        ("Wie sind die Teilchen in einem Feststoff angeordnet?", new[] { "Dicht gepackt und an festen Plätzen schwingend", "Weit voneinander entfernt und frei fliegend", "Dicht gepackt, aber frei gegeneinander verschiebbar" }, "Dicht gepackt und an festen Plätzen schwingend",
+            "Deshalb haben Feststoffe feste Form und festes Volumen."),
+        ("Warum lassen sich Gase leicht zusammendrücken?", new[] { "Zwischen den Teilchen ist sehr viel leerer Raum", "Die Teilchen selbst werden dabei kleiner", "Gasteilchen sind besonders weich" }, "Zwischen den Teilchen ist sehr viel leerer Raum",
+            "In Flüssigkeiten und Feststoffen liegen die Teilchen dagegen schon dicht beieinander."),
+        ("Was ist ein Gemisch aus Feststoff und Flüssigkeit, das sich absetzt?", new[] { "Eine Suspension", "Eine Emulsion, was die eigentliche Bedeutung des Begriffs verfehlt", "Eine Lösung" }, "Eine Suspension",
+            "Beispiel: aufgewirbelter Sand in Wasser. Bei Emulsionen sind es zwei Flüssigkeiten."),
+        ("Was ist eine Emulsion?", new[] { "Ein Gemisch aus zwei nicht mischbaren Flüssigkeiten", "Ein Gemisch aus Feststoff und Gas", "Eine besonders klare Zuckerlösung" }, "Ein Gemisch aus zwei nicht mischbaren Flüssigkeiten",
+            "Milch und Salatdressing sind Emulsionen aus Fett und Wasser."),
+        ("Was ist eine Legierung?", new[] { "Ein Gemisch aus mehreren Metallen", "Ein besonders reines Einzelmetall", "Metall mit einer Schutzlackschicht" }, "Ein Gemisch aus mehreren Metallen",
+            "Messing besteht aus Kupfer und Zink, Bronze aus Kupfer und Zinn."),
+        ("Wie erkennt man Stoffe im Labor sicher?", new[] { "An mehreren Eigenschaften und Nachweisreaktionen", "Ausschließlich am Aussehen und der Farbe", "Am Geschmack und am Geruch der Probe" }, "An mehreren Eigenschaften und Nachweisreaktionen",
+            "Im Labor wird niemals geschmeckt - man kombiniert Messwerte und Nachweise."),
+        ("Warum darf man im Chemieunterricht nie an Stoffen riechen wie an Blumen?", new[] { "Dämpfe können die Atemwege schädigen", "Der Geruch verfälscht das Ergebnis", "Man verliert dabei den Geschmackssinn" }, "Dämpfe können die Atemwege schädigen",
+            "Man fächelt sich vorsichtig kleine Mengen zu, statt direkt einzuatmen."),
+        ("Was bedeutet das Gefahrensymbol mit der Flamme?", new[] { "Der Stoff ist leicht entzündlich", "Der Stoff ist ätzend für die Haut", "Der Stoff ist giftig beim Verschlucken" }, "Der Stoff ist leicht entzündlich",
+            "Die GHS-Symbole warnen vor der jeweiligen Hauptgefahr eines Stoffes."),
+        ("Was ist eine Stoffeigenschaft im Gegensatz zu einer Gegenstandseigenschaft?", new[] { "Sie gilt für den Stoff unabhängig von Form und Menge", "Sie beschreibt Größe und Form des Gegenstands", "Sie ändert sich mit jedem neuen Versuch" }, "Sie gilt für den Stoff unabhängig von Form und Menge",
+            "Dichte und Schmelzpunkt sind Stoffeigenschaften, Länge und Farbe eines Nagels nicht.")
+    };
+
+    private static QuizQuestion StoffeUndEigenschaften(Random r)
+    {
+        var f = StoffeigenschaftenListe[r.Next(StoffeigenschaftenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Stoffe und ihre Eigenschaften", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Reinstoff = eine Stoffart mit festem Schmelz-/Siedepunkt. Gemisch = mehrere Stoffe, trennbar. Dichte = Masse / Volumen. Suspension (fest+flüssig) vs. Emulsion (flüssig+flüssig)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StofftrennungK7Liste =
+    {
+        ("Wie trennt man Sand von Wasser?", new[] { "Durch Filtrieren", "Durch Destillieren", "Durch Chromatographie" }, "Durch Filtrieren",
+            "Der Filter hält die festen Teilchen zurück, das Wasser läuft hindurch."),
+        ("Worauf beruht das Filtrieren?", new[] { "Auf unterschiedlicher Teilchengröße", "Auf unterschiedlichen Siedepunkten und deshalb hier nicht zutrifft", "Auf unterschiedlicher Farbe" }, "Auf unterschiedlicher Teilchengröße",
+            "Nur Teilchen, die kleiner als die Poren sind, kommen durch."),
+        ("Wie gewinnt man reines Wasser aus Salzwasser?", new[] { "Durch Destillation", "Durch Filtrieren", "Durch Absetzenlassen" }, "Durch Destillation",
+            "Das Wasser verdampft, das Salz bleibt zurück; der Dampf wird wieder abgekühlt."),
+        ("Worauf beruht die Destillation?", new[] { "Auf unterschiedlichen Siedepunkten", "Auf unterschiedlicher Dichte", "Auf unterschiedlicher Löslichkeit" }, "Auf unterschiedlichen Siedepunkten",
+            "Der Stoff mit dem niedrigsten Siedepunkt verdampft zuerst und wird aufgefangen."),
+        ("Wozu dient der Kühler bei einer Destillation?", new[] { "Er verflüssigt den aufsteigenden Dampf wieder", "Er hält die Apparatur insgesamt kalt", "Er beschleunigt das Sieden im Kolben" }, "Er verflüssigt den aufsteigenden Dampf wieder",
+            "Das Kondensat, also die gereinigte Flüssigkeit, tropft dann in die Vorlage."),
+        ("Wie trennt man Eisenspäne von Sand?", new[] { "Mit einem Magneten", "Durch Filtrieren, was so nicht korrekt ist", "Durch Verdampfen" }, "Mit einem Magneten",
+            "Man nutzt die magnetische Eigenschaft des Eisens als Trennmerkmal."),
+        ("Wie trennt man Salz aus einer Salzlösung, wenn nur das Salz zählt?", new[] { "Durch Eindampfen der Lösung", "Durch Filtrieren der Lösung", "Mit einem starken Magneten" }, "Durch Eindampfen der Lösung",
+            "Das Wasser verdunstet, zurück bleiben die Salzkristalle."),
+        ("Was macht die Chromatographie sichtbar?", new[] { "Aus welchen Farbstoffen ein Gemisch besteht", "Wie schwer eine Probe insgesamt ist - eine haeufige, aber unzutreffende Vorstellung", "Bei welcher Temperatur sie siedet" }, "Aus welchen Farbstoffen ein Gemisch besteht",
+            "Die Bestandteile wandern unterschiedlich weit - so trennt sich schwarze Tinte in Farben auf."),
+        ("Worauf beruht die Chromatographie?", new[] { "Auf unterschiedlicher Haftung am Trägermaterial", "Auf unterschiedlicher Teilchengröße", "Auf unterschiedlichem Magnetismus" }, "Auf unterschiedlicher Haftung am Trägermaterial",
+            "Wer stärker haftet, wandert langsamer und bleibt weiter unten."),
+        ("Wie trennt man zwei nicht mischbare Flüssigkeiten wie Öl und Wasser?", new[] { "Mit einem Scheidetrichter", "Mit einem Faltenfilter", "Mit einem Magneten" }, "Mit einem Scheidetrichter",
+            "Die schwerere Flüssigkeit unten wird abgelassen, die leichtere bleibt zurück."),
+        ("Wozu dient das Sedimentieren?", new[] { "Schwere Teilchen setzen sich unten ab", "Leichte Teilchen verdampfen zuerst, auch wenn das manche zunaechst vermuten wuerden", "Farbstoffe wandern nach oben" }, "Schwere Teilchen setzen sich unten ab",
+            "Danach kann man die klare Flüssigkeit vorsichtig abgießen - das heißt Dekantieren."),
+        ("Was bedeutet Dekantieren?", new[] { "Vorsichtiges Abgießen der klaren Flüssigkeit", "Erhitzen bis zum vollständigen Verdampfen, was bei genauerem Hinsehen nicht stimmt", "Durchleiten durch feines Filterpapier" }, "Vorsichtiges Abgießen der klaren Flüssigkeit",
+            "Der Bodensatz bleibt dabei im Gefäß zurück."),
+        ("Wie funktioniert die Zentrifuge?", new[] { "Schnelle Drehung presst Schweres nach außen", "Starke Hitze verdampft leichte Anteile", "Ein Magnetfeld zieht Metall heraus" }, "Schnelle Drehung presst Schweres nach außen",
+            "Das beschleunigt das Absetzen enorm - in der Medizin trennt man so Blutbestandteile."),
+        ("Wie wird Trinkwasser im Wasserwerk aufbereitet?", new[] { "Über mehrere Filterstufen und Belüftung", "Ausschließlich durch starkes Erhitzen (was so in der Praxis nicht zutrifft)", "Durch Zugabe von Speisesalz" }, "Über mehrere Filterstufen und Belüftung",
+            "Kies-, Sand- und Aktivkohlefilter entfernen Schwebstoffe und Gerüche."),
+        ("Warum lässt sich ein Gemisch trennen, eine Verbindung aber nicht einfach?", new[] { "Im Gemisch behalten die Stoffe ihre Eigenschaften", "Gemische sind grundsätzlich flüssig - eine verbreitete, aber falsche Annahme", "Verbindungen sind immer sehr klein" }, "Im Gemisch behalten die Stoffe ihre Eigenschaften",
+            "Verbindungen sind chemisch verknüpft - sie lassen sich nur durch Reaktionen zerlegen."),
+        ("Welches Trennverfahren nutzt eine Kaffeemaschine?", new[] { "Filtrieren", "Destillieren", "Zentrifugieren" }, "Filtrieren",
+            "Das Papier hält den Kaffeesatz zurück, der Aufguss läuft durch."),
+        ("Wie trennt man Erdöl in Benzin, Diesel und Kerosin?", new[] { "Durch fraktionierte Destillation", "Durch mehrfaches Filtrieren", "Mit einem sehr starken Magneten" }, "Durch fraktionierte Destillation",
+            "Im Destillationsturm kondensieren die Bestandteile je nach Siedepunkt auf verschiedenen Höhen."),
+        ("Wozu dient ein Sieb als Trennverfahren?", new[] { "Es trennt Feststoffe nach ihrer Korngröße", "Es trennt Flüssigkeiten nach Dichte", "Es trennt Gase nach Gewicht" }, "Es trennt Feststoffe nach ihrer Korngröße",
+            "Kies und Sand lassen sich so einfach voneinander trennen."),
+        ("Warum ist Recycling ein Trennproblem?", new[] { "Wertstoffe müssen erst sauber sortiert werden", "Recycling braucht immer sehr hohe Temperaturen", "Alle Materialien lösen sich in Wasser" }, "Wertstoffe müssen erst sauber sortiert werden",
+            "Magnete holen Eisen heraus, Windsichter trennen Leichtes von Schwerem."),
+        ("Welches Verfahren wählt man für gelöstes Salz im Wasser?", new[] { "Destillieren oder Eindampfen", "Filtrieren oder Sieben", "Sedimentieren oder Dekantieren" }, "Destillieren oder Eindampfen",
+            "Gelöste Teilchen sind zu klein für jeden Filter - man muss das Wasser verdampfen.")
+    };
+
+    private static QuizQuestion StofftrennungK7(Random r)
+    {
+        var f = StofftrennungK7Liste[r.Next(StofftrennungK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Stofftrennverfahren", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Filtrieren = Teilchengröße, Destillieren = Siedepunkt, Chromatographie = Haftung, Scheidetrichter = nicht mischbare Flüssigkeiten, Magnet = magnetische Stoffe. Gelöstes geht nicht durch Filter."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ReaktionK7Liste =
+    {
+        ("Woran erkennt man eine chemische Reaktion?", new[] { "Es entstehen neue Stoffe mit neuen Eigenschaften", "Der Stoff ändert nur seinen Aggregatzustand", "Der Stoff wird lediglich zerkleinert" }, "Es entstehen neue Stoffe mit neuen Eigenschaften",
+            "Schmelzen und Zerreiben sind dagegen nur physikalische Vorgänge."),
+        ("Wie heißen die Ausgangsstoffe einer Reaktion?", new[] { "Edukte", "Produkte", "Katalysatoren" }, "Edukte",
+            "Edukte reagieren zu Produkten - im Reaktionsschema stehen sie links vom Pfeil."),
+        ("Was ist eine exotherme Reaktion?", new[] { "Bei ihr wird Energie an die Umgebung abgegeben", "Bei ihr wird Energie aus der Umgebung aufgenommen", "Bei ihr bleibt die Energie völlig unverändert" }, "Bei ihr wird Energie an die Umgebung abgegeben",
+            "Verbrennungen sind exotherm - es wird warm."),
+        ("Was kennzeichnet eine endotherme Reaktion?", new[] { "Sie nimmt ständig Energie aus der Umgebung auf", "Sie gibt dauerhaft Wärme an die Umgebung ab", "Sie läuft völlig ohne Energieaustausch ab" }, "Sie nimmt ständig Energie aus der Umgebung auf",
+            "Die Umgebung kühlt dabei ab - etwa bei manchen Kühlpackungen."),
+        ("Was ist die Aktivierungsenergie?", new[] { "Die Energie, die eine Reaktion erst startet", "Die Energie, die am Ende frei wird", "Die im Produkt gespeicherte Energie, was einer genaueren Pruefung nicht standhaelt" }, "Die Energie, die eine Reaktion erst startet",
+            "Deshalb braucht auch eine exotherme Reaktion oft ein Streichholz zum Zünden."),
+        ("Was macht ein Katalysator?", new[] { "Er senkt die Aktivierungsenergie, ohne sich zu verbrauchen", "Er liefert die gesamte Energie der Reaktion", "Er verlangsamt jede Reaktion zuverlässig" }, "Er senkt die Aktivierungsenergie, ohne sich zu verbrauchen",
+            "Im Autokatalysator werden so Abgase bei niedrigeren Temperaturen umgewandelt."),
+        ("Was besagt das Gesetz von der Erhaltung der Masse?", new[] { "Die Gesamtmasse bleibt bei einer Reaktion gleich", "Die Masse nimmt bei jeder Reaktion zu", "Die Masse verschwindet teilweise als Energie, obwohl das auf den ersten Blick plausibel klingt" }, "Die Gesamtmasse bleibt bei einer Reaktion gleich",
+            "Atome gehen nicht verloren, sie werden nur neu verknüpft."),
+        ("Warum scheint eine verbrannte Kerze leichter zu werden?", new[] { "Die gasförmigen Produkte entweichen unbemerkt", "Masse geht bei der Verbrennung verloren, was die eigentliche Bedeutung des Begriffs verfehlt", "Die Wärme nimmt Masse mit sich" }, "Die gasförmigen Produkte entweichen unbemerkt",
+            "Wiegt man im geschlossenen Gefäß, bleibt die Masse konstant."),
+        ("Was ist eine Synthese?", new[] { "Aus mehreren Stoffen entsteht ein neuer Stoff", "Ein Stoff zerfällt in mehrere Stoffe", "Zwei Stoffe tauschen ihre Bestandteile" }, "Aus mehreren Stoffen entsteht ein neuer Stoff",
+            "Beispiel: Eisen und Schwefel reagieren zu Eisensulfid."),
+        ("Was ist eine Analyse in der Chemie?", new[] { "Eine Verbindung wird in ihre Bestandteile zerlegt", "Mehrere Stoffe verbinden sich zu einem und deshalb hier nicht zutrifft", "Ein Stoff wird nur genau vermessen" }, "Eine Verbindung wird in ihre Bestandteile zerlegt",
+            "Beispiel: Wasser wird durch Strom in Wasserstoff und Sauerstoff zerlegt."),
+        ("Was passiert beim Verbrennen von Eisenwolle an der Luft?", new[] { "Sie wird schwerer, weil Sauerstoff gebunden wird", "Sie wird leichter, weil Eisen entweicht", "Ihre Masse bleibt exakt gleich" }, "Sie wird schwerer, weil Sauerstoff gebunden wird",
+            "Das war historisch der Beweis, dass Verbrennung Sauerstoffaufnahme bedeutet."),
+        ("Was ist ein Reaktionsschema?", new[] { "Edukte, Pfeil und Produkte in Worten oder Formeln", "Eine Liste aller Laborgeräte", "Eine Tabelle mit Schmelzpunkten, was so nicht korrekt ist" }, "Edukte, Pfeil und Produkte in Worten oder Formeln",
+            "Der Pfeil bedeutet 'reagiert zu' und zeigt die Richtung der Reaktion."),
+        ("Wie beeinflusst der Zerteilungsgrad die Reaktion?", new[] { "Fein verteilt reagiert ein Stoff schneller", "Große Brocken reagieren schneller", "Der Zerteilungsgrad spielt keine Rolle" }, "Fein verteilt reagiert ein Stoff schneller",
+            "Mehr Oberfläche bedeutet mehr Kontaktfläche - Mehlstaub kann sogar explodieren."),
+        ("Wie wirkt eine höhere Temperatur auf die Reaktionsgeschwindigkeit?", new[] { "Die Reaktion läuft schneller ab", "Die Reaktion läuft langsamer ab", "Die Geschwindigkeit ändert sich nicht" }, "Die Reaktion läuft schneller ab",
+            "Deshalb hält der Kühlschrank Lebensmittel länger frisch."),
+        ("Was ist ein Nachweis in der Chemie?", new[] { "Eine Reaktion mit eindeutig sichtbarem Ergebnis", "Eine Messung der Masse einer Probe", "Eine schriftliche Notiz im Protokoll" }, "Eine Reaktion mit eindeutig sichtbarem Ergebnis",
+            "Kalkwasser wird bei CO2 trüb - das ist ein klassischer Nachweis."),
+        ("Wie weist man Sauerstoff nach?", new[] { "Mit der Glimmspanprobe, der Span flammt auf", "Mit Kalkwasser, es wird trüb", "Mit Jod-Lösung, sie färbt sich blau - eine haeufige, aber unzutreffende Vorstellung" }, "Mit der Glimmspanprobe, der Span flammt auf",
+            "Sauerstoff unterhält die Verbrennung - deshalb entzündet sich der glimmende Span neu."),
+        ("Wie weist man Wasserstoff nach?", new[] { "Mit der Knallgasprobe, es macht einen Pfiff", "Mit Kalkwasser, es wird milchig", "Mit dem Magneten, er wird angezogen" }, "Mit der Knallgasprobe, es macht einen Pfiff",
+            "Wasserstoff verbrennt mit Sauerstoff explosionsartig zu Wasser."),
+        ("Warum ist ein Protokoll im Chemieunterricht wichtig?", new[] { "Der Versuch wird dadurch nachvollziehbar und wiederholbar", "Es dient nur der Benotung durch die Lehrkraft, auch wenn das manche zunaechst vermuten wuerden", "Es ersetzt die Sicherheitsregeln im Labor" }, "Der Versuch wird dadurch nachvollziehbar und wiederholbar",
+            "Aufbau, Beobachtung und Deutung gehören klar getrennt hinein."),
+        ("Was ist der Unterschied zwischen Beobachtung und Deutung?", new[] { "Beobachtung ist das Sichtbare, Deutung die Erklärung", "Beide bedeuten im Protokoll dasselbe", "Die Deutung steht immer vor dem Versuch, was bei genauerem Hinsehen nicht stimmt" }, "Beobachtung ist das Sichtbare, Deutung die Erklärung",
+            "'Das Kalkwasser wird trüb' ist Beobachtung, 'also war CO2 vorhanden' ist Deutung."),
+        ("Warum trägt man im Labor eine Schutzbrille?", new[] { "Spritzer können die Augen dauerhaft schädigen", "Sie verbessert die Sicht auf den Versuch", "Sie schützt vor grellem Licht" }, "Spritzer können die Augen dauerhaft schädigen",
+            "Augenverletzungen durch Chemikalien sind oft irreparabel - die Brille ist Pflicht.")
+    };
+
+    private static QuizQuestion ChemischeReaktionK7(Random r)
+    {
+        var f = ReaktionK7Liste[r.Next(ReaktionK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Die chemische Reaktion", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Edukte → Produkte. Exotherm = Energie frei, endotherm = Energie nötig. Aktivierungsenergie startet, Katalysator senkt sie. Masse bleibt erhalten. Nachweise: Glimmspan (O2), Kalkwasser (CO2), Knallgas (H2)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] LuftVerbrennungListe =
+    {
+        ("Woraus besteht Luft hauptsächlich?", new[] { "Zu rund 78 Prozent aus Stickstoff", "Zu rund 78 Prozent aus Sauerstoff", "Zu rund 78 Prozent aus Kohlenstoffdioxid" }, "Zu rund 78 Prozent aus Stickstoff",
+            "Dazu kommen etwa 21 Prozent Sauerstoff und knapp 1 Prozent Edelgase."),
+        ("Wie hoch ist der Sauerstoffanteil der Luft ungefähr?", new[] { "Etwa 21 Prozent", "Etwa 50 Prozent", "Etwa 4 Prozent" }, "Etwa 21 Prozent",
+            "Etwa ein Fünftel der Luft ist Sauerstoff - genau das zeigt auch der Kerzenversuch."),
+        ("Welche drei Bedingungen braucht eine Verbrennung?", new[] { "Brennstoff, Sauerstoff und Zündtemperatur", "Brennstoff, Wasser und Druck", "Sauerstoff, Kälte und Licht" }, "Brennstoff, Sauerstoff und Zündtemperatur",
+            "Fehlt eine der drei, erlischt das Feuer - genau darauf beruht jedes Löschverfahren."),
+        ("Warum erlischt eine Kerze unter einem Glas?", new[] { "Der Sauerstoff im Glas wird aufgebraucht", "Die Temperatur fällt schlagartig ab", "Das Wachs geht vollständig zur Neige" }, "Der Sauerstoff im Glas wird aufgebraucht",
+            "Ohne Sauerstoff bricht eines der drei Feuer-Elemente weg."),
+        ("Wie wirkt Löschen mit Wasser?", new[] { "Es kühlt unter die Zündtemperatur ab", "Es entzieht dem Feuer den Brennstoff", "Es bindet chemisch den Sauerstoff" }, "Es kühlt unter die Zündtemperatur ab",
+            "Der entstehende Wasserdampf verdrängt zusätzlich etwas Sauerstoff."),
+        ("Warum darf man Fettbrände niemals mit Wasser löschen?", new[] { "Das Wasser verdampft schlagartig und schleudert Fett umher", "Wasser lässt Fett noch heißer werden (was so in der Praxis nicht zutrifft)", "Wasser bindet den Sauerstoff im Fett" }, "Das Wasser verdampft schlagartig und schleudert Fett umher",
+            "Es entsteht eine gefährliche Fettexplosion - man löscht mit Deckel oder Löschdecke."),
+        ("Was ist eine Oxidation?", new[] { "Eine Reaktion eines Stoffes mit Sauerstoff", "Ein Zerfall in kleinere Bestandteile", "Das Lösen eines Stoffes in Wasser" }, "Eine Reaktion eines Stoffes mit Sauerstoff",
+            "Verbrennen und Rosten sind beides Oxidationen - nur unterschiedlich schnell."),
+        ("Was ist der Unterschied zwischen Verbrennen und Rosten?", new[] { "Beides ist Oxidation, nur unterschiedlich schnell", "Rosten braucht keinen Sauerstoff", "Verbrennen ist keine chemische Reaktion - eine verbreitete, aber falsche Annahme" }, "Beides ist Oxidation, nur unterschiedlich schnell",
+            "Rosten ist eine stille, langsame Oxidation ohne Flamme."),
+        ("Welche Produkte entstehen beim vollständigen Verbrennen von Kerzenwachs?", new[] { "Kohlenstoffdioxid und Wasser", "Nur Kohlenstoffdioxid", "Wasserstoff und Stickstoff" }, "Kohlenstoffdioxid und Wasser",
+            "Beides lässt sich nachweisen: Kalkwasser trübt sich, an kaltem Glas beschlägt Wasser."),
+        ("Was entsteht bei unvollständiger Verbrennung?", new[] { "Ruß und giftiges Kohlenstoffmonoxid", "Ausschließlich reiner Wasserdampf", "Sauerstoff und Stickstoff" }, "Ruß und giftiges Kohlenstoffmonoxid",
+            "Kohlenstoffmonoxid ist geruchlos und lebensgefährlich - deshalb sind Melder wichtig."),
+        ("Warum ist Kohlenstoffmonoxid so gefährlich?", new[] { "Es ist geruchlos und blockiert den Sauerstofftransport", "Es riecht stechend und reizt die Augen", "Es entzündet sich schon bei Zimmertemperatur, was einer genaueren Pruefung nicht standhaelt" }, "Es ist geruchlos und blockiert den Sauerstofftransport",
+            "Es bindet stärker an Hämoglobin als Sauerstoff - man erstickt unbemerkt."),
+        ("Wie weist man Kohlenstoffdioxid nach?", new[] { "Kalkwasser wird milchig trüb", "Ein Glimmspan flammt hell auf", "Jod-Lösung färbt sich blau-schwarz" }, "Kalkwasser wird milchig trüb",
+            "Der Glimmspan weist Sauerstoff nach, Jod die Stärke."),
+        ("Warum brennt Holz besser als Kohle an?", new[] { "Holz hat eine niedrigere Zündtemperatur", "Holz enthält mehr Sauerstoff, obwohl das auf den ersten Blick plausibel klingt", "Kohle ist immer feucht" }, "Holz hat eine niedrigere Zündtemperatur",
+            "Deshalb schichtet man beim Feuer zuerst Anzünder, dann Holz, dann Kohle."),
+        ("Warum lodert ein Feuer bei Wind stärker?", new[] { "Der Wind bringt ständig frischen Sauerstoff", "Der Wind erhöht die Zündtemperatur", "Der Wind trocknet den Brennstoff sofort" }, "Der Wind bringt ständig frischen Sauerstoff",
+            "Genau darauf beruht auch der Blasebalg in der Schmiede."),
+        ("Wie wirkt eine Löschdecke?", new[] { "Sie trennt das Feuer vom Sauerstoff der Luft", "Sie kühlt den Brennstoff stark ab", "Sie bindet den Brennstoff chemisch, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Sie trennt das Feuer vom Sauerstoff der Luft",
+            "Ersticken ist das Löschprinzip - dasselbe gilt für den Topfdeckel bei Fettbrand."),
+        ("Was ist der Treibhauseffekt?", new[] { "Gase in der Atmosphäre halten Wärmestrahlung zurück", "Die Sonne wird von Jahr zu Jahr heißer", "Die Erde rückt näher an die Sonne heran und deshalb hier nicht zutrifft" }, "Gase in der Atmosphäre halten Wärmestrahlung zurück",
+            "Ohne den natürlichen Treibhauseffekt wäre die Erde eine Eiswüste - zu viel davon heizt sie auf."),
+        ("Welches Gas verstärkt den Treibhauseffekt durch Verbrennung am stärksten?", new[] { "Kohlenstoffdioxid", "Stickstoff, was so nicht korrekt ist", "Edelgase" }, "Kohlenstoffdioxid",
+            "Jede Verbrennung fossiler Brennstoffe setzt zusätzliches CO2 frei."),
+        ("Warum ist Stickstoff in der Luft so reaktionsträge?", new[] { "Seine Moleküle sind sehr stabil gebunden", "Er ist besonders leicht und entweicht schnell", "Er ist ein Edelgas ohne Reaktionen" }, "Seine Moleküle sind sehr stabil gebunden",
+            "Die Dreifachbindung im N2-Molekül ist extrem stark - deshalb 'passiert' mit Stickstoff wenig."),
+        ("Wozu nutzt man Edelgase wie Argon technisch?", new[] { "Als Schutzgas, weil sie kaum reagieren", "Als besonders wirksamen Brennstoff", "Zum Kühlen von Motoren" }, "Als Schutzgas, weil sie kaum reagieren",
+            "Beim Schweißen verhindert Argon, dass das heiße Metall mit Sauerstoff reagiert."),
+        ("Was bedeutet das Verhalten der Kerze im Kerzenversuch mit Wasserstand?", new[] { "Der verbrauchte Sauerstoffanteil wird sichtbar", "Wasser wird bei Hitze angezogen - eine haeufige, aber unzutreffende Vorstellung", "Die Kerze saugt Wasser auf" }, "Der verbrauchte Sauerstoffanteil wird sichtbar",
+            "Das Wasser steigt um etwa ein Fünftel - genau der Sauerstoffanteil der Luft.")
+    };
+
+    private static QuizQuestion LuftUndVerbrennung(Random r)
+    {
+        var f = LuftVerbrennungListe[r.Next(LuftVerbrennungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Luft und Verbrennung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Luft: 78% Stickstoff, 21% Sauerstoff. Verbrennung braucht Brennstoff + Sauerstoff + Zündtemperatur - Löschen entzieht eines davon. Oxidation = Reaktion mit Sauerstoff (Feuer schnell, Rost langsam)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WasserK7Liste =
+    {
+        ("Aus welchen Elementen besteht Wasser?", new[] { "Wasserstoff und Sauerstoff", "Wasserstoff und Stickstoff", "Sauerstoff und Kohlenstoff" }, "Wasserstoff und Sauerstoff",
+            "Die Formel H2O bedeutet: zwei Wasserstoffatome pro Sauerstoffatom."),
+        ("Was bedeutet die Formel H2O?", new[] { "Zwei Wasserstoffatome und ein Sauerstoffatom", "Ein Wasserstoffatom und zwei Sauerstoffatome", "Zwei Wassermoleküle zusammen" }, "Zwei Wasserstoffatome und ein Sauerstoffatom",
+            "Die tiefgestellte Zahl gibt die Anzahl der Atome davor an."),
+        ("Wie lässt sich Wasser in seine Bestandteile zerlegen?", new[] { "Durch Elektrolyse mit elektrischem Strom", "Durch einfaches Filtrieren, auch wenn das manche zunaechst vermuten wuerden", "Durch starkes Schütteln" }, "Durch Elektrolyse mit elektrischem Strom",
+            "Dabei entsteht doppelt so viel Wasserstoff wie Sauerstoff - passend zur Formel H2O."),
+        ("Warum ist Wasser ein so gutes Lösungsmittel?", new[] { "Seine Moleküle sind an den Enden unterschiedlich geladen", "Es hat eine besonders hohe Temperatur", "Es besteht aus sehr großen Teilchen" }, "Seine Moleküle sind an den Enden unterschiedlich geladen",
+            "Diese Dipol-Eigenschaft löst Salze und andere geladene Stoffe besonders gut."),
+        ("Warum löst sich Öl nicht in Wasser?", new[] { "Öl ist unpolar, Wasser dagegen polar", "Öl ist deutlich schwerer als Wasser", "Öl ist zu kalt zum Lösen" }, "Öl ist unpolar, Wasser dagegen polar",
+            "Faustregel: Gleiches löst Gleiches - polar zu polar, unpolar zu unpolar."),
+        ("Wie funktioniert Seife beim Fettlösen?", new[] { "Ihre Teilchen haben einen wasser- und einen fettliebenden Teil", "Sie erhöht die Temperatur des Wassers", "Sie zersetzt das Fett chemisch vollständig, was bei genauerem Hinsehen nicht stimmt" }, "Ihre Teilchen haben einen wasser- und einen fettliebenden Teil",
+            "So vermittelt Seife zwischen Fett und Wasser - das Fett wird abtransportierbar."),
+        ("Was bedeutet 'hartes Wasser'?", new[] { "Es enthält viel Calcium und Magnesium", "Es ist besonders kalt und dicht", "Es lässt sich schlecht verdampfen (was so in der Praxis nicht zutrifft)" }, "Es enthält viel Calcium und Magnesium",
+            "Diese Ionen bilden Kalk und lassen Seife schlechter schäumen."),
+        ("Warum verkalkt ein Wasserkocher?", new[] { "Beim Erhitzen fällt gelöster Kalk aus", "Das Metall reagiert mit dem Wasser", "Der Kunststoff löst sich langsam auf - eine verbreitete, aber falsche Annahme" }, "Beim Erhitzen fällt gelöster Kalk aus",
+            "Mit Zitronensäure oder Essig lässt sich der Kalk wieder auflösen."),
+        ("Wie entfernt man Kalk chemisch?", new[] { "Mit einer Säure wie Essig oder Zitronensäure", "Mit einer Lauge wie Seifenlösung", "Mit reinem destilliertem Wasser" }, "Mit einer Säure wie Essig oder Zitronensäure",
+            "Säure reagiert mit Kalk zu löslichen Stoffen - dabei sprudelt CO2."),
+        ("Was zeigt der pH-Wert an?", new[] { "Ob eine Lösung sauer, neutral oder basisch ist", "Wie warm eine Lösung gerade ist", "Wie viel Salz gelöst wurde" }, "Ob eine Lösung sauer, neutral oder basisch ist",
+            "Unter 7 sauer, genau 7 neutral, über 7 basisch."),
+        ("Welchen pH-Wert hat reines Wasser?", new[] { "7, also neutral", "1, also stark sauer", "14, also stark basisch" }, "7, also neutral",
+            "Leitungswasser liegt meist leicht darüber oder darunter."),
+        ("Womit misst man den pH-Wert einfach?", new[] { "Mit Indikatorpapier oder Universalindikator", "Mit einem Thermometer, was einer genaueren Pruefung nicht standhaelt", "Mit einer Waage" }, "Mit Indikatorpapier oder Universalindikator",
+            "Der Indikator ändert je nach pH-Wert seine Farbe."),
+        ("Warum steht Wasser unter dem Begriff Kreislauf?", new[] { "Es verdunstet, regnet ab und fließt zurück", "Es wird ständig neu gebildet", "Es kreist im Boden im Kreis" }, "Es verdunstet, regnet ab und fließt zurück",
+            "Verdunstung, Wolkenbildung, Niederschlag und Abfluss bilden einen geschlossenen Kreis."),
+        ("Warum ist Trinkwasser weltweit knapp, obwohl die Erde voll Wasser ist?", new[] { "Nur ein winziger Teil ist süß und erreichbar", "Wasser verschwindet aus dem Kreislauf, obwohl das auf den ersten Blick plausibel klingt", "Meerwasser gefriert vollständig" }, "Nur ein winziger Teil ist süß und erreichbar",
+            "Über 97 Prozent sind Salzwasser, ein Großteil des Rests ist in Eis gebunden."),
+        ("Was passiert bei einer Neutralisation?", new[] { "Säure und Lauge reagieren zu Salz und Wasser", "Ein Stoff verdampft vollständig", "Zwei Salze tauschen ihre Farbe" }, "Säure und Lauge reagieren zu Salz und Wasser",
+            "Dabei nähert sich der pH-Wert dem neutralen Bereich."),
+        ("Warum hilft Natron gegen Sodbrennen?", new[] { "Es neutralisiert überschüssige Magensäure", "Es verdünnt den Mageninhalt stark, was die eigentliche Bedeutung des Begriffs verfehlt", "Es verschließt den Magenausgang" }, "Es neutralisiert überschüssige Magensäure",
+            "Basische Stoffe gleichen die Säure aus - ein Alltagsbeispiel für Neutralisation."),
+        ("Wie kommt Kohlensäure ins Mineralwasser?", new[] { "Kohlenstoffdioxid wird unter Druck gelöst", "Es wird Zitronensäure zugesetzt", "Das Wasser wird stark erhitzt" }, "Kohlenstoffdioxid wird unter Druck gelöst",
+            "Beim Öffnen sinkt der Druck - das Gas entweicht als Bläschen."),
+        ("Warum perlt Sprudel beim Öffnen stärker, wenn er warm ist?", new[] { "Warmes Wasser kann weniger Gas gelöst halten", "Warmes Wasser ist dünnflüssiger", "Die Flasche dehnt sich bei Wärme aus und deshalb hier nicht zutrifft" }, "Warmes Wasser kann weniger Gas gelöst halten",
+            "Bei Gasen sinkt die Löslichkeit mit steigender Temperatur - anders als bei den meisten Feststoffen."),
+        ("Warum ist Wasserverschmutzung so problematisch?", new[] { "Schadstoffe verteilen sich im ganzen Kreislauf", "Wasser verliert dabei seine Farbe", "Verschmutztes Wasser gefriert schneller, was so nicht korrekt ist" }, "Schadstoffe verteilen sich im ganzen Kreislauf",
+            "Was in Flüsse gelangt, landet über Grundwasser und Meer letztlich überall."),
+        ("Was passiert in einer Kläranlage grob?", new[] { "Mechanische, biologische und chemische Reinigungsstufen", "Ausschließlich starkes Erhitzen des Abwassers - eine haeufige, aber unzutreffende Vorstellung", "Zugabe von Salz zum Ausfällen" }, "Mechanische, biologische und chemische Reinigungsstufen",
+            "Rechen und Becken, dann Bakterien, zuletzt Fällung von Phosphaten.")
+    };
+
+    private static QuizQuestion WasserAlsLoesungsmittel(Random r)
+    {
+        var f = WasserK7Liste[r.Next(WasserK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Wasser, Lösungen und pH-Wert", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wasser = H2O, polares Lösungsmittel ('Gleiches löst Gleiches'). pH unter 7 sauer, 7 neutral, über 7 basisch. Neutralisation: Säure + Lauge → Salz + Wasser."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MetalleK7Liste =
+    {
+        ("Welche Eigenschaften haben fast alle Metalle gemeinsam?", new[] { "Glanz, gute Leitfähigkeit und Verformbarkeit", "Sprödigkeit, Durchsichtigkeit und Leichtigkeit", "Brennbarkeit, Löslichkeit und Geruch" }, "Glanz, gute Leitfähigkeit und Verformbarkeit",
+            "Diese Eigenschaften folgen aus der metallischen Bindung mit frei beweglichen Elektronen."),
+        ("Warum leiten Metalle den Strom so gut?", new[] { "Sie enthalten frei bewegliche Elektronen", "Ihre Atome sind besonders schwer", "Sie sind immer glatt poliert" }, "Sie enthalten frei bewegliche Elektronen",
+            "Man spricht vom 'Elektronengas' zwischen den Metallionen."),
+        ("Was passiert beim Rosten von Eisen?", new[] { "Eisen reagiert mit Sauerstoff und Wasser", "Eisen zerfällt in kleinere Metallteile, auch wenn das manche zunaechst vermuten wuerden", "Eisen löst sich in der Luft auf" }, "Eisen reagiert mit Sauerstoff und Wasser",
+            "Rost ist Eisenoxid - eine langsame Oxidation, die beide Stoffe braucht."),
+        ("Was braucht Rost zwingend?", new[] { "Sauerstoff und Wasser", "Nur trockene Luft", "Nur Wärme über 50 Grad" }, "Sauerstoff und Wasser",
+            "Deshalb rostet Eisen in trockener Luft oder unter Öl praktisch nicht."),
+        ("Wie schützt man Eisen vor Rost?", new[] { "Durch Lackieren, Verzinken oder Ölen", "Durch häufiges Erwärmen", "Durch Lagerung in feuchter Luft" }, "Durch Lackieren, Verzinken oder Ölen",
+            "Alle Verfahren halten Sauerstoff und Wasser von der Oberfläche fern."),
+        ("Warum schützt Zink das darunterliegende Eisen besonders gut?", new[] { "Zink reagiert bereitwilliger und opfert sich", "Zink ist deutlich härter als Eisen, was bei genauerem Hinsehen nicht stimmt", "Zink stößt Wasser magnetisch ab" }, "Zink reagiert bereitwilliger und opfert sich",
+            "Man nennt das Opferanode - selbst bei Kratzern bleibt das Eisen geschützt."),
+        ("Warum rostet Aluminium nicht sichtbar?", new[] { "Es bildet sofort eine dichte Oxidschicht", "Es reagiert überhaupt nicht mit Sauerstoff", "Es wird immer lackiert verkauft" }, "Es bildet sofort eine dichte Oxidschicht",
+            "Diese unsichtbare Schicht schützt das Metall darunter - anders als poröser Rost."),
+        ("Was ist Edelstahl?", new[] { "Eine Legierung aus Eisen mit Chrom und Nickel", "Besonders reines, unlegiertes Eisen (was so in der Praxis nicht zutrifft)", "Eisen mit einer Goldbeschichtung" }, "Eine Legierung aus Eisen mit Chrom und Nickel",
+            "Das Chrom bildet eine schützende Oxidschicht - deshalb rostet Edelstahl nicht."),
+        ("Warum ist Gold seit Jahrtausenden so beliebt?", new[] { "Es reagiert kaum und bleibt dauerhaft glänzend", "Es ist das härteste bekannte Metall - eine verbreitete, aber falsche Annahme", "Es leitet Strom am allerbesten" }, "Es reagiert kaum und bleibt dauerhaft glänzend",
+            "Gold ist ein Edelmetall - es oxidiert praktisch nicht."),
+        ("Was unterscheidet edle von unedlen Metallen?", new[] { "Edle Metalle reagieren deutlich schwerer mit Sauerstoff", "Edle Metalle sind immer schwerer", "Unedle Metalle leiten keinen Strom, was einer genaueren Pruefung nicht standhaelt" }, "Edle Metalle reagieren deutlich schwerer mit Sauerstoff",
+            "Die Reihenfolge steht in der Redoxreihe - Gold ist sehr edel, Magnesium sehr unedel."),
+        ("Wie gewinnt man Eisen aus Eisenerz?", new[] { "Im Hochofen mit Koks unter starker Hitze", "Durch einfaches Auswaschen mit Wasser", "Durch Filtern des zerkleinerten Erzes" }, "Im Hochofen mit Koks unter starker Hitze",
+            "Der Kohlenstoff entzieht dem Erz den Sauerstoff - eine Reduktion."),
+        ("Was ist eine Reduktion?", new[] { "Einem Stoff wird Sauerstoff entzogen", "Einem Stoff wird Sauerstoff hinzugefügt", "Ein Stoff wird nur zerkleinert" }, "Einem Stoff wird Sauerstoff entzogen",
+            "Reduktion und Oxidation laufen immer gemeinsam ab - man nennt das Redoxreaktion."),
+        ("Warum ist Metallrecycling so sinnvoll?", new[] { "Es spart sehr viel Energie gegenüber der Neugewinnung", "Recyceltes Metall ist deutlich härter", "Metall verliert sonst seine Farbe" }, "Es spart sehr viel Energie gegenüber der Neugewinnung",
+            "Aluminium-Recycling braucht nur rund 5 Prozent der Energie der Neuherstellung."),
+        ("Wie trennt man Eisen aus dem Wertstoffmüll?", new[] { "Mit starken Magneten", "Durch Erhitzen bis zum Schmelzen", "Durch Auflösen in Wasser" }, "Mit starken Magneten",
+            "Eisen ist magnetisch, Aluminium und Kupfer sind es nicht."),
+        ("Welches Metall wird für Stromkabel meist verwendet?", new[] { "Kupfer", "Blei, obwohl das auf den ersten Blick plausibel klingt", "Zinn" }, "Kupfer",
+            "Kupfer leitet sehr gut und lässt sich zu dünnen Drähten ziehen."),
+        ("Warum werden Flugzeuge aus Aluminium gebaut?", new[] { "Es ist leicht und dennoch fest", "Es ist besonders schwer und stabil", "Es ist das billigste Metall" }, "Es ist leicht und dennoch fest",
+            "Die geringe Dichte spart Treibstoff, die Oxidschicht schützt vor Korrosion."),
+        ("Was ist Messing?", new[] { "Eine Legierung aus Kupfer und Zink", "Reines, poliertes Kupfer", "Eisen mit Goldüberzug" }, "Eine Legierung aus Kupfer und Zink",
+            "Bronze besteht dagegen aus Kupfer und Zinn."),
+        ("Warum sind Legierungen oft besser als reine Metalle?", new[] { "Sie sind meist härter und widerstandsfähiger", "Sie leiten den Strom immer besser, was die eigentliche Bedeutung des Begriffs verfehlt", "Sie sind grundsätzlich leichter" }, "Sie sind meist härter und widerstandsfähiger",
+            "Die fremden Atome stören die regelmäßige Gitterstruktur - das macht das Material fester."),
+        ("Warum färbt sich Kupfer an der Luft mit der Zeit grün?", new[] { "Es bildet eine Patina aus Kupferverbindungen", "Es nimmt Farbe aus dem Regen auf", "Es setzt Algen an der Oberfläche an" }, "Es bildet eine Patina aus Kupferverbindungen",
+            "Die grüne Patina schützt das Metall darunter - gut sichtbar an alten Kirchendächern."),
+        ("Was passiert, wenn unedles Metall mit einer Säure reagiert?", new[] { "Es entsteht Wasserstoff und ein Salz", "Es entsteht Sauerstoff und Wasser", "Es passiert überhaupt nichts" }, "Es entsteht Wasserstoff und ein Salz",
+            "Zink in Salzsäure sprudelt sichtbar - das Gas lässt sich mit der Knallgasprobe nachweisen.")
+    };
+
+    private static QuizQuestion MetalleUndKorrosion(Random r)
+    {
+        var f = MetalleK7Liste[r.Next(MetalleK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Chemie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Metalle und Korrosion", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Metalle: Glanz, leitfähig, verformbar (freie Elektronen). Rosten braucht Sauerstoff UND Wasser. Oxidation = Sauerstoff auf, Reduktion = Sauerstoff ab. Legierung = Metallgemisch (Messing, Bronze, Edelstahl)."
         };
     }
 }

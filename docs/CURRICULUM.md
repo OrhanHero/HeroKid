@@ -98,17 +98,17 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## Chemie (`ChemieGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Stoffgemische trennen | Atommodell |
-| Verbrennung | Chemische Reaktionen |
-| Säuren und Laugen | Periodensystem |
-| Metalle und ihre Eigenschaften | Klare Verhältnisse – Stöchiometrie |
-| Stoffe im Alltag | Säuren und Laugen – echt ätzend |
-| Das Periodensystem der Elemente – Übersicht und Werkzeug | Kohlenwasserstoffe – vom Campinggas zum Superbenzin |
-| Gase – zwischen lebensnotwendig und gefährlich | Alkohole – vom Holzgeist zum Glycerin |
-| Wasser – eine Verbindung | Organische Säuren – Salatsauce, Entkalker & Co |
-| Salze – Gegensätze ziehen sich an | Ester – Vielfalt der Produkte aus Alkoholen und Säuren |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Stoffgemische trennen | Stoffe und ihre Eigenschaften | Atommodell |
+| Verbrennung | Stofftrennverfahren | Chemische Reaktionen |
+| Säuren und Laugen | Die chemische Reaktion | Periodensystem |
+| Metalle und ihre Eigenschaften | Luft und Verbrennung | Klare Verhältnisse – Stöchiometrie |
+| Stoffe im Alltag | Wasser, Lösungen und pH-Wert | Säuren und Laugen – echt ätzend |
+| Das Periodensystem der Elemente – Übersicht und Werkzeug | Metalle und Korrosion | Kohlenwasserstoffe – vom Campinggas zum Superbenzin |
+| Gase – zwischen lebensnotwendig und gefährlich | | Alkohole – vom Holzgeist zum Glycerin |
+| Wasser – eine Verbindung | | Organische Säuren – Salatsauce, Entkalker & Co |
+| Salze – Gegensätze ziehen sich an | | Ester – Vielfalt der Produkte aus Alkoholen und Säuren |
 
 Organische Chemie (Kohlenwasserstoffe, Alkohole, organische Säuren, Ester) ist entgegen einer
 früheren Design-Notiz in dieser Datei **inzwischen doch implementiert** (Klasse 9) - die Notiz war
