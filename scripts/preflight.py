@@ -240,6 +240,70 @@ def check_subject_wiring() -> None:
                            f"{gen_name} fehlt in der Standard-Generatorliste des QuizComposer")
 
 
+TOPIC_FACTORY_ENTRY = re.compile(r"\[GradeLevel\.(\w+)\]\s*=\s*new List<TopicFactory>\s*\{(.*?)\}", re.DOTALL)
+TOPIC_METHOD = re.compile(r"private\s+static\s+QuizQuestion\s+(\w+)\s*\(\s*Random\s+\w+\s*\)")
+TUPLE_ARRAY = re.compile(
+    r"private\s+static\s+readonly\s+\((?P<fields>[^)]*)\)\[\]\s+(?P<name>\w+)\s*=", re.DOTALL)
+
+
+def check_generator_consistency() -> None:
+    """Fängt die Compile-Fehler, die beim Anlegen neuer Themenpools entstehen.
+
+    Ohne .NET SDK (Netzwerk-Policy dieser Umgebung lässt keine SDK-Installation zu) wäre der
+    erste Hinweis sonst ein ~8-minütiger CI-Lauf. Geprüft wird:
+      * jede in TopicsByGrade referenzierte TopicFactory existiert als Methode
+      * jede Themen-Methode ist auch registriert (sonst toter Pool, der nie ausgespielt wird)
+      * Tupel-Feldzugriffe (f.Frage, f.Optionen, ...) passen zur Array-Deklaration
+    """
+    gen_dir = SRC / "LernTor.ContentGen" / "Generators"
+    if not gen_dir.exists():
+        return
+
+    for path in sorted(gen_dir.glob("*Generator.cs")):
+        text = path.read_text(encoding="utf-8")
+        defined = set(TOPIC_METHOD.findall(text))
+        if not defined:
+            continue
+
+        referenced: set[str] = set()
+        for _grade, block in TOPIC_FACTORY_ENTRY.findall(text):
+            block = re.sub(r"//.*", "", block)
+            for name in (part.strip() for part in block.split(",")):
+                if name.isidentifier():
+                    referenced.add(name)
+
+        for name in sorted(referenced - defined):
+            report("generator-topics", path,
+                   f"TopicsByGrade verweist auf '{name}', aber keine Methode "
+                   f"'private static QuizQuestion {name}(Random r)' gefunden")
+
+        for name in sorted(defined - referenced):
+            report("generator-topics", path,
+                   f"Themen-Methode '{name}' ist in keiner TopicsByGrade-Liste registriert "
+                   f"- der Pool wird nie ausgespielt")
+
+        # Tupel-Felder: Deklaration mit den tatsächlich benutzten Zugriffen abgleichen.
+        for match in TUPLE_ARRAY.finditer(text):
+            array_name = match.group("name")
+            fields = {
+                part.strip().split()[-1]
+                for part in match.group("fields").split(",")
+                if len(part.strip().split()) >= 2
+            }
+            # Variable finden, die aus diesem Array zieht: var x = ArrayName[...]
+            for var_match in re.finditer(
+                    rf"var\s+(\w+)\s*=\s*{re.escape(array_name)}\s*\[", text):
+                var = var_match.group(1)
+                method_end = text.find("\n    }", var_match.end())
+                body = text[var_match.end(): method_end if method_end > 0 else len(text)]
+                for used in set(re.findall(rf"\b{re.escape(var)}\.(\w+)", body)):
+                    if used not in fields:
+                        line = text[: var_match.start()].count("\n") + 1
+                        report("generator-tuple", path,
+                               f"ab Zeile {line}: '{var}.{used}' passt nicht zu den Feldern von "
+                               f"{array_name} ({', '.join(sorted(fields))})")
+
+
 ORDER_CALL = re.compile(r"\.OrderBy(?:Descending)?\s*\(\s*\w+\s*=>\s*\w+\.(\w+)")
 ENTITY_PROP = re.compile(r"public\s+(DateTimeOffset\??)\s+(\w+)\s*\{\s*get")
 
@@ -334,6 +398,7 @@ def main() -> int:
     if not args.quick:
         checks += [
             ("Subject-Verdrahtung", check_subject_wiring),
+            ("Generator-Konsistenz", check_generator_consistency),
             ("EF DateTimeOffset-Sortierung", check_ef_datetimeoffset_ordering),
         ]
 
