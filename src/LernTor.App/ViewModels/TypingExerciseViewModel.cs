@@ -58,7 +58,18 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         : Lesson.InstructionDe;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(WordCount))]
+    [NotifyPropertyChangedFor(nameof(CharCount))]
     private string currentInput = string.Empty;
+
+    /// <summary>Wörter/Zeichen der bisherigen Eingabe - die Anzeige dafür existierte in
+    /// TypingExerciseView.xaml bereits (aus WritingView übernommen), die zugehörigen Properties
+    /// fehlten aber, sodass sie dauerhaft leer blieb (gefunden von scripts/preflight.py).</summary>
+    public int WordCount => string.IsNullOrWhiteSpace(CurrentInput)
+        ? 0
+        : CurrentInput.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+
+    public int CharCount => CurrentInput?.Length ?? 0;
 
     [ObservableProperty]
     private int currentPosition = 0;

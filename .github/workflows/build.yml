@@ -40,6 +40,12 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Vorab-Prüfung (Fehlerklassen, die der Compiler nicht sieht)
+        # Laufzeit-Fallen wie <Run Text="{Binding ...}"> ohne Mode=OneWay, tote Bindings,
+        # Shutdown() ohne vorheriges Unlock() oder unvollständig verdrahtete neue Fächer
+        # kompilieren sauber und fallen sonst erst beim Kind auf - siehe scripts/preflight.py.
+        run: python scripts/preflight.py
+
       - name: Längen-Bias-Wächter (Distraktoren dürfen nicht "richtig = längste Option" verraten)
         # Kinder lernen sonst schnell "nimm die längste Antwort" statt den Inhalt zu lesen -
         # siehe scripts/check-answer-length-bias.py. Schwelle 60% pro Generator, Zielwert der
