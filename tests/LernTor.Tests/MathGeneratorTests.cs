@@ -98,6 +98,19 @@ public class MathGeneratorTests
         Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
 
+    [Theory]
+    [InlineData(typeof(PolitikGenerator))]
+    [InlineData(typeof(GeoGenerator))]
+    public void Fach_mit_Klasse7_Pool_faellt_nicht_zurueck(Type generatorType)
+    {
+        var generator = (IExerciseGenerator)Activator.CreateInstance(generatorType)!;
+
+        var questions = generator.Generate(GradeLevel.Klasse7, 12, new Random(7));
+
+        Assert.Equal(12, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+    }
+
     [Fact]
     public void Gewi_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
     {

@@ -12,6 +12,7 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Demokratie, BerlinBezirke, Wahlrecht, ArmutUndReichtumPolitik, GlobalisierteWelt, MigrationPolitik, LebenImRechtsstaat },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MitbestimmungK7, RechtsstaatUndJugendrecht, ParteienUndWahlen, MenschenrechteInternational },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Gewaltenteilung, BundestagBundesrat, Wahlsystem, SozialeMarktwirtschaft, WillensbildungUndMedien, KonflikteInternationaleAkteure, FriedenssicherungUndEntwicklungspolitik, EuropaeischeUnion }
         };
 
@@ -376,7 +377,7 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
             "Die progressive Einkommensteuer soll höhere Einkommen stärker an der Finanzierung des Gemeinwesens beteiligen."),
         ("Wie heißt die aktuelle Grundsicherung für Arbeitsuchende in Deutschland (frühere Bezeichnung: Hartz IV)?", new[] { "Bürgergeld", "Kindergeld", "Wohngeld" }, "Bürgergeld",
             "Seit einer Reform heißt die Grundsicherung für Arbeitsuchende in Deutschland \"Bürgergeld\"."),
-        ("Wie wird die gesetzliche Rente in Deutschland im sogenannten Umlageverfahren grundsätzlich finanziert?", new[] { "Die arbeitende Generation zahlt mit ihren Beiträgen die Renten der aktuellen Rentnerinnen und Rentner", "Jede Person spart ihr ganzes Leben nur für sich selbst", "Der Staat druckt für Renten einfach neues Geld" }, "Die arbeitende Generation zahlt mit ihren Beiträgen die Renten der aktuellen Rentnerinnen und Rentner",
+        ("Wie wird die gesetzliche Rente in Deutschland im sogenannten Umlageverfahren grundsätzlich finanziert?", new[] { "Die arbeitende Generation zahlt mit ihren Beiträgen die Renten der aktuellen Rentnerinnen und Rentner", "Jede Person spart ihr ganzes Leben nur für sich selbst (was so in der Praxis nicht zutrifft) - eine verbreitete, aber falsche Annahme", "Der Staat druckt für Renten einfach neues Geld" }, "Die arbeitende Generation zahlt mit ihren Beiträgen die Renten der aktuellen Rentnerinnen und Rentner",
             "Im Umlageverfahren finanzieren die Beiträge der aktuell Beschäftigten direkt die Renten der heutigen Rentnerinnen und Rentner."),
         ("Was schützt der Verbraucherschutz in Deutschland u.a.?", new[] { "Käuferinnen und Käufer vor unsicheren oder irreführend beworbenen Produkten", "Ausschließlich große Unternehmen vor Konkurrenz, was bei genauerem Hinsehen nicht stimmt", "Nur den Staat vor Steuerausfällen" }, "Käuferinnen und Käufer vor unsicheren oder irreführend beworbenen Produkten",
             "Verbraucherschutzregeln sorgen z.B. für Produktsicherheit, klare Kennzeichnung und Widerrufsrechte beim Einkauf."),
@@ -853,6 +854,229 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
             Topic = "Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Im Rechtsstaat gelten Gesetze für alle gleich, auch für die Regierung (Gewaltenteilung); Kinderrechte (UN-Konvention) und Jugendschutz sichern speziell die Bedürfnisse von Kindern ab."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MitbestimmungK7Liste =
+    {
+        ("Was ist eine Klassensprecherwahl?", new[] { "Eine demokratische Wahl von Vertretern der Klasse", "Eine Ernennung durch die Lehrkraft", "Ein Losverfahren am Schuljahresanfang" }, "Eine demokratische Wahl von Vertretern der Klasse",
+            "Sie ist oft die erste eigene Erfahrung mit Demokratie."),
+        ("Was macht die Schülervertretung?", new[] { "Sie vertritt die Interessen aller Schüler gegenüber der Schule", "Sie erteilt Noten in Nebenfächern", "Sie entscheidet über Lehrpläne" }, "Sie vertritt die Interessen aller Schüler gegenüber der Schule",
+            "In Berlin ist sie im Schulgesetz verankert."),
+        ("Was ist die Gesamtkonferenz an einer Schule?", new[] { "Ein Gremium mit Lehrkräften, Eltern und Schülern", "Eine Versammlung nur der Lehrkräfte", "Ein Treffen der Schulleitungen" }, "Ein Gremium mit Lehrkräften, Eltern und Schülern",
+            "Dort werden wichtige schulische Entscheidungen beraten."),
+        ("Warum ist Mitbestimmung in der Schule wichtig?", new[] { "Man lernt Demokratie durch eigenes Handeln", "Sie ersetzt den Unterricht", "Sie verkürzt die Schulzeit" }, "Man lernt Demokratie durch eigenes Handeln",
+            "Wer mitgestalten kann, übernimmt eher Verantwortung."),
+        ("Was ist ein Kompromiss?", new[] { "Eine Lösung, bei der alle Seiten nachgeben", "Der Sieg der Mehrheit", "Ein Abbruch der Verhandlung, was einer genaueren Pruefung nicht standhaelt" }, "Eine Lösung, bei der alle Seiten nachgeben",
+            "Kompromissfähigkeit ist eine Kernfähigkeit in der Demokratie."),
+        ("Was bedeutet Mehrheitsprinzip?", new[] { "Die größere Zahl entscheidet, Minderheiten bleiben geschützt", "Die Mehrheit darf alles bestimmen, obwohl das auf den ersten Blick plausibel klingt", "Alle müssen zustimmen" }, "Die größere Zahl entscheidet, Minderheiten bleiben geschützt",
+            "Ohne Minderheitenschutz wäre es Herrschaft der Mehrheit."),
+        ("Was ist Minderheitenschutz?", new[] { "Grundrechte gelten auch gegen Mehrheitsentscheidungen", "Kleine Gruppen entscheiden allein", "Minderheiten dürfen nicht wählen" }, "Grundrechte gelten auch gegen Mehrheitsentscheidungen",
+            "Das unterscheidet Demokratie von reiner Mehrheitsherrschaft."),
+        ("Was ist eine Petition?", new[] { "Eine formelle Bitte oder Beschwerde an ein Parlament", "Eine Demonstration auf der Straße, was die eigentliche Bedeutung des Begriffs verfehlt", "Ein Gerichtsverfahren" }, "Eine formelle Bitte oder Beschwerde an ein Parlament",
+            "Jeder darf sie einreichen - auch Jugendliche."),
+        ("Was ist ein Bürgerbegehren?", new[] { "Eine Initiative von Bürgern für eine Abstimmung", "Eine Wahl der Regierung", "Ein Antrag auf Sozialleistungen und deshalb hier nicht zutrifft" }, "Eine Initiative von Bürgern für eine Abstimmung",
+            "In Berlin gibt es dafür Volksbegehren und Volksentscheide."),
+        ("Was ist zivilgesellschaftliches Engagement?", new[] { "Freiwilliger Einsatz für gemeinsame Anliegen", "Bezahlte Arbeit im öffentlichen Dienst", "Die Mitgliedschaft in einer Partei" }, "Freiwilliger Einsatz für gemeinsame Anliegen",
+            "Vereine, Initiativen und Ehrenamt gehören dazu."),
+        ("Was ist eine Nichtregierungsorganisation?", new[] { "Eine unabhängige Organisation für gesellschaftliche Ziele", "Eine Behörde ohne Regierungsauftrag, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Ein Unternehmen ohne Gewinnabsicht" }, "Eine unabhängige Organisation für gesellschaftliche Ziele",
+            "Beispiele sind Amnesty International oder Greenpeace."),
+        ("Warum sind Vereine für die Demokratie wichtig?", new[] { "Menschen üben dort gemeinsames Entscheiden", "Sie ersetzen politische Parteien, auch wenn das manche zunaechst vermuten wuerden", "Sie zahlen Steuern für den Staat" }, "Menschen üben dort gemeinsames Entscheiden",
+            "Vorstandswahlen und Versammlungen sind Demokratie im Kleinen."),
+        ("Was ist Lobbyarbeit?", new[] { "Interessenvertretung gegenüber der Politik", "Die Arbeit im Parlamentsgebäude, was bei genauerem Hinsehen nicht stimmt", "Wahlkampf einer Partei" }, "Interessenvertretung gegenüber der Politik",
+            "Sie ist legitim, sollte aber transparent sein."),
+        ("Was ist eine Demonstration?", new[] { "Eine öffentliche Meinungsäußerung mehrerer Menschen", "Eine Vorführung neuer Technik (was so in der Praxis nicht zutrifft)", "Eine Versammlung im Parlament" }, "Eine öffentliche Meinungsäußerung mehrerer Menschen",
+            "Die Versammlungsfreiheit ist ein Grundrecht."),
+        ("Muss man eine Demonstration anmelden?", new[] { "Ja, in der Regel bei der Versammlungsbehörde", "Nein, nie", "Nur wenn mehr als tausend Menschen kommen - eine verbreitete, aber falsche Annahme" }, "Ja, in der Regel bei der Versammlungsbehörde",
+            "Die Anmeldung ist keine Genehmigung - das Recht besteht unabhängig davon."),
+        ("Was ist der Unterschied zwischen Meinung und Tatsache?", new[] { "Tatsachen sind überprüfbar, Meinungen nicht", "Meinungen sind immer falsch", "Es gibt keinen Unterschied" }, "Tatsachen sind überprüfbar, Meinungen nicht",
+            "In Debatten sollte man beides klar auseinanderhalten."),
+        ("Was ist ein Konflikt?", new[] { "Ein Gegensatz von Interessen oder Zielen", "Immer ein gewaltsamer Streit", "Ein Missverständnis in der Sprache, was einer genaueren Pruefung nicht standhaelt" }, "Ein Gegensatz von Interessen oder Zielen",
+            "Konflikte gehören zur Demokratie - entscheidend ist, wie man sie austrägt."),
+        ("Was ist Mediation?", new[] { "Vermittlung durch eine neutrale dritte Person", "Ein Gerichtsurteil", "Eine Abstimmung über den Streit" }, "Vermittlung durch eine neutrale dritte Person",
+            "An vielen Schulen gibt es dafür ausgebildete Streitschlichter."),
+        ("Was gehört zu einer fairen Diskussion?", new[] { "Ausreden lassen, zuhören, sachlich bleiben", "Möglichst laut argumentieren", "Den anderen unterbrechen" }, "Ausreden lassen, zuhören, sachlich bleiben",
+            "Angriffe auf die Person ersetzen keine Argumente."),
+        ("Warum ist Beteiligung Jugendlicher wichtig?", new[] { "Entscheidungen betreffen ihre Zukunft am längsten", "Sie haben mehr Freizeit", "Erwachsene interessiert Politik nicht" }, "Entscheidungen betreffen ihre Zukunft am längsten",
+            "In Berlin dürfen Jugendliche ab 16 das Abgeordnetenhaus mitwählen.")
+    };
+
+    private static QuizQuestion MitbestimmungK7(Random r)
+    {
+        var f = MitbestimmungK7Liste[r.Next(MitbestimmungK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Mitbestimmung und Engagement", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Demokratie beginnt in der Schule: Klassensprecher, Schülervertretung, Gesamtkonferenz. Mehrheitsprinzip gilt nur mit Minderheitenschutz. Petition, Bürgerbegehren, Demonstration und Ehrenamt als Beteiligungswege."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] RechtsstaatUndJugendrechtListe =
+    {
+        ("Was bedeutet Rechtsstaat?", new[] { "Alle staatliche Macht ist an Recht und Gesetz gebunden", "Der Staat macht die Gesetze allein", "Gerichte entscheiden nach Gefühl" }, "Alle staatliche Macht ist an Recht und Gesetz gebunden",
+            "Auch Regierung und Behörden stehen unter dem Gesetz."),
+        ("Was steht in Artikel 1 des Grundgesetzes?", new[] { "Die Würde des Menschen ist unantastbar", "Alle Deutschen haben Wahlrecht, obwohl das auf den ersten Blick plausibel klingt", "Deutschland ist eine Republik" }, "Die Würde des Menschen ist unantastbar",
+            "Er ist der Kern der Verfassung und darf nicht geändert werden."),
+        ("Was sind Grundrechte?", new[] { "Rechte des Einzelnen gegenüber dem Staat", "Pflichten der Bürger", "Regeln für Unternehmen, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Rechte des Einzelnen gegenüber dem Staat",
+            "Sie stehen in den Artikeln 1 bis 19 des Grundgesetzes."),
+        ("Was schützt die Meinungsfreiheit?", new[] { "Das Recht, seine Meinung frei zu äußern", "Das Recht, alles zu behaupten", "Das Recht auf Zustimmung anderer und deshalb hier nicht zutrifft" }, "Das Recht, seine Meinung frei zu äußern",
+            "Sie endet dort, wo Rechte anderer verletzt werden - etwa bei Beleidigung."),
+        ("Was ist die Unschuldsvermutung?", new[] { "Jeder gilt bis zum Urteil als unschuldig", "Angeklagte müssen ihre Unschuld beweisen", "Nur Ersttäter gelten als unschuldig" }, "Jeder gilt bis zum Urteil als unschuldig",
+            "Deshalb spricht man vor dem Urteil von mutmaßlichen Tätern."),
+        ("Ab welchem Alter ist man in Deutschland strafmündig?", new[] { "Ab 14 Jahren", "Ab 18 Jahren", "Ab 10 Jahren" }, "Ab 14 Jahren",
+            "Zwischen 14 und 17 gilt das Jugendstrafrecht mit Erziehungsgedanken."),
+        ("Was ist das Ziel des Jugendstrafrechts?", new[] { "Erziehung statt Vergeltung", "Möglichst harte Bestrafung", "Ausschluss aus der Gesellschaft" }, "Erziehung statt Vergeltung",
+            "Sozialstunden und Weisungen sind typische Maßnahmen."),
+        ("Ab wann ist man voll geschäftsfähig?", new[] { "Ab 18 Jahren", "Ab 16 Jahren", "Ab 14 Jahren" }, "Ab 18 Jahren",
+            "Zwischen 7 und 17 ist man beschränkt geschäftsfähig."),
+        ("Was ist der Taschengeldparagraf?", new[] { "Minderjährige dürfen mit eigenem Geld kleine Käufe tätigen", "Eltern müssen Taschengeld zahlen, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Taschengeld ist steuerfrei" }, "Minderjährige dürfen mit eigenem Geld kleine Käufe tätigen",
+            "Größere Verträge brauchen die Zustimmung der Eltern."),
+        ("Was regelt das Jugendschutzgesetz?", new[] { "Altersgrenzen für Alkohol, Rauchen und Ausgehzeiten", "Die Schulpflicht", "Das Wahlalter" }, "Altersgrenzen für Alkohol, Rauchen und Ausgehzeiten",
+            "Es schützt Jugendliche vor Gefährdungen."),
+        ("Was ist eine Straftat?", new[] { "Ein im Gesetz mit Strafe bedrohtes Verhalten", "Jedes unhöfliche Verhalten", "Ein Verstoß gegen Schulregeln, auch wenn das manche zunaechst vermuten wuerden" }, "Ein im Gesetz mit Strafe bedrohtes Verhalten",
+            "Ohne Gesetz gibt es keine Strafe - das nennt man Bestimmtheitsgebot."),
+        ("Was ist der Unterschied zwischen Zivil- und Strafrecht?", new[] { "Zivilrecht regelt Streit zwischen Privaten, Strafrecht ahndet Straftaten", "Beide sind identisch", "Zivilrecht gilt nur für Firmen, was bei genauerem Hinsehen nicht stimmt (was so in der Praxis nicht zutrifft)" }, "Zivilrecht regelt Streit zwischen Privaten, Strafrecht ahndet Straftaten",
+            "Beim Zivilprozess klagt eine Partei, beim Strafprozess die Staatsanwaltschaft."),
+        ("Welche Aufgabe hat die Staatsanwaltschaft?", new[] { "Sie ermittelt und erhebt Anklage", "Sie verurteilt Angeklagte", "Sie verteidigt Beschuldigte" }, "Sie ermittelt und erhebt Anklage",
+            "Sie muss auch entlastende Umstände berücksichtigen."),
+        ("Wer entscheidet über Schuld und Strafe?", new[] { "Ein unabhängiges Gericht", "Die Polizei", "Die Staatsanwaltschaft - eine verbreitete, aber falsche Annahme" }, "Ein unabhängiges Gericht",
+            "Richter sind nur dem Gesetz unterworfen und nicht weisungsgebunden."),
+        ("Was ist das Bundesverfassungsgericht?", new[] { "Das höchste Gericht für Verfassungsfragen", "Ein Berufungsgericht für Strafsachen, was einer genaueren Pruefung nicht standhaelt", "Ein Gericht der Europäischen Union" }, "Das höchste Gericht für Verfassungsfragen",
+            "Es kann Gesetze für verfassungswidrig erklären."),
+        ("Was ist eine Verfassungsbeschwerde?", new[] { "Die Klage einer Person wegen Grundrechtsverletzung", "Eine Beschwerde über die Regierung, obwohl das auf den ersten Blick plausibel klingt", "Ein Antrag auf Gesetzesänderung" }, "Die Klage einer Person wegen Grundrechtsverletzung",
+            "Jeder kann sie einlegen, wenn der Rechtsweg erschöpft ist."),
+        ("Was bedeutet Gewaltmonopol des Staates?", new[] { "Nur der Staat darf legitim Zwang ausüben", "Der Staat darf alles tun", "Gewalt ist grundsätzlich erlaubt" }, "Nur der Staat darf legitim Zwang ausüben",
+            "Es schützt vor Selbstjustiz und ist an strenge Regeln gebunden."),
+        ("Was ist Notwehr?", new[] { "Die erforderliche Verteidigung gegen einen Angriff", "Jede Form von Gegenwehr", "Rache nach einer Tat" }, "Die erforderliche Verteidigung gegen einen Angriff",
+            "Sie muss verhältnismäßig sein und den Angriff abwehren, nicht bestrafen."),
+        ("Was ist unterlassene Hilfeleistung?", new[] { "Nicht zu helfen, obwohl es zumutbar wäre", "Falsche Hilfe zu leisten, was die eigentliche Bedeutung des Begriffs verfehlt", "Den Notruf zu wählen" }, "Nicht zu helfen, obwohl es zumutbar wäre",
+            "Wer den Notruf wählt und absichert, hat seine Pflicht meist erfüllt."),
+        ("Warum ist ein unabhängiges Gericht so wichtig?", new[] { "Nur so ist Recht vor Macht geschützt", "Damit Verfahren schneller gehen", "Damit Urteile milder ausfallen" }, "Nur so ist Recht vor Macht geschützt",
+            "In Diktaturen werden Gerichte politisch gesteuert.")
+    };
+
+    private static QuizQuestion RechtsstaatUndJugendrecht(Random r)
+    {
+        var f = RechtsstaatUndJugendrechtListe[r.Next(RechtsstaatUndJugendrechtListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Rechtsstaat und Jugendrecht", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Rechtsstaat: alle Macht an Gesetz gebunden. Artikel 1: Menschenwürde. Strafmündig ab 14 (Jugendstrafrecht: Erziehung statt Vergeltung), voll geschäftsfähig ab 18. Unschuldsvermutung, unabhängige Gerichte."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ParteienUndWahlenListe =
+    {
+        ("Was ist eine politische Partei?", new[] { "Ein Zusammenschluss zur Mitwirkung an der politischen Willensbildung", "Eine Behörde des Staates", "Ein Verein für Freizeitaktivitäten und deshalb hier nicht zutrifft, was so nicht korrekt ist" }, "Ein Zusammenschluss zur Mitwirkung an der politischen Willensbildung",
+            "Das Grundgesetz weist Parteien diese Rolle ausdrücklich zu."),
+        ("Was ist ein Parteiprogramm?", new[] { "Die schriftlichen Ziele und Positionen einer Partei", "Der Terminplan für Wahlkampfauftritte - eine haeufige, aber unzutreffende Vorstellung", "Die Mitgliederliste" }, "Die schriftlichen Ziele und Positionen einer Partei",
+            "Es hilft Wählern, Angebote zu vergleichen."),
+        ("Was bedeutet Opposition?", new[] { "Die Parteien, die nicht die Regierung stellen", "Die stärkste Partei im Parlament", "Ein Zusammenschluss aller Parteien, auch wenn das manche zunaechst vermuten wuerden" }, "Die Parteien, die nicht die Regierung stellen",
+            "Sie kontrolliert die Regierung und bietet Alternativen an."),
+        ("Was ist eine Koalition?", new[] { "Ein Regierungsbündnis mehrerer Parteien", "Ein Zusammenschluss von Wählern, was bei genauerem Hinsehen nicht stimmt", "Ein Vertrag mit anderen Staaten" }, "Ein Regierungsbündnis mehrerer Parteien",
+            "Sie ist nötig, wenn keine Partei allein die Mehrheit hat."),
+        ("Was regelt ein Koalitionsvertrag?", new[] { "Die gemeinsamen Vorhaben der Regierungsparteien", "Die Gehälter der Minister", "Die Sitzverteilung im Parlament (was so in der Praxis nicht zutrifft)" }, "Die gemeinsamen Vorhaben der Regierungsparteien",
+            "Er ist rechtlich nicht bindend, politisch aber sehr wirksam."),
+        ("Was sind die fünf Wahlrechtsgrundsätze?", new[] { "Allgemein, unmittelbar, frei, gleich und geheim", "Öffentlich, schriftlich und kostenlos - eine verbreitete, aber falsche Annahme", "Freiwillig, anonym und digital" }, "Allgemein, unmittelbar, frei, gleich und geheim",
+            "Sie stehen in Artikel 38 des Grundgesetzes."),
+        ("Was bedeutet der Grundsatz 'geheim'?", new[] { "Niemand darf erfahren, wie man gewählt hat", "Wahlergebnisse bleiben unveröffentlicht, was einer genaueren Pruefung nicht standhaelt", "Die Kandidaten sind unbekannt" }, "Niemand darf erfahren, wie man gewählt hat",
+            "Deshalb gibt es Wahlkabinen und blickdichte Umschläge."),
+        ("Was ist die Erststimme bei der Bundestagswahl?", new[] { "Die Stimme für einen Kandidaten im Wahlkreis", "Die Stimme für eine Partei", "Die wichtigere der beiden Stimmen, obwohl das auf den ersten Blick plausibel klingt" }, "Die Stimme für einen Kandidaten im Wahlkreis",
+            "Wer die meisten Erststimmen hat, zieht direkt ins Parlament ein."),
+        ("Was bewirkt die Zweitstimme?", new[] { "Sie bestimmt die Sitzverteilung der Parteien", "Sie wählt den Bundeskanzler", "Sie gilt nur als Ersatzstimme" }, "Sie bestimmt die Sitzverteilung der Parteien",
+            "Deshalb ist sie für die Machtverhältnisse entscheidend."),
+        ("Was ist die Fünf-Prozent-Hürde?", new[] { "Parteien unter fünf Prozent ziehen nicht ins Parlament ein", "Eine Mindestwahlbeteiligung", "Eine Grenze für Wahlkampfausgaben" }, "Parteien unter fünf Prozent ziehen nicht ins Parlament ein",
+            "Sie soll Zersplitterung verhindern - kostet aber Stimmen ihre Wirkung."),
+        ("Wer wählt den Bundeskanzler?", new[] { "Der Bundestag", "Das Volk direkt", "Der Bundespräsident allein" }, "Der Bundestag",
+            "Deutschland ist eine parlamentarische Demokratie, keine Präsidialdemokratie."),
+        ("Welche Aufgabe hat der Bundespräsident?", new[] { "Repräsentation und Ausfertigung der Gesetze", "Führung der Regierungsgeschäfte", "Oberbefehl über die Streitkräfte im Frieden" }, "Repräsentation und Ausfertigung der Gesetze",
+            "Er steht über den Parteien und hat vor allem eine integrierende Rolle."),
+        ("Was ist der Bundesrat?", new[] { "Die Vertretung der Bundesländer im Bund", "Die zweite Kammer des Bundestags", "Ein Beratungsgremium der Regierung" }, "Die Vertretung der Bundesländer im Bund",
+            "Bei vielen Gesetzen muss er zustimmen."),
+        ("Was ist Föderalismus?", new[] { "Aufteilung der Staatsgewalt zwischen Bund und Ländern", "Die Herrschaft einer Partei", "Ein Zusammenschluss von Staaten, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Aufteilung der Staatsgewalt zwischen Bund und Ländern",
+            "Bildung ist zum Beispiel Ländersache - deshalb gibt es 16 Schulsysteme."),
+        ("Wie heißt das Landesparlament in Berlin?", new[] { "Abgeordnetenhaus", "Landtag", "Bürgerschaft" }, "Abgeordnetenhaus",
+            "Berlin ist zugleich Stadt und Bundesland."),
+        ("Wer regiert das Land Berlin?", new[] { "Der Senat unter dem Regierenden Bürgermeister", "Der Oberbürgermeister allein", "Die Bezirksbürgermeister gemeinsam" }, "Der Senat unter dem Regierenden Bürgermeister",
+            "Die Senatoren entsprechen den Ministern anderer Bundesländer."),
+        ("Was entscheiden die Berliner Bezirke selbst?", new[] { "Örtliche Angelegenheiten wie Grünflächen und Bürgerämter", "Die Steuern für ganz Berlin", "Die Schulgesetze" }, "Örtliche Angelegenheiten wie Grünflächen und Bürgerämter",
+            "Zwölf Bezirke mit eigenen Bezirksverordnetenversammlungen."),
+        ("Ab welchem Alter darf man in Berlin das Abgeordnetenhaus wählen?", new[] { "Ab 16 Jahren", "Ab 18 Jahren", "Ab 14 Jahren" }, "Ab 16 Jahren",
+            "Für den Bundestag gilt weiterhin 18 Jahre."),
+        ("Was ist Wahlbeteiligung?", new[] { "Der Anteil der Wahlberechtigten, die wählen gehen", "Die Zahl der Kandidaten", "Die Zahl der gültigen Stimmen und deshalb hier nicht zutrifft" }, "Der Anteil der Wahlberechtigten, die wählen gehen",
+            "Eine niedrige Beteiligung schwächt die Legitimation der Gewählten."),
+        ("Warum ist Wählen gehen wichtig?", new[] { "Wer nicht wählt, überlässt anderen die Entscheidung", "Es ist gesetzlich vorgeschrieben", "Man erhält dafür eine Aufwandsentschädigung, was so nicht korrekt ist" }, "Wer nicht wählt, überlässt anderen die Entscheidung",
+            "In Deutschland gibt es keine Wahlpflicht, aber ein Wahlrecht.")
+    };
+
+    private static QuizQuestion ParteienUndWahlen(Random r)
+    {
+        var f = ParteienUndWahlenListe[r.Next(ParteienUndWahlenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Parteien, Wahlen und Föderalismus", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Fünf Wahlrechtsgrundsätze: allgemein, unmittelbar, frei, gleich, geheim. Erststimme = Wahlkreis, Zweitstimme = Sitzverteilung. Fünf-Prozent-Hürde. Berlin: Abgeordnetenhaus, Senat, Wahlrecht ab 16."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MenschenrechteInternationalListe =
+    {
+        ("Was sind Menschenrechte?", new[] { "Rechte, die jedem Menschen von Geburt an zustehen", "Rechte, die man sich verdienen muss - eine haeufige, aber unzutreffende Vorstellung", "Rechte nur für Staatsbürger" }, "Rechte, die jedem Menschen von Geburt an zustehen",
+            "Sie sind unteilbar, unveräußerlich und gelten weltweit."),
+        ("Wann wurde die Allgemeine Erklärung der Menschenrechte verabschiedet?", new[] { "1948", "1918", "1989" }, "1948",
+            "Sie war eine direkte Antwort auf die Verbrechen des Zweiten Weltkriegs."),
+        ("Wer verabschiedete die Allgemeine Erklärung der Menschenrechte?", new[] { "Die Vereinten Nationen", "Die Europäische Union", "Die NATO" }, "Die Vereinten Nationen",
+            "Sie ist rechtlich nicht bindend, aber weltweit einflussreich."),
+        ("Was ist die UN-Kinderrechtskonvention?", new[] { "Ein Vertrag über die Rechte von Kindern", "Ein Programm gegen Kinderarmut", "Eine Regelung zur Schulpflicht" }, "Ein Vertrag über die Rechte von Kindern",
+            "1989 beschlossen, von fast allen Staaten der Welt ratifiziert."),
+        ("Welche vier Grundprinzipien hat die Kinderrechtskonvention?", new[] { "Gleichheit, Kindeswohl, Entwicklung und Beteiligung", "Bildung, Gesundheit, Wohnen und Arbeit", "Freiheit, Gleichheit, Brüderlichkeit und Frieden, auch wenn das manche zunaechst vermuten wuerden" }, "Gleichheit, Kindeswohl, Entwicklung und Beteiligung",
+            "Das Beteiligungsrecht wird im Alltag oft übersehen."),
+        ("Was bedeutet das Recht auf Beteiligung für Kinder?", new[] { "Kinder dürfen bei sie betreffenden Fragen mitreden", "Kinder entscheiden allein über alles", "Kinder dürfen alle Gesetze mitbestimmen, was bei genauerem Hinsehen nicht stimmt" }, "Kinder dürfen bei sie betreffenden Fragen mitreden",
+            "Ihre Meinung muss dem Alter entsprechend berücksichtigt werden."),
+        ("Was sind die Vereinten Nationen?", new[] { "Ein Zusammenschluss fast aller Staaten für Frieden und Zusammenarbeit", "Ein europäisches Bündnis", "Eine Wirtschaftsorganisation (was so in der Praxis nicht zutrifft) - eine verbreitete, aber falsche Annahme" }, "Ein Zusammenschluss fast aller Staaten für Frieden und Zusammenarbeit",
+            "1945 gegründet, heute 193 Mitgliedstaaten."),
+        ("Was ist der UN-Sicherheitsrat?", new[] { "Das Gremium für Fragen von Frieden und Sicherheit", "Das Parlament der Vereinten Nationen, was einer genaueren Pruefung nicht standhaelt", "Ein Gericht für Kriegsverbrechen" }, "Das Gremium für Fragen von Frieden und Sicherheit",
+            "Fünf ständige Mitglieder haben ein Vetorecht."),
+        ("Was bedeutet ein Veto im Sicherheitsrat?", new[] { "Ein ständiges Mitglied kann Beschlüsse blockieren", "Eine besonders starke Zustimmung", "Ein Antrag auf neue Abstimmung" }, "Ein ständiges Mitglied kann Beschlüsse blockieren",
+            "Deshalb ist der Rat bei Konflikten oft handlungsunfähig."),
+        ("Was ist der Internationale Strafgerichtshof?", new[] { "Ein Gericht für schwerste Völkerrechtsverbrechen", "Ein Schiedsgericht für Handelsstreit, obwohl das auf den ersten Blick plausibel klingt", "Das oberste Gericht der EU" }, "Ein Gericht für schwerste Völkerrechtsverbrechen",
+            "Er verfolgt Völkermord, Kriegsverbrechen und Verbrechen gegen die Menschlichkeit."),
+        ("Was ist Amnesty International?", new[] { "Eine Organisation für Menschenrechte weltweit", "Eine UN-Behörde", "Ein Gericht für politische Gefangene" }, "Eine Organisation für Menschenrechte weltweit",
+            "Sie dokumentiert Verstöße und setzt sich für politische Gefangene ein."),
+        ("Was bedeutet Meinungsfreiheit im internationalen Vergleich?", new[] { "Sie ist längst nicht überall garantiert", "Sie gilt in allen Staaten gleich", "Sie ist ein rein europäisches Recht, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Sie ist längst nicht überall garantiert",
+            "In vielen Ländern werden Journalisten verfolgt oder inhaftiert."),
+        ("Was ist Pressefreiheit ein Gradmesser für?", new[] { "Den Zustand der Demokratie in einem Land", "Die Wirtschaftskraft eines Landes und deshalb hier nicht zutrifft", "Die Bildungsausgaben" }, "Den Zustand der Demokratie in einem Land",
+            "Reporter ohne Grenzen veröffentlicht dazu jährlich eine Rangliste."),
+        ("Was ist Zensur?", new[] { "Staatliche Kontrolle und Unterdrückung von Inhalten", "Die Bewertung von Filmen nach Alter, was so nicht korrekt ist", "Die Redaktion einer Zeitung" }, "Staatliche Kontrolle und Unterdrückung von Inhalten",
+            "Das Grundgesetz verbietet sie ausdrücklich."),
+        ("Was ist Entwicklungszusammenarbeit?", new[] { "Unterstützung für nachhaltige Entwicklung in Partnerländern", "Militärische Hilfe im Konfliktfall", "Handel ohne Zölle" }, "Unterstützung für nachhaltige Entwicklung in Partnerländern",
+            "Der Begriff ersetzt bewusst das einseitige Wort Entwicklungshilfe."),
+        ("Was ist eine Friedensmission der UN?", new[] { "Der Einsatz von Blauhelmen zur Sicherung von Waffenruhen", "Ein Angriffskrieg mit UN-Mandat", "Eine diplomatische Konferenz" }, "Der Einsatz von Blauhelmen zur Sicherung von Waffenruhen",
+            "Blauhelme dürfen meist nur zur Selbstverteidigung Gewalt anwenden."),
+        ("Was ist Völkerrecht?", new[] { "Das Recht zwischen Staaten", "Das Recht der Volksvertreter", "Das Recht innerhalb eines Volkes" }, "Das Recht zwischen Staaten",
+            "Es beruht auf Verträgen und Gewohnheitsrecht - Durchsetzung ist oft schwierig."),
+        ("Was macht Menschenrechte universell?", new[] { "Sie gelten für alle Menschen unabhängig von Herkunft", "Sie gelten nur in Demokratien", "Sie werden von jedem Staat neu festgelegt - eine haeufige, aber unzutreffende Vorstellung" }, "Sie gelten für alle Menschen unabhängig von Herkunft",
+            "Kulturelle Unterschiede rechtfertigen keine Ausnahmen von Grundrechten."),
+        ("Warum werden Menschenrechte trotzdem oft verletzt?", new[] { "Es fehlt an wirksamen Durchsetzungsmöglichkeiten", "Sie sind rechtlich unklar formuliert, auch wenn das manche zunaechst vermuten wuerden", "Sie sind kaum bekannt" }, "Es fehlt an wirksamen Durchsetzungsmöglichkeiten",
+            "Kein Staat kann leicht gezwungen werden, sie einzuhalten."),
+        ("Was kann jeder Einzelne für Menschenrechte tun?", new[] { "Sich informieren, engagieren und Verstöße benennen", "Nichts, das ist reine Staatssache", "Nur bei den Vereinten Nationen arbeiten" }, "Sich informieren, engagieren und Verstöße benennen",
+            "Petitionen, Briefaktionen und Spenden haben nachweislich Wirkung.")
+    };
+
+    private static QuizQuestion MenschenrechteInternational(Random r)
+    {
+        var f = MenschenrechteInternationalListe[r.Next(MenschenrechteInternationalListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Menschenrechte und internationale Politik", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Menschenrechte gelten von Geburt an für alle. Allgemeine Erklärung 1948, Kinderrechtskonvention 1989 (Gleichheit, Kindeswohl, Entwicklung, Beteiligung). UN mit Sicherheitsrat und Vetorecht."
         };
     }
 }

@@ -12,6 +12,7 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Kontinente, Klimazonen, Bundeslaender, RisikoraeumeNaturgefahren, MigrationUndBevoelkerung, TropischerRegenwald, ArmutUndReichtumKlasse6 },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { KlimazonenUndVegetation, StadtUndRaumentwicklung, WasserUndMeere },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Plattentektonik, Klimawandel, Verstaedterung, ArmutReichtum, RessourcenEnergie, LandwirtschaftUndBoden, KlimaschutzInternational, WirtschaftlicheVerflechtung, EuropaWirtschaftsraum }
         };
 
@@ -887,6 +888,174 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
             Topic = "Armut und Reichtum (Klasse-6-Niveau)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Armut bedeutet fehlenden Zugang zu Grundbedürfnissen wie Wasser, Nahrung und Bildung - Bildung, Gesundheitsversorgung und fairer Handel gehören zu den wichtigsten Hebeln dagegen."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KlimazonenUndVegetationListe =
+    {
+        ("Was ist der Unterschied zwischen Wetter und Klima?", new[] { "Wetter ist der aktuelle Zustand, Klima der langjährige Durchschnitt", "Wetter gilt für Städte, Klima für Länder (was so in der Praxis nicht zutrifft)", "Beide Begriffe bedeuten dasselbe" }, "Wetter ist der aktuelle Zustand, Klima der langjährige Durchschnitt",
+            "Als Klima gilt der Mittelwert über mindestens 30 Jahre."),
+        ("Welche Klimazonen gibt es von den Polen zum Äquator?", new[] { "Polar, gemäßigt, subtropisch, tropisch", "Kalt, kühl, warm, heiß", "Trocken, feucht, nass, vereist" }, "Polar, gemäßigt, subtropisch, tropisch",
+            "Die Zonen entstehen durch den unterschiedlichen Einfallswinkel der Sonne."),
+        ("Warum ist es am Äquator wärmer als an den Polen?", new[] { "Die Sonne steht dort steiler und wärmt stärker", "Der Äquator liegt näher an der Sonne", "Dort ist die Atmosphäre dünner" }, "Die Sonne steht dort steiler und wärmt stärker",
+            "An den Polen verteilt sich dieselbe Energie auf eine größere Fläche."),
+        ("Was kennzeichnet das tropische Regenwaldklima?", new[] { "Ganzjährig heiß und feucht", "Heiße Sommer und kalte Winter", "Trocken mit einer kurzen Regenzeit" }, "Ganzjährig heiß und feucht",
+            "Deshalb gibt es dort keine Jahreszeiten im europäischen Sinn."),
+        ("Was ist eine Savanne?", new[] { "Grasland mit Regen- und Trockenzeit", "Ein immerfeuchter Wald", "Eine Sandwüste ohne Bewuchs - eine verbreitete, aber falsche Annahme" }, "Grasland mit Regen- und Trockenzeit",
+            "Je näher an der Wüste, desto kürzer die Regenzeit."),
+        ("Wie entstehen Wüsten in den Subtropen?", new[] { "Absinkende trockene Luft verhindert Wolkenbildung", "Es regnet dort nur nachts", "Der Boden nimmt allen Regen sofort auf, was einer genaueren Pruefung nicht standhaelt" }, "Absinkende trockene Luft verhindert Wolkenbildung",
+            "Um 30 Grad Breite liegt der absteigende Ast der globalen Luftzirkulation."),
+        ("Was ist der Golfstrom?", new[] { "Eine warme Meeresströmung, die Europa mildert", "Ein Wind aus der Sahara", "Ein Fluss im Golf von Mexiko, obwohl das auf den ersten Blick plausibel klingt" }, "Eine warme Meeresströmung, die Europa mildert",
+            "Ohne ihn wäre es in Nordeuropa deutlich kälter."),
+        ("Was bedeutet maritimes Klima?", new[] { "Milde Winter, kühle Sommer durch Meereseinfluss", "Sehr heiße Sommer und kalte Winter", "Ganzjährig gleichbleibende Temperatur, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Milde Winter, kühle Sommer durch Meereseinfluss",
+            "Wasser erwärmt und kühlt sich langsamer ab als Land."),
+        ("Was kennzeichnet kontinentales Klima?", new[] { "Große Temperaturunterschiede zwischen Sommer und Winter", "Ganzjährig hohe Niederschläge", "Sehr milde Winter" }, "Große Temperaturunterschiede zwischen Sommer und Winter",
+            "Je weiter man ins Landesinnere kommt, desto stärker der Effekt."),
+        ("Was ist ein Klimadiagramm?", new[] { "Eine Darstellung von Temperatur und Niederschlag im Jahr", "Eine Karte der Klimazonen", "Eine Wettervorhersage für eine Woche" }, "Eine Darstellung von Temperatur und Niederschlag im Jahr",
+            "Die Kurve zeigt die Temperatur, die Säulen den Niederschlag."),
+        ("Was ist die Vegetationszone?", new[] { "Ein Gebiet mit typischer, klimabedingter Pflanzenwelt", "Ein Naturschutzgebiet", "Eine landwirtschaftliche Nutzfläche" }, "Ein Gebiet mit typischer, klimabedingter Pflanzenwelt",
+            "Vegetationszonen folgen weitgehend den Klimazonen."),
+        ("Was ist die Tundra?", new[] { "Baumlose Kältesteppe am Rand der Polarzone", "Ein tropischer Feuchtwald", "Eine Grassteppe der Subtropen" }, "Baumlose Kältesteppe am Rand der Polarzone",
+            "Der Boden ist dauerhaft gefroren - man nennt ihn Permafrost."),
+        ("Was ist Permafrost?", new[] { "Dauerhaft gefrorener Boden", "Ewiger Schnee auf Berggipfeln", "Eine Frostperiode im Frühjahr" }, "Dauerhaft gefrorener Boden",
+            "Beim Auftauen entweicht Methan - ein starkes Treibhausgas."),
+        ("Was ist die Taiga?", new[] { "Der borealer Nadelwaldgürtel des Nordens", "Ein Steppengebiet Zentralasiens und deshalb hier nicht zutrifft", "Ein tropischer Bergwald" }, "Der borealer Nadelwaldgürtel des Nordens",
+            "Sie ist der größte zusammenhängende Waldgürtel der Erde."),
+        ("Warum sind Höhenstufen im Gebirge wie Klimazonen?", new[] { "Mit der Höhe sinkt die Temperatur ähnlich wie zu den Polen", "Gebirge liegen näher an der Sonne, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Der Luftdruck erzeugt Kälte" }, "Mit der Höhe sinkt die Temperatur ähnlich wie zu den Polen",
+            "Pro 100 Meter Höhe sinkt die Temperatur um etwa 0,6 Grad."),
+        ("Was ist eine Baumgrenze?", new[] { "Die Höhe, ab der keine Bäume mehr wachsen", "Die Grenze eines Waldgebiets", "Ein Zaun um ein Naturschutzgebiet, auch wenn das manche zunaechst vermuten wuerden" }, "Die Höhe, ab der keine Bäume mehr wachsen",
+            "Sie liegt in den Alpen bei etwa 1800 bis 2000 Metern."),
+        ("Was ist Desertifikation?", new[] { "Die Ausbreitung wüstenähnlicher Bedingungen", "Die Begrünung von Wüsten", "Ein Sandsturm in der Sahara, was bei genauerem Hinsehen nicht stimmt" }, "Die Ausbreitung wüstenähnlicher Bedingungen",
+            "Überweidung, Abholzung und Klimawandel verstärken sie."),
+        ("Was ist der Sahel?", new[] { "Eine Trockenzone südlich der Sahara", "Ein Gebirge in Nordafrika (was so in der Praxis nicht zutrifft)", "Ein Fluss in Westafrika" }, "Eine Trockenzone südlich der Sahara",
+            "Die Region ist von Dürren und Desertifikation besonders betroffen."),
+        ("Wie wirkt sich der Klimawandel auf Klimazonen aus?", new[] { "Zonen verschieben sich polwärts", "Die Zonen bleiben unverändert - eine verbreitete, aber falsche Annahme", "Alle Zonen werden feuchter" }, "Zonen verschieben sich polwärts",
+            "Pflanzen und Tiere können oft nicht schnell genug mitwandern."),
+        ("Warum ist Mitteleuropa klimatisch begünstigt?", new[] { "Gemäßigtes Klima mit ausreichend Niederschlag", "Es liegt in den Subtropen", "Es hat kaum Temperaturschwankungen, was einer genaueren Pruefung nicht standhaelt" }, "Gemäßigtes Klima mit ausreichend Niederschlag",
+            "Das ermöglicht ertragreiche Landwirtschaft ohne Bewässerung.")
+    };
+
+    private static QuizQuestion KlimazonenUndVegetation(Random r)
+    {
+        var f = KlimazonenUndVegetationListe[r.Next(KlimazonenUndVegetationListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Klimazonen und Vegetationszonen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wetter = aktuell, Klima = Durchschnitt über 30 Jahre. Zonen vom Äquator zu den Polen: tropisch, subtropisch, gemäßigt, polar. Maritim = ausgeglichen, kontinental = große Unterschiede. Höhenstufen wirken wie Klimazonen."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StadtUndRaumentwicklungListe =
+    {
+        ("Was ist Verstädterung?", new[] { "Der wachsende Anteil der Stadtbevölkerung", "Der Bau neuer Häuser auf dem Land", "Die Vergrößerung von Stadtparks" }, "Der wachsende Anteil der Stadtbevölkerung",
+            "Seit 2007 lebt erstmals mehr als die Hälfte der Menschheit in Städten."),
+        ("Was ist eine Megastadt?", new[] { "Eine Stadt mit über zehn Millionen Einwohnern", "Die größte Stadt eines Landes, obwohl das auf den ersten Blick plausibel klingt", "Eine Stadt mit Hochhäusern" }, "Eine Stadt mit über zehn Millionen Einwohnern",
+            "Tokio, Delhi und Shanghai gehören dazu."),
+        ("Was ist ein Slum?", new[] { "Ein informelles Viertel mit schlechter Infrastruktur", "Ein historischer Stadtkern, was die eigentliche Bedeutung des Begriffs verfehlt", "Ein Industriegebiet" }, "Ein informelles Viertel mit schlechter Infrastruktur",
+            "Oft fehlen Wasser, Strom und rechtlich gesicherter Wohnraum."),
+        ("Was bedeutet Landflucht?", new[] { "Abwanderung vom Land in die Städte", "Flucht aus der Stadt aufs Land", "Auswanderung ins Ausland" }, "Abwanderung vom Land in die Städte",
+            "Mangelnde Perspektiven auf dem Land sind ein Hauptgrund."),
+        ("Was ist Suburbanisierung?", new[] { "Das Wachstum des Umlands großer Städte", "Der Bau von U-Bahnen", "Die Verdichtung der Innenstadt und deshalb hier nicht zutrifft" }, "Das Wachstum des Umlands großer Städte",
+            "Viele ziehen ins Grüne und pendeln zur Arbeit in die Stadt."),
+        ("Was ist Gentrifizierung?", new[] { "Aufwertung eines Viertels mit steigenden Mieten", "Der Abriss alter Häuser", "Die Ansiedlung von Industrie, was so nicht korrekt ist" }, "Aufwertung eines Viertels mit steigenden Mieten",
+            "Alteingesessene können sich das Viertel oft nicht mehr leisten."),
+        ("Was ist ein Stadtteilzentrum?", new[] { "Ein Versorgungs- und Treffpunkt im Quartier", "Das Rathaus einer Stadt", "Ein Einkaufszentrum am Stadtrand - eine haeufige, aber unzutreffende Vorstellung" }, "Ein Versorgungs- und Treffpunkt im Quartier",
+            "Kurze Wege verringern Verkehr und stärken die Nachbarschaft."),
+        ("Was bedeutet Stadt der kurzen Wege?", new[] { "Wohnen, Arbeiten und Einkaufen liegen nah beieinander", "Eine Stadt mit wenigen Straßen, auch wenn das manche zunaechst vermuten wuerden", "Eine besonders kleine Stadt" }, "Wohnen, Arbeiten und Einkaufen liegen nah beieinander",
+            "Das Konzept gilt als Leitbild nachhaltiger Stadtentwicklung."),
+        ("Warum sind Grünflächen in Städten wichtig?", new[] { "Sie kühlen, filtern Luft und bieten Erholung", "Sie erhöhen die Grundstückspreise, was bei genauerem Hinsehen nicht stimmt", "Sie ersetzen Straßen" }, "Sie kühlen, filtern Luft und bieten Erholung",
+            "Auch für Regenwasser sind unversiegelte Flächen entscheidend."),
+        ("Was ist eine Schwammstadt?", new[] { "Eine Stadt, die Regenwasser speichert statt ableitet", "Eine Stadt mit vielen Kanälen", "Eine Stadt am Meer" }, "Eine Stadt, die Regenwasser speichert statt ableitet",
+            "Begrünte Dächer und Mulden mindern Überflutung und Hitze."),
+        ("Was ist ein Pendler?", new[] { "Jemand, der regelmäßig zum Arbeitsort fährt", "Ein Reisender im Fernverkehr (was so in der Praxis nicht zutrifft)", "Ein Bewohner der Innenstadt" }, "Jemand, der regelmäßig zum Arbeitsort fährt",
+            "Rund um Berlin pendeln täglich hunderttausende Menschen."),
+        ("Welches Problem entsteht durch hohe Pendlerzahlen?", new[] { "Staus, Emissionen und volle Verkehrsmittel", "Zu viele leere Wohnungen", "Ein Mangel an Arbeitsplätzen" }, "Staus, Emissionen und volle Verkehrsmittel",
+            "Gute Bahnverbindungen ins Umland entlasten spürbar."),
+        ("Was ist ein Ballungsraum?", new[] { "Ein Gebiet mit hoher Bevölkerungs- und Wirtschaftsdichte", "Ein Naturschutzgebiet", "Eine dünn besiedelte Region" }, "Ein Gebiet mit hoher Bevölkerungs- und Wirtschaftsdichte",
+            "Berlin-Brandenburg ist ein Beispiel dafür."),
+        ("Was ist Daseinsvorsorge?", new[] { "Grundversorgung mit Wasser, Verkehr, Schulen und Ärzten", "Die private Altersvorsorge - eine verbreitete, aber falsche Annahme", "Der Katastrophenschutz" }, "Grundversorgung mit Wasser, Verkehr, Schulen und Ärzten",
+            "Sie soll überall gesichert sein - auch in ländlichen Räumen."),
+        ("Was ist strukturschwacher Raum?", new[] { "Eine Region mit wenig Arbeitsplätzen und Abwanderung", "Ein Gebiet ohne Straßen", "Ein Bezirk mit alten Gebäuden, was einer genaueren Pruefung nicht standhaelt" }, "Eine Region mit wenig Arbeitsplätzen und Abwanderung",
+            "Fördermittel sollen dort gleichwertige Lebensverhältnisse ermöglichen."),
+        ("Was ist ein Flächennutzungsplan?", new[] { "Ein Plan für die künftige Nutzung städtischer Flächen", "Eine Karte aller Grundstückseigentümer", "Ein Verzeichnis der Baugenehmigungen" }, "Ein Plan für die künftige Nutzung städtischer Flächen",
+            "Er legt fest, wo gewohnt, gearbeitet und erholt wird."),
+        ("Warum ist bezahlbarer Wohnraum ein Thema in Berlin?", new[] { "Die Mieten steigen schneller als die Einkommen", "Es gibt zu viele leere Wohnungen", "Der Wohnungsbau ist verboten" }, "Die Mieten steigen schneller als die Einkommen",
+            "Zuzug und knappes Angebot treiben die Preise."),
+        ("Was ist sozialer Wohnungsbau?", new[] { "Geförderte Wohnungen mit begrenzter Miete", "Wohnungen nur für Beamte, obwohl das auf den ersten Blick plausibel klingt", "Kostenlose Unterkünfte" }, "Geförderte Wohnungen mit begrenzter Miete",
+            "Die Bindung läuft nach einigen Jahrzehnten aus - dann steigen die Mieten."),
+        ("Was ist ein Quartiersmanagement?", new[] { "Stadtteilarbeit zur Verbesserung der Lebensbedingungen", "Die Verwaltung von Mietshäusern", "Ein Sicherheitsdienst im Viertel, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Stadtteilarbeit zur Verbesserung der Lebensbedingungen",
+            "In Berlin arbeiten Quartiersmanagements in benachteiligten Kiezen."),
+        ("Warum ist Stadtplanung Zukunftsaufgabe?", new[] { "Sie entscheidet über Klima, Verkehr und Zusammenleben", "Sie betrifft nur Architekten", "Sie ist rein technische Arbeit" }, "Sie entscheidet über Klima, Verkehr und Zusammenleben",
+            "Was heute gebaut wird, steht oft hundert Jahre.")
+    };
+
+    private static QuizQuestion StadtUndRaumentwicklung(Random r)
+    {
+        var f = StadtUndRaumentwicklungListe[r.Next(StadtUndRaumentwicklungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Stadt- und Raumentwicklung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Verstädterung: über die Hälfte der Menschheit lebt in Städten. Megastadt ab 10 Millionen. Gentrifizierung = Aufwertung mit steigenden Mieten. Stadt der kurzen Wege und Schwammstadt als Leitbilder."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WasserUndMeereListe =
+    {
+        ("Wie viel Prozent der Erde sind mit Wasser bedeckt?", new[] { "Rund 71 Prozent", "Rund 50 Prozent", "Rund 90 Prozent" }, "Rund 71 Prozent",
+            "Der weitaus größte Teil davon ist jedoch Salzwasser."),
+        ("Wie viel des Wassers auf der Erde ist Süßwasser?", new[] { "Etwa 2,5 Prozent", "Etwa 30 Prozent und deshalb hier nicht zutrifft", "Etwa 50 Prozent" }, "Etwa 2,5 Prozent",
+            "Davon ist der Großteil in Eis und Grundwasser gebunden."),
+        ("Was ist der Wasserkreislauf?", new[] { "Verdunstung, Wolkenbildung, Niederschlag und Abfluss", "Der Wasserverbrauch eines Haushalts", "Die Reinigung in der Kläranlage" }, "Verdunstung, Wolkenbildung, Niederschlag und Abfluss",
+            "Die Sonne treibt diesen Kreislauf an."),
+        ("Was ist Grundwasser?", new[] { "Wasser, das im Boden gespeichert ist", "Wasser in Flüssen und Seen", "Regen kurz vor dem Auftreffen" }, "Wasser, das im Boden gespeichert ist",
+            "In Deutschland stammt der größte Teil des Trinkwassers daraus."),
+        ("Was ist Wasserknappheit?", new[] { "Weniger Wasser verfügbar als benötigt", "Ein Rückgang der Regenmenge", "Zu hohe Wasserpreise" }, "Weniger Wasser verfügbar als benötigt",
+            "Etwa zwei Milliarden Menschen sind zeitweise betroffen."),
+        ("Was ist virtuelles Wasser?", new[] { "Wasser, das zur Herstellung eines Produkts nötig war", "Wasser in Computersimulationen, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Ungenutztes Regenwasser" }, "Wasser, das zur Herstellung eines Produkts nötig war",
+            "Ein Kilogramm Rindfleisch benötigt mehrere tausend Liter."),
+        ("Was ist Bewässerungslandwirtschaft?", new[] { "Anbau mit künstlicher Wasserzufuhr", "Landwirtschaft nur bei Regen", "Anbau in Gewächshäusern" }, "Anbau mit künstlicher Wasserzufuhr",
+            "Sie ermöglicht Erträge in trockenen Gebieten, verbraucht aber viel Wasser."),
+        ("Welches Problem entsteht durch übermäßige Bewässerung?", new[] { "Versalzung der Böden", "Zu starkes Pflanzenwachstum", "Übermäßige Bodenfeuchte im Winter" }, "Versalzung der Böden",
+            "Verdunstet Wasser, bleiben Salze zurück - der Boden wird unfruchtbar."),
+        ("Was ist das Aralsee-Problem?", new[] { "Ein See schrumpfte durch Bewässerung dramatisch", "Ein See überflutete ganze Städte", "Ein See wurde künstlich angelegt" }, "Ein See schrumpfte durch Bewässerung dramatisch",
+            "Für den Baumwollanbau wurden die Zuflüsse abgeleitet."),
+        ("Was bedeutet Trinkwasserversorgung?", new[] { "Gewinnung, Aufbereitung und Verteilung von Trinkwasser", "Nur das Verlegen von Rohren", "Der Verkauf von Mineralwasser, auch wenn das manche zunaechst vermuten wuerden" }, "Gewinnung, Aufbereitung und Verteilung von Trinkwasser",
+            "In Deutschland gilt Trinkwasser als das am besten kontrollierte Lebensmittel."),
+        ("Was ist ein Fluss-Einzugsgebiet?", new[] { "Das Gebiet, aus dem ein Fluss sein Wasser erhält", "Der Bereich um die Flussmündung, was bei genauerem Hinsehen nicht stimmt", "Das Überschwemmungsgebiet" }, "Das Gebiet, aus dem ein Fluss sein Wasser erhält",
+            "Es wird durch Wasserscheiden begrenzt."),
+        ("Was ist Hochwasserschutz?", new[] { "Maßnahmen gegen Überflutungen", "Der Bau von Wasserkraftwerken", "Die Reinigung von Flüssen" }, "Maßnahmen gegen Überflutungen",
+            "Deiche helfen, wirksamer sind oft renaturierte Auen."),
+        ("Was ist eine Flussrenaturierung?", new[] { "Rückbau von Begradigungen zu naturnahen Läufen", "Der Ausbau als Schifffahrtsweg", "Die Trockenlegung eines Flusses" }, "Rückbau von Begradigungen zu naturnahen Läufen",
+            "Mäander und Auen bremsen Hochwasser und fördern Artenvielfalt."),
+        ("Warum verschärft Flächenversiegelung Hochwasser?", new[] { "Regen kann nicht versickern und fließt sofort ab", "Versiegelte Flächen speichern zu viel Wasser (was so in der Praxis nicht zutrifft)", "Beton zieht Regen an" }, "Regen kann nicht versickern und fließt sofort ab",
+            "In Städten schwellen Kanäle bei Starkregen schnell über."),
+        ("Was ist Meeresverschmutzung durch Plastik?", new[] { "Kunststoffabfälle gelangen in Ozeane und zerfallen zu Mikroplastik", "Ölteppiche auf der Wasseroberfläche - eine verbreitete, aber falsche Annahme, was einer genaueren Pruefung nicht standhaelt", "Zu warmes Wasser durch Kraftwerke" }, "Kunststoffabfälle gelangen in Ozeane und zerfallen zu Mikroplastik",
+            "Ein Großteil stammt aus Flüssen weniger Länder."),
+        ("Was ist Überfischung?", new[] { "Mehr Fische entnehmen als nachwachsen", "Fischzucht in großen Anlagen", "Fischen mit sehr großen Netzen, obwohl das auf den ersten Blick plausibel klingt" }, "Mehr Fische entnehmen als nachwachsen",
+            "Viele Bestände sind bis an die Grenze befischt."),
+        ("Was ist Aquakultur?", new[] { "Die Zucht von Fischen und Meerestieren", "Der Anbau von Wasserpflanzen zur Zierde", "Ein Verfahren zur Meerwasserentsalzung" }, "Die Zucht von Fischen und Meerestieren",
+            "Sie entlastet Wildbestände, kann aber Küstenökosysteme belasten."),
+        ("Was ist Meerwasserentsalzung?", new[] { "Gewinnung von Trinkwasser aus Meerwasser", "Der Salzabbau am Toten Meer, was die eigentliche Bedeutung des Begriffs verfehlt", "Die Reinigung von Abwasser" }, "Gewinnung von Trinkwasser aus Meerwasser",
+            "Sie ist sehr energieaufwendig und erzeugt salzige Rückstände."),
+        ("Warum ist Wasser ein möglicher Konfliktstoff?", new[] { "Flüsse durchqueren Grenzen und Nutzung konkurriert", "Wasser ist besonders teuer", "Es lässt sich schlecht transportieren" }, "Flüsse durchqueren Grenzen und Nutzung konkurriert",
+            "Staudämme am Oberlauf betreffen alle Anrainer flussabwärts."),
+        ("Wie kann man im Alltag Wasser sparen?", new[] { "Kürzer duschen und Geräte voll beladen", "Nur abends Wasser nutzen", "Flaschenwasser statt Leitungswasser kaufen" }, "Kürzer duschen und Geräte voll beladen",
+            "Am meisten spart man indirekt - über Konsum und Ernährung.")
+    };
+
+    private static QuizQuestion WasserUndMeere(Random r)
+    {
+        var f = WasserUndMeereListe[r.Next(WasserUndMeereListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Wasser, Meere und Ressourcennutzung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nur 2,5% des Wassers sind Süßwasser, davon das meiste in Eis und Grundwasser. Virtuelles Wasser steckt in jedem Produkt. Bewässerung kann Böden versalzen (Aralsee). Versiegelung verschärft Hochwasser."
         };
     }
 }

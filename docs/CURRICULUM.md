@@ -158,31 +158,31 @@ Rahmenlehrplan" weiter unten).
 
 ## Politik (`PolitikGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Was ist Demokratie? | Gewaltenteilung |
-| Berlin und seine Bezirke | Bundestag und Bundesrat |
-| Wahlrecht | Wahlsystem |
-| Armut und Reichtum (Klasse-6-Niveau) | Soziale Marktwirtschaft |
-| Leben in einer globalisierten Welt | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
-| Migration und Bevölkerung | Konflikte und Konfliktlösungen: internationale Akteure |
-| Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte) | |
-| | Friedenssicherung und Entwicklungspolitik |
-| | Europa in der Welt: Die Europäische Union |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Was ist Demokratie? | Mitbestimmung und Engagement | Gewaltenteilung |
+| Berlin und seine Bezirke | Rechtsstaat und Jugendrecht | Bundestag und Bundesrat |
+| Wahlrecht | Parteien, Wahlen und Föderalismus | Wahlsystem |
+| Armut und Reichtum (Klasse-6-Niveau) | Menschenrechte und internationale Politik | Soziale Marktwirtschaft |
+| Leben in einer globalisierten Welt |  | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
+| Migration und Bevölkerung |  | Konflikte und Konfliktlösungen: internationale Akteure |
+| Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte) |  |  |
+|  |  | Friedenssicherung und Entwicklungspolitik |
+|  |  | Europa in der Welt: Die Europäische Union |
 
 ## Geografie (`GeoGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Kontinente und Ozeane | Plattentektonik |
-| Klimazonen | Klimawandel |
-| Deutschland: Bundesländer | Verstädterung |
-| Leben in Risikoräumen (Naturgefahren) | Armut und Reichtum weltweit |
-| Migration und Bevölkerung (Flucht, Landflucht) | Umgang mit Ressourcen: Energie und Rohstoffe |
-| Vielfalt der Erde (tropischer Regenwald) | Umgang mit Ressourcen: Landwirtschaft und Boden |
-| Armut und Reichtum (Klasse-6-Niveau) | Klimaschutz: Internationale Konflikte und Lösungen |
-| | Wirtschaftliche Verflechtungen und Globalisierung |
-| | Europa in der Welt (naturräumliche und wirtschaftliche Vielfalt) |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Kontinente und Ozeane | Klimazonen und Vegetationszonen | Plattentektonik |
+| Klimazonen | Stadt- und Raumentwicklung | Klimawandel |
+| Deutschland: Bundesländer | Wasser, Meere und Ressourcennutzung | Verstädterung |
+| Leben in Risikoräumen (Naturgefahren) |  | Armut und Reichtum weltweit |
+| Migration und Bevölkerung (Flucht, Landflucht) |  | Umgang mit Ressourcen: Energie und Rohstoffe |
+| Vielfalt der Erde (tropischer Regenwald) |  | Umgang mit Ressourcen: Landwirtschaft und Boden |
+| Armut und Reichtum (Klasse-6-Niveau) |  | Klimaschutz: Internationale Konflikte und Lösungen |
+|  |  | Wirtschaftliche Verflechtungen und Globalisierung |
+|  |  | Europa in der Welt (naturräumliche und wirtschaftliche Vielfalt) |
 
 ## Ethik (`EthikGenerator.cs`)
 
