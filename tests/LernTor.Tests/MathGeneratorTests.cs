@@ -99,6 +99,15 @@ public class MathGeneratorTests
     }
 
     [Fact]
+    public void Physik_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
+    {
+        var questions = new PhysikGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));
+
+        Assert.Equal(12, questions.Count);
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+    }
+
+    [Fact]
     public void Biologie_Klasse7_liefert_eigene_Klasse7_Themen_ohne_Rueckfall()
     {
         var questions = new BiologieGenerator().Generate(GradeLevel.Klasse7, 12, new Random(7));

@@ -3,7 +3,9 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Physik nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen) und Klasse 9 (vertieft).</summary>
+/// <summary>Physik nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen), Klasse 7 (Aufbau: Optik,
+/// Kraft und Bewegung, Druck und Auftrieb, Wärmelehre, Energieformen, Elektrizität) und
+/// Klasse 9 (vertieft).</summary>
 public sealed class PhysikGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Physik;
@@ -12,6 +14,7 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik, WaermeausdehnungKoerper, WechselwirkungUndKraft, MechanischeEnergieUndArbeit, ThermischeEnergieUndWaerme },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { OptikLichtUndSehen, KraftUndBewegung, DruckUndAuftrieb, WaermelehreK7, EnergieformenUndUmwandlung, ElektrizitaetGrundlagen },
             [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion, Kinematik, RadioaktivitaetUndKernphysik, SchwingungenWellenOptik }
         };
 
@@ -932,6 +935,346 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Topic = "Thermische Energie und Wärme", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Wärme fließt immer vom wärmeren zum kälteren Körper - über Leitung (Kontakt), Strömung (Konvektion) oder Strahlung (ohne Materie); gute Wärmeleiter wie Metall fühlen sich kälter/heißer an als Isolatoren."
+        };
+    }
+
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort (siehe
+    // scripts/check-answer-length-bias.py - "die längste Option stimmt" war ein reales Muster).
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] OptikListe =
+    {
+        ("Wie breitet sich Licht in einem klaren Stoff aus?", new[] { "Geradlinig in alle Richtungen", "In gekrümmten Bahnen um Hindernisse", "In sprunghaften Zickzacklinien" }, "Geradlinig in alle Richtungen",
+            "Die geradlinige Ausbreitung erklärt Schatten und das Sehen mit Lichtstrahlen."),
+        ("Wodurch entsteht ein Schatten?", new[] { "Ein Körper hält das geradlinige Licht auf", "Der Körper zieht das Licht zu sich hin", "Die Luft dahinter wird abgekühlt" }, "Ein Körper hält das geradlinige Licht auf",
+            "Weil Licht nicht um Ecken läuft, bleibt hinter dem Körper ein unbeleuchteter Bereich."),
+        ("Was unterscheidet Kernschatten von Halbschatten?", new[] { "Im Kernschatten ist die Lichtquelle völlig verdeckt", "Der Kernschatten liegt immer weiter außen", "Halbschatten entsteht nur bei einer Punktlichtquelle" }, "Im Kernschatten ist die Lichtquelle völlig verdeckt",
+            "Bei ausgedehnten Lichtquellen sieht man aus dem Halbschatten noch einen Teil der Quelle."),
+        ("Wie entsteht eine Mondfinsternis?", new[] { "Die Erde steht zwischen Sonne und Mond", "Der Mond steht zwischen Sonne und Erde", "Die Sonne verdeckt zeitweise den Mond" }, "Die Erde steht zwischen Sonne und Mond",
+            "Der Mond wandert dabei durch den Schatten der Erde. Umgekehrt ist es eine Sonnenfinsternis."),
+        ("Was besagt das Reflexionsgesetz?", new[] { "Einfallswinkel gleich Ausfallswinkel", "Der Ausfallswinkel ist stets doppelt so groß", "Der Winkel hängt von der Lichtfarbe ab" }, "Einfallswinkel gleich Ausfallswinkel",
+            "Beide Winkel werden zum Lot (der Senkrechten auf dem Spiegel) gemessen."),
+        ("Warum kann man sich in einer rauen Wand nicht spiegeln?", new[] { "Das Licht wird in alle Richtungen gestreut", "Die Wand verschluckt das Licht vollständig", "Raue Flächen kehren den Lichtweg um" }, "Das Licht wird in alle Richtungen gestreut",
+            "Nur an glatten Flächen bleibt die Ordnung der Strahlen erhalten - man nennt das gerichtete Reflexion."),
+        ("Was passiert mit Licht beim Übergang von Luft in Wasser?", new[] { "Es wird zum Lot hin gebrochen", "Es wird vom Lot weg gebrochen", "Es läuft völlig unverändert weiter" }, "Es wird zum Lot hin gebrochen",
+            "Beim Übergang ins optisch dichtere Medium (Wasser, Glas) knickt der Strahl zum Lot hin."),
+        ("Warum wirkt ein Strohhalm im Wasserglas geknickt?", new[] { "Das Licht wird an der Wasseroberfläche gebrochen", "Das Wasser verbiegt den Strohhalm wirklich", "Der Glasrand wirft einen doppelten Schatten (was so in der Praxis nicht zutrifft)" }, "Das Licht wird an der Wasseroberfläche gebrochen",
+            "Unser Gehirn verlängert die Strahlen geradlinig - dadurch erscheint der Halm versetzt."),
+        ("Was geschieht mit weißem Licht an einem Prisma?", new[] { "Es wird in die Spektralfarben zerlegt", "Es wird vollständig verschluckt", "Es wird zu reinem Rot gebündelt" }, "Es wird in die Spektralfarben zerlegt",
+            "Verschiedene Farben werden unterschiedlich stark gebrochen - so entsteht auch der Regenbogen."),
+        ("Wodurch entsteht ein Regenbogen?", new[] { "Brechung und Reflexion in Wassertropfen", "Spiegelung an der Wolkenoberseite", "Streuung des Lichts an Staubkörnern" }, "Brechung und Reflexion in Wassertropfen",
+            "Jeder Tropfen wirkt wie ein winziges Prisma - deshalb steht der Bogen der Sonne gegenüber."),
+        ("Warum erscheint ein Blatt grün?", new[] { "Es wirft grünes Licht zurück, den Rest schluckt es", "Es erzeugt selbst grünes Licht", "Es lässt nur grünes Licht hindurch" }, "Es wirft grünes Licht zurück, den Rest schluckt es",
+            "Körperfarben entstehen dadurch, welche Anteile des weißen Lichts zurückgeworfen werden."),
+        ("Warum wird ein schwarzes T-Shirt in der Sonne heißer?", new[] { "Es nimmt fast alles Licht auf statt es zu spiegeln", "Es leitet die Wärme besonders schlecht ab", "Schwarze Farbe erzeugt zusätzlich Wärme" }, "Es nimmt fast alles Licht auf statt es zu spiegeln",
+            "Aufgenommene Lichtenergie wird in Wärme umgewandelt; helle Kleidung reflektiert stattdessen."),
+        ("Welches Bild erzeugt ein ebener Spiegel?", new[] { "Ein aufrechtes, seitenverkehrtes, gleich großes Bild", "Ein umgekehrtes und verkleinertes Bild", "Ein aufrechtes und stark vergrößertes Bild - eine verbreitete, aber falsche Annahme" }, "Ein aufrechtes, seitenverkehrtes, gleich großes Bild",
+            "Das Bild liegt scheinbar genauso weit hinter dem Spiegel, wie der Gegenstand davor steht."),
+        ("Wozu dient eine Sammellinse?", new[] { "Sie bündelt parallel einfallendes Licht in einem Punkt", "Sie streut das Licht gleichmäßig auseinander", "Sie hält einen Teil des Lichts vollständig zurück" }, "Sie bündelt parallel einfallendes Licht in einem Punkt",
+            "Dieser Punkt heißt Brennpunkt; Lupe, Kamera und das menschliche Auge nutzen Sammellinsen."),
+        ("Was versteht man unter der Brennweite?", new[] { "Der Abstand von Linse zu Brennpunkt", "Die Dicke der Linse in der Mitte", "Die Zeit bis Papier zu brennen beginnt" }, "Der Abstand von Linse zu Brennpunkt",
+            "Je stärker gewölbt die Linse, desto kürzer die Brennweite und desto stärker die Wirkung."),
+        ("Wie wirkt eine Zerstreuungslinse?", new[] { "Sie lässt paralleles Licht auseinanderlaufen", "Sie bündelt Licht in einem Brennpunkt", "Sie dreht die Lichtrichtung um 90 Grad, was einer genaueren Pruefung nicht standhaelt" }, "Sie lässt paralleles Licht auseinanderlaufen",
+            "Solche Linsen sind am Rand dicker als in der Mitte und korrigieren Kurzsichtigkeit."),
+        ("Warum sieht man einen Gegenstand überhaupt?", new[] { "Von ihm gelangt Licht in unser Auge", "Unser Auge sendet Strahlen zu ihm aus", "Er zieht Lichtstrahlen an sich heran" }, "Von ihm gelangt Licht in unser Auge",
+            "Entweder leuchtet der Körper selbst oder er wirft Licht einer Quelle zurück."),
+        ("Was ist eine Lichtquelle im physikalischen Sinn?", new[] { "Ein Körper, der selbst Licht aussendet", "Jeder Körper, der Licht zurückwirft", "Ein Gegenstand mit heller Oberfläche" }, "Ein Körper, der selbst Licht aussendet",
+            "Sonne, Kerze und Lampe leuchten selbst; der Mond dagegen reflektiert nur Sonnenlicht."),
+        ("Wie schnell breitet sich Licht im Vakuum aus?", new[] { "Rund 300.000 Kilometer pro Sekunde", "Rund 300 Kilometer pro Sekunde", "Rund 1.000 Kilometer pro Stunde" }, "Rund 300.000 Kilometer pro Sekunde",
+            "Nichts ist schneller. Deshalb sieht man den Blitz lange vor dem Donner."),
+        ("Warum hört man den Donner später als man den Blitz sieht?", new[] { "Schall ist viel langsamer als Licht", "Der Donner entsteht erst deutlich später", "Wolken halten den Schall zunächst auf" }, "Schall ist viel langsamer als Licht",
+            "Schall legt etwa 340 Meter pro Sekunde zurück - aus 3 Sekunden Abstand wird rund 1 Kilometer.")
+    };
+
+    private static QuizQuestion OptikLichtUndSehen(Random r)
+    {
+        var f = OptikListe[r.Next(OptikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Optik: Licht, Schatten, Spiegel und Linsen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Licht läuft geradlinig (→ Schatten). Reflexion: Einfallswinkel = Ausfallswinkel. Brechung: zum Lot hin beim Übergang in Wasser/Glas. Sammellinse bündelt, Zerstreuungslinse streut."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KraftListe =
+    {
+        ("Woran erkennt man, dass eine Kraft wirkt?", new[] { "Ein Körper wird verformt oder ändert seine Bewegung", "Ein Körper wird automatisch schwerer, obwohl das auf den ersten Blick plausibel klingt", "Ein Körper verändert seine Farbe" }, "Ein Körper wird verformt oder ändert seine Bewegung",
+            "Kräfte zeigen sich an ihren Wirkungen: verformen, beschleunigen, abbremsen oder umlenken."),
+        ("In welcher Einheit misst man die Kraft?", new[] { "In Newton (N)", "In Kilogramm (kg)", "In Joule (J)" }, "In Newton (N)",
+            "Kilogramm ist die Masse, Joule die Energie - die Kraft misst man in Newton."),
+        ("Was gehört alles zu einer Kraft dazu?", new[] { "Betrag, Richtung und Angriffspunkt", "Nur der Betrag in Newton", "Nur die Richtung des Pfeils, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Betrag, Richtung und Angriffspunkt",
+            "Deshalb zeichnet man Kräfte als Pfeile - die Länge zeigt den Betrag, die Spitze die Richtung."),
+        ("Was ist der Unterschied zwischen Masse und Gewichtskraft?", new[] { "Die Masse bleibt gleich, die Gewichtskraft hängt vom Ort ab", "Beide bedeuten physikalisch genau dasselbe", "Die Masse ändert sich auf dem Mond, die Kraft nicht und deshalb hier nicht zutrifft" }, "Die Masse bleibt gleich, die Gewichtskraft hängt vom Ort ab",
+            "Auf dem Mond hat man dieselbe Masse, aber nur etwa ein Sechstel der Gewichtskraft."),
+        ("Wie berechnet man die Gewichtskraft?", new[] { "Masse mal Ortsfaktor (F = m · g)", "Masse geteilt durch Ortsfaktor", "Masse plus Ortsfaktor" }, "Masse mal Ortsfaktor (F = m · g)",
+            "Auf der Erde ist g ungefähr 9,81 N/kg - 1 kg wiegt also rund 10 Newton."),
+        ("Welche Gewichtskraft hat ein Körper von 5 kg auf der Erde?", new[] { "Ungefähr 50 Newton", "Ungefähr 5 Newton", "Ungefähr 500 Newton" }, "Ungefähr 50 Newton",
+            "5 kg mal rund 10 N/kg ergibt etwa 50 N."),
+        ("Wie wirkt die Reibungskraft?", new[] { "Sie wirkt der Bewegung entgegen", "Sie beschleunigt den Körper zusätzlich", "Sie wirkt immer senkrecht nach oben" }, "Sie wirkt der Bewegung entgegen",
+            "Reibung bremst - deshalb rollt ein Ball auf Rasen schneller aus als auf Eis."),
+        ("Welche Reibungsart ist am größten?", new[] { "Haftreibung", "Gleitreibung", "Rollreibung" }, "Haftreibung",
+            "Deshalb ist das Anschieben schwerer als das Weiterschieben; Rollreibung ist am kleinsten."),
+        ("Wo ist Reibung ausdrücklich erwünscht?", new[] { "Bei Bremsen und Schuhsohlen", "In Kugellagern und Getrieben", "Bei Skiern auf frischem Schnee" }, "Bei Bremsen und Schuhsohlen",
+            "Ohne Reibung könnten wir weder bremsen noch gehen - in Lagern will man sie dagegen klein halten."),
+        ("Was bewirkt eine Feder in einem Kraftmesser?", new[] { "Sie dehnt sich proportional zur Kraft", "Sie erzeugt selbst eine Gegenkraft aus Strom", "Sie misst direkt die Masse in Kilogramm" }, "Sie dehnt sich proportional zur Kraft",
+            "Doppelte Kraft, doppelte Dehnung - dieser Zusammenhang heißt Hookesches Gesetz."),
+        ("Was besagt das Wechselwirkungsprinzip?", new[] { "Zu jeder Kraft gehört eine gleich große Gegenkraft", "Kräfte heben sich immer vollständig auf", "Die größere Kraft setzt sich stets durch, was so nicht korrekt ist" }, "Zu jeder Kraft gehört eine gleich große Gegenkraft",
+            "Actio = Reactio: Beim Absprung drückt man die Erde weg, sie drückt genauso stark zurück."),
+        ("Was passiert, wenn sich alle Kräfte auf einen Körper aufheben?", new[] { "Er bleibt in Ruhe oder bewegt sich gleichförmig weiter", "Er kommt in jedem Fall sofort zum Stillstand - eine haeufige, aber unzutreffende Vorstellung", "Er wird immer schneller" }, "Er bleibt in Ruhe oder bewegt sich gleichförmig weiter",
+            "Das ist das Trägheitsprinzip - ohne resultierende Kraft ändert sich der Bewegungszustand nicht."),
+        ("Warum rutscht man beim Bremsen im Bus nach vorn?", new[] { "Der Körper behält wegen seiner Trägheit die Bewegung bei", "Der Bus drückt die Fahrgäste aktiv nach vorn, auch wenn das manche zunaechst vermuten wuerden", "Die Schwerkraft wirkt beim Bremsen schräg" }, "Der Körper behält wegen seiner Trägheit die Bewegung bei",
+            "Die Trägheit ist auch der Grund, warum Sicherheitsgurte lebenswichtig sind."),
+        ("Wie berechnet man die Geschwindigkeit?", new[] { "Weg geteilt durch Zeit (v = s / t)", "Weg mal Zeit", "Zeit geteilt durch Weg, was bei genauerem Hinsehen nicht stimmt" }, "Weg geteilt durch Zeit (v = s / t)",
+            "In 2 Stunden 100 km bedeutet 50 km/h."),
+        ("Ein Radfahrer legt 600 m in 60 s zurück. Wie schnell ist er?", new[] { "10 m/s", "6 m/s", "36 m/s" }, "10 m/s",
+            "600 m geteilt durch 60 s ergibt 10 m/s, also 36 km/h."),
+        ("Wie rechnet man m/s in km/h um?", new[] { "Mit 3,6 multiplizieren", "Durch 3,6 teilen", "Mit 60 multiplizieren (was so in der Praxis nicht zutrifft)" }, "Mit 3,6 multiplizieren",
+            "10 m/s sind 36 km/h. Umgekehrt teilt man km/h durch 3,6."),
+        ("Was kennzeichnet eine gleichförmige Bewegung?", new[] { "Die Geschwindigkeit bleibt konstant", "Der Körper wird stetig schneller", "Der Körper bewegt sich im Kreis" }, "Die Geschwindigkeit bleibt konstant",
+            "Im Weg-Zeit-Diagramm ergibt das eine Gerade."),
+        ("Was zeigt ein Weg-Zeit-Diagramm mit steiler Geraden?", new[] { "Eine hohe konstante Geschwindigkeit", "Einen Körper im Stillstand", "Eine ständig sinkende Geschwindigkeit" }, "Eine hohe konstante Geschwindigkeit",
+            "Je steiler die Gerade, desto mehr Weg pro Zeit - also desto schneller."),
+        ("Was ist ein Hebel?", new[] { "Ein drehbarer Körper, der Kräfte umsetzt", "Ein Seil zum Anheben von Lasten", "Ein Gerät zum Messen von Kräften" }, "Ein drehbarer Körper, der Kräfte umsetzt",
+            "Am Hebel gilt: Kraft mal Kraftarm = Last mal Lastarm."),
+        ("Warum ist ein langer Schraubenschlüssel praktischer?", new[] { "Ein längerer Hebelarm braucht weniger Kraft", "Er ist stabiler gegen Verbiegen", "Er passt auf mehr Schraubengrößen - eine verbreitete, aber falsche Annahme" }, "Ein längerer Hebelarm braucht weniger Kraft",
+            "Weil Kraft mal Kraftarm konstant bleibt, sinkt die nötige Kraft mit wachsendem Arm.")
+    };
+
+    private static QuizQuestion KraftUndBewegung(Random r)
+    {
+        var f = KraftListe[r.Next(KraftListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Kraft und Bewegung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Kraft in Newton, F = m · g (g ≈ 10 N/kg). Masse bleibt, Gewichtskraft hängt vom Ort ab. v = s / t; m/s mal 3,6 ergibt km/h. Hebel: Kraft · Kraftarm = Last · Lastarm."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DruckListe =
+    {
+        ("Wie ist der Druck definiert?", new[] { "Kraft geteilt durch Fläche (p = F / A)", "Kraft mal Fläche", "Fläche geteilt durch Kraft, was einer genaueren Pruefung nicht standhaelt" }, "Kraft geteilt durch Fläche (p = F / A)",
+            "Dieselbe Kraft auf kleinerer Fläche ergibt größeren Druck."),
+        ("In welcher Einheit misst man den Druck?", new[] { "In Pascal (Pa)", "In Newton (N)", "In Watt (W)" }, "In Pascal (Pa)",
+            "1 Pascal ist 1 Newton pro Quadratmeter; im Alltag rechnet man oft in Bar oder Hektopascal."),
+        ("Warum sinkt man mit Schneeschuhen weniger ein?", new[] { "Die größere Fläche verringert den Druck", "Schneeschuhe sind besonders leicht, obwohl das auf den ersten Blick plausibel klingt", "Sie verdichten den Schnee vorab" }, "Die größere Fläche verringert den Druck",
+            "Gleiche Gewichtskraft, größere Fläche - der Druck auf den Schnee wird kleiner."),
+        ("Warum sind Messer scharf geschliffen?", new[] { "Die kleine Fläche erzeugt sehr großen Druck", "Scharfe Klingen sind besonders hart", "Dünne Klingen sind leichter zu führen" }, "Die kleine Fläche erzeugt sehr großen Druck",
+            "Je kleiner die Auflagefläche, desto größer der Druck bei gleicher Kraft."),
+        ("Wodurch entsteht der Luftdruck?", new[] { "Durch die Gewichtskraft der Luftsäule über uns", "Durch die Wärme der Sonnenstrahlung, was die eigentliche Bedeutung des Begriffs verfehlt", "Durch die Drehung der Erde" }, "Durch die Gewichtskraft der Luftsäule über uns",
+            "Auf Meereshöhe drückt die Luft mit etwa 1013 Hektopascal."),
+        ("Wie ändert sich der Luftdruck mit der Höhe?", new[] { "Er nimmt nach oben hin ab", "Er nimmt nach oben hin zu", "Er bleibt überall gleich" }, "Er nimmt nach oben hin ab",
+            "Weiter oben lastet weniger Luft über einem - deshalb sind Flugzeugkabinen unter Druck."),
+        ("Warum knacken die Ohren im Flugzeug?", new[] { "Der Luftdruck außen ändert sich schneller als innen", "Die Luft im Ohr erwärmt sich stark", "Das Trommelfell wird dünner" }, "Der Luftdruck außen ändert sich schneller als innen",
+            "Über die Ohrtrompete gleicht sich der Druck aus - Schlucken oder Gähnen hilft."),
+        ("Wovon hängt der Wasserdruck in einem See ab?", new[] { "Von der Tiefe unter der Oberfläche", "Von der Größe des Sees und deshalb hier nicht zutrifft", "Von der Form des Ufers" }, "Von der Tiefe unter der Oberfläche",
+            "Nur die Höhe der Wassersäule zählt, nicht wie breit der See ist - das nennt man hydrostatisches Paradoxon."),
+        ("Warum sind Staumauern unten dicker als oben?", new[] { "Der Wasserdruck ist unten am größten", "Unten ist das Wasser deutlich kälter", "Oben würde mehr Material auffallen" }, "Der Wasserdruck ist unten am größten",
+            "Der Druck wächst mit der Tiefe, also braucht die Mauer unten mehr Widerstand."),
+        ("Was besagt das Prinzip von Archimedes?", new[] { "Der Auftrieb entspricht der Gewichtskraft des verdrängten Wassers", "Jeder Körper im Wasser verliert die Hälfte seines Gewichts", "Schwere Körper sinken immer, leichte schwimmen" }, "Der Auftrieb entspricht der Gewichtskraft des verdrängten Wassers",
+            "Deshalb schwimmt ein Schiff aus Stahl: Es verdrängt sehr viel Wasser."),
+        ("Wann schwimmt ein Körper an der Oberfläche?", new[] { "Wenn der Auftrieb größer als die Gewichtskraft ist", "Wenn er aus Holz oder Kunststoff besteht, was so nicht korrekt ist", "Wenn er eine flache Form hat" }, "Wenn der Auftrieb größer als die Gewichtskraft ist",
+            "Entscheidend ist die mittlere Dichte des Körpers im Vergleich zum Wasser."),
+        ("Warum schwimmt ein Schiff aus Stahl?", new[] { "Sein Hohlraum verdrängt sehr viel Wasser", "Stahl ist leichter als Wasser", "Die Farbe verringert sein Gewicht - eine haeufige, aber unzutreffende Vorstellung" }, "Sein Hohlraum verdrängt sehr viel Wasser",
+            "Die mittlere Dichte aus Stahl und eingeschlossener Luft ist kleiner als die von Wasser."),
+        ("Was passiert mit dem Auftrieb, wenn ein Körper tiefer sinkt?", new[] { "Er bleibt gleich, solange der Körper ganz untergetaucht ist", "Er wird mit der Tiefe immer größer", "Er verschwindet ab einer bestimmten Tiefe" }, "Er bleibt gleich, solange der Körper ganz untergetaucht ist",
+            "Das verdrängte Volumen ändert sich nicht mehr - also bleibt der Auftrieb konstant."),
+        ("Wie steigt und sinkt ein U-Boot?", new[] { "Es füllt oder leert seine Tauchtanks", "Es verändert seine Außentemperatur, auch wenn das manche zunaechst vermuten wuerden", "Es dreht die Schrauben rückwärts" }, "Es füllt oder leert seine Tauchtanks",
+            "Mit Wasser in den Tanks steigt die mittlere Dichte, mit Luft sinkt sie wieder."),
+        ("Warum steigt ein Heißluftballon?", new[] { "Warme Luft ist leichter als kalte Umgebungsluft", "Der Brenner drückt ihn nach oben", "Der Stoff der Hülle zieht sich zusammen" }, "Warme Luft ist leichter als kalte Umgebungsluft",
+            "Beim Erwärmen dehnt sich Luft aus, ihre Dichte sinkt - der Auftrieb überwiegt."),
+        ("Was ist die Dichte eines Stoffes?", new[] { "Masse geteilt durch Volumen", "Masse mal Volumen", "Volumen geteilt durch Masse" }, "Masse geteilt durch Volumen",
+            "Wasser hat rund 1 g/cm³ - Stoffe mit kleinerer Dichte schwimmen darauf."),
+        ("Wie überträgt eine hydraulische Presse Kraft?", new[] { "Der Druck wirkt in der Flüssigkeit überall gleich", "Die Flüssigkeit wird stark zusammengedrückt, was bei genauerem Hinsehen nicht stimmt", "Zahnräder verstärken die Bewegung" }, "Der Druck wirkt in der Flüssigkeit überall gleich",
+            "Auf der größeren Kolbenfläche entsteht dadurch eine viel größere Kraft."),
+        ("Warum funktioniert ein Strohhalm?", new[] { "Der Luftdruck drückt die Flüssigkeit nach oben", "Man zieht die Flüssigkeit aktiv hoch (was so in der Praxis nicht zutrifft)", "Die Flüssigkeit klettert an der Wand" }, "Der Luftdruck drückt die Flüssigkeit nach oben",
+            "Durch das Saugen sinkt der Druck im Halm - der äußere Luftdruck schiebt nach."),
+        ("Warum lässt sich ein Saugnapf schwer abziehen?", new[] { "Der äußere Luftdruck presst ihn an die Fläche", "Der Gummi verklebt mit der Oberfläche - eine verbreitete, aber falsche Annahme", "Er zieht die Fläche magnetisch an" }, "Der äußere Luftdruck presst ihn an die Fläche",
+            "Unter dem Napf ist fast keine Luft - der Druckunterschied hält ihn fest."),
+        ("Warum steigen Luftblasen im Wasser nach oben?", new[] { "Der Auftrieb ist größer als ihre Gewichtskraft", "Sie werden von der Oberfläche angezogen", "Warmes Wasser drückt sie hoch" }, "Der Auftrieb ist größer als ihre Gewichtskraft",
+            "Luft hat eine viel kleinere Dichte als Wasser - der Auftrieb gewinnt deutlich.")
+    };
+
+    private static QuizQuestion DruckUndAuftrieb(Random r)
+    {
+        var f = DruckListe[r.Next(DruckListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Druck und Auftrieb", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "p = F / A (in Pascal): kleine Fläche → großer Druck. Wasserdruck wächst mit der Tiefe. Auftrieb = Gewichtskraft des verdrängten Wassers (Archimedes). Dichte = Masse / Volumen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WaermeK7Liste =
+    {
+        ("Was misst ein Thermometer eigentlich?", new[] { "Die Temperatur, ein Maß für die Teilchenbewegung", "Die gespeicherte Wärmemenge eines Körpers", "Den Druck der umgebenden Luft" }, "Die Temperatur, ein Maß für die Teilchenbewegung",
+            "Je heftiger sich die Teilchen bewegen, desto höher die Temperatur."),
+        ("Warum steigt die Flüssigkeit im Thermometer bei Wärme?", new[] { "Die Flüssigkeit dehnt sich beim Erwärmen aus", "Das Glas zieht sich stark zusammen", "Der Luftdruck drückt sie nach oben" }, "Die Flüssigkeit dehnt sich beim Erwärmen aus",
+            "Die Wärmeausdehnung ist der Messeffekt fast aller Flüssigkeitsthermometer."),
+        ("Bei welcher Temperatur schmilzt Eis unter Normaldruck?", new[] { "Bei 0 Grad Celsius", "Bei 100 Grad Celsius", "Bei minus 273 Grad Celsius" }, "Bei 0 Grad Celsius",
+            "0 °C ist der Schmelzpunkt, 100 °C der Siedepunkt von Wasser."),
+        ("Was ist der absolute Nullpunkt?", new[] { "Minus 273 Grad Celsius, die tiefstmögliche Temperatur", "Der Gefrierpunkt von Wasser bei 0 Grad", "Die Temperatur im Weltraum von minus 100 Grad, was einer genaueren Pruefung nicht standhaelt" }, "Minus 273 Grad Celsius, die tiefstmögliche Temperatur",
+            "Dort stünde die Teilchenbewegung still; in Kelvin gemessen sind das 0 K."),
+        ("Wie nennt man den Übergang von fest zu flüssig?", new[] { "Schmelzen", "Verdampfen", "Erstarren" }, "Schmelzen",
+            "Umgekehrt heißt flüssig zu fest erstarren."),
+        ("Wie heißt der Übergang von gasförmig direkt zu fest?", new[] { "Resublimieren", "Verdampfen", "Kondensieren, obwohl das auf den ersten Blick plausibel klingt" }, "Resublimieren",
+            "So entstehen Eisblumen am Fenster - der Wasserdampf wird ohne Umweg fest."),
+        ("Warum bleibt die Temperatur beim Schmelzen konstant?", new[] { "Die Energie wird zum Aufbrechen der Bindungen gebraucht", "Das Thermometer misst dabei ungenau", "Die Wärme fließt vollständig nach außen ab" }, "Die Energie wird zum Aufbrechen der Bindungen gebraucht",
+            "Diese Energie heißt Schmelzwärme - sie erhöht die Temperatur nicht."),
+        ("Wodurch wird Wärme in einem Metallstab weitergegeben?", new[] { "Durch Wärmeleitung von Teilchen zu Teilchen", "Durch Strömung im festen Metall, was die eigentliche Bedeutung des Begriffs verfehlt", "Durch Strahlung im Inneren" }, "Durch Wärmeleitung von Teilchen zu Teilchen",
+            "In Festkörpern geben schwingende Teilchen ihre Energie an Nachbarn weiter."),
+        ("Wie gelangt die Wärme der Sonne zur Erde?", new[] { "Durch Wärmestrahlung, ganz ohne Materie", "Durch Wärmeleitung im Weltraum", "Durch Luftströmungen aus dem All und deshalb hier nicht zutrifft" }, "Durch Wärmestrahlung, ganz ohne Materie",
+            "Nur Strahlung überwindet das Vakuum - Leitung und Strömung brauchen Materie."),
+        ("Warum steigt warme Luft in einem Raum nach oben?", new[] { "Sie hat eine kleinere Dichte als kalte Luft", "Sie wird von der Decke angezogen, was so nicht korrekt ist", "Kalte Luft drückt sie aktiv hoch" }, "Sie hat eine kleinere Dichte als kalte Luft",
+            "Dieser Kreislauf heißt Konvektion - deshalb sitzen Heizkörper unter dem Fenster."),
+        ("Warum fühlt sich Metall kälter an als Holz bei gleicher Temperatur?", new[] { "Metall leitet die Wärme schneller von der Hand weg", "Metall ist tatsächlich kälter als Holz", "Holz erzeugt selbst etwas Wärme" }, "Metall leitet die Wärme schneller von der Hand weg",
+            "Wir fühlen keine Temperatur, sondern den Wärmestrom aus unserer Haut."),
+        ("Wozu dient die Luft in einer Daunenjacke?", new[] { "Sie wirkt als schlechter Wärmeleiter und isoliert", "Sie erwärmt sich selbst durch Bewegung", "Sie leitet Körperwärme nach außen ab" }, "Sie wirkt als schlechter Wärmeleiter und isoliert",
+            "Ruhende Luft in kleinen Kammern ist ein hervorragender Isolator."),
+        ("Warum haben Brücken Dehnungsfugen?", new[] { "Damit sich das Material bei Wärme ausdehnen kann", "Damit Regenwasser abfließen kann", "Damit die Brücke leichter wird" }, "Damit sich das Material bei Wärme ausdehnen kann",
+            "Ohne Fugen würde sich die Brücke im Sommer verwerfen."),
+        ("Wie verhält sich Wasser zwischen 0 und 4 Grad Celsius?", new[] { "Es zieht sich beim Erwärmen zusammen", "Es dehnt sich wie jeder andere Stoff aus", "Es ändert sein Volumen überhaupt nicht" }, "Es zieht sich beim Erwärmen zusammen",
+            "Diese Anomalie sorgt dafür, dass Seen von oben zufrieren und Fische unten überleben."),
+        ("Warum platzen volle Wasserflaschen im Gefrierfach?", new[] { "Eis braucht mehr Platz als flüssiges Wasser", "Die Flasche zieht sich bei Kälte zusammen - eine haeufige, aber unzutreffende Vorstellung", "Das Wasser gefriert schlagartig zu Dampf" }, "Eis braucht mehr Platz als flüssiges Wasser",
+            "Wasser dehnt sich beim Gefrieren um etwa 9 Prozent aus."),
+        ("Was passiert beim Verdunsten mit der Umgebung?", new[] { "Sie kühlt ab, weil Energie entzogen wird", "Sie erwärmt sich durch die Bewegung", "Sie bleibt völlig unverändert" }, "Sie kühlt ab, weil Energie entzogen wird",
+            "Deshalb friert man nass am Strand - Verdunstungskälte kühlt die Haut."),
+        ("Warum kocht Wasser auf hohen Bergen früher?", new[] { "Der geringere Luftdruck senkt den Siedepunkt", "Die Luft ist dort deutlich trockener", "Das Wasser ist dort weicher" }, "Der geringere Luftdruck senkt den Siedepunkt",
+            "Auf 3000 Metern siedet Wasser schon bei etwa 90 °C - Eier brauchen länger."),
+        ("Was ist der Unterschied zwischen Wärme und Temperatur?", new[] { "Wärme ist übertragene Energie, Temperatur ein Zustand", "Beide Begriffe bedeuten dasselbe", "Temperatur wird in Joule gemessen" }, "Wärme ist übertragene Energie, Temperatur ein Zustand",
+            "Ein Eisberg hat mehr Wärmeenergie als eine Kerzenflamme, aber viel weniger Temperatur."),
+        ("Wozu dient die verspiegelte Wand einer Thermoskanne?", new[] { "Sie wirft Wärmestrahlung zurück", "Sie leitet Wärme besonders gut ab", "Sie sieht nur hochwertiger aus" }, "Sie wirft Wärmestrahlung zurück",
+            "Das Vakuum verhindert Leitung und Strömung, die Verspiegelung die Strahlung."),
+        ("Warum trägt man in heißen Ländern oft helle, weite Kleidung?", new[] { "Helle Farben werfen Sonnenstrahlung zurück", "Helle Farben leiten Wärme besser ab", "Weite Kleidung ist schwerer und kühler, auch wenn das manche zunaechst vermuten wuerden" }, "Helle Farben werfen Sonnenstrahlung zurück",
+            "Zusätzlich sorgt die Luftschicht unter weiter Kleidung für Belüftung.")
+    };
+
+    private static QuizQuestion WaermelehreK7(Random r)
+    {
+        var f = WaermeK7Liste[r.Next(WaermeK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Wärmelehre: Temperatur und Wärmeübertragung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Temperatur = Teilchenbewegung, Wärme = übertragene Energie. Übertragung durch Leitung (Kontakt), Strömung (Konvektion) und Strahlung (auch im Vakuum). Wasser dehnt sich beim Gefrieren aus."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EnergieK7Liste =
+    {
+        ("In welcher Einheit misst man Energie?", new[] { "In Joule (J)", "In Newton (N)", "In Watt (W)" }, "In Joule (J)",
+            "Watt ist die Leistung, also Energie pro Zeit; Newton ist die Kraft."),
+        ("Welche Energieform besitzt ein hochgehobener Stein?", new[] { "Lageenergie (potenzielle Energie)", "Bewegungsenergie, was bei genauerem Hinsehen nicht stimmt", "Wärmeenergie" }, "Lageenergie (potenzielle Energie)",
+            "Beim Fallen wandelt sie sich in Bewegungsenergie um."),
+        ("Welche Energie hat ein fahrendes Auto?", new[] { "Bewegungsenergie (kinetische Energie)", "Lageenergie", "Chemische Energie" }, "Bewegungsenergie (kinetische Energie)",
+            "Sie wächst mit der Masse und besonders stark mit der Geschwindigkeit."),
+        ("Welche Energieform steckt in einem Akku?", new[] { "Chemische Energie", "Lageenergie", "Kernenergie" }, "Chemische Energie",
+            "Beim Entladen wird sie in elektrische Energie umgewandelt."),
+        ("Was besagt der Energieerhaltungssatz?", new[] { "Energie geht nie verloren, sie wandelt sich um", "Energie kann bei Bedarf neu entstehen", "Energie verschwindet beim Verbrauch" }, "Energie geht nie verloren, sie wandelt sich um",
+            "Deshalb ist 'Energieverbrauch' physikalisch ungenau - Energie wird nur entwertet."),
+        ("Welche Umwandlung passiert in einer Glühlampe?", new[] { "Elektrische Energie in Licht und viel Wärme", "Licht in elektrische Energie", "Wärme in chemische Energie" }, "Elektrische Energie in Licht und viel Wärme",
+            "Nur wenige Prozent werden Licht - deshalb sind LEDs viel sparsamer."),
+        ("Was geschieht beim Fallenlassen eines Balls energetisch?", new[] { "Lageenergie wandelt sich in Bewegungsenergie", "Bewegungsenergie wandelt sich in Lageenergie", "Chemische Energie wird zu Wärme" }, "Lageenergie wandelt sich in Bewegungsenergie",
+            "Je tiefer der Ball fällt, desto schneller wird er."),
+        ("Warum springt ein Ball nie ganz auf seine Ausgangshöhe zurück?", new[] { "Ein Teil der Energie wird zu Wärme und Schall", "Energie geht dabei wirklich verloren", "Die Schwerkraft nimmt mit der Zeit zu (was so in der Praxis nicht zutrifft)" }, "Ein Teil der Energie wird zu Wärme und Schall",
+            "Verformung und Reibung entwerten Energie - erhalten bleibt sie trotzdem."),
+        ("Was beschreibt die Leistung?", new[] { "Umgesetzte Energie pro Zeit", "Die insgesamt gespeicherte Energie", "Die Kraft mal die Strecke" }, "Umgesetzte Energie pro Zeit",
+            "P = E / t, gemessen in Watt. 1 Watt ist 1 Joule pro Sekunde."),
+        ("Wie viel Energie verbraucht ein 100-Watt-Gerät in einer Stunde?", new[] { "0,1 Kilowattstunden", "1 Kilowattstunde", "100 Kilowattstunden" }, "0,1 Kilowattstunden",
+            "100 W sind 0,1 kW; mal 1 Stunde ergibt 0,1 kWh."),
+        ("Was ist der Wirkungsgrad einer Maschine?", new[] { "Der Anteil der Energie, der nutzbar wird", "Die gesamte aufgenommene Energiemenge", "Die Zeit bis zur ersten Reparatur" }, "Der Anteil der Energie, der nutzbar wird",
+            "Der Rest wird meist als Abwärme entwertet; über 100 Prozent geht nie."),
+        ("Warum gibt es kein Perpetuum mobile?", new[] { "Reibung entwertet ständig Energie zu Wärme", "Die Bauteile sind noch nicht gut genug - eine verbreitete, aber falsche Annahme", "Es wurde bisher nur nicht gebaut" }, "Reibung entwertet ständig Energie zu Wärme",
+            "Ohne Energiezufuhr läuft keine Maschine dauerhaft - das verbietet die Physik."),
+        ("Welche Energieform nutzt ein Wasserkraftwerk?", new[] { "Die Lageenergie des gestauten Wassers", "Die chemische Energie des Wassers", "Die Kernenergie der Wassermoleküle, was einer genaueren Pruefung nicht standhaelt" }, "Die Lageenergie des gestauten Wassers",
+            "Beim Herabfließen wird sie zu Bewegungs- und dann zu elektrischer Energie."),
+        ("Woher stammt die Energie in Kohle und Erdöl ursprünglich?", new[] { "Aus dem Sonnenlicht vergangener Zeitalter", "Aus dem heißen Erdinneren", "Aus der Drehbewegung der Erde" }, "Aus dem Sonnenlicht vergangener Zeitalter",
+            "Pflanzen banden Sonnenenergie, aus ihnen entstanden über Jahrmillionen fossile Brennstoffe."),
+        ("Was zeichnet erneuerbare Energiequellen aus?", new[] { "Sie erneuern sich in menschlichen Zeiträumen", "Sie sind unbegrenzt und kostenlos verfügbar, obwohl das auf den ersten Blick plausibel klingt", "Sie erzeugen überhaupt keine Abwärme" }, "Sie erneuern sich in menschlichen Zeiträumen",
+            "Sonne, Wind und Wasser stehen dauerhaft zur Verfügung, Kohle und Öl dagegen nicht."),
+        ("Welche Umwandlung findet in einer Solarzelle statt?", new[] { "Lichtenergie wird zu elektrischer Energie", "Wärmeenergie wird zu Licht", "Elektrische Energie wird zu Licht, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Lichtenergie wird zu elektrischer Energie",
+            "Ein Solarkollektor erwärmt dagegen Wasser - das ist etwas anderes."),
+        ("Warum wird beim Bremsen die Bremsscheibe heiß?", new[] { "Bewegungsenergie wird durch Reibung zu Wärme", "Der Bremsdruck erzeugt zusätzlich Energie und deshalb hier nicht zutrifft", "Die Reifen leiten Wärme nach oben" }, "Bewegungsenergie wird durch Reibung zu Wärme",
+            "Elektroautos nutzen diese Energie teilweise zum Laden statt sie zu verheizen."),
+        ("Wie kann man im Haushalt Energie sparen?", new[] { "Stoßlüften statt Fenster dauerhaft zu kippen", "Die Heizung nachts komplett abstellen, was so nicht korrekt ist", "Den Kühlschrank offen stehen lassen" }, "Stoßlüften statt Fenster dauerhaft zu kippen",
+            "Beim Stoßlüften wird die Luft getauscht, ohne dass Wände auskühlen."),
+        ("Warum ist eine LED sparsamer als eine Glühlampe?", new[] { "Sie wandelt viel mehr Energie in Licht statt Wärme", "Sie leuchtet grundsätzlich schwächer", "Sie braucht eine geringere Spannung" }, "Sie wandelt viel mehr Energie in Licht statt Wärme",
+            "Der bessere Wirkungsgrad spart bei gleicher Helligkeit rund 80 Prozent Energie."),
+        ("Was bedeutet 'Energie entwerten'?", new[] { "Sie wird zu kaum nutzbarer Abwärme", "Sie verschwindet vollständig", "Sie wird in Materie umgewandelt" }, "Sie wird zu kaum nutzbarer Abwärme",
+            "Die Menge bleibt gleich, aber die Nutzbarkeit sinkt - darum geht es beim Energiesparen.")
+    };
+
+    private static QuizQuestion EnergieformenUndUmwandlung(Random r)
+    {
+        var f = EnergieK7Liste[r.Next(EnergieK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Energieformen und Energieumwandlung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Energie in Joule, Leistung P = E / t in Watt. Energie geht nie verloren, sie wandelt sich um und wird zu Abwärme entwertet. Lageenergie ↔ Bewegungsenergie beim Fallen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ElektrizitaetK7Liste =
+    {
+        ("Was braucht ein Stromkreis mindestens?", new[] { "Quelle, Verbraucher und leitende Verbindung", "Nur eine Batterie und ein Kabel", "Einen Schalter und eine Sicherung" }, "Quelle, Verbraucher und leitende Verbindung",
+            "Ohne geschlossenen Kreis fließt kein Strom."),
+        ("Was fließt in einem metallischen Leiter?", new[] { "Freie Elektronen", "Ganze Atome", "Protonen aus dem Kern" }, "Freie Elektronen",
+            "In Metallen sind Elektronen frei beweglich - deshalb leiten sie gut."),
+        ("Welches Material leitet den Strom am besten?", new[] { "Kupfer", "Gummi", "Porzellan" }, "Kupfer",
+            "Metalle sind Leiter, Gummi und Porzellan sind Isolatoren."),
+        ("Warum sind Kabel mit Kunststoff ummantelt?", new[] { "Kunststoff isoliert und schützt vor Stromschlag", "Kunststoff leitet den Strom besser", "Kunststoff macht das Kabel schwerer" }, "Kunststoff isoliert und schützt vor Stromschlag",
+            "Der Kupferkern leitet, die Isolierung verhindert gefährliche Berührung."),
+        ("In welcher Einheit misst man die Stromstärke?", new[] { "In Ampere (A)", "In Volt (V)", "In Ohm (Ω)" }, "In Ampere (A)",
+            "Volt misst die Spannung, Ohm den Widerstand."),
+        ("Was misst man in Volt?", new[] { "Die elektrische Spannung", "Die Stromstärke", "Den elektrischen Widerstand" }, "Die elektrische Spannung",
+            "Die Spannung ist gewissermaßen der 'Antrieb' für die Elektronen."),
+        ("Wie schließt man ein Amperemeter an?", new[] { "In Reihe, im Stromweg selbst", "Parallel zum Verbraucher", "Direkt an die Erdung" }, "In Reihe, im Stromweg selbst",
+            "Der Strom muss durch das Messgerät fließen; ein Voltmeter wird dagegen parallel geschaltet."),
+        ("Was passiert in einer Reihenschaltung, wenn eine Lampe ausfällt?", new[] { "Alle Lampen gehen aus", "Nur diese eine Lampe geht aus", "Die anderen leuchten heller" }, "Alle Lampen gehen aus",
+            "Der Stromkreis ist unterbrochen - das war das Problem alter Lichterketten."),
+        ("Was gilt für Lampen in Parallelschaltung?", new[] { "Jede leuchtet unabhängig von den anderen", "Alle gehen gemeinsam aus", "Sie leuchten nur zusammen halb so hell - eine haeufige, aber unzutreffende Vorstellung" }, "Jede leuchtet unabhängig von den anderen",
+            "Deshalb sind Steckdosen im Haus parallel geschaltet."),
+        ("Was ist der elektrische Widerstand?", new[] { "Ein Maß dafür, wie stark ein Bauteil den Strom hemmt", "Die Menge des gespeicherten Stroms, auch wenn das manche zunaechst vermuten wuerden", "Die Länge des verwendeten Kabels" }, "Ein Maß dafür, wie stark ein Bauteil den Strom hemmt",
+            "Gemessen in Ohm; bei gleicher Spannung fließt bei größerem Widerstand weniger Strom."),
+        ("Wozu dient eine Sicherung im Stromkreis?", new[] { "Sie unterbricht bei zu hohem Strom den Kreis", "Sie erhöht die Spannung bei Bedarf, was bei genauerem Hinsehen nicht stimmt", "Sie speichert Strom für Notfälle" }, "Sie unterbricht bei zu hohem Strom den Kreis",
+            "So werden Kabelbrände durch Überlastung oder Kurzschluss verhindert."),
+        ("Was ist ein Kurzschluss?", new[] { "Strom fließt am Verbraucher vorbei direkt zurück", "Der Stromkreis ist unterbrochen", "Die Spannung fällt auf null ab" }, "Strom fließt am Verbraucher vorbei direkt zurück",
+            "Ohne Widerstand wird der Strom sehr groß - die Leitung erhitzt sich gefährlich."),
+        ("Warum darf man Elektrogeräte nicht mit nassen Händen bedienen?", new[] { "Wasser leitet und erhöht die Gefahr eines Stromschlags", "Geräte rosten dann schneller", "Nasse Hände rutschen leichter ab (was so in der Praxis nicht zutrifft)" }, "Wasser leitet und erhöht die Gefahr eines Stromschlags",
+            "Reines Wasser leitet zwar schlecht, gelöste Salze aber sehr gut - Leitungswasser ist gefährlich."),
+        ("Welche Spannung hat eine Haushaltssteckdose in Deutschland?", new[] { "230 Volt", "12 Volt", "1000 Volt" }, "230 Volt",
+            "Diese Spannung ist lebensgefährlich - deshalb niemals in Steckdosen hantieren."),
+        ("Welche Spannung liefert eine übliche Batterie im Alltag?", new[] { "1,5 Volt", "230 Volt", "0,01 Volt" }, "1,5 Volt",
+            "Mehrere Zellen in Reihe ergeben höhere Spannungen, z.B. 9 Volt beim Blockakku."),
+        ("Was erzeugt ein stromdurchflossener Draht in seiner Umgebung?", new[] { "Ein Magnetfeld", "Ein Schwerefeld", "Elektrische Ladung im Raum" }, "Ein Magnetfeld",
+            "Darauf beruhen Elektromagnete und Elektromotoren."),
+        ("Wie kann man einen Elektromagneten verstärken?", new[] { "Mehr Windungen und einen Eisenkern verwenden", "Ein dickeres Gehäuse anbringen", "Den Draht deutlich kürzer machen" }, "Mehr Windungen und einen Eisenkern verwenden",
+            "Auch eine größere Stromstärke verstärkt das Magnetfeld."),
+        ("Was ist der Vorteil eines Elektromagneten gegenüber einem Dauermagneten?", new[] { "Man kann ihn gezielt ein- und ausschalten", "Er ist immer deutlich stärker", "Er braucht überhaupt keine Energie - eine verbreitete, aber falsche Annahme" }, "Man kann ihn gezielt ein- und ausschalten",
+            "Deshalb arbeiten Schrottplatz-Kräne und Türöffner mit Elektromagneten."),
+        ("Was wandelt ein Elektromotor um?", new[] { "Elektrische Energie in Bewegungsenergie", "Bewegungsenergie in elektrische Energie", "Wärme in elektrische Energie" }, "Elektrische Energie in Bewegungsenergie",
+            "Ein Generator macht genau das Umgekehrte."),
+        ("Warum sollte man Ladegeräte nicht dauerhaft eingesteckt lassen?", new[] { "Sie verbrauchen auch ohne Gerät etwas Strom", "Sie entladen sich dabei selbst", "Sie verlieren ihre Spannung" }, "Sie verbrauchen auch ohne Gerät etwas Strom",
+            "Dieser Leerlaufverbrauch summiert sich im Haushalt spürbar.")
+    };
+
+    private static QuizQuestion ElektrizitaetGrundlagen(Random r)
+    {
+        var f = ElektrizitaetK7Liste[r.Next(ElektrizitaetK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Elektrizität: Stromkreis und Wirkungen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Stromstärke in Ampere, Spannung in Volt, Widerstand in Ohm. Reihenschaltung: einer aus, alle aus. Parallelschaltung: unabhängig. 230 V aus der Steckdose sind lebensgefährlich."
         };
     }
 }

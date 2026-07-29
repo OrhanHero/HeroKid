@@ -83,18 +83,18 @@ Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
 
 ## Physik (`PhysikGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Aggregatzustände | Ohmsches Gesetz |
-| Einfacher Stromkreis | Energieerhaltung |
-| Magnetismus | Newtonsche Gesetze |
-| Von den Sinnen zum Messen | Magnetfelder und elektromagnetische Induktion |
-| Welt des Großen – Welt des Kleinen (Optik und Weltraum) | Gleichförmige und beschleunigte Bewegungen (Kinematik) |
-| Bewegung zu Wasser, zu Lande und in der Luft (Bionik) | Radioaktivität und Kernphysik |
-| Thermisches Verhalten von Körpern (Wärmeausdehnung) | Schwingungen, Wellen und optische Geräte |
-| Wechselwirkung und Kraft | |
-| Mechanische Energie und Arbeit | |
-| Thermische Energie und Wärme | |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Aggregatzustände | Optik: Licht, Schatten, Spiegel und Linsen | Ohmsches Gesetz |
+| Einfacher Stromkreis | Kraft und Bewegung | Energieerhaltung |
+| Magnetismus | Druck und Auftrieb | Newtonsche Gesetze |
+| Von den Sinnen zum Messen | Wärmelehre: Temperatur und Wärmeübertragung | Magnetfelder und elektromagnetische Induktion |
+| Welt des Großen – Welt des Kleinen (Optik und Weltraum) | Energieformen und Energieumwandlung | Gleichförmige und beschleunigte Bewegungen (Kinematik) |
+| Bewegung zu Wasser, zu Lande und in der Luft (Bionik) | Elektrizität: Stromkreis und Wirkungen | Radioaktivität und Kernphysik |
+| Thermisches Verhalten von Körpern (Wärmeausdehnung) | | Schwingungen, Wellen und optische Geräte |
+| Wechselwirkung und Kraft | | |
+| Mechanische Energie und Arbeit | | |
+| Thermische Energie und Wärme | | |
 
 ## Chemie (`ChemieGenerator.cs`)
 
