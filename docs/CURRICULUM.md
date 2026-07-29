@@ -186,40 +186,40 @@ Rahmenlehrplan" weiter unten).
 
 ## Ethik (`EthikGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Werte und Regeln | Verantwortung und Pflicht |
-| Freundschaft und Konflikte | Meinungsfreiheit und Grenzen |
-| Weltreligionen | Digitale Ethik |
-| Wer bin ich? – Identität und Rolle | Recht und Gerechtigkeit |
-| Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau) | Wer bin ich? - Identität und Rolle |
-| Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau) | Wie frei bin ich? - Freiheit und Verantwortung |
-| | Was ist gerecht? - Gerechtigkeitstheorien vertieft |
-| | Was ist der Mensch? - Mensch und Gemeinschaft |
-| | Was soll ich tun? - Handeln und Moral |
-| | Worauf kann ich vertrauen? - Wissen und Glauben |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Werte und Regeln | Freundschaft, Identität und Respekt | Verantwortung und Pflicht |
+| Freundschaft und Konflikte | Weltreligionen und Zusammenleben | Meinungsfreiheit und Grenzen |
+| Weltreligionen | Gerechtigkeit, Werte und Verantwortung | Digitale Ethik |
+| Wer bin ich? – Identität und Rolle |  | Recht und Gerechtigkeit |
+| Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau) |  | Wer bin ich? - Identität und Rolle |
+| Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau) |  | Wie frei bin ich? - Freiheit und Verantwortung |
+|  |  | Was ist gerecht? - Gerechtigkeitstheorien vertieft |
+|  |  | Was ist der Mensch? - Mensch und Gemeinschaft |
+|  |  | Was soll ich tun? - Handeln und Moral |
+|  |  | Worauf kann ich vertrauen? - Wissen und Glauben |
 
 ## Kunst (`KunstGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Kunstwerke wahrnehmen und beschreiben | Kunst als Intervention und Mahnung |
-| Material, Körper und Raum | Medienkunst und bildhaftes Gestalten |
-| Medien und Verfahren | Architektur, Raum und Design |
-| Kunst und meine Lebenswelt | Materialästhetik und Transformation |
-| | Inszenierung und Kuration |
-| | Kulturelle Identität und Vielfalt |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Kunstwerke wahrnehmen und beschreiben | Perspektive, Farbe und Bildaufbau | Kunst als Intervention und Mahnung |
+| Material, Körper und Raum | Kunstepochen und Bildmedien | Medienkunst und bildhaftes Gestalten |
+| Medien und Verfahren |  | Architektur, Raum und Design |
+| Kunst und meine Lebenswelt |  | Materialästhetik und Transformation |
+|  |  | Inszenierung und Kuration |
+|  |  | Kulturelle Identität und Vielfalt |
 
 ## Musik (`MusikGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Grundlagen der Musik | Harmonielehre und Partiturlesen |
-| Form und Gestaltung | Komposition und Satzweisen |
-| Gattungen und Genres | Medien und digitale Produktion |
-| Wirkung und Funktion | Gattungen und Genres der Musikgeschichte |
-| Musik im kulturellen Kontext | Filmmusik und Programmmusik |
-| | Musik im kulturellen und gesellschaftlichen Kontext |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Grundlagen der Musik | Musiklehre, Medien und Urheberrecht | Harmonielehre und Partiturlesen |
+| Form und Gestaltung | Musikepochen und Stilrichtungen | Komposition und Satzweisen |
+| Gattungen und Genres |  | Medien und digitale Produktion |
+| Wirkung und Funktion |  | Gattungen und Genres der Musikgeschichte |
+| Musik im kulturellen Kontext |  | Filmmusik und Programmmusik |
+|  |  | Musik im kulturellen und gesellschaftlichen Kontext |
 
 ## Geschichte (`GeschichteGenerator.cs`)
 
@@ -235,11 +235,11 @@ Rahmenlehrplan" weiter unten).
 
 ## Medienbildung / ITG (`ItgGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Datenschutz-Grundlagen | Cybermobbing |
-| Sichere Passwörter | Fake News erkennen |
-| Urheberrecht im Internet | Algorithmen-Grundbegriff |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Datenschutz-Grundlagen | Algorithmen, Hardware und sicheres Arbeiten | Cybermobbing |
+| Sichere Passwörter | Daten, Medien und digitale Werkzeuge | Fake News erkennen |
+| Urheberrecht im Internet |  | Algorithmen-Grundbegriff |
 
 ## KI-Bereich (`KiWissenGenerator.cs` + `KiContentService`)
 

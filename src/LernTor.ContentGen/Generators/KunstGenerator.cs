@@ -12,6 +12,7 @@ public sealed class KunstGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { KunstwerkeWahrnehmen, MaterialKoerperRaum, MedienUndVerfahren, KunstUndLebenswelt },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { PerspektiveUndFarbe, KunstepochenUndMedien },
             [GradeLevel.Klasse9] = new List<TopicFactory> { KunstAlsInterventionUndMahnung, MedienkunstUndBildhaftesGestalten, ArchitekturRaumUndDesign, MaterialaesthetikUndTransformation, InszenierungUndKuration, KulturelleIdentitaetUndVielfalt }
         };
 
@@ -572,6 +573,119 @@ public sealed class KunstGenerator : ExerciseGeneratorBase
             Topic = "Kulturelle Identität und Vielfalt", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Zeitgenössische Kunst macht Vielfalt sichtbar - kulturelle Herkunft, sexuelle Vielfalt, Pop-Kultur und gesellschaftliche Ideale werden künstlerisch verhandelt."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] PerspektiveUndFarbeListe =
+    {
+        ("Was ist Zentralperspektive?", new[] { "Alle Fluchtlinien treffen sich in einem Punkt", "Alle Linien laufen parallel", "Objekte werden gleich groß dargestellt" }, "Alle Fluchtlinien treffen sich in einem Punkt",
+            "Sie wurde in der Renaissance entwickelt und erzeugt räumliche Tiefe."),
+        ("Was ist ein Fluchtpunkt?", new[] { "Der Punkt, in dem sich Tiefenlinien treffen", "Der hellste Punkt eines Bildes", "Der Bildmittelpunkt" }, "Der Punkt, in dem sich Tiefenlinien treffen",
+            "Er liegt immer auf dem Horizont."),
+        ("Wo liegt der Horizont in einer perspektivischen Zeichnung?", new[] { "Auf Augenhöhe der Betrachtenden", "Immer am oberen Bildrand", "Immer in der Bildmitte" }, "Auf Augenhöhe der Betrachtenden",
+            "Die Augenhöhe entscheidet, ob man von oben oder unten schaut."),
+        ("Was ist Übereckperspektive?", new[] { "Darstellung mit zwei Fluchtpunkten", "Perspektive ohne Fluchtpunkt", "Ansicht von schräg oben" }, "Darstellung mit zwei Fluchtpunkten",
+            "Man sieht ein Objekt über Eck, etwa eine Hausecke."),
+        ("Wie erzeugt man Tiefe ohne Fluchtpunkte?", new[] { "Durch Überschneidung, Größenunterschiede und Farbperspektive", "Nur durch dunkle Farben", "Durch besonders dicke Linien (was so in der Praxis nicht zutrifft)" }, "Durch Überschneidung, Größenunterschiede und Farbperspektive",
+            "Was überschneidet, liegt vorn - das versteht das Auge sofort."),
+        ("Was ist Luft- oder Farbperspektive?", new[] { "Ferne Dinge wirken blasser und bläulicher", "Ferne Dinge werden dunkler gemalt - eine verbreitete, aber falsche Annahme", "Der Himmel wird immer blau gemalt" }, "Ferne Dinge wirken blasser und bläulicher",
+            "Die Atmosphäre streut Licht - Berge in der Ferne wirken deshalb dunstig."),
+        ("Was sind die Primärfarben?", new[] { "Rot, Gelb und Blau", "Grün, Orange und Violett", "Schwarz, Weiß und Grau" }, "Rot, Gelb und Blau",
+            "Sie lassen sich nicht aus anderen Farben mischen."),
+        ("Was entsteht beim Mischen zweier Primärfarben?", new[] { "Eine Sekundärfarbe", "Eine Primärfarbe, was einer genaueren Pruefung nicht standhaelt", "Ein Grauton" }, "Eine Sekundärfarbe",
+            "Rot und Gelb ergeben Orange, Blau und Gelb ergeben Grün."),
+        ("Was sind Komplementärfarben?", new[] { "Farben, die sich im Farbkreis gegenüberliegen", "Farben, die nebeneinander liegen", "Farben derselben Familie" }, "Farben, die sich im Farbkreis gegenüberliegen",
+            "Nebeneinander verstärken sie sich, gemischt ergeben sie Grau."),
+        ("Welche Wirkung haben warme Farben?", new[] { "Sie wirken nah und aktivierend", "Sie wirken fern und beruhigend", "Sie wirken immer traurig" }, "Sie wirken nah und aktivierend",
+            "Rot, Orange und Gelb gelten als warm."),
+        ("Was ist ein Farbkontrast?", new[] { "Ein deutlicher Unterschied zwischen Farben", "Eine besonders kräftige Farbe", "Der Übergang zweier Farben" }, "Ein deutlicher Unterschied zwischen Farben",
+            "Hell-Dunkel-, Kalt-Warm- und Komplementärkontrast sind Beispiele."),
+        ("Was ist ein Bildaufbau oder eine Komposition?", new[] { "Die bewusste Anordnung der Bildelemente", "Die Wahl des Malmaterials, obwohl das auf den ersten Blick plausibel klingt", "Die Größe der Leinwand" }, "Die bewusste Anordnung der Bildelemente",
+            "Sie lenkt den Blick und erzeugt Spannung oder Ruhe."),
+        ("Was ist der Goldene Schnitt?", new[] { "Ein Teilungsverhältnis, das als harmonisch gilt", "Ein Rahmen aus Blattgold", "Eine besonders scharfe Schnitttechnik, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Ein Teilungsverhältnis, das als harmonisch gilt",
+            "Etwa im Verhältnis 3 zu 5 - man findet es in Kunst und Natur."),
+        ("Was bewirkt die Drittel-Regel in der Fotografie?", new[] { "Motive auf den Drittellinien wirken spannender", "Bilder sollen aus drei Farben bestehen und deshalb hier nicht zutrifft", "Der Himmel füllt ein Drittel" }, "Motive auf den Drittellinien wirken spannender",
+            "Ein zentriertes Motiv wirkt dagegen oft statisch."),
+        ("Was ist eine Skizze?", new[] { "Ein schneller Entwurf zur Ideenfindung", "Ein fertiges Kunstwerk", "Eine technische Konstruktionszeichnung" }, "Ein schneller Entwurf zur Ideenfindung",
+            "Sie darf unfertig sein - das ist ihr Zweck."),
+        ("Was ist Schraffur?", new[] { "Schattierung durch parallele Linien", "Ein Farbauftrag mit dem Schwamm, was so nicht korrekt ist", "Das Auskratzen von Farbe" }, "Schattierung durch parallele Linien",
+            "Kreuzschraffur erzeugt dunklere Bereiche."),
+        ("Wie entsteht Plastizität in einer Zeichnung?", new[] { "Durch Licht, Schatten und Halbtöne", "Durch besonders dicke Umrisse", "Durch viele verschiedene Farben" }, "Durch Licht, Schatten und Halbtöne",
+            "Der Kernschatten sitzt gegenüber der Lichtquelle."),
+        ("Was ist ein Kernschatten?", new[] { "Der dunkelste Bereich am Objekt selbst", "Der Schatten auf dem Untergrund", "Ein heller Reflex" }, "Der dunkelste Bereich am Objekt selbst",
+            "Der Schlagschatten fällt dagegen auf die Umgebung."),
+        ("Was ist Proportion?", new[] { "Das Größenverhältnis von Teilen zueinander", "Die Farbwahl eines Bildes", "Der Abstand zum Betrachter - eine haeufige, aber unzutreffende Vorstellung" }, "Das Größenverhältnis von Teilen zueinander",
+            "Beim Gesicht helfen Hilfslinien, die Verhältnisse zu treffen."),
+        ("Warum üben Künstler Perspektive und Proportion?", new[] { "Sie sind Werkzeuge, um Ideen sichtbar zu machen", "Sie sind Pflicht für jede Ausstellung", "Ohne sie ist Kunst nicht erlaubt" }, "Sie sind Werkzeuge, um Ideen sichtbar zu machen",
+            "Wer die Regeln kennt, kann sie auch bewusst brechen.")
+    };
+
+    private static QuizQuestion PerspektiveUndFarbe(Random r)
+    {
+        var f = PerspektiveUndFarbeListe[r.Next(PerspektiveUndFarbeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Kunst, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Perspektive, Farbe und Bildaufbau", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Zentralperspektive: Fluchtlinien treffen sich auf dem Horizont in Augenhöhe. Primärfarben Rot, Gelb, Blau. Komplementärfarben liegen sich im Farbkreis gegenüber. Tiefe auch durch Überschneidung und Farbperspektive."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KunstepochenUndMedienListe =
+    {
+        ("Was kennzeichnet die Kunst der Renaissance?", new[] { "Perspektive, Anatomie und Rückgriff auf die Antike", "Flächige Bilder ohne Tiefe", "Ausschließlich abstrakte Formen, auch wenn das manche zunaechst vermuten wuerden" }, "Perspektive, Anatomie und Rückgriff auf die Antike",
+            "Der Mensch rückte ins Zentrum der Darstellung."),
+        ("Wer schuf die Mona Lisa?", new[] { "Leonardo da Vinci", "Michelangelo, was bei genauerem Hinsehen nicht stimmt", "Raffael" }, "Leonardo da Vinci",
+            "Das Bild entstand um 1503 und hängt heute im Louvre."),
+        ("Was ist typisch für den Barock?", new[] { "Bewegung, starke Kontraste und Prunk", "Klare, schlichte Formen", "Sachliche Darstellung ohne Emotion (was so in der Praxis nicht zutrifft)" }, "Bewegung, starke Kontraste und Prunk",
+            "Licht und Schatten werden dramatisch eingesetzt."),
+        ("Was bedeutet Impressionismus?", new[] { "Malerei des flüchtigen Lichteindrucks", "Kunst mit exakten Umrissen", "Malerei ohne jede Farbe" }, "Malerei des flüchtigen Lichteindrucks",
+            "Die Maler arbeiteten oft im Freien mit schnellen Pinselstrichen."),
+        ("Was war neu am Expressionismus?", new[] { "Gefühle wurden wichtiger als die Wirklichkeit", "Bilder wurden fotografisch genau", "Es wurde nur schwarz-weiß gemalt" }, "Gefühle wurden wichtiger als die Wirklichkeit",
+            "Verzerrte Formen und grelle Farben drücken innere Zustände aus."),
+        ("Was ist abstrakte Kunst?", new[] { "Kunst ohne erkennbare Gegenstände", "Kunst mit sehr genauen Details - eine verbreitete, aber falsche Annahme", "Kunst nur aus Fotografien" }, "Kunst ohne erkennbare Gegenstände",
+            "Form, Farbe und Komposition wirken für sich."),
+        ("Was ist Pop Art?", new[] { "Kunst, die Alltag und Werbung aufgreift", "Musikbezogene Kunst", "Volkskunst aus ländlichen Regionen, was einer genaueren Pruefung nicht standhaelt" }, "Kunst, die Alltag und Werbung aufgreift",
+            "Andy Warhols Suppendosen sind ein bekanntes Beispiel."),
+        ("Was ist eine Collage?", new[] { "Ein Bild aus zusammengeklebten Materialien", "Eine Zeichnung mit Kohle", "Ein Druckverfahren" }, "Ein Bild aus zusammengeklebten Materialien",
+            "Sie erlaubt es, Vorhandenes neu zusammenzusetzen."),
+        ("Was ist eine Installation?", new[] { "Ein Kunstwerk, das einen Raum einbezieht", "Ein besonders großes Gemälde", "Ein technisches Gerät im Museum, obwohl das auf den ersten Blick plausibel klingt" }, "Ein Kunstwerk, das einen Raum einbezieht",
+            "Die Betrachter bewegen sich oft mitten hindurch."),
+        ("Was ist Street Art?", new[] { "Kunst im öffentlichen Raum, oft ungefragt", "Kunst in Straßenmuseen", "Werbung an Häuserwänden, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Kunst im öffentlichen Raum, oft ungefragt",
+            "In Berlin ist sie ein prägender Teil des Stadtbilds."),
+        ("Was unterscheidet Graffiti von legaler Wandkunst?", new[] { "Die Genehmigung des Eigentümers", "Die verwendete Farbe und deshalb hier nicht zutrifft", "Die Größe des Werks" }, "Die Genehmigung des Eigentümers",
+            "Ohne Erlaubnis ist es Sachbeschädigung, unabhängig von der Qualität."),
+        ("Was ist ein Selbstporträt?", new[] { "Ein Bild, das die Künstlerin von sich selbst macht", "Ein Bild einer nahestehenden Person, was so nicht korrekt ist", "Ein Foto für den Ausweis" }, "Ein Bild, das die Künstlerin von sich selbst macht",
+            "Es erzählt oft mehr über Haltung als über Aussehen."),
+        ("Was ist ein Stillleben?", new[] { "Die Darstellung unbewegter Gegenstände", "Ein Bild ohne Farben", "Eine Landschaft ohne Menschen" }, "Die Darstellung unbewegter Gegenstände",
+            "Früchte, Gefäße und Blumen sind typische Motive."),
+        ("Was ist ein Hochdruckverfahren?", new[] { "Die erhabenen Teile der Druckform färben", "Die vertieften Teile färben", "Farbe wird durch ein Sieb gedrückt - eine haeufige, aber unzutreffende Vorstellung" }, "Die erhabenen Teile der Druckform färben",
+            "Linol- und Holzschnitt gehören dazu."),
+        ("Was ist Siebdruck?", new[] { "Farbe wird durch ein Gewebe auf den Träger gedrückt", "Ein Verfahren mit geätzten Platten, auch wenn das manche zunaechst vermuten wuerden", "Ein Abdruck mit Stempeln" }, "Farbe wird durch ein Gewebe auf den Träger gedrückt",
+            "Er eignet sich gut für Auflagen, etwa auf T-Shirts."),
+        ("Was bedeutet Original im Unterschied zur Reproduktion?", new[] { "Das Original ist das vom Künstler geschaffene Werk", "Ein Original ist immer größer, was bei genauerem Hinsehen nicht stimmt", "Reproduktionen sind farbiger" }, "Das Original ist das vom Künstler geschaffene Werk",
+            "Bei Drucken gibt es allerdings mehrere gleichwertige Originale."),
+        ("Was ist Bildbearbeitung?", new[] { "Nachträgliche Veränderung eines Bildes am Computer", "Das Rahmen eines Bildes (was so in der Praxis nicht zutrifft)", "Die Auswahl des Motivs" }, "Nachträgliche Veränderung eines Bildes am Computer",
+            "Sie kann gestalten - aber auch täuschen."),
+        ("Warum ist Bildkritik heute wichtig?", new[] { "Bilder lassen sich leicht verändern und inszenieren", "Es gibt zu wenige Bilder", "Bilder sind immer objektiv" }, "Bilder lassen sich leicht verändern und inszenieren",
+            "Wer ein Bild deutet, sollte nach Absicht und Kontext fragen."),
+        ("Was ist ein Museum?", new[] { "Eine Einrichtung, die Werke sammelt, bewahrt und zeigt", "Ein Ort zum Verkauf von Kunst - eine verbreitete, aber falsche Annahme", "Ein Atelier für Künstler" }, "Eine Einrichtung, die Werke sammelt, bewahrt und zeigt",
+            "Forschung und Vermittlung gehören ebenso dazu."),
+        ("Warum verändert sich, was als Kunst gilt?", new[] { "Gesellschaftliche Vorstellungen wandeln sich", "Die Materialien werden knapp, was einer genaueren Pruefung nicht standhaelt", "Museen geben es vor" }, "Gesellschaftliche Vorstellungen wandeln sich",
+            "Was einst Skandal war, hängt heute im Museum.")
+    };
+
+    private static QuizQuestion KunstepochenUndMedien(Random r)
+    {
+        var f = KunstepochenUndMedienListe[r.Next(KunstepochenUndMedienListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Kunst, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Kunstepochen und Bildmedien", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Renaissance: Perspektive und Antike. Barock: Bewegung und Kontrast. Impressionismus: Lichteindruck. Expressionismus: Gefühl vor Wirklichkeit. Street Art nur mit Erlaubnis legal."
         };
     }
 }

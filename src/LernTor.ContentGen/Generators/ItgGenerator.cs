@@ -15,6 +15,7 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Datenschutz, SicherePasswoerter, Urheberrecht },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { AlgorithmenUndDigitaleWerkzeuge, DatenMedienUndWerkzeuge },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Cybermobbing, FakeNewsErkennen, Algorithmen }
         };
 
@@ -351,6 +352,119 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
             Topic = "Algorithmen-Grundbegriff", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Ein Algorithmus ist eine genaue Schritt-für-Schritt-Anleitung - Empfehlungsalgorithmen wählen Inhalte basierend auf deinem bisherigen Verhalten aus."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AlgorithmenUndDigitaleWerkzeugeListe =
+    {
+        ("Was ist ein Algorithmus?", new[] { "Eine eindeutige Schritt-für-Schritt-Anleitung", "Ein Computerprogramm in Maschinensprache (was so in der Praxis nicht zutrifft)", "Ein Speicherbereich im Rechner" }, "Eine eindeutige Schritt-für-Schritt-Anleitung",
+            "Auch ein Kochrezept ist im Prinzip ein Algorithmus."),
+        ("Was ist eine Schleife in der Programmierung?", new[] { "Eine Wiederholung von Anweisungen", "Ein Fehler im Programm", "Ein Sprung zum Programmende - eine verbreitete, aber falsche Annahme" }, "Eine Wiederholung von Anweisungen",
+            "Sie spart es, dieselben Befehle mehrfach zu schreiben."),
+        ("Was ist eine Verzweigung?", new[] { "Eine Wenn-dann-Entscheidung im Ablauf", "Ein Programm mit mehreren Fenstern, was einer genaueren Pruefung nicht standhaelt", "Ein Netzwerkkabel mit Abzweig" }, "Eine Wenn-dann-Entscheidung im Ablauf",
+            "Damit reagiert ein Programm auf unterschiedliche Fälle."),
+        ("Was ist eine Variable?", new[] { "Ein benannter Speicherplatz für einen Wert", "Ein wechselnder Programmname, obwohl das auf den ersten Blick plausibel klingt", "Ein Fehler im Ablauf" }, "Ein benannter Speicherplatz für einen Wert",
+            "Ihr Inhalt kann sich während des Programmlaufs ändern."),
+        ("Was ist ein Programmfehler oder Bug?", new[] { "Eine Stelle, an der das Programm falsch arbeitet", "Ein Virus im System", "Ein defektes Bauteil, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Eine Stelle, an der das Programm falsch arbeitet",
+            "Der Begriff geht auf ein echtes Insekt in einem Rechner zurück."),
+        ("Was ist Binärcode?", new[] { "Zahlen aus Nullen und Einsen", "Eine Programmiersprache", "Ein Verschlüsselungsverfahren" }, "Zahlen aus Nullen und Einsen",
+            "Computer arbeiten intern nur mit diesen zwei Zuständen."),
+        ("Wie viele Bit hat ein Byte?", new[] { "Acht", "Zehn", "Sechzehn" }, "Acht",
+            "Mit einem Byte lassen sich 256 verschiedene Werte darstellen."),
+        ("Was ist der Prozessor eines Computers?", new[] { "Das Bauteil, das Befehle ausführt", "Der Speicher für Dateien", "Die Verbindung zum Netzwerk und deshalb hier nicht zutrifft" }, "Das Bauteil, das Befehle ausführt",
+            "Man nennt ihn auch CPU - das Rechenzentrum des Geräts."),
+        ("Was unterscheidet Arbeitsspeicher von Festplatte?", new[] { "Der Arbeitsspeicher ist schnell, aber flüchtig", "Die Festplatte ist schneller", "Beide speichern dauerhaft" }, "Der Arbeitsspeicher ist schnell, aber flüchtig",
+            "Beim Ausschalten verliert der Arbeitsspeicher seinen Inhalt."),
+        ("Was ist ein Betriebssystem?", new[] { "Die Software, die Hardware und Programme verwaltet", "Ein Programm zum Schreiben von Texten", "Der Virenschutz eines Rechners" }, "Die Software, die Hardware und Programme verwaltet",
+            "Windows, macOS, Linux und Android sind Beispiele."),
+        ("Was ist eine IP-Adresse?", new[] { "Die Adresse eines Geräts im Netzwerk", "Ein Passwort für den Router", "Der Name einer Webseite" }, "Die Adresse eines Geräts im Netzwerk",
+            "Über sie finden Datenpakete ihren Weg."),
+        ("Wozu dient ein Router?", new[] { "Er verbindet Netzwerke und leitet Daten weiter", "Er speichert Webseiten", "Er verschlüsselt Festplatten, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung" }, "Er verbindet Netzwerke und leitet Daten weiter",
+            "Zu Hause verbindet er das Heimnetz mit dem Internet."),
+        ("Was bedeutet das Schlosssymbol im Browser?", new[] { "Die Verbindung ist verschlüsselt", "Die Seite ist geprüft und seriös", "Die Seite verlangt ein Passwort" }, "Die Verbindung ist verschlüsselt",
+            "Verschlüsselt heißt nicht automatisch vertrauenswürdig."),
+        ("Was ist ein Cookie?", new[] { "Eine kleine Datei zur Wiedererkennung im Browser", "Ein Virus in Webseiten", "Ein Zwischenspeicher für Bilder, auch wenn das manche zunaechst vermuten wuerden" }, "Eine kleine Datei zur Wiedererkennung im Browser",
+            "Tracking-Cookies können das Surfverhalten über Seiten hinweg verfolgen."),
+        ("Was ist Cloud-Speicher?", new[] { "Speicherplatz auf fremden Servern über das Internet", "Ein besonders großer USB-Stick", "Der Arbeitsspeicher eines Rechners" }, "Speicherplatz auf fremden Servern über das Internet",
+            "Praktisch für Zugriff überall - die Daten liegen aber bei einem Anbieter."),
+        ("Warum sind Backups wichtig?", new[] { "Daten gehen bei Defekt oder Angriff sonst verloren", "Sie machen den Rechner schneller", "Sie sind gesetzlich vorgeschrieben, was bei genauerem Hinsehen nicht stimmt" }, "Daten gehen bei Defekt oder Angriff sonst verloren",
+            "Sinnvoll sind mehrere Kopien an verschiedenen Orten."),
+        ("Was ist Ransomware?", new[] { "Schadsoftware, die Daten verschlüsselt und Lösegeld fordert", "Werbesoftware im Browser", "Ein Programm zur Datenrettung" }, "Schadsoftware, die Daten verschlüsselt und Lösegeld fordert",
+            "Aktuelle Backups sind der beste Schutz dagegen."),
+        ("Was ist eine Suchmaschinen-Trefferliste?", new[] { "Eine nach Kriterien sortierte Auswahl von Seiten", "Eine vollständige Liste aller Webseiten (was so in der Praxis nicht zutrifft)", "Eine redaktionell geprüfte Empfehlung" }, "Eine nach Kriterien sortierte Auswahl von Seiten",
+            "Werbung und Optimierung beeinflussen die Reihenfolge mit."),
+        ("Wie recherchiert man zuverlässig?", new[] { "Mehrere Quellen vergleichen und Urheber prüfen", "Den ersten Treffer übernehmen", "Nur Videos verwenden" }, "Mehrere Quellen vergleichen und Urheber prüfen",
+            "Wer hat es geschrieben, wann und mit welchem Interesse?"),
+        ("Was bedeutet digitale Selbstverteidigung?", new[] { "Bewusster Umgang mit Daten, Passwörtern und Berechtigungen", "Der Kauf teurer Sicherheitssoftware", "Der Verzicht auf das Internet" }, "Bewusster Umgang mit Daten, Passwörtern und Berechtigungen",
+            "Sparsame Datenfreigabe schützt am wirksamsten.")
+    };
+
+    private static QuizQuestion AlgorithmenUndDigitaleWerkzeuge(Random r)
+    {
+        var f = AlgorithmenUndDigitaleWerkzeugeListe[r.Next(AlgorithmenUndDigitaleWerkzeugeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Algorithmen, Hardware und sicheres Arbeiten", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Algorithmus = eindeutige Schritt-für-Schritt-Anleitung; Schleife wiederholt, Verzweigung entscheidet. 1 Byte = 8 Bit. Arbeitsspeicher ist flüchtig, Festplatte dauerhaft. Backups schützen vor Ransomware."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DatenMedienUndWerkzeugeListe =
+    {
+        ("Was ist ein digitaler Fußabdruck?", new[] { "Die Spur an Daten, die man online hinterlässt", "Die Größe einer Datei", "Der Stromverbrauch eines Geräts" }, "Die Spur an Daten, die man online hinterlässt",
+            "Vieles davon lässt sich nur schwer wieder löschen."),
+        ("Was bedeutet das Recht auf Vergessenwerden?", new[] { "Anspruch auf Löschung veralteter personenbezogener Daten", "Das Recht, Passwörter zu vergessen (was so in der Praxis nicht zutrifft)", "Der Anspruch auf anonyme Nutzung" }, "Anspruch auf Löschung veralteter personenbezogener Daten",
+            "Es gilt in der EU seit der Datenschutz-Grundverordnung."),
+        ("Was ist Tracking im Internet?", new[] { "Das Verfolgen des Nutzerverhaltens über Seiten hinweg", "Die Messung der Ladezeit", "Das Speichern von Lesezeichen" }, "Das Verfolgen des Nutzerverhaltens über Seiten hinweg",
+            "Daraus entstehen Profile für personalisierte Werbung."),
+        ("Wozu dient ein Werbeblocker?", new[] { "Er unterbindet Anzeigen und oft auch Tracker", "Er beschleunigt den Prozessor - eine verbreitete, aber falsche Annahme", "Er verschlüsselt E-Mails" }, "Er unterbindet Anzeigen und oft auch Tracker",
+            "Manche Seiten finanzieren sich allerdings über Werbung."),
+        ("Was ist ein VPN?", new[] { "Eine verschlüsselte Verbindung über einen Zwischenserver", "Ein Virenschutzprogramm", "Ein besonders schnelles WLAN, was einer genaueren Pruefung nicht standhaelt" }, "Eine verschlüsselte Verbindung über einen Zwischenserver",
+            "Der Anbieter sieht dann allerdings den Datenverkehr."),
+        ("Was ist Open Source?", new[] { "Software, deren Quellcode offen einsehbar ist", "Kostenlose Software ohne Einschränkung", "Software ohne Installation" }, "Software, deren Quellcode offen einsehbar ist",
+            "Offenheit ermöglicht Prüfung und Weiterentwicklung durch alle."),
+        ("Was ist eine Lizenz bei Software oder Bildern?", new[] { "Die Regel, wie etwas genutzt werden darf", "Der Preis eines Produkts, obwohl das auf den ersten Blick plausibel klingt", "Die Versionsnummer" }, "Die Regel, wie etwas genutzt werden darf",
+            "Creative-Commons-Lizenzen regeln zum Beispiel Bildnutzung."),
+        ("Darf man Bilder aus dem Internet frei im Referat nutzen?", new[] { "Nur mit passender Lizenz und Quellenangabe", "Ja, alles im Netz ist frei", "Nur wenn man sie verkleinert, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Nur mit passender Lizenz und Quellenangabe",
+            "Für Unterricht gibt es Ausnahmen, die aber begrenzt sind."),
+        ("Was ist ein Urheberrechtsverstoß beim Hochladen?", new[] { "Fremde Werke ohne Erlaubnis veröffentlichen", "Eigene Werke zu teilen", "Ein Link auf eine Webseite" }, "Fremde Werke ohne Erlaubnis veröffentlichen",
+            "Auch Musik unter einem eigenen Video kann betroffen sein."),
+        ("Was ist Tabellenkalkulation?", new[] { "Software zum Rechnen und Auswerten in Tabellen", "Ein Programm zum Schreiben von Texten und deshalb hier nicht zutrifft", "Eine Datenbank für Bilder" }, "Software zum Rechnen und Auswerten in Tabellen",
+            "Formeln aktualisieren sich automatisch, wenn Werte sich ändern."),
+        ("Was macht eine Formel in einer Tabellenkalkulation?", new[] { "Sie berechnet Werte automatisch aus Zellen", "Sie formatiert die Schriftart, was so nicht korrekt ist", "Sie sortiert die Zeilen" }, "Sie berechnet Werte automatisch aus Zellen",
+            "Ändert sich ein Wert, ändert sich das Ergebnis sofort mit."),
+        ("Wozu dient ein Diagramm?", new[] { "Zahlen anschaulich vergleichbar machen", "Die Datei zu verkleinern - eine haeufige, aber unzutreffende Vorstellung", "Text zu formatieren" }, "Zahlen anschaulich vergleichbar machen",
+            "Die Wahl des Diagrammtyps beeinflusst die Aussage stark."),
+        ("Wie kann ein Diagramm täuschen?", new[] { "Durch abgeschnittene Achsen oder verzerrte Skalen", "Durch zu viele Farben", "Durch eine Überschrift" }, "Durch abgeschnittene Achsen oder verzerrte Skalen",
+            "Ein Blick auf die Achsenbeschriftung lohnt sich immer."),
+        ("Was gehört zu einer guten Präsentation?", new[] { "Wenig Text, klare Struktur und freies Sprechen", "Möglichst viele Animationen", "Alle Informationen auf den Folien" }, "Wenig Text, klare Struktur und freies Sprechen",
+            "Die Folie unterstützt den Vortrag, ersetzt ihn nicht."),
+        ("Was ist ein Dateiformat?", new[] { "Die Art, wie Daten in einer Datei abgelegt sind", "Die Größe einer Datei", "Der Speicherort" }, "Die Art, wie Daten in einer Datei abgelegt sind",
+            "Die Endung wie .jpg oder .pdf weist darauf hin."),
+        ("Was unterscheidet ein PDF von einem Textdokument?", new[] { "Das PDF behält das Layout überall bei", "Ein PDF lässt sich leichter bearbeiten", "Ein PDF ist immer kleiner" }, "Das PDF behält das Layout überall bei",
+            "Deshalb eignet es sich gut zum Weitergeben."),
+        ("Was ist Datenkompression?", new[] { "Verkleinern von Dateien durch geschickte Kodierung", "Das Löschen alter Dateien", "Die Verschlüsselung von Daten, auch wenn das manche zunaechst vermuten wuerden" }, "Verkleinern von Dateien durch geschickte Kodierung",
+            "Verlustfrei bleibt alles erhalten, verlustbehaftet gehen Details verloren."),
+        ("Was ist künstliche Intelligenz aus ITG-Sicht?", new[] { "Software, die aus Daten Muster lernt", "Ein besonders schneller Prozessor, was bei genauerem Hinsehen nicht stimmt", "Ein Roboter mit Bewusstsein" }, "Software, die aus Daten Muster lernt",
+            "Sie folgt Statistik, nicht Verstehen."),
+        ("Warum ist Quellenangabe auch bei KI-Nutzung wichtig?", new[] { "Transparenz darüber, wie ein Ergebnis entstand", "Damit die KI bezahlt wird", "Weil KI-Texte fehlerfrei sind (was so in der Praxis nicht zutrifft)" }, "Transparenz darüber, wie ein Ergebnis entstand",
+            "Fremde Leistung als eigene auszugeben bleibt Täuschung."),
+        ("Was ist verantwortungsvolle Mediennutzung?", new[] { "Bewusst auswählen, prüfen und Pausen einplanen", "Möglichst wenige Geräte besitzen - eine verbreitete, aber falsche Annahme", "Nur abends online zu gehen" }, "Bewusst auswählen, prüfen und Pausen einplanen",
+            "Wer steuert - du oder die App?")
+    };
+
+    private static QuizQuestion DatenMedienUndWerkzeuge(Random r)
+    {
+        var f = DatenMedienUndWerkzeugeListe[r.Next(DatenMedienUndWerkzeugeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Daten, Medien und digitale Werkzeuge", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Digitaler Fußabdruck und Tracking; Recht auf Vergessenwerden. Lizenzen regeln Bildnutzung. Tabellenkalkulation rechnet automatisch; Diagramme können durch abgeschnittene Achsen täuschen."
         };
     }
 }

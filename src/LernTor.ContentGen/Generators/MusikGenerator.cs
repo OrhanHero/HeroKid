@@ -12,6 +12,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { GrundlagenDerMusik, FormUndGestaltung, GattungenUndGenres, WirkungUndFunktion, MusikImKulturellenKontext },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MusiklehreUndMedien, MusikepochenUndStile },
             [GradeLevel.Klasse9] = new List<TopicFactory> { HarmonielehreUndPartiturlesen, KompositionUndSatzweisen, MedienUndDigitaleProduktion, GattungenDerMusikgeschichte, FilmmusikUndProgrammmusik, MusikImGesellschaftlichenKontext }
         };
 
@@ -53,7 +54,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             "Allmählich lauter werden", "\"Crescendo\" bedeutet, im Verlauf eines Musikstücks allmählich lauter zu werden."),
         ("Was bedeutet die Vortragsangabe \"decrescendo\" (oder \"diminuendo\")?", new[] { "Allmählich leiser werden", "Allmählich lauter werden", "Allmählich langsamer werden" },
             "Allmählich leiser werden", "\"Decrescendo\"/\"diminuendo\" bedeutet, im Verlauf eines Musikstücks allmählich leiser zu werden."),
-        ("Warum ist das Wissen um Halb- und Ganztonschritte besonders für das Spielen der Gitarre wichtig?", new[] { "Weil sich Halb- und Ganztonschritte direkt in den Bünden auf dem Griffbrett widerspiegeln", "Weil die Gitarre als einziges Instrument keine Halbtonschritte kennt", "Weil dieses Wissen für Saiteninstrumente keine Rolle spielt" },
+        ("Warum ist das Wissen um Halb- und Ganztonschritte besonders für das Spielen der Gitarre wichtig?", new[] { "Weil sich Halb- und Ganztonschritte direkt in den Bünden auf dem Griffbrett widerspiegeln", "Weil die Gitarre als einziges Instrument keine Halbtonschritte kennt (was so in der Praxis nicht zutrifft)", "Weil dieses Wissen für Saiteninstrumente keine Rolle spielt" },
             "Weil sich Halb- und Ganztonschritte direkt in den Bünden auf dem Griffbrett widerspiegeln", "Jeder Bund auf dem Gitarrengriffbrett entspricht einem Halbtonschritt - das Wissen um Halb-/Ganztonschritte hilft direkt beim Greifen von Tönen und Akkorden."),
         ("Was ist der Unterschied zwischen einer Note und einer Pause in der Notation?", new[] { "Eine Note zeigt einen zu spielenden Ton, eine Pause zeigt eine Stille von bestimmter Dauer", "Beide Symbole bedeuten exakt dasselbe", "Eine Pause zeigt immer einen besonders lauten Ton an" },
             "Eine Note zeigt einen zu spielenden Ton, eine Pause zeigt eine Stille von bestimmter Dauer", "Während eine Note einen zu spielenden Ton mit bestimmter Tonhöhe und Dauer anzeigt, zeigt eine Pause eine Stille von festgelegter Dauer an.")
@@ -255,7 +256,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             "Barock", "Barock (ca. 1600-1750) ist eine bekannte Epoche der europäischen Musikgeschichte, gefolgt u.a. von Klassik und Romantik."),
         ("Wie hat sich Musik zu bestimmten Anlässen (z.B. Hochzeiten) im Laufe der Zeit verändert?", new[] { "Musikstile und Instrumentierung passen sich veränderten gesellschaftlichen Gewohnheiten und Vorlieben an", "Musik zu solchen Anlässen ist seit Jahrhunderten exakt identisch geblieben", "Musik spielt bei solchen Anlässen grundsätzlich keine Rolle" },
             "Musikstile und Instrumentierung passen sich veränderten gesellschaftlichen Gewohnheiten und Vorlieben an", "Musik zu bestimmten Anlässen wie Hochzeiten verändert sich mit der Zeit, weil sich gesellschaftliche Gewohnheiten, Technik und musikalische Vorlieben wandeln."),
-        ("Was bedeutet \"Persönlichkeitsrecht\" im Zusammenhang mit einer Musikaufnahme?", new[] { "Das Recht einer Person, selbst zu bestimmen, wie ihre Stimme oder ihr Bild verwendet werden", "Ein Recht, das ausschließlich für schriftliche Texte gilt", "Ein Begriff ohne Bezug zu Musik" },
+        ("Was bedeutet \"Persönlichkeitsrecht\" im Zusammenhang mit einer Musikaufnahme?", new[] { "Das Recht einer Person, selbst zu bestimmen, wie ihre Stimme oder ihr Bild verwendet werden", "Ein Recht, das ausschließlich für schriftliche Texte gilt - eine verbreitete, aber falsche Annahme, was einer genaueren Pruefung nicht standhaelt", "Ein Begriff ohne Bezug zu Musik" },
             "Das Recht einer Person, selbst zu bestimmen, wie ihre Stimme oder ihr Bild verwendet werden", "Das Persönlichkeitsrecht schützt u.a. das Recht einer Person, selbst zu bestimmen, wie ihre Stimme oder ihr Bild - etwa in einer Musikaufnahme - verwendet werden darf."),
         ("Was ist ein zentraler Unterschied zwischen einem Live-Konzert und einer Musikaufnahme?", new[] { "Ein Live-Konzert findet unmittelbar und einmalig vor Publikum statt, eine Aufnahme kann beliebig oft wiedergegeben werden", "Beide sind in jeder Hinsicht identisch", "Eine Aufnahme findet immer live vor Publikum statt" },
             "Ein Live-Konzert findet unmittelbar und einmalig vor Publikum statt, eine Aufnahme kann beliebig oft wiedergegeben werden", "Ein Live-Konzert ist ein einmaliges, unmittelbares Erlebnis, während eine Aufnahme beliebig oft und zu jeder Zeit wiedergegeben werden kann."),
@@ -473,7 +474,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             "Ein sprechgesangartiger Teil, der die Handlung vorantreibt", "Ein Rezitativ ist ein sprechgesangartiger, textnaher Teil einer Oper, der vor allem dazu dient, die Handlung voranzutreiben."),
         ("Was ist eine Arie in der Oper?", new[] { "Eine besonders melodische, oft gefühlvolle Solo-Gesangsnummer", "Ein rein sprechgesangartiger Handlungsteil", "Ein Begriff aus der Instrumentalmusik ohne Gesang (was so in der Praxis nicht zutrifft)" },
             "Eine besonders melodische, oft gefühlvolle Solo-Gesangsnummer", "Eine Arie ist eine besonders melodische, oft gefühlsbetonte Solo-Gesangsnummer, die Emotionen einer Figur ausdrückt."),
-        ("Was ist eine Oper?", new[] { "Ein musikalisches Bühnenwerk, das eine Handlung durch Gesang, Orchester und szenische Darstellung erzählt", "Ein rein instrumentales Konzertstück ohne jede Handlung", "Ein Begriff aus der Popmusik" },
+        ("Was ist eine Oper?", new[] { "Ein musikalisches Bühnenwerk, das eine Handlung durch Gesang, Orchester und szenische Darstellung erzählt", "Ein rein instrumentales Konzertstück ohne jede Handlung (was so in der Praxis nicht zutrifft) - eine verbreitete, aber falsche Annahme", "Ein Begriff aus der Popmusik" },
             "Ein musikalisches Bühnenwerk, das eine Handlung durch Gesang, Orchester und szenische Darstellung erzählt", "Eine Oper ist ein musikalisches Bühnenwerk, das eine Handlung durch Gesang, Orchestermusik und szenische Darstellung erzählt."),
         ("Was ist ein Musical?", new[] { "Ein Bühnenwerk, das Gesang, Tanz und gesprochenen Dialog miteinander verbindet, oft in populärerem Musikstil", "Ein rein klassisches Instrumentalstück ohne jede Handlung - eine verbreitete, aber falsche Annahme, was einer genaueren Pruefung nicht standhaelt", "Ein Begriff aus der Kirchenmusik" },
             "Ein Bühnenwerk, das Gesang, Tanz und gesprochenen Dialog miteinander verbindet, oft in populärerem Musikstil", "Ein Musical verbindet Gesang, Tanz und gesprochenen Dialog, meist in einem populäreren Musikstil als die klassische Oper."),
@@ -531,7 +532,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             "Musik wird gezielt eingesetzt, um eine bestimmte Grundstimmung einer Szene zu erzeugen", "Bei der Mood-Technik wird Musik gezielt eingesetzt, um eine bestimmte emotionale Grundstimmung einer Filmszene zu erzeugen."),
         ("Was ist Tonmalerei?", new[] { "Musikalische Darstellung außermusikalischer Bilder oder Ereignisse durch klangliche Mittel", "Ausschließlich das Anmalen von Notenblättern mit Farbe", "Ein Begriff, der nur bei elektronischer Musik verwendet wird" },
             "Musikalische Darstellung außermusikalischer Bilder oder Ereignisse durch klangliche Mittel", "Tonmalerei stellt außermusikalische Bilder oder Ereignisse (z.B. ein Gewitter) durch klangliche musikalische Mittel dar."),
-        ("Was ist Tonsymbolik?", new[] { "Bestimmte Töne oder Klänge stehen symbolisch für eine außermusikalische Bedeutung", "Ein Begriff, der ausschließlich die Lautstärke eines Stücks beschreibt", "Ein Synonym für eine Tonleiter" },
+        ("Was ist Tonsymbolik?", new[] { "Bestimmte Töne oder Klänge stehen symbolisch für eine außermusikalische Bedeutung", "Ein Begriff, der ausschließlich die Lautstärke eines Stücks beschreibt, obwohl das auf den ersten Blick plausibel klingt", "Ein Synonym für eine Tonleiter" },
             "Bestimmte Töne oder Klänge stehen symbolisch für eine außermusikalische Bedeutung", "Bei der Tonsymbolik stehen bestimmte Töne oder Klänge symbolisch für eine außermusikalische Bedeutung, z.B. hohe Töne für Licht oder tiefe Töne für Bedrohung."),
         ("Was bedeutet ein \"musikalisches Signal\", z.B. eine Fanfare?", new[] { "Ein kurzes musikalisches Zeichen, das eine bestimmte Ankündigung oder Bedeutung transportiert", "Ein rein zufälliges, bedeutungsloses musikalisches Element", "Ein Begriff aus der Harmonielehre" },
             "Ein kurzes musikalisches Zeichen, das eine bestimmte Ankündigung oder Bedeutung transportiert", "Ein musikalisches Signal wie eine Fanfare ist ein kurzes, oft feierliches musikalisches Zeichen, das eine bestimmte Ankündigung oder Bedeutung transportiert."),
@@ -628,6 +629,119 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             Topic = "Musik im kulturellen und gesellschaftlichen Kontext", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Musik spiegelt Gesellschaft wider: Herrschaft, Protest, Jugendkulturen, Geschlechterstereotype und Globalisierung prägen, wie und welche Musik entsteht."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MusiklehreUndMedienListe =
+    {
+        ("Wie viele Halbtonschritte hat eine Oktave?", new[] { "Zwölf", "Acht", "Sieben" }, "Zwölf",
+            "Die zwölf Halbtöne bilden die chromatische Tonleiter."),
+        ("Was ist ein Intervall?", new[] { "Der Abstand zwischen zwei Tönen", "Eine Pause im Stück", "Ein Taktwechsel" }, "Der Abstand zwischen zwei Tönen",
+            "Prime, Terz, Quinte und Oktave sind häufige Intervalle."),
+        ("Woraus besteht ein Dur-Dreiklang?", new[] { "Grundton, große Terz und Quinte", "Grundton, kleine Terz und Quinte", "Grundton, Quarte und Sexte" }, "Grundton, große Terz und Quinte",
+            "Die große Terz gibt ihm den hellen Klang."),
+        ("Was unterscheidet Dur von Moll?", new[] { "Die Terz ist bei Moll einen Halbton tiefer", "Moll ist immer langsamer", "Dur hat mehr Töne" }, "Die Terz ist bei Moll einen Halbton tiefer",
+            "Deshalb wirkt Moll oft dunkler oder trauriger."),
+        ("Was gibt die Taktangabe 4/4 an?", new[] { "Vier Viertelnoten pro Takt", "Vier Takte pro Zeile", "Vier Stimmen im Satz" }, "Vier Viertelnoten pro Takt",
+            "Der 4/4-Takt ist der häufigste Takt in der Popmusik."),
+        ("Was ist ein Auftakt?", new[] { "Unvollständiger Takt vor dem ersten vollen Takt", "Der erste Ton eines Stücks", "Ein besonders lauter Einsatz, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Unvollständiger Takt vor dem ersten vollen Takt",
+            "Viele Volkslieder beginnen mit einem Auftakt."),
+        ("Was bedeutet Tempoangabe Allegro?", new[] { "Schnell und lebhaft", "Langsam und getragen", "Sehr leise" }, "Schnell und lebhaft",
+            "Adagio bedeutet dagegen langsam."),
+        ("Was ist Dynamik in der Musik?", new[] { "Die Lautstärkegestaltung", "Die Geschwindigkeit", "Die Tonhöhe" }, "Die Lautstärkegestaltung",
+            "Piano heißt leise, forte laut, crescendo lauter werdend."),
+        ("Was ist eine Melodie?", new[] { "Eine Folge von Tönen mit Gestalt", "Mehrere Töne gleichzeitig", "Der Rhythmus eines Stücks" }, "Eine Folge von Tönen mit Gestalt",
+            "Sie ist meist das, was man mitsummt."),
+        ("Was ist Harmonie?", new[] { "Das Zusammenklingen mehrerer Töne", "Der Wechsel des Tempos", "Die Lautstärke eines Akkords und deshalb hier nicht zutrifft" }, "Das Zusammenklingen mehrerer Töne",
+            "Akkordfolgen bilden das harmonische Gerüst eines Stücks."),
+        ("Was ist eine Kadenz?", new[] { "Eine typische Akkordfolge zum Schluss", "Ein Soloteil im Konzert, was so nicht korrekt ist", "Ein Taktwechsel" }, "Eine typische Akkordfolge zum Schluss",
+            "Tonika, Subdominante und Dominante bilden die einfachste Form."),
+        ("Was ist eine Coverversion?", new[] { "Eine Neuaufnahme eines bestehenden Songs", "Das Bild auf dem Album", "Ein neuer Text zu einer Melodie" }, "Eine Neuaufnahme eines bestehenden Songs",
+            "Rechtlich sind dabei die Urheberrechte zu beachten."),
+        ("Was ist ein Sample in der Musikproduktion?", new[] { "Ein übernommener Ausschnitt einer Aufnahme", "Eine Demoversion eines Songs", "Ein einzelner Ton eines Instruments" }, "Ein übernommener Ausschnitt einer Aufnahme",
+            "Für die Nutzung braucht man in der Regel eine Genehmigung."),
+        ("Was regelt das Urheberrecht bei Musik?", new[] { "Wer über die Nutzung eines Werks bestimmt", "Wie laut Musik gespielt werden darf - eine haeufige, aber unzutreffende Vorstellung", "Welche Instrumente erlaubt sind" }, "Wer über die Nutzung eines Werks bestimmt",
+            "Es schützt Komponisten, Texter und ausübende Künstler."),
+        ("Was macht die GEMA?", new[] { "Sie verwaltet Rechte und verteilt Vergütungen", "Sie produziert Alben", "Sie vergibt Musikpreise, auch wenn das manche zunaechst vermuten wuerden" }, "Sie verwaltet Rechte und verteilt Vergütungen",
+            "Wer öffentlich Musik spielt, zahlt in der Regel Gebühren."),
+        ("Was ist Streaming?", new[] { "Musik hören ohne dauerhaften Download", "Der Kauf einer Datei", "Radioempfang über Antenne, was bei genauerem Hinsehen nicht stimmt" }, "Musik hören ohne dauerhaften Download",
+            "Die Vergütung pro Abruf ist für viele Künstler sehr gering."),
+        ("Welche Rolle spielt Musik in Filmen?", new[] { "Sie lenkt Emotionen und Aufmerksamkeit", "Sie füllt nur Pausen", "Sie ersetzt Dialoge" }, "Sie lenkt Emotionen und Aufmerksamkeit",
+            "Dieselbe Szene wirkt mit anderer Musik völlig anders."),
+        ("Was ist ein Leitmotiv?", new[] { "Ein wiederkehrendes Motiv für Figur oder Idee", "Das Hauptthema eines Konzerts (was so in der Praxis nicht zutrifft)", "Der Refrain eines Songs" }, "Ein wiederkehrendes Motiv für Figur oder Idee",
+            "Filmmusik nutzt es, um Personen musikalisch wiederzuerkennen."),
+        ("Wie ist ein Sinfonieorchester grob aufgeteilt?", new[] { "Streicher, Holzbläser, Blechbläser und Schlagwerk", "Sänger, Streicher und Klavier", "Melodie- und Rhythmusgruppe" }, "Streicher, Holzbläser, Blechbläser und Schlagwerk",
+            "Die Streicher bilden meist die größte Gruppe."),
+        ("Warum lohnt sich aktives Musizieren?", new[] { "Es fördert Konzentration, Gehör und Zusammenspiel", "Es ersetzt das Sporttraining", "Es ist Pflicht in der Schule" }, "Es fördert Konzentration, Gehör und Zusammenspiel",
+            "Gemeinsames Spielen trainiert zudem Aufeinanderhören.")
+    };
+
+    private static QuizQuestion MusiklehreUndMedien(Random r)
+    {
+        var f = MusiklehreUndMedienListe[r.Next(MusiklehreUndMedienListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Musiklehre, Medien und Urheberrecht", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Oktave = 12 Halbtöne. Dur-Dreiklang: Grundton, große Terz, Quinte; bei Moll ist die Terz einen Halbton tiefer. Dynamik = Lautstärke (piano/forte). Sampling und Coverversionen brauchen Rechte."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MusikepochenUndStileListe =
+    {
+        ("Welche Musikepoche folgte auf die Renaissance?", new[] { "Der Barock", "Die Klassik", "Die Romantik" }, "Der Barock",
+            "Er dauerte etwa von 1600 bis 1750."),
+        ("Wer gilt als bedeutendster Komponist des Barock?", new[] { "Johann Sebastian Bach", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart" }, "Johann Sebastian Bach",
+            "Sein Todesjahr 1750 markiert traditionell das Ende der Epoche."),
+        ("Was ist eine Fuge?", new[] { "Ein Stück, in dem ein Thema kunstvoll nachgeahmt wird", "Ein langsamer Trauermarsch", "Ein Tanz im Dreivierteltakt, was einer genaueren Pruefung nicht standhaelt" }, "Ein Stück, in dem ein Thema kunstvoll nachgeahmt wird",
+            "Die Stimmen setzen nacheinander mit demselben Thema ein."),
+        ("Was kennzeichnet die Wiener Klassik?", new[] { "Klare Formen, Ausgewogenheit und Sinfonien", "Starke Gefühlsausbrüche", "Elektronische Klänge" }, "Klare Formen, Ausgewogenheit und Sinfonien",
+            "Haydn, Mozart und Beethoven prägten sie."),
+        ("Was ist eine Sinfonie?", new[] { "Ein mehrsätziges Werk für Orchester", "Ein Stück für ein Soloinstrument", "Ein Gesangsstück mit Klavier" }, "Ein mehrsätziges Werk für Orchester",
+            "Meist hat sie vier Sätze mit unterschiedlichem Charakter."),
+        ("Was ist ein Streichquartett?", new[] { "Zwei Violinen, Viola und Violoncello", "Vier Geigen", "Streicher mit Klavier, obwohl das auf den ersten Blick plausibel klingt" }, "Zwei Violinen, Viola und Violoncello",
+            "Es gilt als Königsdisziplin der Kammermusik."),
+        ("Was kennzeichnet die Romantik in der Musik?", new[] { "Gefühl, Naturbilder und persönlicher Ausdruck", "Strenge mathematische Formen, was die eigentliche Bedeutung des Begriffs verfehlt", "Verzicht auf Melodien" }, "Gefühl, Naturbilder und persönlicher Ausdruck",
+            "Das Kunstlied erlebte in dieser Zeit seine Blüte."),
+        ("Was ist ein Kunstlied?", new[] { "Ein vertontes Gedicht für Stimme und Klavier", "Ein Volkslied ohne Begleitung und deshalb hier nicht zutrifft", "Ein Lied aus der Oper" }, "Ein vertontes Gedicht für Stimme und Klavier",
+            "Schubert schrieb über sechshundert davon."),
+        ("Was ist eine Oper?", new[] { "Ein Bühnenwerk mit durchgehender Musik", "Ein Konzert ohne Bühne", "Ein Theaterstück mit Zwischenmusik" }, "Ein Bühnenwerk mit durchgehender Musik",
+            "Gesang, Orchester, Bühnenbild und Handlung greifen ineinander."),
+        ("Was ist ein Musical?", new[] { "Ein Bühnenstück mit Songs, Dialogen und Tanz", "Eine Oper in englischer Sprache", "Ein Konzert mit Filmmusik" }, "Ein Bühnenstück mit Songs, Dialogen und Tanz",
+            "Es entstand im 20. Jahrhundert vor allem in den USA."),
+        ("Woraus entwickelte sich der Jazz?", new[] { "Aus afroamerikanischen Traditionen wie Blues und Ragtime", "Aus der europäischen Klassik, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung", "Aus der elektronischen Musik" }, "Aus afroamerikanischen Traditionen wie Blues und Ragtime",
+            "New Orleans gilt als eine seiner Wiegen."),
+        ("Was ist Improvisation im Jazz?", new[] { "Spontanes Erfinden von Musik im Moment", "Das Spielen nach Noten", "Die Wiederholung eines Themas" }, "Spontanes Erfinden von Musik im Moment",
+            "Sie folgt dabei meist einem harmonischen Gerüst."),
+        ("Was ist ein Blues-Schema?", new[] { "Eine feste Akkordfolge über zwölf Takte", "Ein trauriger Text", "Ein langsames Tempo, auch wenn das manche zunaechst vermuten wuerden" }, "Eine feste Akkordfolge über zwölf Takte",
+            "Auf dieser Grundlage entstand viel Rock- und Popmusik."),
+        ("Woraus entstand die Rockmusik?", new[] { "Aus Blues, Country und Rhythm and Blues", "Aus der Wiener Klassik, was bei genauerem Hinsehen nicht stimmt", "Aus dem Kirchenlied" }, "Aus Blues, Country und Rhythm and Blues",
+            "In den 1950er Jahren wurde daraus der Rock and Roll."),
+        ("Was kennzeichnet Hip-Hop musikalisch?", new[] { "Rap über Beats, oft mit Samples", "Gesang mit Orchesterbegleitung (was so in der Praxis nicht zutrifft)", "Improvisation über Jazzakkorde" }, "Rap über Beats, oft mit Samples",
+            "Neben Rap gehören DJing, Breakdance und Graffiti zur Kultur."),
+        ("Was ist elektronische Musik?", new[] { "Musik, deren Klänge elektronisch erzeugt werden", "Musik mit verstärkter Gitarre - eine verbreitete, aber falsche Annahme", "Musik aus dem Radio" }, "Musik, deren Klänge elektronisch erzeugt werden",
+            "Synthesizer und Computer ersetzen oder ergänzen Instrumente."),
+        ("Was ist ein Sequenzer in der Musikproduktion?", new[] { "Ein Werkzeug zum Anordnen von Klängen in der Zeit", "Ein Effektgerät für Hall", "Ein Mikrofon für Aufnahmen" }, "Ein Werkzeug zum Anordnen von Klängen in der Zeit",
+            "Heute meist als Software auf dem Computer."),
+        ("Was bedeutet Weltmusik?", new[] { "Musik verschiedener Kulturen jenseits westlicher Popmusik", "Musik, die weltweit bekannt ist", "Musik aus Weltausstellungen" }, "Musik verschiedener Kulturen jenseits westlicher Popmusik",
+            "Der Begriff ist umstritten, weil er sehr Verschiedenes zusammenfasst."),
+        ("Was ist türkische Volksmusik oft rhythmisch besonders?", new[] { "Sie nutzt ungerade Taktarten wie 9/8", "Sie verwendet nur den 4/4-Takt", "Sie kennt keinen festen Rhythmus, was einer genaueren Pruefung nicht standhaelt" }, "Sie nutzt ungerade Taktarten wie 9/8",
+            "Solche Rhythmen wirken auf westliche Ohren zunächst ungewohnt."),
+        ("Warum verändert sich Musik über die Zeit?", new[] { "Technik, Gesellschaft und Geschmack wandeln sich", "Alte Musik geht verloren", "Instrumente werden verboten" }, "Technik, Gesellschaft und Geschmack wandeln sich",
+            "Jede Generation prägt eigene Formen und Stile.")
+    };
+
+    private static QuizQuestion MusikepochenUndStile(Random r)
+    {
+        var f = MusikepochenUndStileListe[r.Next(MusikepochenUndStileListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Musikepochen und Stilrichtungen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Barock (Bach, Fuge), Wiener Klassik (Haydn/Mozart/Beethoven, Sinfonie), Romantik (Kunstlied). Jazz aus Blues und Ragtime mit Improvisation. Hip-Hop: Rap über Beats mit Samples."
         };
     }
 }

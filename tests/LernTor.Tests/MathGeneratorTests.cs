@@ -70,14 +70,15 @@ public class MathGeneratorTests
     }
 
     [Fact]
-    public void Fach_ohne_Klasse7_Pool_faellt_auf_Klasse6_zurueck()
+    public void Fach_ohne_eigenen_Pool_faellt_auf_die_naechstniedrigere_Stufe_zurueck()
     {
-        // MusikGenerator hat (noch) keinen Klasse-7-Pool - die Übergangsregel liefert dann
-        // Klasse-6-Aufgaben (Wiederholung des zuletzt Gelernten) statt das Fach zu überspringen.
-        var questions = new MusikGenerator().Generate(GradeLevel.Klasse7, 5, new Random(7));
+        // Inzwischen hat jedes Fach einen Klasse-7-Pool. Die Übergangsregel bleibt aber wichtig
+        // für künftige Stufen (Klasse 8/10): eine Stufe ohne eigenen Pool liefert Aufgaben der
+        // nächstniedrigeren vorhandenen Stufe, statt das Fach still zu überspringen.
+        var questions = new MusikGenerator().Generate((GradeLevel)8, 5, new Random(7));
 
         Assert.Equal(5, questions.Count);
-        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse6, q.GradeLevel));
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
 
     [Fact]
@@ -101,6 +102,10 @@ public class MathGeneratorTests
     [Theory]
     [InlineData(typeof(PolitikGenerator))]
     [InlineData(typeof(GeoGenerator))]
+    [InlineData(typeof(EthikGenerator))]
+    [InlineData(typeof(KunstGenerator))]
+    [InlineData(typeof(MusikGenerator))]
+    [InlineData(typeof(ItgGenerator))]
     public void Fach_mit_Klasse7_Pool_faellt_nicht_zurueck(Type generatorType)
     {
         var generator = (IExerciseGenerator)Activator.CreateInstance(generatorType)!;

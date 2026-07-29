@@ -12,6 +12,7 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { WerteRegeln, Freundschaft, Weltreligionen, IdentitaetUndRolleKlasse6, FreiheitUndVerantwortungKlasse6, RechtUndGerechtigkeitKlasse6 },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { FreundschaftUndIdentitaet, WeltreligionenK7, GerechtigkeitUndWerte },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Verantwortung, Meinungsfreiheit, DigitaleEthik, RechtUndGerechtigkeit, IdentitaetUndRolle, FreiheitPhilosophisch, GerechtigkeitstheorienVertieft, MenschUndGemeinschaft, HandelnUndMoral, WissenUndGlauben }
         };
 
@@ -913,6 +914,174 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
             Topic = "Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Gerechtigkeit ist mehr als reine Gleichbehandlung - sie berücksichtigt unterschiedliche Bedürfnisse (Chancengerechtigkeit) und verlangt, dass Regeln für alle gleichermaßen gelten."
+        };
+    }
+    // ----- Klasse 7 -----
+    // Distraktoren bewusst ähnlich lang wie die richtige Antwort.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FreundschaftUndIdentitaetListe =
+    {
+        ("Was macht eine gute Freundschaft aus?", new[] { "Vertrauen, Verlässlichkeit und Ehrlichkeit", "Möglichst viele gemeinsame Fotos (was so in der Praxis nicht zutrifft)", "Immer derselben Meinung zu sein" }, "Vertrauen, Verlässlichkeit und Ehrlichkeit",
+            "Auch Streit gehört dazu - entscheidend ist, wie man ihn austrägt."),
+        ("Was bedeutet Empathie?", new[] { "Sich in die Gefühle anderer hineinversetzen", "Mit anderen Mitleid haben - eine verbreitete, aber falsche Annahme", "Immer nachzugeben" }, "Sich in die Gefühle anderer hineinversetzen",
+            "Empathie ist die Grundlage für Rücksicht und faires Verhalten."),
+        ("Was ist der Unterschied zwischen Mitleid und Mitgefühl?", new[] { "Mitgefühl begegnet auf Augenhöhe, Mitleid blickt herab", "Beide bedeuten dasselbe", "Mitleid ist stärker als Mitgefühl" }, "Mitgefühl begegnet auf Augenhöhe, Mitleid blickt herab",
+            "Betroffene wünschen sich meist Mitgefühl statt Bedauern."),
+        ("Was ist Gruppendruck?", new[] { "Der Einfluss einer Gruppe auf eigenes Verhalten", "Ein Streit zwischen zwei Gruppen, was einer genaueren Pruefung nicht standhaelt", "Die Größe einer Freundesgruppe" }, "Der Einfluss einer Gruppe auf eigenes Verhalten",
+            "Wer ihn erkennt, kann bewusster entscheiden."),
+        ("Wie kann man Gruppendruck widerstehen?", new[] { "Eigene Werte kennen und Nein sagen üben", "Sich völlig zurückziehen", "Immer mitmachen und später klären, obwohl das auf den ersten Blick plausibel klingt" }, "Eigene Werte kennen und Nein sagen üben",
+            "Verbündete in der Gruppe machen es deutlich leichter."),
+        ("Was ist Zivilcourage?", new[] { "Mut, bei Unrecht einzugreifen", "Körperliche Stärke im Streit", "Die Bereitschaft zum Wettkampf" }, "Mut, bei Unrecht einzugreifen",
+            "Hilfe holen zählt genauso wie direktes Eingreifen."),
+        ("Wie hilft man bei Mobbing richtig?", new[] { "Betroffene unterstützen und Erwachsene einbeziehen", "Selbst zurückschlagen", "Wegsehen, um nicht selbst betroffen zu sein" }, "Betroffene unterstützen und Erwachsene einbeziehen",
+            "Wegsehen bestärkt die Täter - Zuschauer haben viel Einfluss."),
+        ("Was ist eine Grenze in einer Beziehung?", new[] { "Was jemand nicht möchte und respektiert werden muss", "Die räumliche Entfernung", "Die Dauer einer Freundschaft, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Was jemand nicht möchte und respektiert werden muss",
+            "Grenzen dürfen sich ändern und müssen nicht begründet werden."),
+        ("Was bedeutet Einvernehmlichkeit?", new[] { "Alle Beteiligten stimmen freiwillig zu", "Die Mehrheit entscheidet", "Ein Erwachsener erlaubt es" }, "Alle Beteiligten stimmen freiwillig zu",
+            "Schweigen oder Zögern ist keine Zustimmung."),
+        ("Was ist Respekt?", new[] { "Andere in ihrer Würde und Andersartigkeit anerkennen", "Vor jemandem Angst haben und deshalb hier nicht zutrifft, was so nicht korrekt ist", "Immer höflich zu sein" }, "Andere in ihrer Würde und Andersartigkeit anerkennen",
+            "Respekt ist unabhängig von Sympathie."),
+        ("Was ist Toleranz?", new[] { "Andere Überzeugungen aushalten, auch wenn man sie nicht teilt", "Alles gutzuheißen", "Gleichgültigkeit gegenüber anderen - eine haeufige, aber unzutreffende Vorstellung" }, "Andere Überzeugungen aushalten, auch wenn man sie nicht teilt",
+            "Toleranz endet dort, wo die Würde anderer verletzt wird."),
+        ("Was ist Vorurteil im Unterschied zum Urteil?", new[] { "Ein Urteil ohne eigene Prüfung", "Ein Urteil vor Gericht", "Ein besonders hartes Urteil, auch wenn das manche zunaechst vermuten wuerden" }, "Ein Urteil ohne eigene Prüfung",
+            "Vorurteile fühlen sich sicher an, weil man sie nie überprüft."),
+        ("Was ist Identität?", new[] { "Das Bild, das jemand von sich selbst hat", "Der Ausweis einer Person, was bei genauerem Hinsehen nicht stimmt", "Der Beruf eines Menschen" }, "Das Bild, das jemand von sich selbst hat",
+            "Sie entsteht aus Herkunft, Erfahrungen und eigenen Entscheidungen."),
+        ("Was bedeutet Mehrfachzugehörigkeit?", new[] { "Sich mehreren Kulturen oder Gruppen zugehörig fühlen", "In zwei Vereinen Mitglied zu sein", "Zwei Staatsbürgerschaften zu haben" }, "Sich mehreren Kulturen oder Gruppen zugehörig fühlen",
+            "Für viele Jugendliche in Berlin ist das Alltag und ein Gewinn."),
+        ("Was ist Selbstwertgefühl?", new[] { "Die eigene Wertschätzung für sich selbst", "Der Stolz auf Besitz", "Das Ansehen bei anderen (was so in der Praxis nicht zutrifft)" }, "Die eigene Wertschätzung für sich selbst",
+            "Es hängt nicht von Likes oder Noten ab."),
+        ("Wie wirken soziale Medien auf das Selbstbild?", new[] { "Vergleiche mit geschönten Bildern können belasten", "Sie stärken immer das Selbstbewusstsein - eine verbreitete, aber falsche Annahme", "Sie haben keinen Einfluss" }, "Vergleiche mit geschönten Bildern können belasten",
+            "Hinter den meisten Bildern stecken Filter und Auswahl."),
+        ("Was ist Verantwortung?", new[] { "Für die Folgen des eigenen Handelns einstehen", "Eine Aufgabe zu bekommen", "Anderen Vorschriften zu machen" }, "Für die Folgen des eigenen Handelns einstehen",
+            "Verantwortung wächst mit Wissen und Handlungsmöglichkeiten."),
+        ("Was ist das Gewissen?", new[] { "Die innere Instanz für richtig und falsch", "Die Meinung der Eltern", "Ein Gesetz des Staates" }, "Die innere Instanz für richtig und falsch",
+            "Es wird durch Erziehung und Erfahrung geprägt, ist aber nicht unfehlbar."),
+        ("Was ist die Goldene Regel?", new[] { "Behandle andere so, wie du behandelt werden willst", "Der Stärkere hat recht", "Jeder ist sich selbst der Nächste" }, "Behandle andere so, wie du behandelt werden willst",
+            "Sie findet sich in fast allen Kulturen und Religionen."),
+        ("Warum ist Streiten lernen wichtig?", new[] { "Konflikte gehören dazu und lassen sich fair lösen", "Wer streitet, gewinnt an Ansehen", "Streit sollte immer vermieden werden" }, "Konflikte gehören dazu und lassen sich fair lösen",
+            "Sachlich bleiben und beim Thema statt bei der Person - das ist erlernbar.")
+    };
+
+    private static QuizQuestion FreundschaftUndIdentitaet(Random r)
+    {
+        var f = FreundschaftUndIdentitaetListe[r.Next(FreundschaftUndIdentitaetListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Freundschaft, Identität und Respekt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Empathie: sich in andere hineinversetzen. Grenzen respektieren, Einvernehmlichkeit ernst nehmen. Toleranz endet, wo die Würde anderer verletzt wird. Zivilcourage: bei Unrecht eingreifen oder Hilfe holen."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WeltreligionenK7Liste =
+    {
+        ("Welche fünf Weltreligionen unterscheidet man üblicherweise?", new[] { "Judentum, Christentum, Islam, Hinduismus, Buddhismus", "Christentum, Islam, Judentum, Atheismus, Humanismus", "Katholizismus, Protestantismus, Orthodoxie, Islam, Judentum" }, "Judentum, Christentum, Islam, Hinduismus, Buddhismus",
+            "Sie unterscheiden sich stark in Ursprung, Lehre und Praxis."),
+        ("Was haben Judentum, Christentum und Islam gemeinsam?", new[] { "Sie sind monotheistisch und beziehen sich auf Abraham", "Sie haben dasselbe heilige Buch, was einer genaueren Pruefung nicht standhaelt", "Sie feiern dieselben Feste" }, "Sie sind monotheistisch und beziehen sich auf Abraham",
+            "Man nennt sie deshalb abrahamitische Religionen."),
+        ("Was bedeutet Monotheismus?", new[] { "Der Glaube an einen einzigen Gott", "Der Glaube an mehrere Götter", "Der Glaube an keine Götter" }, "Der Glaube an einen einzigen Gott",
+            "Polytheismus bezeichnet dagegen den Glauben an mehrere Gottheiten."),
+        ("Was ist die Tora?", new[] { "Die fünf Bücher Mose im Judentum", "Das heilige Buch des Islam", "Eine Sammlung buddhistischer Texte" }, "Die fünf Bücher Mose im Judentum",
+            "Sie wird in der Synagoge aus einer handgeschriebenen Rolle gelesen."),
+        ("Was ist der Schabbat?", new[] { "Der jüdische Ruhetag von Freitag- bis Samstagabend", "Ein jüdisches Neujahrsfest", "Der Tag des Fastenbrechens" }, "Der jüdische Ruhetag von Freitag- bis Samstagabend",
+            "An ihm ruht die Arbeit - ein Grundgedanke, der auch den Sonntag prägte."),
+        ("Was sind die fünf Säulen des Islam?", new[] { "Glaubensbekenntnis, Gebet, Almosen, Fasten, Pilgerfahrt", "Koran, Moschee, Imam, Kalif, Mekka", "Gebet, Fasten, Predigt, Taufe, Feiertag, obwohl das auf den ersten Blick plausibel klingt" }, "Glaubensbekenntnis, Gebet, Almosen, Fasten, Pilgerfahrt",
+            "Sie strukturieren das religiöse Leben gläubiger Muslime."),
+        ("Was ist der Ramadan?", new[] { "Der islamische Fastenmonat", "Ein Wallfahrtsort in Saudi-Arabien", "Das islamische Neujahr" }, "Der islamische Fastenmonat",
+            "Von Sonnenaufgang bis Sonnenuntergang wird auf Essen und Trinken verzichtet."),
+        ("Was feiern Muslime am Zuckerfest?", new[] { "Das Ende des Fastenmonats Ramadan", "Die Geburt des Propheten", "Die Pilgerfahrt nach Mekka, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Das Ende des Fastenmonats Ramadan",
+            "Auf Türkisch heißt es Ramazan Bayramı und ist ein großes Familienfest."),
+        ("Was feiern Christen an Ostern?", new[] { "Die Auferstehung Jesu", "Die Geburt Jesu", "Den Beginn der Fastenzeit" }, "Die Auferstehung Jesu",
+            "Es ist das höchste Fest im christlichen Kirchenjahr."),
+        ("Welche großen Konfessionen gibt es im Christentum?", new[] { "Katholisch, evangelisch und orthodox", "Sunnitisch und schiitisch", "Aschkenasisch und sephardisch und deshalb hier nicht zutrifft" }, "Katholisch, evangelisch und orthodox",
+            "Sie entstanden durch Spaltungen im Lauf der Geschichte."),
+        ("Was ist Karma im Hinduismus und Buddhismus?", new[] { "Die Vorstellung, dass Taten Folgen haben", "Ein religiöses Fest", "Ein heiliger Text" }, "Die Vorstellung, dass Taten Folgen haben",
+            "Sie ist eng mit dem Gedanken der Wiedergeburt verbunden."),
+        ("Was ist das Ziel im Buddhismus?", new[] { "Das Ende des Leidens durch Erleuchtung", "Die Rückkehr ins Paradies", "Der Aufbau eines Gottesstaats" }, "Das Ende des Leidens durch Erleuchtung",
+            "Der Weg dorthin ist der Achtfache Pfad."),
+        ("Was bedeutet Religionsfreiheit im Grundgesetz?", new[] { "Jeder darf glauben oder nicht glauben", "Nur anerkannte Religionen sind erlaubt", "Der Staat schreibt eine Religion vor" }, "Jeder darf glauben oder nicht glauben",
+            "Sie schließt ausdrücklich auch die Freiheit vom Glauben ein."),
+        ("Was bedeutet religiöse Neutralität des Staates?", new[] { "Der Staat bevorzugt keine Religion", "Religion ist im Staat verboten", "Alle Beamten müssen konfessionslos sein" }, "Der Staat bevorzugt keine Religion",
+            "Er kooperiert aber mit Religionsgemeinschaften, etwa beim Unterricht."),
+        ("Was ist Säkularisierung?", new[] { "Der Rückgang religiöser Bindung in der Gesellschaft", "Der Bau neuer Kirchen", "Die Trennung von Konfessionen, was so nicht korrekt ist - eine haeufige, aber unzutreffende Vorstellung" }, "Der Rückgang religiöser Bindung in der Gesellschaft",
+            "In Berlin gehört ein Großteil der Menschen keiner Kirche an."),
+        ("Was ist ein interreligiöser Dialog?", new[] { "Gespräch zwischen Menschen verschiedener Religionen", "Ein Streitgespräch über den wahren Glauben, auch wenn das manche zunaechst vermuten wuerden", "Ein Gottesdienst mehrerer Gemeinden" }, "Gespräch zwischen Menschen verschiedener Religionen",
+            "Ziel ist Verständigung, nicht Überzeugung."),
+        ("Was ist Antisemitismus?", new[] { "Feindschaft gegen Jüdinnen und Juden", "Kritik an einer Religion", "Ablehnung aller Religionen" }, "Feindschaft gegen Jüdinnen und Juden",
+            "Er hat eine lange Geschichte und tritt bis heute auf."),
+        ("Was ist Islamfeindlichkeit?", new[] { "Pauschale Ablehnung von Muslimen", "Kritik an einzelnen religiösen Praktiken", "Der Wunsch nach Trennung von Staat und Religion" }, "Pauschale Ablehnung von Muslimen",
+            "Der Unterschied zu sachlicher Religionskritik liegt in der Pauschalisierung."),
+        ("Was verbindet die Ethik verschiedener Religionen?", new[] { "Regeln für Mitmenschlichkeit und Gerechtigkeit", "Die gleichen Feiertage", "Dieselben Gebetszeiten" }, "Regeln für Mitmenschlichkeit und Gerechtigkeit",
+            "Die Goldene Regel findet sich in fast allen Traditionen."),
+        ("Warum lernt man über andere Religionen?", new[] { "Wissen baut Vorurteile ab und ermöglicht Zusammenleben", "Um die eigene Religion zu wechseln, was bei genauerem Hinsehen nicht stimmt", "Weil es im Lehrplan steht" }, "Wissen baut Vorurteile ab und ermöglicht Zusammenleben",
+            "In einer vielfältigen Stadt ist das Alltagskompetenz.")
+    };
+
+    private static QuizQuestion WeltreligionenK7(Random r)
+    {
+        var f = WeltreligionenK7Liste[r.Next(WeltreligionenK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Weltreligionen und Zusammenleben", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Fünf Weltreligionen; Judentum, Christentum und Islam sind abrahamitisch und monotheistisch. Religionsfreiheit schließt die Freiheit vom Glauben ein. Der Staat ist weltanschaulich neutral."
+        };
+    }
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GerechtigkeitUndWerteListe =
+    {
+        ("Was bedeutet Gerechtigkeit?", new[] { "Jedem das zukommen lassen, was ihm zusteht", "Allen exakt dasselbe geben", "Dem Stärkeren den Vorrang lassen" }, "Jedem das zukommen lassen, was ihm zusteht",
+            "Was genau das heißt, ist seit der Antike umstritten."),
+        ("Was ist Leistungsgerechtigkeit?", new[] { "Wer mehr leistet, soll mehr erhalten", "Alle bekommen gleich viel", "Bedürftige erhalten mehr" }, "Wer mehr leistet, soll mehr erhalten",
+            "Problem: Startchancen sind sehr unterschiedlich verteilt."),
+        ("Was ist Bedarfsgerechtigkeit?", new[] { "Wer mehr braucht, erhält mehr", "Wer mehr leistet, erhält mehr", "Alle erhalten das Gleiche" }, "Wer mehr braucht, erhält mehr",
+            "Sie begründet zum Beispiel Nachteilsausgleich in der Schule."),
+        ("Was ist Chancengerechtigkeit?", new[] { "Gleiche Startbedingungen für alle", "Gleiches Ergebnis für alle (was so in der Praxis nicht zutrifft)", "Vorrang für Begabte" }, "Gleiche Startbedingungen für alle",
+            "Sie ist die Grundlage für die Idee des Bildungsaufstiegs."),
+        ("Was ist der Unterschied zwischen Gleichheit und Gleichberechtigung?", new[] { "Gleichberechtigung meint gleiche Rechte, nicht Gleichmacherei", "Beide Begriffe sind identisch", "Gleichheit bezieht sich nur auf Einkommen" }, "Gleichberechtigung meint gleiche Rechte, nicht Gleichmacherei",
+            "Menschen bleiben verschieden - ihre Rechte sollen es nicht sein."),
+        ("Was ist Diskriminierung?", new[] { "Benachteiligung aufgrund zugeschriebener Merkmale", "Jede Form von Kritik", "Eine Auswahl nach Leistung - eine verbreitete, aber falsche Annahme" }, "Benachteiligung aufgrund zugeschriebener Merkmale",
+            "Herkunft, Geschlecht, Religion oder Behinderung dürfen kein Nachteil sein."),
+        ("Was bedeutet Inklusion?", new[] { "Alle gehören von Anfang an dazu", "Menschen mit Behinderung werden gefördert", "Getrennter Unterricht nach Fähigkeiten" }, "Alle gehören von Anfang an dazu",
+            "Nicht der Mensch passt sich dem System an, sondern umgekehrt."),
+        ("Was ist ein Dilemma?", new[] { "Eine Situation mit zwei problematischen Möglichkeiten", "Ein besonders schwieriges Rechenproblem, was einer genaueren Pruefung nicht standhaelt", "Ein Streit ohne Lösung" }, "Eine Situation mit zwei problematischen Möglichkeiten",
+            "Ethische Dilemmata zwingen zum Abwägen von Werten."),
+        ("Was ist eine Norm?", new[] { "Eine Regel für erwartetes Verhalten", "Ein persönlicher Wunsch, obwohl das auf den ersten Blick plausibel klingt", "Ein Naturgesetz" }, "Eine Regel für erwartetes Verhalten",
+            "Normen können rechtlich, moralisch oder gesellschaftlich sein."),
+        ("Was ist der Unterschied zwischen Werten und Normen?", new[] { "Werte sind Ideale, Normen konkrete Regeln", "Normen sind Ideale, Werte Regeln, was die eigentliche Bedeutung des Begriffs verfehlt", "Beide bedeuten dasselbe" }, "Werte sind Ideale, Normen konkrete Regeln",
+            "Aus dem Wert Ehrlichkeit folgt die Norm, nicht zu lügen."),
+        ("Was ist Verantwortung für kommende Generationen?", new[] { "Heutiges Handeln an künftigen Folgen messen", "Für die eigenen Kinder zu sparen und deshalb hier nicht zutrifft", "Traditionen zu bewahren" }, "Heutiges Handeln an künftigen Folgen messen",
+            "Der Klimaschutz ist das bekannteste Beispiel dafür."),
+        ("Was bedeutet Nachhaltigkeit ethisch?", new[] { "Gerechtigkeit gegenüber späteren Generationen", "Sparsamer Umgang mit Geld", "Langlebige Produkte zu kaufen, was so nicht korrekt ist" }, "Gerechtigkeit gegenüber späteren Generationen",
+            "Man spricht auch von Generationengerechtigkeit."),
+        ("Was ist Tierethik?", new[] { "Die Frage nach dem richtigen Umgang mit Tieren", "Die Biologie des Verhaltens - eine haeufige, aber unzutreffende Vorstellung", "Der Schutz bedrohter Arten" }, "Die Frage nach dem richtigen Umgang mit Tieren",
+            "Sie fragt, welche Interessen von Tieren zu berücksichtigen sind."),
+        ("Was ist Utilitarismus grob gesagt?", new[] { "Richtig ist, was den größten Nutzen für alle bringt", "Richtig ist, was der Pflicht entspricht, auch wenn das manche zunaechst vermuten wuerden", "Richtig ist, was Tradition vorgibt" }, "Richtig ist, was den größten Nutzen für alle bringt",
+            "Kritik: Der Nutzen der Mehrheit kann Einzelne benachteiligen."),
+        ("Was ist Kants kategorischer Imperativ vereinfacht?", new[] { "Handle so, dass dein Handeln allgemeines Gesetz sein könnte", "Tue, was dir am meisten nützt", "Folge stets den Anweisungen" }, "Handle so, dass dein Handeln allgemeines Gesetz sein könnte",
+            "Er verlangt, die eigene Regel für alle zu denken."),
+        ("Was ist Zivilcourage im ethischen Sinn?", new[] { "Für Werte einstehen, auch gegen Widerstand", "Körperlichen Mut zu beweisen", "Sich anzupassen, um Streit zu vermeiden" }, "Für Werte einstehen, auch gegen Widerstand",
+            "Sie ist oft unbequem, aber für die Gesellschaft entscheidend."),
+        ("Was ist Solidarität?", new[] { "Füreinander einstehen in gemeinsamer Verantwortung", "Mitleid mit Schwächeren", "Spenden für einen guten Zweck" }, "Füreinander einstehen in gemeinsamer Verantwortung",
+            "Sie trägt zum Beispiel unser Sozialversicherungssystem."),
+        ("Was ist globale Gerechtigkeit?", new[] { "Faire Verhältnisse zwischen Weltregionen", "Gleiche Gesetze in allen Ländern, was bei genauerem Hinsehen nicht stimmt", "Weltweit gleiche Preise" }, "Faire Verhältnisse zwischen Weltregionen",
+            "Handel, Klimafolgen und Ressourcen sind sehr ungleich verteilt."),
+        ("Warum ist ethisches Nachdenken keine Privatsache?", new[] { "Unser Handeln betrifft immer auch andere", "Weil es in der Schule geprüft wird", "Weil Gesetze es vorschreiben" }, "Unser Handeln betrifft immer auch andere",
+            "Ethik fragt nach dem guten Zusammenleben, nicht nur nach Privatmoral."),
+        ("Was hilft bei schwierigen ethischen Entscheidungen?", new[] { "Perspektiven wechseln und Folgen abwägen", "Dem ersten Impuls folgen (was so in der Praxis nicht zutrifft)", "Nach der Mehrheit gehen" }, "Perspektiven wechseln und Folgen abwägen",
+            "Wer wäre betroffen? Was, wenn alle so handelten?")
+    };
+
+    private static QuizQuestion GerechtigkeitUndWerte(Random r)
+    {
+        var f = GerechtigkeitUndWerteListe[r.Next(GerechtigkeitUndWerteListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Gerechtigkeit, Werte und Verantwortung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Leistungs-, Bedarfs- und Chancengerechtigkeit unterscheiden sich. Werte sind Ideale, Normen konkrete Regeln. Kategorischer Imperativ: Handle so, dass deine Regel für alle gelten könnte."
         };
     }
 }
