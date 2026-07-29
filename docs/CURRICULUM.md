@@ -117,16 +117,16 @@ Rahmenlehrplan" weiter unten).
 
 ## Biologie (`BiologieGenerator.cs`)
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Der menschliche Körper | Zellbiologie |
-| Fotosynthese | Vererbung (Genetik) |
-| Wirbeltierklassen | Ökosysteme |
-| Pubertät und Entwicklung | Gesundheit und Krankheit (Immunologie) |
-| Die Zelle | Bau und Funktion des Nervensystems |
-| Lebensräume und ihre Bewohner (Nahrungsketten) | Sucht und Suchtprävention |
-| | Vererbung beim Menschen (Humangenetik) |
-| | Evolution – Theorien und Stammesgeschichte |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Der menschliche Körper | Zelle und Zellteilung | Zellbiologie |
+| Fotosynthese | Fotosynthese und Zellatmung | Vererbung (Genetik) |
+| Wirbeltierklassen | Sinnesorgane und Reizverarbeitung | Ökosysteme |
+| Pubertät und Entwicklung | Blut und Blutkreislauf | Gesundheit und Krankheit (Immunologie) |
+| Die Zelle | Ökosystem Wald | Bau und Funktion des Nervensystems |
+| Lebensräume und ihre Bewohner (Nahrungsketten) | Angepasstheit an Lebensräume | Sucht und Suchtprävention |
+| | | Vererbung beim Menschen (Humangenetik) |
+| | | Evolution – Theorien und Stammesgeschichte |
 
 ## Englisch (`EnglischGenerator.cs`)
 

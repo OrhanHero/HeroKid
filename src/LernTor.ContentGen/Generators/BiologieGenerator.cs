@@ -3,7 +3,9 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Biologie nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen) und Klasse 9 (vertieft).</summary>
+/// <summary>Biologie nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen), Klasse 7 (Aufbau:
+/// Zellteilung, Stoffwechsel, Sinne, Blutkreislauf, Ökosystem, Angepasstheit) und Klasse 9
+/// (vertieft).</summary>
 public sealed class BiologieGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Biologie;
@@ -12,6 +14,7 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung, Zelle, LebensraeumeUndNahrungsketten },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { ZelleUndZellteilung, StoffwechselPflanzeTier, Sinnesorgane, BlutUndKreislauf, OekosystemWald, AngepasstheitLebensraum },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem, Immunsystem, Nervensystem, SuchtUndSuchtpraevention, Humangenetik, Evolution }
         };
 
@@ -783,6 +786,347 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Topic = "Lebensräume und ihre Bewohner (Nahrungsketten)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Nahrungsketten laufen meist: Produzent (Pflanze) → Konsument (Pflanzenfresser) → Konsument (Fleischfresser) → Destruenten zersetzen am Ende alles wieder."
+        };
+    }
+
+    // ----- Klasse 7 -----
+    // Distraktoren sind hier bewusst ähnlich lang wie die richtige Antwort formuliert -
+    // "die längste Option ist die richtige" war ein real ausgenutztes Muster
+    // (siehe scripts/check-answer-length-bias.py).
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ZellteilungListe =
+    {
+        ("Wozu teilen sich Zellen in einem Lebewesen?", new[] { "Für Wachstum und den Ersatz verbrauchter Zellen", "Damit der Körper insgesamt leichter wird", "Um die Körpertemperatur konstant zu halten (was so in der Praxis nicht zutrifft)" }, "Für Wachstum und den Ersatz verbrauchter Zellen",
+            "Durch Zellteilung wächst ein Lebewesen und ersetzt ständig alte oder beschädigte Zellen - z.B. Haut und Blut."),
+        ("Was entsteht bei einer normalen Zellteilung (Mitose)?", new[] { "Zwei Zellen mit identischem Erbgut", "Zwei Zellen mit völlig verschiedenem Erbgut", "Eine große Zelle mit doppeltem Zellkern" }, "Zwei Zellen mit identischem Erbgut",
+            "Bei der Mitose wird das Erbgut zuerst verdoppelt und dann gleichmäßig auf zwei identische Tochterzellen verteilt."),
+        ("Warum muss sich das Erbgut vor der Zellteilung verdoppeln?", new[] { "Damit beide Tochterzellen einen vollständigen Satz erhalten", "Weil der Zellkern sonst zu klein zum Teilen wäre - eine verbreitete, aber falsche Annahme", "Damit die Zelle danach schneller wachsen kann" }, "Damit beide Tochterzellen einen vollständigen Satz erhalten",
+            "Ohne Verdopplung bekäme jede Tochterzelle nur die Hälfte der Erbinformation und wäre nicht funktionsfähig."),
+        ("Wo im Körper teilen sich Zellen besonders häufig?", new[] { "In Haut, Schleimhaut und im Knochenmark", "Ausschließlich in den Zähnen und Haaren", "Vor allem im Fettgewebe am Bauch" }, "In Haut, Schleimhaut und im Knochenmark",
+            "Gewebe mit hohem Verschleiß erneuert sich ständig - deshalb heilen Schürfwunden auch so schnell."),
+        ("Was ist die Erbinformation einer Zelle chemisch gesehen?", new[] { "Die DNA in den Chromosomen des Zellkerns", "Ein Eiweiß in der Zellmembran", "Der Zuckervorrat in den Vakuolen, was einer genaueren Pruefung nicht standhaelt" }, "Die DNA in den Chromosomen des Zellkerns",
+            "Die DNA ist der Bauplan des Lebewesens; sie liegt aufgewickelt als Chromosomen im Zellkern."),
+        ("Was sind Chromosomen?", new[] { "Verpackte Träger der Erbinformation im Zellkern", "Kleine Kraftwerke für die Energiegewinnung", "Poren zum Stofftransport durch die Membran" }, "Verpackte Träger der Erbinformation im Zellkern",
+            "Vor der Teilung wickelt sich die DNA zu Chromosomen auf - so lässt sie sich sauber verteilen."),
+        ("Wie viele Chromosomen hat eine normale menschliche Körperzelle?", new[] { "46 Chromosomen (23 Paare)", "23 Chromosomen (ohne Paare)", "92 Chromosomen (46 Paare)" }, "46 Chromosomen (23 Paare)",
+            "Menschen haben 46 Chromosomen: je 23 von der Mutter und 23 vom Vater."),
+        ("Was unterscheidet eine Pflanzenzelle von einer Tierzelle?", new[] { "Zellwand, Chloroplasten und große Vakuole", "Zellkern, Zellmembran und Cytoplasma, obwohl das auf den ersten Blick plausibel klingt", "Mitochondrien, Ribosomen und Enzyme" }, "Zellwand, Chloroplasten und große Vakuole",
+            "Zellkern, Membran und Cytoplasma haben beide - nur Zellwand, Chloroplasten und die große Vakuole sind pflanzentypisch."),
+        ("Welche Aufgabe hat die Zellmembran?", new[] { "Sie steuert, welche Stoffe hinein und hinaus dürfen", "Sie stellt die gesamte Energie der Zelle her", "Sie speichert die komplette Erbinformation" }, "Sie steuert, welche Stoffe hinein und hinaus dürfen",
+            "Die Zellmembran ist eine selektive Grenze: Nährstoffe hinein, Abfallstoffe hinaus."),
+        ("Was passiert in den Mitochondrien?", new[] { "Aus Nährstoffen wird nutzbare Energie gewonnen", "Die Erbinformation wird dauerhaft gespeichert", "Wasser wird für Trockenzeiten eingelagert" }, "Aus Nährstoffen wird nutzbare Energie gewonnen",
+            "Mitochondrien sind die Kraftwerke der Zelle - dort läuft die Zellatmung ab."),
+        ("Warum werden Mitochondrien als 'Kraftwerke' bezeichnet?", new[] { "Weil sie Nährstoffe in Energie für die Zelle umwandeln", "Weil sie elektrischen Strom für Nerven erzeugen, was die eigentliche Bedeutung des Begriffs verfehlt", "Weil sie die Zelle bei Kälte aufheizen können" }, "Weil sie Nährstoffe in Energie für die Zelle umwandeln",
+            "Sie verbrennen Traubenzucker mit Sauerstoff und liefern so die Energie für alle Zellvorgänge."),
+        ("Welche Zellen enthalten besonders viele Mitochondrien?", new[] { "Muskelzellen, weil sie viel Energie brauchen", "Hautzellen, weil sie außen liegen", "Fettzellen, weil sie Vorräte lagern" }, "Muskelzellen, weil sie viel Energie brauchen",
+            "Je höher der Energiebedarf eines Gewebes, desto mehr Mitochondrien enthalten seine Zellen."),
+        ("Wozu dient die große Vakuole einer Pflanzenzelle?", new[] { "Sie speichert Wasser und gibt der Zelle Festigkeit", "Sie erzeugt den grünen Farbstoff der Blätter", "Sie transportiert Zucker in die Wurzeln" }, "Sie speichert Wasser und gibt der Zelle Festigkeit",
+            "Ist die Vakuole prall gefüllt, steht die Pflanze stramm - fehlt Wasser, lässt sie die Blätter hängen."),
+        ("Warum welkt eine Pflanze bei Wassermangel?", new[] { "Die Vakuolen schrumpfen und der Zelldruck fällt ab", "Die Zellwände lösen sich vollständig auf", "Die Chloroplasten wandern aus den Blättern" }, "Die Vakuolen schrumpfen und der Zelldruck fällt ab",
+            "Der Innendruck der Zellen hält die Pflanze aufrecht - fehlt Wasser, sinkt der Druck und sie welkt."),
+        ("Was ist ein Gewebe?", new[] { "Ein Verband gleichartiger Zellen mit gleicher Aufgabe", "Eine einzelne Zelle mit besonders vielen Kernen", "Die feste Außenhülle eines ganzen Organs" }, "Ein Verband gleichartiger Zellen mit gleicher Aufgabe",
+            "Gleichartige Zellen bilden Gewebe, mehrere Gewebe bilden ein Organ (z.B. Muskelgewebe im Herzen)."),
+        ("Wie ordnet man die Ebenen vom Kleinen zum Großen richtig?", new[] { "Zelle - Gewebe - Organ - Organismus", "Organ - Zelle - Gewebe - Organismus", "Gewebe - Organismus - Zelle - Organ" }, "Zelle - Gewebe - Organ - Organismus",
+            "Zellen bilden Gewebe, Gewebe bilden Organe, Organe bilden zusammen den Organismus."),
+        ("Womit macht man Zellen im Unterricht sichtbar?", new[] { "Mit einem Lichtmikroskop und einem Präparat", "Mit einer starken Lupe im Sonnenlicht", "Mit bloßem Auge bei guter Beleuchtung" }, "Mit einem Lichtmikroskop und einem Präparat",
+            "Zellen sind meist unter 0,1 mm groß - dafür braucht man ein Mikroskop, oft mit Färbung."),
+        ("Warum färbt man Zellpräparate oft ein?", new[] { "Damit farblose Zellteile überhaupt sichtbar werden", "Damit die Zellen unter dem Glas länger leben und deshalb hier nicht zutrifft", "Damit das Mikroskop stärker vergrößern kann" }, "Damit farblose Zellteile überhaupt sichtbar werden",
+            "Viele Zellstrukturen sind durchsichtig - Farbstoffe machen z.B. den Zellkern gut erkennbar."),
+        ("Was ist typisch für einen Tumor?", new[] { "Zellen teilen sich unkontrolliert weiter", "Zellen hören vollständig auf, sich zu teilen", "Zellen wandeln sich in Knochengewebe um" }, "Zellen teilen sich unkontrolliert weiter",
+            "Normalerweise wird die Zellteilung streng gesteuert - fällt diese Steuerung aus, wächst ein Tumor."),
+        ("Warum ist eine einzelne Zelle bereits ein Lebewesen sein können?", new[] { "Weil sie alle Kennzeichen des Lebens erfüllt", "Weil sie größer als ein Bakterium ist", "Weil sie immer einen Zellkern besitzt" }, "Weil sie alle Kennzeichen des Lebens erfüllt",
+            "Einzeller wie das Pantoffeltierchen bewegen sich, ernähren sich, wachsen und vermehren sich - alles in einer Zelle.")
+    };
+
+    private static QuizQuestion ZelleUndZellteilung(Random r)
+    {
+        var f = ZellteilungListe[r.Next(ZellteilungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Zelle und Zellteilung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Zellkern = Erbinformation (DNA/Chromosomen), Mitochondrien = Energie, Membran = Grenze. Pflanzenzellen haben zusätzlich Zellwand, Chloroplasten und Vakuole."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StoffwechselListe =
+    {
+        ("Welche Stoffe braucht eine Pflanze für die Fotosynthese?", new[] { "Wasser, Kohlenstoffdioxid und Lichtenergie", "Sauerstoff, Traubenzucker und Wärme", "Stickstoff, Mineralsalze und Dunkelheit, was so nicht korrekt ist" }, "Wasser, Kohlenstoffdioxid und Lichtenergie",
+            "Aus Wasser und CO2 baut die Pflanze mit Lichtenergie Traubenzucker auf - Sauerstoff entsteht dabei als Nebenprodukt."),
+        ("Was entsteht bei der Fotosynthese?", new[] { "Traubenzucker und Sauerstoff", "Kohlenstoffdioxid und Wasser", "Eiweiß und Mineralsalze" }, "Traubenzucker und Sauerstoff",
+            "Fotosynthese: Wasser + CO2 + Licht → Traubenzucker + Sauerstoff."),
+        ("In welchem Zellteil läuft die Fotosynthese ab?", new[] { "In den Chloroplasten", "In den Mitochondrien", "Im Zellkern" }, "In den Chloroplasten",
+            "Die Chloroplasten enthalten den grünen Farbstoff Chlorophyll, der das Sonnenlicht einfängt."),
+        ("Welche Aufgabe hat das Chlorophyll?", new[] { "Es fängt Lichtenergie für die Fotosynthese ein", "Es transportiert Wasser aus der Wurzel", "Es speichert Zucker über den Winter" }, "Es fängt Lichtenergie für die Fotosynthese ein",
+            "Chlorophyll absorbiert vor allem rotes und blaues Licht - grünes wirft es zurück, deshalb sehen Blätter grün aus."),
+        ("Was passiert bei der Zellatmung?", new[] { "Traubenzucker wird mit Sauerstoff zu Energie abgebaut", "Aus Licht und Wasser wird Traubenzucker aufgebaut", "Mineralsalze werden in Eiweiße umgewandelt" }, "Traubenzucker wird mit Sauerstoff zu Energie abgebaut",
+            "Zellatmung: Traubenzucker + Sauerstoff → CO2 + Wasser + Energie. Sie läuft in den Mitochondrien ab."),
+        ("Wie hängen Fotosynthese und Zellatmung zusammen?", new[] { "Sie sind Gegenspieler - was die eine aufbaut, baut die andere ab", "Sie laufen beide nur bei Sonnenlicht ab", "Sie finden beide ausschließlich in Wurzeln statt - eine haeufige, aber unzutreffende Vorstellung" }, "Sie sind Gegenspieler - was die eine aufbaut, baut die andere ab",
+            "Fotosynthese baut Zucker auf und setzt Sauerstoff frei, Zellatmung baut Zucker unter Sauerstoffverbrauch wieder ab."),
+        ("Betreiben Pflanzen auch Zellatmung?", new[] { "Ja, ununterbrochen - Tag und Nacht", "Nein, sie betreiben nur Fotosynthese", "Nur im Winter bei Kälte" }, "Ja, ununterbrochen - Tag und Nacht",
+            "Auch Pflanzen brauchen Energie für ihre Zellen - deshalb atmen sie rund um die Uhr, zusätzlich zur Fotosynthese am Tag."),
+        ("Warum geben Pflanzen tagsüber netto Sauerstoff ab?", new[] { "Die Fotosynthese läuft stärker als die Zellatmung", "Sie stellen die Zellatmung bei Licht ganz ein", "Sie nehmen tagsüber gar kein Kohlenstoffdioxid auf" }, "Die Fotosynthese läuft stärker als die Zellatmung",
+            "Am Tag produziert die Fotosynthese mehr Sauerstoff, als die Zellatmung gleichzeitig verbraucht."),
+        ("Wodurch nimmt ein Blatt Kohlenstoffdioxid auf?", new[] { "Durch kleine Spaltöffnungen an der Blattunterseite", "Durch die Wurzelhaare tief in der Erde, auch wenn das manche zunaechst vermuten wuerden", "Durch die feste Rinde am Baumstamm" }, "Durch kleine Spaltöffnungen an der Blattunterseite",
+            "Spaltöffnungen (Stomata) regeln den Gasaustausch und die Wasserabgabe des Blattes."),
+        ("Warum schließt eine Pflanze bei Hitze ihre Spaltöffnungen?", new[] { "Um weniger Wasser zu verdunsten", "Um mehr Sonnenlicht aufzunehmen", "Um schneller wachsen zu können" }, "Um weniger Wasser zu verdunsten",
+            "Geschlossene Spaltöffnungen schützen vor Austrocknung - dafür stockt vorübergehend die Fotosynthese."),
+        ("Wozu dient der bei der Fotosynthese gebildete Traubenzucker?", new[] { "Als Energie- und Baustoff für die ganze Pflanze", "Ausschließlich als Vorrat für die Samen, was bei genauerem Hinsehen nicht stimmt", "Nur zur Färbung der Blüten" }, "Als Energie- und Baustoff für die ganze Pflanze",
+            "Aus Traubenzucker baut die Pflanze Stärke, Zellwände und weitere Stoffe - und gewinnt daraus Energie."),
+        ("Als was speichert eine Pflanze überschüssigen Zucker?", new[] { "Als Stärke, zum Beispiel in der Kartoffel", "Als Fett in den Blattadern", "Als Eiweiß in der Rinde" }, "Als Stärke, zum Beispiel in der Kartoffel",
+            "Stärke ist die Speicherform - deshalb weist man sie mit Jod-Lösung in Kartoffeln nach."),
+        ("Wie weist man Stärke in einem Blatt nach?", new[] { "Mit Jod-Kaliumjodid-Lösung, sie färbt blau-schwarz", "Mit Kalkwasser, es wird milchig trüb", "Mit einer Glimmspanprobe, sie flammt auf" }, "Mit Jod-Kaliumjodid-Lösung, sie färbt blau-schwarz",
+            "Jod färbt Stärke blau-schwarz. Kalkwasser weist CO2 nach, die Glimmspanprobe Sauerstoff."),
+        ("Womit weist man Kohlenstoffdioxid nach?", new[] { "Mit Kalkwasser, das milchig trüb wird", "Mit Jod-Lösung, die blau-schwarz wird", "Mit einem glimmenden Span, der aufflammt" }, "Mit Kalkwasser, das milchig trüb wird",
+            "CO2 lässt Kalkwasser milchig ausfallen - ein Standardnachweis im Unterricht."),
+        ("Warum sind Pflanzen die Grundlage fast jeder Nahrungskette?", new[] { "Nur sie bauen aus Licht energiereiche Stoffe auf", "Sie sind die größten Lebewesen der Erde", "Sie brauchen selbst überhaupt keine Energie (was so in der Praxis nicht zutrifft)" }, "Nur sie bauen aus Licht energiereiche Stoffe auf",
+            "Pflanzen sind Produzenten: Alle Konsumenten leben direkt oder indirekt von dem, was Pflanzen aufbauen."),
+        ("Was bedeutet der Begriff 'Produzent' im Ökosystem?", new[] { "Ein Lebewesen, das organische Stoffe selbst aufbaut", "Ein Tier, das andere Tiere erbeutet", "Ein Pilz, der abgestorbenes Material zersetzt" }, "Ein Lebewesen, das organische Stoffe selbst aufbaut",
+            "Produzenten (grüne Pflanzen, Algen) bauen aus anorganischen Stoffen Biomasse auf."),
+        ("Warum nennt man Wälder oft die 'grüne Lunge'?", new[] { "Sie geben viel Sauerstoff ab und binden CO2", "Sie filtern das Grundwasser für Städte - eine verbreitete, aber falsche Annahme", "Sie erzeugen Wind für kühlere Luft" }, "Sie geben viel Sauerstoff ab und binden CO2",
+            "Durch Fotosynthese binden Wälder große Mengen CO2 und setzen Sauerstoff frei - wichtig fürs Klima."),
+        ("Was braucht der Mensch aus der Nahrung als Energielieferanten?", new[] { "Kohlenhydrate, Fette und Eiweiße", "Vitamine, Wasser und Mineralstoffe", "Ballaststoffe, Salz und Sauerstoff" }, "Kohlenhydrate, Fette und Eiweiße",
+            "Nur diese drei Nährstoffgruppen liefern Energie. Vitamine und Mineralstoffe sind lebenswichtig, aber energiefrei."),
+        ("Welche Rolle spielt Sauerstoff bei der menschlichen Ernährung?", new[] { "Er wird gebraucht, um Nährstoffe zu Energie abzubauen", "Er liefert selbst die meiste Energie", "Er ersetzt bei Sport die Kohlenhydrate" }, "Er wird gebraucht, um Nährstoffe zu Energie abzubauen",
+            "Ohne Sauerstoff kann die Zellatmung nicht ablaufen - deshalb atmen wir beim Sport schneller."),
+        ("Was verbindet Atmung, Blutkreislauf und Verdauung?", new[] { "Sie versorgen gemeinsam jede Zelle mit Energie", "Sie arbeiten völlig unabhängig voneinander", "Sie sind nur bei körperlicher Anstrengung aktiv" }, "Sie versorgen gemeinsam jede Zelle mit Energie",
+            "Verdauung liefert Nährstoffe, Atmung den Sauerstoff, das Blut bringt beides zu jeder Zelle.")
+    };
+
+    private static QuizQuestion StoffwechselPflanzeTier(Random r)
+    {
+        var f = StoffwechselListe[r.Next(StoffwechselListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Fotosynthese und Zellatmung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Fotosynthese: Wasser + CO2 + Licht → Zucker + Sauerstoff (in Chloroplasten). Zellatmung: Zucker + Sauerstoff → CO2 + Wasser + Energie (in Mitochondrien). Sie sind Gegenspieler."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SinnesorganeListe =
+    {
+        ("Welche fünf Sinne besitzt der Mensch klassischerweise?", new[] { "Sehen, Hören, Riechen, Schmecken, Tasten", "Sehen, Hören, Sprechen, Denken, Tasten", "Riechen, Schmecken, Atmen, Fühlen, Sehen" }, "Sehen, Hören, Riechen, Schmecken, Tasten",
+            "Jedem Sinn ist ein Sinnesorgan zugeordnet: Auge, Ohr, Nase, Zunge und Haut."),
+        ("Wo im Auge entsteht das scharfe Bild?", new[] { "Auf der Netzhaut am Augenhintergrund", "Auf der Hornhaut ganz vorne", "In der Regenbogenhaut in der Mitte, was einer genaueren Pruefung nicht standhaelt" }, "Auf der Netzhaut am Augenhintergrund",
+            "Linse und Hornhaut bündeln das Licht so, dass auf der Netzhaut ein scharfes Bild entsteht."),
+        ("Welche Aufgabe hat die Pupille?", new[] { "Sie lässt je nach Helligkeit mehr oder weniger Licht ein", "Sie erzeugt die Farbe der Augen", "Sie schützt das Auge vor Staub" }, "Sie lässt je nach Helligkeit mehr oder weniger Licht ein",
+            "Die Pupille ist die Öffnung in der Regenbogenhaut; bei Dunkelheit weitet sie sich."),
+        ("Wie stellt das Auge auf nahe Gegenstände scharf?", new[] { "Die Linse wird durch Muskeln stärker gewölbt", "Die Netzhaut verschiebt sich nach hinten, obwohl das auf den ersten Blick plausibel klingt", "Die Pupille verschließt sich vollständig" }, "Die Linse wird durch Muskeln stärker gewölbt",
+            "Diese Anpassung heißt Akkommodation - die Linse verändert ihre Brechkraft."),
+        ("Was unterscheidet Stäbchen von Zapfen in der Netzhaut?", new[] { "Stäbchen sehen hell-dunkel, Zapfen sehen Farben", "Stäbchen sehen Farben, Zapfen nur Bewegung, was die eigentliche Bedeutung des Begriffs verfehlt", "Beide leisten exakt dasselbe im Auge" }, "Stäbchen sehen hell-dunkel, Zapfen sehen Farben",
+            "Deshalb erscheint bei Dämmerung alles grau: Dann arbeiten fast nur noch die Stäbchen."),
+        ("Warum sieht man im Dunkeln kaum Farben?", new[] { "Die farbempfindlichen Zapfen brauchen mehr Licht", "Die Netzhaut schaltet nachts vollständig ab", "Farben verschwinden bei Dunkelheit tatsächlich" }, "Die farbempfindlichen Zapfen brauchen mehr Licht",
+            "Zapfen arbeiten erst ab einer gewissen Helligkeit - nachts übernehmen die lichtempfindlicheren Stäbchen."),
+        ("Was ist Kurzsichtigkeit?", new[] { "Der Augapfel ist zu lang, Fernes wird unscharf", "Der Augapfel ist zu kurz, Nahes wird unscharf", "Die Netzhaut fehlt an einer Stelle völlig" }, "Der Augapfel ist zu lang, Fernes wird unscharf",
+            "Bei Kurzsichtigkeit entsteht das Bild vor der Netzhaut - eine Zerstreuungslinse korrigiert das."),
+        ("Wie gelangt Schall zum Trommelfell?", new[] { "Durch die Ohrmuschel und den Gehörgang", "Direkt durch den Schädelknochen ins Innenohr", "Über die Ohrtrompete aus dem Rachen" }, "Durch die Ohrmuschel und den Gehörgang",
+            "Die Ohrmuschel sammelt den Schall, der Gehörgang leitet ihn zum Trommelfell, das zu schwingen beginnt."),
+        ("Welche Aufgabe haben die Gehörknöchelchen?", new[] { "Sie verstärken die Schwingungen des Trommelfells", "Sie erzeugen selbst Töne für das Innenohr", "Sie halten das Gleichgewicht beim Gehen" }, "Sie verstärken die Schwingungen des Trommelfells",
+            "Hammer, Amboss und Steigbügel übertragen und verstärken die Schwingung zum Innenohr."),
+        ("Wo werden Schallschwingungen in Nervensignale umgewandelt?", new[] { "In der Schnecke des Innenohrs", "Im Trommelfell des Mittelohrs", "In der Ohrmuschel des Außenohrs" }, "In der Schnecke des Innenohrs",
+            "In der flüssigkeitsgefüllten Schnecke reizen die Schwingungen feine Haarsinneszellen."),
+        ("Warum kann laute Musik das Gehör dauerhaft schädigen?", new[] { "Die feinen Haarsinneszellen sterben unwiederbringlich ab", "Das Trommelfell wächst dauerhaft zusammen", "Die Gehörknöchelchen verschmelzen miteinander und deshalb hier nicht zutrifft" }, "Die feinen Haarsinneszellen sterben unwiederbringlich ab",
+            "Zerstörte Haarsinneszellen wachsen nicht nach - Hörschäden durch Lärm sind endgültig."),
+        ("Welches Organ ist zusätzlich für das Gleichgewicht zuständig?", new[] { "Die Bogengänge im Innenohr", "Die Zunge im Mundraum", "Die Nasenschleimhaut" }, "Die Bogengänge im Innenohr",
+            "Die drei Bogengänge melden Drehbewegungen des Kopfes ans Gehirn."),
+        ("Wie funktioniert der Geruchssinn?", new[] { "Duftstoffe reizen Riechzellen in der Nasenschleimhaut", "Die Nase misst die Temperatur der Atemluft", "Der Rachen filtert Gerüche aus der Nahrung" }, "Duftstoffe reizen Riechzellen in der Nasenschleimhaut",
+            "In der Luft gelöste Duftmoleküle docken an Riechzellen an, die Signale ans Gehirn senden."),
+        ("Warum schmeckt Essen bei Schnupfen fade?", new[] { "Weil der Geruchssinn stark am Schmecken beteiligt ist", "Weil die Zunge bei Krankheit anschwillt, was so nicht korrekt ist", "Weil der Magen weniger Säure bildet" }, "Weil der Geruchssinn stark am Schmecken beteiligt ist",
+            "Der volle Geschmack entsteht aus Schmecken UND Riechen - fällt die Nase aus, bleibt wenig übrig."),
+        ("Welche Geschmacksrichtungen erkennt die Zunge?", new[] { "Süß, sauer, salzig, bitter und umami", "Süß, scharf, heiß, kalt und salzig", "Sauer, bitter, würzig, fettig und frisch" }, "Süß, sauer, salzig, bitter und umami",
+            "Scharf ist übrigens kein Geschmack, sondern ein Schmerzreiz."),
+        ("Warum ist der Tastsinn an den Fingerspitzen besonders fein?", new[] { "Dort liegen besonders viele Tastkörperchen dicht beieinander", "Dort ist die Haut deutlich dicker als anderswo - eine haeufige, aber unzutreffende Vorstellung", "Dort verlaufen die größten Blutgefäße" }, "Dort liegen besonders viele Tastkörperchen dicht beieinander",
+            "Je dichter die Sinneszellen sitzen, desto genauer kann man mit dieser Körperstelle tasten."),
+        ("Wie läuft der Weg eines Reizes im Körper?", new[] { "Sinnesorgan - Nerv - Gehirn - Reaktion", "Gehirn - Sinnesorgan - Muskel - Nerv, auch wenn das manche zunaechst vermuten wuerden", "Muskel - Nerv - Sinnesorgan - Gehirn" }, "Sinnesorgan - Nerv - Gehirn - Reaktion",
+            "Das Sinnesorgan nimmt den Reiz auf, Nerven leiten ihn weiter, das Gehirn verarbeitet und löst die Reaktion aus."),
+        ("Was ist bei einem Reflex anders?", new[] { "Die Reaktion läuft ohne Umweg über das Gehirn ab", "Die Reaktion dauert deutlich länger als sonst", "Der Reiz wird vom Gehirn bewusst geprüft" }, "Die Reaktion läuft ohne Umweg über das Gehirn ab",
+            "Beim Reflex schaltet das Rückenmark direkt um - deshalb zieht man die Hand blitzschnell von der Herdplatte."),
+        ("Wozu dient eine Sonnenbrille aus biologischer Sicht?", new[] { "Sie schützt die Netzhaut vor schädlicher UV-Strahlung", "Sie verbessert dauerhaft die Sehschärfe", "Sie verhindert das Anschwellen der Pupille" }, "Sie schützt die Netzhaut vor schädlicher UV-Strahlung",
+            "UV-Licht kann Hornhaut und Netzhaut schädigen - guter UV-Schutz ist wichtiger als dunkle Gläser."),
+        ("Warum sind Sinnesorgane für das Überleben wichtig?", new[] { "Sie melden Gefahren und Veränderungen der Umwelt", "Sie erzeugen die Energie für alle Bewegungen, was bei genauerem Hinsehen nicht stimmt", "Sie ersetzen bei Bedarf beschädigte Organe" }, "Sie melden Gefahren und Veränderungen der Umwelt",
+            "Nur wer Reize wahrnimmt, kann rechtzeitig reagieren - das gilt für Menschen wie für Tiere.")
+    };
+
+    private static QuizQuestion Sinnesorgane(Random r)
+    {
+        var f = SinnesorganeListe[r.Next(SinnesorganeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Sinnesorgane und Reizverarbeitung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Auge: Linse bündelt, Netzhaut mit Stäbchen (hell-dunkel) und Zapfen (Farbe). Ohr: Trommelfell - Gehörknöchelchen - Schnecke. Reizweg: Sinnesorgan → Nerv → Gehirn → Reaktion."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] BlutkreislaufListe =
+    {
+        ("Woraus besteht Blut hauptsächlich?", new[] { "Blutplasma, rote und weiße Blutkörperchen, Blutplättchen", "Nur aus Wasser mit gelösten Mineralsalzen", "Aus Lymphe, Gewebswasser und Eiweißen" }, "Blutplasma, rote und weiße Blutkörperchen, Blutplättchen",
+            "Etwa 55% Plasma (Flüssigkeit) und 45% Zellen - jede Sorte mit eigener Aufgabe."),
+        ("Welche Aufgabe haben rote Blutkörperchen?", new[] { "Sie transportieren Sauerstoff durch den Körper", "Sie bekämpfen eingedrungene Krankheitserreger (was so in der Praxis nicht zutrifft)", "Sie verschließen Wunden bei Verletzungen" }, "Sie transportieren Sauerstoff durch den Körper",
+            "Der rote Blutfarbstoff Hämoglobin bindet Sauerstoff in der Lunge und gibt ihn im Gewebe ab."),
+        ("Welche Aufgabe haben weiße Blutkörperchen?", new[] { "Sie bekämpfen Krankheitserreger im Körper", "Sie transportieren Sauerstoff zu den Zellen", "Sie lassen Wunden schneller verkrusten" }, "Sie bekämpfen Krankheitserreger im Körper",
+            "Weiße Blutkörperchen sind die Abwehrtruppe des Immunsystems."),
+        ("Wozu dienen Blutplättchen?", new[] { "Sie sorgen für die Blutgerinnung bei Wunden", "Sie transportieren Nährstoffe zur Leber", "Sie regeln die Körpertemperatur" }, "Sie sorgen für die Blutgerinnung bei Wunden",
+            "Blutplättchen verkleben die Wunde - so entsteht Schorf und die Blutung stoppt."),
+        ("Was macht Blut rot?", new[] { "Der eisenhaltige Farbstoff Hämoglobin", "Ein Farbstoff aus der Nahrung", "Die Gallenflüssigkeit aus der Leber - eine verbreitete, aber falsche Annahme" }, "Der eisenhaltige Farbstoff Hämoglobin",
+            "Hämoglobin enthält Eisen - deshalb ist Eisenmangel eine häufige Ursache für Blutarmut."),
+        ("Wohin pumpt die rechte Herzhälfte das Blut?", new[] { "In die Lunge, um Sauerstoff aufzunehmen", "In den Körper, um Organe zu versorgen, was einer genaueren Pruefung nicht standhaelt", "In die Leber, um Gifte abzubauen" }, "In die Lunge, um Sauerstoff aufzunehmen",
+            "Rechte Hälfte → Lungenkreislauf, linke Hälfte → Körperkreislauf."),
+        ("Was ist der Unterschied zwischen Arterien und Venen?", new[] { "Arterien führen vom Herzen weg, Venen zum Herzen hin", "Arterien führen immer Blut ohne Sauerstoff", "Venen liegen ausschließlich in den Beinen" }, "Arterien führen vom Herzen weg, Venen zum Herzen hin",
+            "Die Richtung entscheidet, nicht der Sauerstoffgehalt - die Lungenarterie führt sauerstoffarmes Blut."),
+        ("Warum haben Venen in den Beinen Klappen?", new[] { "Damit das Blut nicht zurück nach unten sackt", "Damit das Blut schneller fließen kann", "Damit sie sich bei Kälte verengen können, obwohl das auf den ersten Blick plausibel klingt" }, "Damit das Blut nicht zurück nach unten sackt",
+            "Venenklappen wirken wie Rückschlagventile gegen die Schwerkraft - unterstützt von der Muskelpumpe."),
+        ("Wo findet der Gasaustausch zwischen Blut und Gewebe statt?", new[] { "In den feinen Haargefäßen (Kapillaren)", "In den großen Arterien nahe am Herzen", "Direkt in den Herzkammern" }, "In den feinen Haargefäßen (Kapillaren)",
+            "Kapillarwände sind so dünn, dass Sauerstoff und Nährstoffe hindurchtreten können."),
+        ("Was geschieht in den Lungenbläschen?", new[] { "Sauerstoff geht ins Blut, Kohlenstoffdioxid heraus", "Nahrung wird in Nährstoffe zerlegt", "Blut wird von Krankheitserregern gereinigt, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Sauerstoff geht ins Blut, Kohlenstoffdioxid heraus",
+            "Die riesige Gesamtfläche der Lungenbläschen macht den Gasaustausch so wirksam."),
+        ("Warum schlägt das Herz beim Sport schneller?", new[] { "Die Muskeln brauchen mehr Sauerstoff und Nährstoffe", "Das Blut wird bei Wärme dickflüssiger", "Die Lunge kann sonst keine Luft aufnehmen" }, "Die Muskeln brauchen mehr Sauerstoff und Nährstoffe",
+            "Höherer Bedarf = mehr Blut pro Minute = höhere Herzfrequenz."),
+        ("Was versteht man unter dem Puls?", new[] { "Die spürbare Druckwelle in den Arterien", "Die Menge Blut in einer einzelnen Vene", "Die Temperatur des Blutes am Handgelenk" }, "Die spürbare Druckwelle in den Arterien",
+            "Bei jedem Herzschlag läuft eine Druckwelle durch die Arterien - am Handgelenk gut tastbar."),
+        ("Wie viel Blut hat ein erwachsener Mensch etwa?", new[] { "Ungefähr 5 bis 6 Liter", "Ungefähr 15 bis 20 Liter", "Ungefähr 1 bis 2 Liter" }, "Ungefähr 5 bis 6 Liter",
+            "Das sind rund 7-8% des Körpergewichts."),
+        ("Warum ist regelmäßige Bewegung gut fürs Herz?", new[] { "Der Herzmuskel wird kräftiger und arbeitet sparsamer", "Das Herz schlägt danach dauerhaft sehr schnell", "Das Blut wird dadurch dünnflüssiger" }, "Der Herzmuskel wird kräftiger und arbeitet sparsamer",
+            "Ein trainiertes Herz pumpt pro Schlag mehr Blut - der Ruhepuls sinkt."),
+        ("Welche Blutgruppe gilt als universeller Spender?", new[] { "0 negativ", "AB positiv", "A positiv" }, "0 negativ",
+            "0 negativ passt fast immer, AB positiv ist dagegen der Universalempfänger."),
+        ("Warum muss bei einer Bluttransfusion die Blutgruppe passen?", new[] { "Sonst verklumpt das Blut im Körper des Empfängers", "Sonst kühlt das Blut zu schnell ab", "Sonst gerinnt es im Beutel zu früh" }, "Sonst verklumpt das Blut im Körper des Empfängers",
+            "Antikörper des Empfängers greifen fremde Merkmale an - das kann lebensgefährlich sein."),
+        ("Welche Aufgabe hat die Milz im Blutkreislauf?", new[] { "Sie baut alte rote Blutkörperchen ab", "Sie erzeugt den größten Teil des Blutdrucks", "Sie speichert Sauerstoff für Notfälle" }, "Sie baut alte rote Blutkörperchen ab",
+            "Die Milz sortiert verbrauchte Blutzellen aus und gehört zugleich zum Immunsystem."),
+        ("Wo werden rote Blutkörperchen gebildet?", new[] { "Im roten Knochenmark", "In der Leber", "In den Nieren und deshalb hier nicht zutrifft" }, "Im roten Knochenmark",
+            "Das Knochenmark produziert ständig Nachschub - rote Blutkörperchen leben nur etwa 120 Tage."),
+        ("Was passiert bei Eisenmangel im Blut?", new[] { "Es entsteht zu wenig Hämoglobin, man wird müde", "Das Blut gerinnt überhaupt nicht mehr, was so nicht korrekt ist", "Der Puls steigt dauerhaft stark an" }, "Es entsteht zu wenig Hämoglobin, man wird müde",
+            "Weniger Hämoglobin bedeutet weniger Sauerstofftransport - typische Folgen sind Müdigkeit und Blässe."),
+        ("Warum ist Blutspenden wichtig?", new[] { "Blut lässt sich nicht künstlich herstellen", "Blut wird für Medikamente gegen Fieber gebraucht", "Blut kann jahrelang gelagert werden" }, "Blut lässt sich nicht künstlich herstellen",
+            "Für Operationen und Unfälle gibt es keinen Ersatz - gespendetes Blut ist zudem nur wenige Wochen haltbar.")
+    };
+
+    private static QuizQuestion BlutUndKreislauf(Random r)
+    {
+        var f = BlutkreislaufListe[r.Next(BlutkreislaufListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Blut und Blutkreislauf", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Rote Blutkörperchen = Sauerstoff, weiße = Abwehr, Blutplättchen = Gerinnung. Arterien führen VOM Herzen weg, Venen ZUM Herzen hin. Rechte Herzhälfte → Lunge, linke → Körper."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] OekosystemWaldListe =
+    {
+        ("Was versteht man unter einem Ökosystem?", new[] { "Lebewesen und ihr Lebensraum in Wechselwirkung", "Nur die Tiere eines bestimmten Gebietes", "Ausschließlich der Boden mit seinen Nährstoffen" }, "Lebewesen und ihr Lebensraum in Wechselwirkung",
+            "Ein Ökosystem umfasst die Lebensgemeinschaft (Biozönose) UND den Lebensraum (Biotop)."),
+        ("Wie heißen die Stockwerke des Waldes von oben nach unten?", new[] { "Baum-, Strauch-, Kraut- und Moosschicht", "Kraut-, Moos-, Strauch- und Baumschicht", "Strauch-, Baum-, Moos- und Krautschicht" }, "Baum-, Strauch-, Kraut- und Moosschicht",
+            "Jede Schicht bietet eigene Lebensbedingungen bei Licht, Feuchte und Temperatur."),
+        ("Warum wachsen im dichten Buchenwald am Boden kaum Pflanzen?", new[] { "Das Kronendach lässt zu wenig Licht durch", "Der Boden enthält überhaupt keine Nährstoffe", "Die Temperatur ist dort dauerhaft zu hoch" }, "Das Kronendach lässt zu wenig Licht durch",
+            "Deshalb blühen Frühblüher wie Buschwindröschen, bevor die Buchen austreiben."),
+        ("Was sind Frühblüher und warum blühen sie so früh?", new[] { "Pflanzen, die das Licht vor dem Blattaustrieb nutzen", "Pflanzen, die nur im Hochsommer blühen können - eine haeufige, aber unzutreffende Vorstellung", "Pflanzen, die ausschließlich nachts blühen" }, "Pflanzen, die das Licht vor dem Blattaustrieb nutzen",
+            "Sie speichern Kraft in Zwiebeln oder Knollen und nutzen das kurze Lichtfenster im Frühjahr."),
+        ("Welche Rolle spielen Destruenten im Wald?", new[] { "Sie zersetzen Totes zu Mineralstoffen für Pflanzen", "Sie fressen ausschließlich lebende Pflanzen", "Sie bauen aus Licht neue Biomasse auf" }, "Sie zersetzen Totes zu Mineralstoffen für Pflanzen",
+            "Pilze, Bakterien und Bodentiere schließen so den Stoffkreislauf."),
+        ("Was gehört zu den Destruenten?", new[] { "Pilze, Bakterien und Regenwürmer", "Rehe, Hasen und Eichhörnchen", "Buchen, Eichen und Farne" }, "Pilze, Bakterien und Regenwürmer",
+            "Alle Zersetzer, die abgestorbenes Material abbauen - die 'Recyclinganlage' des Waldes."),
+        ("Warum spricht man von einem Stoffkreislauf?", new[] { "Nährstoffe werden immer wieder neu verwendet", "Stoffe verschwinden am Ende vollständig", "Der Wald bezieht alle Stoffe aus der Luft, auch wenn das manche zunaechst vermuten wuerden" }, "Nährstoffe werden immer wieder neu verwendet",
+            "Pflanze → Tier → Destruent → Mineralstoffe → wieder Pflanze: Der Kreis schließt sich."),
+        ("Was unterscheidet einen Stoffkreislauf vom Energiefluss?", new[] { "Stoffe kreisen, Energie fließt nur in eine Richtung", "Beide verlaufen identisch im Kreis", "Energie kreist, Stoffe fließen geradeaus" }, "Stoffe kreisen, Energie fließt nur in eine Richtung",
+            "Energie kommt als Sonnenlicht herein und geht als Wärme verloren - sie kann nicht kreisen."),
+        ("Was ist ein Nahrungsnetz?", new[] { "Mehrere verflochtene Nahrungsketten eines Lebensraums", "Eine einzelne Kette aus genau drei Gliedern", "Das Wurzelgeflecht unter einem Baum" }, "Mehrere verflochtene Nahrungsketten eines Lebensraums",
+            "In der Natur frisst kaum ein Tier nur eine einzige Art - daraus entsteht ein Netz."),
+        ("Warum wird die Zahl der Lebewesen von Stufe zu Stufe kleiner?", new[] { "Bei jedem Schritt geht viel Energie als Wärme verloren", "Größere Tiere legen weniger Eier", "Fressfeinde wandern regelmäßig ab" }, "Bei jedem Schritt geht viel Energie als Wärme verloren",
+            "Nur etwa 10% der Energie gelangen in die nächste Stufe - daher die 'Energiepyramide'."),
+        ("Was passiert, wenn in einem Wald alle Füchse verschwinden?", new[] { "Die Zahl der Mäuse steigt zunächst stark an", "Der Wald bleibt völlig unverändert", "Alle Pflanzen sterben innerhalb weniger Tage" }, "Die Zahl der Mäuse steigt zunächst stark an",
+            "Fehlende Fressfeinde lassen die Beutepopulation wachsen - bis Nahrungsmangel sie wieder begrenzt."),
+        ("Was bedeutet 'biologisches Gleichgewicht'?", new[] { "Die Artenzahlen schwanken um einen stabilen Mittelwert", "Alle Arten haben exakt dieselbe Individuenzahl", "Es gibt überhaupt keine Veränderungen mehr" }, "Die Artenzahlen schwanken um einen stabilen Mittelwert",
+            "Räuber-Beute-Beziehungen pendeln sich ein - starr ist ein Ökosystem aber nie."),
+        ("Welche Rolle spielt Totholz im Wald?", new[] { "Es bietet vielen Arten Lebensraum und Nahrung", "Es schadet dem Wald und muss entfernt werden", "Es verhindert das Wachstum aller Jungbäume" }, "Es bietet vielen Arten Lebensraum und Nahrung",
+            "Käfer, Pilze und Spechte sind auf Totholz angewiesen - deshalb bleibt es heute bewusst liegen."),
+        ("Warum ist ein Mischwald stabiler als eine Fichten-Monokultur?", new[] { "Vielfalt macht ihn widerstandsfähiger gegen Schädlinge", "Mischwälder wachsen deutlich schneller", "Monokulturen brauchen mehr Sonnenlicht" }, "Vielfalt macht ihn widerstandsfähiger gegen Schädlinge",
+            "Fällt eine Art aus, können andere die Lücke schließen - in Monokulturen breiten sich Schädlinge dagegen rasend aus."),
+        ("Was ist eine Symbiose?", new[] { "Ein Zusammenleben, von dem beide Partner profitieren", "Ein Zusammenleben zum Schaden beider Partner, was bei genauerem Hinsehen nicht stimmt", "Das Fressen einer Art durch eine andere" }, "Ein Zusammenleben, von dem beide Partner profitieren",
+            "Beispiel Mykorrhiza: Der Pilz liefert Wasser und Mineralstoffe, der Baum gibt Zucker zurück."),
+        ("Was kennzeichnet einen Parasiten?", new[] { "Er lebt auf Kosten eines Wirtes, ohne ihn sofort zu töten", "Er lebt gleichberechtigt mit seinem Partner (was so in der Praxis nicht zutrifft)", "Er zersetzt ausschließlich totes Material" }, "Er lebt auf Kosten eines Wirtes, ohne ihn sofort zu töten",
+            "Zecken oder Misteln schädigen ihren Wirt, halten ihn aber meist am Leben."),
+        ("Welche Bedeutung hat der Waldboden?", new[] { "Er speichert Wasser und liefert Nährstoffe", "Er dient nur als Standfläche für Bäume - eine verbreitete, aber falsche Annahme", "Er verhindert das Eindringen von Regen" }, "Er speichert Wasser und liefert Nährstoffe",
+            "Ein gesunder Waldboden wirkt wie ein Schwamm und schützt so auch vor Hochwasser."),
+        ("Wie beeinflusst der Wald das örtliche Klima?", new[] { "Er kühlt, spendet Schatten und erhöht die Luftfeuchte", "Er heizt seine Umgebung deutlich auf", "Er hat keinerlei Einfluss auf das Klima" }, "Er kühlt, spendet Schatten und erhöht die Luftfeuchte",
+            "Verdunstung über die Blätter wirkt wie eine natürliche Klimaanlage - in Städten besonders wertvoll."),
+        ("Warum sind Berliner Stadtwälder wie der Grunewald wichtig?", new[] { "Sie kühlen die Stadt und bieten Erholung und Lebensraum", "Sie liefern das gesamte Bauholz der Stadt", "Sie werden ausschließlich zur Jagd genutzt, was einer genaueren Pruefung nicht standhaelt" }, "Sie kühlen die Stadt und bieten Erholung und Lebensraum",
+            "Stadtwälder mindern Hitzeinseln, filtern Staub und sind Rückzugsraum für viele Arten."),
+        ("Was schadet einem Waldökosystem am meisten?", new[] { "Zerstörung des Lebensraums und starke Verschmutzung", "Das Sammeln einzelner Pilze im Herbst", "Das Beobachten von Vögeln mit dem Fernglas, obwohl das auf den ersten Blick plausibel klingt" }, "Zerstörung des Lebensraums und starke Verschmutzung",
+            "Rodung, Versiegelung und Schadstoffe treffen den ganzen Kreislauf - Naturbeobachtung dagegen nicht.")
+    };
+
+    private static QuizQuestion OekosystemWald(Random r)
+    {
+        var f = OekosystemWaldListe[r.Next(OekosystemWaldListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Ökosystem Wald", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ökosystem = Lebewesen + Lebensraum. Produzenten (Pflanzen) → Konsumenten (Tiere) → Destruenten (Pilze/Bakterien). Stoffe kreisen, Energie fließt nur in eine Richtung."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AngepasstheitListe =
+    {
+        ("Was bedeutet 'Angepasstheit' in der Biologie?", new[] { "Merkmale passen zu den Bedingungen des Lebensraums", "Ein Tier gewöhnt sich innerhalb weniger Stunden um", "Alle Arten sehen in einem Lebensraum gleich aus" }, "Merkmale passen zu den Bedingungen des Lebensraums",
+            "Angepasstheiten entstehen über viele Generationen, nicht im Lauf eines einzelnen Lebens."),
+        ("Warum haben Eisbären ein dichtes Fell und eine Fettschicht?", new[] { "Zum Schutz vor Kälte in der Arktis", "Um im Wasser besser gesehen zu werden", "Um schneller laufen zu können" }, "Zum Schutz vor Kälte in der Arktis",
+            "Fell und Speck wirken als doppelte Isolierung gegen extreme Kälte."),
+        ("Welchen Vorteil hat ein kleines Oberflächen-Volumen-Verhältnis in der Kälte?", new[] { "Der Körper gibt weniger Wärme an die Umgebung ab", "Der Körper nimmt mehr Sonnenlicht auf, was die eigentliche Bedeutung des Begriffs verfehlt", "Das Tier braucht weniger Wasser" }, "Der Körper gibt weniger Wärme an die Umgebung ab",
+            "Deshalb sind arktische Tiere oft gedrungen, Wüstentiere dagegen schlank mit großen Ohren."),
+        ("Warum hat der Wüstenfuchs so große Ohren?", new[] { "Über sie gibt er überschüssige Wärme ab", "Er hört damit Beute unter dem Sand und deshalb hier nicht zutrifft", "Sie schützen ihn vor Sandstürmen" }, "Über sie gibt er überschüssige Wärme ab",
+            "Die stark durchbluteten Ohren wirken wie Kühlrippen - ein Musterbeispiel für Angepasstheit."),
+        ("Was ist Winterschlaf?", new[] { "Körpertemperatur und Herzschlag sinken stark ab", "Das Tier schläft nachts einfach länger", "Das Tier wandert in wärmere Gebiete" }, "Körpertemperatur und Herzschlag sinken stark ab",
+            "Igel und Murmeltiere fahren ihren Stoffwechsel radikal herunter, um Energie zu sparen."),
+        ("Was unterscheidet Winterruhe vom Winterschlaf?", new[] { "Bei Winterruhe wachen die Tiere immer wieder auf", "Bei Winterruhe sinkt die Temperatur stärker ab, was so nicht korrekt ist", "Winterruhe dauert immer genau drei Monate" }, "Bei Winterruhe wachen die Tiere immer wieder auf",
+            "Eichhörnchen halten Winterruhe: Sie wachen regelmäßig auf und fressen aus ihrem Vorrat."),
+        ("Was ist Winterstarre und welche Tiere zeigen sie?", new[] { "Wechselwarme Tiere wie Frösche erstarren bei Kälte", "Vögel stellen im Winter das Fliegen ein - eine haeufige, aber unzutreffende Vorstellung", "Säugetiere legen einen Fettvorrat an" }, "Wechselwarme Tiere wie Frösche erstarren bei Kälte",
+            "Wechselwarme Tiere können ihre Temperatur nicht regeln - bei Kälte werden sie bewegungsunfähig."),
+        ("Was ist der Unterschied zwischen gleichwarmen und wechselwarmen Tieren?", new[] { "Gleichwarme halten ihre Temperatur konstant, wechselwarme nicht", "Gleichwarme leben nur in warmen Ländern", "Wechselwarme haben immer ein dichtes Fell" }, "Gleichwarme halten ihre Temperatur konstant, wechselwarme nicht",
+            "Säugetiere und Vögel sind gleichwarm; Reptilien, Amphibien und Fische sind wechselwarm."),
+        ("Warum sonnen sich Eidechsen morgens auf Steinen?", new[] { "Sie müssen sich erst auf Betriebstemperatur bringen", "Sie trocknen so ihre feuchte Haut", "Sie signalisieren damit ihr Revier, auch wenn das manche zunaechst vermuten wuerden" }, "Sie müssen sich erst auf Betriebstemperatur bringen",
+            "Als wechselwarme Tiere sind sie im Kalten träge und beziehen Wärme von außen."),
+        ("Wozu dient Tarnung im Tierreich?", new[] { "Zum Schutz vor Feinden oder zum Anschleichen an Beute", "Zur Anlockung von Partnern bei der Balz, was bei genauerem Hinsehen nicht stimmt", "Zur Regelung der Körpertemperatur" }, "Zum Schutz vor Feinden oder zum Anschleichen an Beute",
+            "Wer nicht gesehen wird, wird nicht gefressen - und kann sich selbst besser anschleichen."),
+        ("Warum wechselt der Schneehase im Winter die Fellfarbe?", new[] { "Weißes Fell tarnt ihn im Schnee vor Feinden", "Weißes Fell wärmt deutlich besser", "Er signalisiert damit seine Paarungsbereitschaft" }, "Weißes Fell tarnt ihn im Schnee vor Feinden",
+            "Ein klassisches Beispiel für saisonale Anpassung an den Lebensraum."),
+        ("Was ist Warntracht?", new[] { "Auffällige Farben signalisieren Gefahr oder Gift", "Unauffällige Farben verstecken das Tier", "Farbwechsel je nach Tageszeit" }, "Auffällige Farben signalisieren Gefahr oder Gift",
+            "Wespen und Feuersalamander warnen mit Gelb-Schwarz bzw. Gelb-Schwarz vor Wehrhaftigkeit."),
+        ("Wie sind Fische an das Leben im Wasser angepasst?", new[] { "Stromlinienform, Kiemen und Schwimmblase", "Lunge, Fell und kräftige Beine", "Federn, Schnabel und hohle Knochen (was so in der Praxis nicht zutrifft)" }, "Stromlinienform, Kiemen und Schwimmblase",
+            "Die Kiemen entnehmen dem Wasser Sauerstoff, die Schwimmblase regelt die Tiefe."),
+        ("Wie sind Vögel an das Fliegen angepasst?", new[] { "Hohle Knochen, Federn und kräftige Flugmuskeln", "Schwere Knochen und dichtes Fell - eine verbreitete, aber falsche Annahme", "Kiemen, Flossen und Schwimmblase" }, "Hohle Knochen, Federn und kräftige Flugmuskeln",
+            "Alles zielt auf geringes Gewicht bei hoher Kraft - selbst das Skelett ist luftgefüllt."),
+        ("Warum ziehen manche Vögel im Herbst nach Süden?", new[] { "Im Winter finden sie hier zu wenig Nahrung", "Sie vertragen den Schnee grundsätzlich nicht", "Sie folgen dem Magnetfeld ohne Grund" }, "Im Winter finden sie hier zu wenig Nahrung",
+            "Insektenfresser wie Schwalben finden im Winter schlicht nichts zu fressen."),
+        ("Wie überstehen Laubbäume den Winter?", new[] { "Sie werfen ihre Blätter ab und ruhen", "Sie behalten alle Blätter und wachsen weiter", "Sie ziehen sich vollständig in die Wurzeln zurück" }, "Sie werfen ihre Blätter ab und ruhen",
+            "Ohne Blätter verdunsten sie kaum Wasser - wichtig, weil gefrorener Boden kein Wasser liefert."),
+        ("Warum behalten Nadelbäume ihre Nadeln?", new[] { "Die kleine Oberfläche und Wachsschicht sparen Wasser", "Nadeln frieren grundsätzlich nicht ein, was einer genaueren Pruefung nicht standhaelt", "Nadeln betreiben keine Fotosynthese" }, "Die kleine Oberfläche und Wachsschicht sparen Wasser",
+            "So können sie auch an milden Wintertagen Fotosynthese betreiben."),
+        ("Wie sind Kakteen an die Wüste angepasst?", new[] { "Dicker Wasserspeicher, Dornen statt Blätter, Wachsschicht", "Große dünne Blätter und flache Wurzeln, obwohl das auf den ersten Blick plausibel klingt", "Dichtes Fell und tiefe Winterruhe" }, "Dicker Wasserspeicher, Dornen statt Blätter, Wachsschicht",
+            "Jede Anpassung senkt den Wasserverlust; die Dornen schützen zusätzlich vor Fressfeinden."),
+        ("Was versteht man unter einer ökologischen Nische?", new[] { "Die Rolle einer Art im Lebensraum mit allen Ansprüchen", "Ein Versteck, in dem ein Tier schläft, was die eigentliche Bedeutung des Begriffs verfehlt", "Ein Gebiet ganz ohne andere Lebewesen" }, "Die Rolle einer Art im Lebensraum mit allen Ansprüchen",
+            "Nutzen zwei Arten dieselbe Nische, konkurrieren sie - meist setzt sich eine durch."),
+        ("Warum können nah verwandte Arten nebeneinander leben?", new[] { "Sie nutzen unterschiedliche Nischen desselben Lebensraums", "Sie fressen exakt dasselbe zur selben Zeit und deshalb hier nicht zutrifft", "Sie vermischen sich zu einer einzigen Art" }, "Sie nutzen unterschiedliche Nischen desselben Lebensraums",
+            "Verschiedene Meisenarten suchen z.B. in unterschiedlichen Baumhöhen nach Futter.")
+    };
+
+    private static QuizQuestion AngepasstheitLebensraum(Random r)
+    {
+        var f = AngepasstheitListe[r.Next(AngepasstheitListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Angepasstheit an Lebensräume", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Angepasstheit = Körperbau und Verhalten passen zum Lebensraum. Gleichwarm (Säuger/Vögel) vs. wechselwarm (Reptilien/Amphibien/Fische). Winterschlaf ≠ Winterruhe ≠ Winterstarre."
         };
     }
 }
