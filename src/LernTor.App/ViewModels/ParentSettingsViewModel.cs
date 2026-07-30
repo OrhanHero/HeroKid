@@ -11,6 +11,7 @@ using LernTor.Core.Models;
 using LernTor.Core.Services;
 using LernTor.Data.Entities;
 using LernTor.Data.Repositories;
+using LernTor.News;
 using LernTor.Security;
 using Microsoft.Win32;
 
@@ -465,6 +466,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         SelectedProfile = Profiles.FirstOrDefault(p => p.Id == PreselectProfileId) ?? Profiles.FirstOrDefault();
         OnPropertyChanged(nameof(CustomQuestionProfileHint));
+        BuildNewsFeedToggles();
 
         await ReloadCustomQuestionsAsync();
     }
@@ -1393,6 +1395,52 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         OnPropertyChanged(nameof(HasNoCustomReadingTexts));
         await ReloadReadingLibraryAsync();
+    }
+
+    // --- Nachrichtenquellen an/aus (global, siehe AppSettings.DisabledNewsFeeds) ---
+
+    /// <summary>Alle kuratierten Quellen mit Ein/Aus-Schalter.</summary>
+    public ObservableCollection<NewsFeedToggle> NewsFeedToggles { get; } = new();
+
+    [ObservableProperty]
+    private string newsFeedStatus = string.Empty;
+
+    private void BuildNewsFeedToggles()
+    {
+        NewsFeedToggles.Clear();
+        foreach (var feed in CuratedNewsFeeds.All.OrderBy(f => f.RegionFocus).ThenBy(f => f.Name))
+        {
+            NewsFeedToggles.Add(new NewsFeedToggle(
+                feed.Name,
+                $"{feed.RegionFocus} · {(feed.IsGerman ? "Deutsch" : "Türkisch")}",
+                !_settings.DisabledNewsFeeds.Contains(feed.Name),
+                OnNewsFeedToggled));
+        }
+
+        UpdateNewsFeedStatus();
+    }
+
+    private async void OnNewsFeedToggled(NewsFeedToggle toggle)
+    {
+        if (toggle.IsEnabled)
+        {
+            _settings.DisabledNewsFeeds.Remove(toggle.Name);
+        }
+        else
+        {
+            _settings.DisabledNewsFeeds.Add(toggle.Name);
+        }
+
+        await _settingsRepo.SaveAsync(_settings);
+        UpdateNewsFeedStatus();
+    }
+
+    private void UpdateNewsFeedStatus()
+    {
+        var active = NewsFeedToggles.Count(t => t.IsEnabled);
+        NewsFeedStatus = active == 0
+            ? "Alle Quellen abgeschaltet - dann greifen wieder alle, ein leerer News-Bereich wäre schlimmer."
+            : $"{active} von {NewsFeedToggles.Count} Quellen aktiv. Pro Quelle kommt eine Nachricht am Tag.";
     }
 
     // --- Lesetext-Verwaltung: EINE Liste aus eigenen und eingebauten Texten ---

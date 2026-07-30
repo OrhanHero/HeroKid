@@ -19,6 +19,13 @@ public sealed class AppSettings
     /// </summary>
     public HashSet<string> HiddenReadingTextKeys { get; set; } = new();
 
+    /// <summary>
+    /// Namen der abgeschalteten Nachrichtenquellen (siehe <c>CuratedNewsFeeds.All</c>). Sind alle
+    /// abgeschaltet, greifen wieder alle - ein leerer News-Bereich wäre schlimmer als eine
+    /// ignorierte Einstellung.
+    /// </summary>
+    public HashSet<string> DisabledNewsFeeds { get; set; } = new();
+
     public bool HardLockShellReplacementEnabled { get; set; } = false;
 
     /// <summary>Zeigt dem Kind die 🔥-Lernserie (aufeinanderfolgende Lerntage) auf dem

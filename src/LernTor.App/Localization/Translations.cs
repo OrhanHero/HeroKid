@@ -396,6 +396,10 @@ public static class Translations
             ["Parent_ReadingText_Tr"] = L("Text auf Türkisch:", "Türkçe metin:"),
             ["Parent_ReadingText_En"] = L("Text auf Englisch:", "İngilizce metin:"),
             ["Parent_ReadingText_Add"] = L("Lesetext hinzufügen", "Okuma metni ekle"),
+            ["Parent_NewsFeeds_Title"] = L("Nachrichtenquellen", "Haber kaynakları"),
+            ["Parent_NewsFeeds_Intro"] = L(
+                "Aus jeder aktiven Quelle kommt eine Nachricht pro Tag. Haken weg = die Quelle wird nicht mehr abgerufen. Gilt für alle Kinder. Sind alle abgeschaltet, greifen wieder alle - ein leerer News-Bereich wäre schlimmer.",
+                "Her etkin kaynaktan günde bir haber gelir. İşareti kaldırın = kaynak artık çekilmez. Tüm çocuklar için geçerlidir. Hepsi kapatılırsa yine hepsi geçerli olur - boş bir haber bölümü daha kötü olurdu."),
             ["Parent_ReadingText_LibraryTitle"] = L("Alle Lesetexte verwalten", "Tüm okuma metinlerini yönet"),
             ["Parent_ReadingText_LibraryIntro"] = L(
                 "Hier stehen alle Texte: die eingebauten und deine eigenen. Haken weg = der Text kommt nicht mehr vor. 📌 heftet einen Text an - er steht dann jeden Tag an erster Stelle, bis du ihn wieder löst. Genau dafür gedacht, einen neu eingetragenen Text sofort zu prüfen oder ein Gedicht vor der Abfrage täglich üben zu lassen.",

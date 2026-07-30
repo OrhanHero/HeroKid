@@ -18,6 +18,29 @@ public sealed class RssNewsServiceTests
     }
 
     [Fact]
+    public void Abgeschaltete_Quellen_werden_uebersprungen()
+    {
+        // Eltern koennen Quellen im Eltern-Bereich abwaehlen (AppSettings.DisabledNewsFeeds).
+        var alle = CuratedNewsFeeds.All.Select(f => f.Name).ToList();
+        var abgeschaltet = new HashSet<string> { alle[0], alle[1] };
+
+        var aktiv = CuratedNewsFeeds.All.Where(f => !abgeschaltet.Contains(f.Name)).ToList();
+
+        Assert.Equal(alle.Count - 2, aktiv.Count);
+        Assert.DoesNotContain(aktiv, f => abgeschaltet.Contains(f.Name));
+    }
+
+    [Fact]
+    public void Quellennamen_sind_eindeutig()
+    {
+        // Der Name dient als Schluessel in den Einstellungen - waeren zwei gleich, liessen sie
+        // sich nicht getrennt abschalten.
+        var namen = CuratedNewsFeeds.All.Select(f => f.Name).ToList();
+
+        Assert.Equal(namen.Count, namen.Distinct().Count());
+    }
+
+    [Fact]
     public void Atom_Eintrag_ohne_summary_liefert_den_content_als_Text()
     {
         // Atom erlaubt es, <summary> wegzulassen und nur <content> zu liefern - genau so baut

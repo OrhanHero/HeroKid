@@ -52,11 +52,28 @@ public sealed class RssNewsService
     /// <param name="gradeLevel">Klassenstufe (6 oder 9) für altersgerechte Textvereinfachung:
     /// Klasse 6 = stark vereinfacht (kurze Sätze, einfaches Vokabular, Aktiv statt Passiv),
     /// Klasse 9 = mild vereinfacht (normale Satzstruktur, nur schwierigste Wörter ersetzt).</param>
-    public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(int targetCount = 8, int? childAge = null, GradeLevel gradeLevel = GradeLevel.Klasse6, CancellationToken cancellationToken = default)
+    /// <param name="disabledFeedNames">Von den Eltern im Eltern-Bereich abgeschaltete Quellen
+    /// (Name aus <see cref="CuratedNewsFeeds.All"/>). Bleibt nichts übrig, greifen bewusst wieder
+    /// alle Quellen: ein leerer News-Bereich wäre schlimmer als eine ignorierte Einstellung.</param>
+    public async Task<IReadOnlyList<NewsArticle>> LoadCuratedArticlesAsync(
+        int targetCount = 8,
+        int? childAge = null,
+        GradeLevel gradeLevel = GradeLevel.Klasse6,
+        IReadOnlySet<string>? disabledFeedNames = null,
+        CancellationToken cancellationToken = default)
     {
         var articles = new List<NewsArticle>();
 
-        foreach (var source in CuratedNewsFeeds.All)
+        var activeFeeds = disabledFeedNames is null || disabledFeedNames.Count == 0
+            ? CuratedNewsFeeds.All
+            : CuratedNewsFeeds.All.Where(f => !disabledFeedNames.Contains(f.Name)).ToList();
+
+        if (activeFeeds.Count == 0)
+        {
+            activeFeeds = CuratedNewsFeeds.All;
+        }
+
+        foreach (var source in activeFeeds)
         {
             try
             {

@@ -607,6 +607,26 @@
                      Stuecke waren im Eltern-Bereich vorher gar nicht sichtbar, und ein frisch
                      eingetragener eigener Text liess sich nicht gezielt aufrufen - das Anheften
                      loest genau das. -->
+                <!-- Nachrichtenquellen: bisher nur im Code aenderbar - jetzt ohne neuen Build. -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_NewsFeeds_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_NewsFeeds_Intro]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <TextBlock Text="{Binding NewsFeedStatus, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <ItemsControl ItemsSource="{Binding NewsFeedToggles}" Margin="0,0,0,20">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsEnabled}" Margin="0,0,0,6">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" FontSize="13" />
+                                    <TextBlock Text="{Binding Description, Mode=OneWay}" FontSize="11" Opacity="0.7" />
+                                </StackPanel>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_LibraryTitle]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_LibraryIntro]}"
