@@ -8,6 +8,13 @@ public sealed class QuestionOutcome
     public required Subject Subject { get; init; }
     public required string GivenAnswer { get; init; }
     public required bool WasCorrect { get; init; }
+
+    /// <summary>
+    /// Bearbeitungsdauer in Millisekunden (von der Anzeige der Frage bis zum Absenden).
+    /// 0 = nicht gemessen. Fließt nur ins Eltern-Protokoll, nicht in die Bewertung -
+    /// schnell zu antworten ist kein Fehler, siehe AnswerPaceAnalyzer.
+    /// </summary>
+    public int DurationMs { get; init; }
 }
 
 public sealed class QuizResult

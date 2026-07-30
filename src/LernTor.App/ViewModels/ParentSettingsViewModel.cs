@@ -8,6 +8,7 @@ using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 using LernTor.Data.Entities;
 using LernTor.Data.Repositories;
 using LernTor.Security;
@@ -677,6 +678,17 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string reportQuizTrendDisplay = string.Empty;
 
+    /// <summary>Antworttempo im Zeitraum - zeigt, ob gelesen oder geraten wurde (AnswerPaceAnalyzer).</summary>
+    [ObservableProperty]
+    private string reportPaceDisplay = string.Empty;
+
+    /// <summary>Warnzeile, nur gefüllt wenn auffällig viele Antworten sehr schnell kamen.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPaceWarning))]
+    private string reportPaceWarningDisplay = string.Empty;
+
+    public bool HasPaceWarning => !string.IsNullOrEmpty(ReportPaceWarningDisplay);
+
     [ObservableProperty]
     private bool hasReportData;
 
@@ -702,6 +714,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             HasTopicReportData = false;
             ReportLearnedDaysDisplay = string.Empty;
             ReportQuizTrendDisplay = string.Empty;
+            ReportPaceDisplay = string.Empty;
+            ReportPaceWarningDisplay = string.Empty;
             return;
         }
 
@@ -742,6 +756,23 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         foreach (var row in weakestTopics)
         {
             TopicReportRows.Add(row);
+        }
+
+        // Antworttempo: im reinen Richtig/Falsch-Bericht ist Raten unsichtbar, weil es bei drei
+        // Optionen in einem Drittel der Fälle "richtig" ergibt. Die Dauer macht es sichtbar.
+        var pace = AnswerPaceAnalyzer.Analyze(answers.Select(a => (a.AnswerDurationMs, a.WasCorrect)));
+        if (pace.HasData)
+        {
+            ReportPaceDisplay = string.Format(
+                loc["Parent_Report_Pace"], pace.Quick, pace.Measured, (pace.MedianMs / 1000.0).ToString("0.#"));
+            ReportPaceWarningDisplay = pace.IsSuspicious
+                ? string.Format(loc["Parent_Report_PaceSuspicious"], pace.QuickAndWrong)
+                : string.Empty;
+        }
+        else
+        {
+            ReportPaceDisplay = loc["Parent_Report_PaceNoData"];
+            ReportPaceWarningDisplay = string.Empty;
         }
 
         var learnedDays = answers.Select(a => DateOnly.FromDateTime(a.Timestamp.LocalDateTime)).Distinct().Count();

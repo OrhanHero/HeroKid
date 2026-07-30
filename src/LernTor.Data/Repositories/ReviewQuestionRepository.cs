@@ -110,6 +110,22 @@ public sealed class ReviewQuestionRepository
             .ToList();
     }
 
+    /// <summary>
+    /// Wie viele Wiederholungsfragen heute über alle Fächer hinweg anstehen. Dieselbe
+    /// Fälligkeitsregel wie <see cref="GetDueQuestionsAsync"/> (nicht am selben Tag erneut),
+    /// aber ohne Fachfilter und ohne Obergrenze - gedacht für die Anzeige auf dem
+    /// Willkommensbildschirm, damit die Kinder sehen, dass ihre Fehler nicht verschwinden.
+    /// </summary>
+    public async Task<int> GetDueCountAsync(string profileId, CancellationToken cancellationToken = default)
+    {
+        var entities = await _db.ReviewQuestions
+            .Where(r => r.ProfileId == profileId)
+            .ToListAsync(cancellationToken);
+
+        var today = DateTime.Today;
+        return entities.Count(r => r.LastAnsweredAt.LocalDateTime.Date < today);
+    }
+
     private static QuizQuestion ToQuestion(ReviewQuestionEntity entity) => new()
     {
         Id = entity.QuestionId,

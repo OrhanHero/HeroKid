@@ -19,6 +19,20 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
     private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly bool _requireExplanationAcknowledgment;
 
+    /// <summary>
+    /// Wann diese Karte aufgebaut wurde. Alle drei Aufrufer (Übungen, Abschlussquiz, News) bauen
+    /// das ViewModel genau dann, wenn die Frage sichtbar wird - der Aufbauzeitpunkt ist damit der
+    /// Anzeigezeitpunkt. Bei News stehen mehrere Fragen eines Artikels gleichzeitig auf dem
+    /// Bildschirm; dort enthält die zweite Frage auch die Zeit der ersten. Das überschätzt die
+    /// Dauer, macht die Auswertung also höchstens vorsichtiger und erzeugt keine Fehlalarme.
+    /// Monoton steigende Uhr statt Systemzeit, damit eine Zeitumstellung keine negativen
+    /// Dauern erzeugt.
+    /// </summary>
+    private readonly long _shownAtTicks = System.Diagnostics.Stopwatch.GetTimestamp();
+
+    /// <summary>Bearbeitungsdauer in Millisekunden, gesetzt beim Absenden.</summary>
+    public int DurationMs { get; private set; }
+
     public QuizQuestion Question { get; }
 
     public bool IsOpenText => Question.Type == QuestionType.OpenText;
@@ -194,6 +208,9 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
 
         FinalGivenAnswer = answer;
         IsCorrect = Question.CheckAnswer(answer);
+        DurationMs = (int)Math.Clamp(
+            System.Diagnostics.Stopwatch.GetElapsedTime(_shownAtTicks).TotalMilliseconds,
+            1, int.MaxValue);
         IsSubmitted = true;
         OnPropertyChanged(nameof(NeedsExplanationAcknowledgment));
         _onSubmitted?.Invoke(this);
@@ -204,6 +221,7 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
         QuestionId = Question.Id,
         Subject = Question.Subject,
         GivenAnswer = FinalGivenAnswer,
-        WasCorrect = IsCorrect
+        WasCorrect = IsCorrect,
+        DurationMs = DurationMs
     };
 }

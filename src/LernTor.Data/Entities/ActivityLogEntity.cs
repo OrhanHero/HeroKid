@@ -12,6 +12,14 @@ public sealed class ActivityLogEntity
     public string Prompt { get; set; } = string.Empty;
     public string GivenAnswer { get; set; } = string.Empty;
     public bool WasCorrect { get; set; }
+
+    /// <summary>
+    /// Wie lange das Kind für diese Aufgabe gebraucht hat, in Millisekunden. 0 heißt "nicht
+    /// gemessen" - so stehen Alt-Zeilen aus der Zeit vor dieser Messung da, und der additive
+    /// Schema-Abgleich legt neue Spalten ohnehin mit DEFAULT 0 an. AnswerPaceAnalyzer
+    /// überspringt solche Zeilen, statt sie als "blitzschnell" zu werten.
+    /// </summary>
+    public int AnswerDurationMs { get; set; }
 }
 
 /// <summary>Ein abgeschlossener Abschlussquiz-Versuch – für die Elternübersicht.</summary>

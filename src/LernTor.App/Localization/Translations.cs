@@ -28,6 +28,11 @@ public static class Translations
 
             ["Welcome_Greeting"] = L("Hallo, {0}!", "Merhaba, {0}!"),
             ["Welcome_Streak"] = L("🔥 {0} Tage in Folge - stark!", "🔥 {0} gündür üst üste - süper!"),
+            // Fehler-Kartei: zeigt den Kindern, dass Fehler wiederkommen, statt zu verschwinden.
+            // Formulierung bewusst ohne Plural-Nomen hinter der Zahl, damit "1" und "7" beide passen.
+            ["Welcome_DueReviews"] = L(
+                "🔁 Von früher noch offen: {0} - beim zweiten Mal sitzt es meistens.",
+                "🔁 Önceden kalan: {0} - ikinci seferde genelde oturur."),
             ["Welcome_Title"] = L("Willkommen bei LernTor!", "LernTor'a Hoş Geldin!"),
             ["Welcome_Subtitle"] = L(
                 "Bevor du den PC benutzen kannst, lernen wir gemeinsam ein bisschen. Los geht's!",
@@ -378,6 +383,17 @@ public static class Translations
             ["Parent_Report_LearnedDays"] = L("📅 An {0} von {1} Tagen gelernt", "📅 {1} günün {0} gününde öğrenildi"),
             ["Parent_Report_QuizTrend"] = L("📈 Abschlussquiz-Verlauf: {0}", "📈 Final sınavı gelişimi: {0}"),
             ["Parent_Report_NoQuiz"] = L("📈 Noch kein Abschlussquiz im Zeitraum.", "📈 Bu dönemde henüz final sınavı yok."),
+            // Antworttempo: macht sichtbar, ob gelesen oder geraten wurde. {0} = schnelle Antworten,
+            // {1} = gemessene Antworten gesamt, {2} = Median in Sekunden.
+            ["Parent_Report_Pace"] = L(
+                "⏱ Tempo: {0} von {1} Antworten unter 3 Sekunden (Mittelwert {2} s pro Aufgabe)",
+                "⏱ Hız: {1} cevaptan {0} tanesi 3 saniyenin altında (soru başına ortalama {2} sn)"),
+            ["Parent_Report_PaceSuspicious"] = L(
+                "⚠️ Auffällig viele sehr schnelle Antworten - das spricht fürs Raten. Davon waren {0} falsch.",
+                "⚠️ Çok fazla hızlı cevap var - bu tahmin edildiğini gösterir. Bunlardan {0} tanesi yanlıştı."),
+            ["Parent_Report_PaceNoData"] = L(
+                "⏱ Tempo: noch keine Messwerte im Zeitraum.",
+                "⏱ Hız: bu dönemde henüz ölçüm yok."),
 
             ["Steps_Reading"] = L("Lesen", "Okuma"),
             ["Steps_Typing"] = L("Tippen", "Yazma"),

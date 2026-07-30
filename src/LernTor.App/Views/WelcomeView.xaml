@@ -32,6 +32,18 @@
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
+            <!-- Fehler-Kartei: die falsch beantworteten Fragen früherer Tage kommen wieder. Bisher
+                 passierte das unsichtbar - hier sehen die Kinder es, bevor sie in die Fächer gehen. -->
+            <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center" HorizontalAlignment="Center"
+                       Margin="0,0,0,24" TextWrapping="Wrap"
+                       Visibility="{Binding ShowDueReviews, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_DueReviews]" />
+                        <Binding Path="DueReviewCount" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
                     Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
                     HorizontalAlignment="Center"

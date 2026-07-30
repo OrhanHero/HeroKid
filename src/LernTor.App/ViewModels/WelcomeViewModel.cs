@@ -18,10 +18,26 @@ public sealed partial class WelcomeViewModel : ObservableObject
     /// <summary>Erst ab 2 Tagen anzeigen - "🔥 1 Tag in Folge" wäre keine Serie.</summary>
     public bool ShowStreak => CurrentStreak >= 2;
 
-    public WelcomeViewModel(string profileName, int currentStreak, Action onContinue, Action<AppLanguage> onSwitchLanguage)
+    /// <summary>
+    /// Heute fällige Aufgaben aus der Fehler-Kartei (falsch beantwortete Fragen früherer Tage).
+    /// Die Kartei arbeitete bisher unsichtbar im Hintergrund - hier sehen die Kinder, dass ihre
+    /// Fehler nicht einfach verschwinden, sondern wiederkommen, bis sie sitzen. Das erzieht
+    /// mehr als jede zusätzliche Sperre.
+    /// </summary>
+    public int DueReviewCount { get; }
+
+    public bool ShowDueReviews => DueReviewCount > 0;
+
+    public WelcomeViewModel(
+        string profileName,
+        int currentStreak,
+        Action onContinue,
+        Action<AppLanguage> onSwitchLanguage,
+        int dueReviewCount = 0)
     {
         ProfileName = profileName;
         CurrentStreak = currentStreak;
+        DueReviewCount = dueReviewCount;
         _onContinue = onContinue;
         _onSwitchLanguage = onSwitchLanguage;
     }

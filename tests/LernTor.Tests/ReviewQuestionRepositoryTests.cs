@@ -131,6 +131,28 @@ public sealed class ReviewQuestionRepositoryTests : IDisposable
         Assert.Empty(db.ReviewQuestions.ToList());
     }
 
+    [Fact]
+    public async Task Faellige_Anzahl_zaehlt_ueber_alle_Faecher_und_nur_fuer_das_eigene_Profil()
+    {
+        // Speist die Zahl auf dem Willkommensbildschirm ("Von früher noch offen: 2") - sie muss
+        // dieselbe Fälligkeitsregel verwenden wie die Ausgabe der Fragen selbst.
+        using var db = CreateContext();
+        var repo = new ReviewQuestionRepository(db);
+
+        await repo.RecordOutcomeAsync("p1", MathQuestion("m1"), wasCorrect: false);
+        await repo.RecordOutcomeAsync("p1", MathQuestion("m2"), wasCorrect: false);
+        await repo.RecordOutcomeAsync("anderes-profil", MathQuestion("m3"), wasCorrect: false);
+
+        // Heute beantwortet heißt heute nicht fällig - der Willkommensbildschirm zeigt also nichts an.
+        Assert.Equal(0, await repo.GetDueCountAsync("p1"));
+
+        Backdate(db, days: 1);
+
+        Assert.Equal(2, await repo.GetDueCountAsync("p1"));
+        Assert.Equal(1, await repo.GetDueCountAsync("anderes-profil"));
+        Assert.Equal(0, await repo.GetDueCountAsync("profil-ohne-fehler"));
+    }
+
     /// <summary>Setzt LastAnsweredAt aller Einträge um <paramref name="days"/> Tage zurück -
     /// simuliert den Folgetag, ohne echte Wartezeit.</summary>
     private static void Backdate(LernTorDbContext db, int days)

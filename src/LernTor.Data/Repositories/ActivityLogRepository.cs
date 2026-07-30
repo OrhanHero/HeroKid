@@ -25,7 +25,8 @@ public sealed class ActivityLogRepository
             QuestionId = outcome.QuestionId,
             Prompt = prompt,
             GivenAnswer = outcome.GivenAnswer,
-            WasCorrect = outcome.WasCorrect
+            WasCorrect = outcome.WasCorrect,
+            AnswerDurationMs = outcome.DurationMs
         });
 
         await _db.SaveChangesAsync(cancellationToken);

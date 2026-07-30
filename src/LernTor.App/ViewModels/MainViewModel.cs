@@ -191,7 +191,11 @@ public sealed partial class MainViewModel : ObservableObject
             streak = StreakCalculator.CurrentStreak(learningDays, DateOnly.FromDateTime(DateTime.Today));
         }
 
-        return new WelcomeViewModel(CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage);
+        // Fehler-Kartei sichtbar machen: die Kinder sollen wissen, dass falsch beantwortete
+        // Fragen wiederkommen, bevor sie in die Fächer gehen - nicht erst, wenn sie dort auftauchen.
+        var dueReviews = await _reviewRepo.GetDueCountAsync(CurrentProfile!.Id);
+
+        return new WelcomeViewModel(CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews);
     }
 
     /// <summary>Baut die fünf Makro-Etappen (Lesen/Tippen/News/Fächer/Quiz) für die Fortschrittsleiste neu auf.</summary>
