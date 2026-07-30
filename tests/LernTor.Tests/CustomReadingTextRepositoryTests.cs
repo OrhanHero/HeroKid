@@ -139,9 +139,18 @@ public sealed class CustomReadingTextRepositoryTests : IDisposable
 
     public void Dispose()
     {
-        if (File.Exists(_dbPath))
+        try
         {
-            File.Delete(_dbPath);
+            if (File.Exists(_dbPath))
+            {
+                File.Delete(_dbPath);
+            }
+        }
+        catch
+        {
+            // Der Sqlite-Provider poolt Verbindungen, die Datei kann nach dem Dispose des
+            // DbContext noch kurz gesperrt sein - dann räumt das OS das Temp-Verzeichnis auf.
+            // Gleiches Muster wie in ReviewQuestionRepositoryTests.
         }
     }
 }

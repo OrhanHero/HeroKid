@@ -176,6 +176,13 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
 - **EF Core's Sqlite provider cannot translate `OrderBy`/`OrderByDescending` on a `DateTimeOffset`
   column** (`NotSupportedException` at query execution, not at compile time). Fetch rows first
   (`ToListAsync()`), then sort in memory.
+- **Repository tests that back onto a real SQLite temp file must wrap the `File.Delete` in their
+  `Dispose` in a `try`/`catch`.** `Microsoft.Data.Sqlite` pools connections, so the file handle can
+  still be held after the `DbContext` is disposed — `File.Delete` then throws `IOException: The
+  process cannot access the file`, and xUnit reports that as a *test failure* even though the test
+  itself passed. Only reproduces on the Windows CI runner, never on a quick local reading of the
+  code. Existing repository tests (`ReviewQuestionRepositoryTests`, `CustomReadingTextRepositoryTests`)
+  show the pattern; the OS cleans the temp directory anyway.
 - Kiosk hardening (`KioskLockService.Lock()`) must never let one measure's failure crash the app —
   Group Policy/antivirus can deny the `DisableTaskMgr` registry write on some machines. Each
   measure (keyboard hook, task-manager policy) is attempted independently and failures are
