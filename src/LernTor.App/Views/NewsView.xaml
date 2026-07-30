@@ -174,9 +174,16 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Nur zeigen, wenn es wirklich Fragen gibt: die Überschrift hing vorher auch über
+                     fragenlosen Artikeln und damit über einem leeren Bereich, was wie ein
+                     Ladefehler aussah. -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_AnswerQuestions]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,12"
-                           Visibility="{Binding CurrentArticle, Converter={StaticResource NullToVis}}" />
+                           Visibility="{Binding HasQuestions, Converter={StaticResource BoolToVis}}" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_NoQuestions]}"
+                           Style="{StaticResource BodyText}" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,12"
+                           Visibility="{Binding HasNoQuestions, Converter={StaticResource BoolToVis}}" />
 
                 <ItemsControl ItemsSource="{Binding CurrentQuestions}">
                     <ItemsControl.ItemTemplate>

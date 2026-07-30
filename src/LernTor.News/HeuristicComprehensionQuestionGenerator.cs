@@ -38,8 +38,26 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
     /// </summary>
     private static QuizQuestion? BuildClozeQuestion(NewsArticle article)
     {
+        // Absteigend nachgiebiger: erst der Idealfall (langer Satz, langes Inhaltswort), dann
+        // kürzere Sätze und kürzere Wörter. Vorher galt nur die erste Stufe - ein kurzer Teaser
+        // wie "Das neue Gerät ist da." hat kein Wort mit sechs Buchstaben, und der Artikel blieb
+        // ganz ohne Frage (realer Fund aus dem Familienbetrieb, betraf heise online).
+        foreach (var (minWordsPerSentence, minWordLength) in new[] { (4, 6), (4, 5), (3, 5), (3, 4) })
+        {
+            var question = TryBuildCloze(article, minWordsPerSentence, minWordLength);
+            if (question is not null)
+            {
+                return question;
+            }
+        }
+
+        return null;
+    }
+
+    private static QuizQuestion? TryBuildCloze(NewsArticle article, int minWordsPerSentence, int minWordLength)
+    {
         var sentences = Regex.Split(article.SimplifiedSummary, @"(?<=[.!?])\s+")
-            .Where(s => s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 4)
+            .Where(s => s.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= minWordsPerSentence)
             .ToList();
 
         if (sentences.Count == 0)
@@ -48,7 +66,7 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
         }
 
         var sentence = sentences[0];
-        var contentWords = ExtractContentWords(sentence);
+        var contentWords = ExtractContentWords(sentence, minWordLength);
         if (contentWords.Count == 0)
         {
             return null;
@@ -59,7 +77,7 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
 
         // Ablenker aus dem übrigen Text (nicht aus demselben Satz, damit sie nicht direkt
         // daneben stehen); reichen die nicht, ergänzen neutrale Standard-Ablenker.
-        var distractors = ExtractContentWords(string.Join(" ", sentences.Skip(1)) + " " + article.Title)
+        var distractors = ExtractContentWords(string.Join(" ", sentences.Skip(1)) + " " + article.Title, minWordLength)
             .Where(w => !string.Equals(w, answer, StringComparison.OrdinalIgnoreCase))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderByDescending(w => w.Length)
@@ -95,9 +113,9 @@ public sealed class HeuristicComprehensionQuestionGenerator : IComprehensionQues
         };
     }
 
-    private static List<string> ExtractContentWords(string text) => text
+    private static List<string> ExtractContentWords(string text, int minWordLength) => text
         .Split(new[] { ' ', ',', '.', ':', ';', '!', '?', '-', '"', '„', '“', '(', ')' },
             StringSplitOptions.RemoveEmptyEntries)
-        .Where(w => w.Length >= 6 && !Stopwords.Contains(w) && w.All(char.IsLetter))
+        .Where(w => w.Length >= minWordLength && !Stopwords.Contains(w) && w.All(char.IsLetter))
         .ToList();
 }

@@ -53,6 +53,20 @@ public sealed partial class NewsViewModel : ObservableObject
 
     public ObservableCollection<QuestionAnswerViewModel> CurrentQuestions { get; } = new();
 
+    /// <summary>
+    /// Ob dieser Artikel überhaupt Fragen hat. Steuert die Überschrift "Beantworte die Fragen zum
+    /// Artikel" - die stand vorher unabhängig davon da und hing bei fragenlosen Artikeln über
+    /// einem leeren Bereich, was wie ein Ladefehler aussah (gemeldet aus dem Familienbetrieb).
+    /// </summary>
+    public bool HasQuestions => CurrentQuestions.Count > 0;
+
+    /// <summary>
+    /// Gegenstück für den Hinweis, dass dieser Artikel nur zu lesen ist. Verlangt ausdrücklich
+    /// einen angezeigten Artikel - am Ende der Liste ist CurrentArticle null, dort wäre der
+    /// Hinweis sinnlos.
+    /// </summary>
+    public bool HasNoQuestions => CurrentArticle is not null && CurrentQuestions.Count == 0;
+
     /// <summary>Ein klickbarer Marker je Artikel (erledigt/aktuell/offen) für die Übersichtsleiste
     /// im Kopf - so sieht das Kind auch nach einem Neustart, welche Artikel heute geschafft sind.</summary>
     public ObservableCollection<SessionStepViewModel> ArticleMarkers { get; } = new();
@@ -179,6 +193,8 @@ public sealed partial class NewsViewModel : ObservableObject
             CurrentArticle = null;
             CanProceed = true;
             LockSecondsRemaining = 0;
+            OnPropertyChanged(nameof(HasQuestions));
+            OnPropertyChanged(nameof(HasNoQuestions));
             return;
         }
 
@@ -187,6 +203,11 @@ public sealed partial class NewsViewModel : ObservableObject
         {
             CurrentQuestions.Add(new QuestionAnswerViewModel(question, _homeworkChat, OnQuestionSubmitted));
         }
+
+        // CurrentQuestions ist eine ObservableCollection - Count-Änderungen lösen für die
+        // abgeleiteten Eigenschaften kein PropertyChanged aus, das muss hier passieren.
+        OnPropertyChanged(nameof(HasQuestions));
+        OnPropertyChanged(nameof(HasNoQuestions));
 
         var alreadyCompleted = _completedArticleIds.Contains(CurrentArticle.Id);
 

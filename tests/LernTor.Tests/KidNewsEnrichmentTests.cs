@@ -145,6 +145,38 @@ public class HeuristicComprehensionQuestionGeneratorTests
 
         Assert.Empty(questions);
     }
+
+    [Theory]
+    // Kurze Anrisszeilen ohne langes Inhaltswort: fruehere Fassung gab hier auf, weil sie starr
+    // ein Wort mit mindestens sechs Buchstaben im ersten Satz verlangte. Folge im Familienbetrieb:
+    // heise-online-Artikel standen ganz ohne Frage da.
+    [InlineData("Das neue Gerät ist da.")]
+    [InlineData("Der Bund plant ein Gesetz.")]
+    [InlineData("Die Preise sind erneut gestiegen.")]
+    [InlineData("Ein Test zeigt klare Vorteile.")]
+    public void Kurze_Anrisszeilen_liefern_trotzdem_eine_Frage(string summary)
+    {
+        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(Article(summary));
+
+        var cloze = Assert.Single(questions);
+        Assert.Contains("_____", cloze.Prompt);
+        Assert.Contains(cloze.CorrectAnswers[0], cloze.Options);
+        Assert.True(cloze.Options.Count >= 3);
+        Assert.True(cloze.CheckAnswer(cloze.CorrectAnswers[0]));
+        Assert.DoesNotContain(cloze.CorrectAnswers[0], cloze.Prompt);
+    }
+
+    [Fact]
+    public void Lange_Zusammenfassungen_nutzen_weiterhin_das_laengste_Inhaltswort()
+    {
+        // Die Aufweichung darf den Normalfall nicht verschlechtern: solange ein langes
+        // Inhaltswort da ist, bleibt es die Loesung.
+        var questions = new HeuristicComprehensionQuestionGenerator().GenerateQuestions(
+            Article("Die Bezirksverordnetenversammlung hat den Bau beschlossen. Der Baubeginn ist im Herbst."));
+
+        var cloze = Assert.Single(questions);
+        Assert.Equal("Bezirksverordnetenversammlung", cloze.CorrectAnswers[0]);
+    }
 }
 
 public class KidNewsMetadataTests

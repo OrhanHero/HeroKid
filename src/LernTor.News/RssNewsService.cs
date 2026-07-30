@@ -274,10 +274,36 @@ public sealed class RssNewsService
         return string.Empty;
     }
 
+    /// <summary>
+    /// Holt den Fließtext eines Eintrags. Atom-Feeds dürfen <c>summary</c> weglassen und nur
+    /// <c>content</c> liefern - genau das tut z.B. heise online. Wurde nur <c>Summary</c>
+    /// ausgelesen, blieb der Text dieser Quelle leer, und in der Folge fehlten dem Artikel die
+    /// Verständnisfragen (realer Fund aus dem Familienbetrieb). Deshalb wird <c>Content</c> als
+    /// gleichwertige Quelle behandelt, und der jeweils längere Text gewinnt: manche Feeds füllen
+    /// <c>summary</c> nur mit einer Zeile, während <c>content</c> den ganzen Teaser enthält.
+    /// </summary>
+    internal static string ExtractRawSummary(SyndicationItem item)
+    {
+        var summary = item.Summary?.Text ?? string.Empty;
+        var content = (item.Content as TextSyndicationContent)?.Text ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(summary))
+        {
+            return content.Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return summary.Trim();
+        }
+
+        return content.Trim().Length > summary.Trim().Length ? content.Trim() : summary.Trim();
+    }
+
     private NewsArticle BuildArticle(SyndicationItem item, NewsFeedSource source, GradeLevel gradeLevel)
     {
         var title = item.Title?.Text ?? "Ohne Titel";
-        var rawSummary = item.Summary?.Text ?? string.Empty;
+        var rawSummary = ExtractRawSummary(item);
         var simplified = _simplifier.Simplify(rawSummary, gradeLevel);
         var imageUrl = item.Links.FirstOrDefault(l => l.MediaType?.StartsWith("image") == true)?.Uri.ToString();
 

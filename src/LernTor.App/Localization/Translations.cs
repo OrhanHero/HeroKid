@@ -148,6 +148,11 @@ public static class Translations
                 "Şu anda haberler yüklenemedi. Lütfen internet bağlantını kontrol et."),
             ["News_ArticleProgress"] = L("Artikel {0} von {1}", "Haber {0} / {1}"),
             ["News_AnswerQuestions"] = L("Beantworte die Fragen zum Artikel:", "Haberle ilgili soruları cevapla:"),
+            // Manche Feeds liefern nur eine sehr kurze Anrisszeile, aus der sich kein sinnvoller
+            // Lückentext bauen lässt. Dann steht das hier statt einer leeren Fragen-Überschrift.
+            ["News_NoQuestions"] = L(
+                "Zu diesem Artikel gibt es keine Frage - lies ihn einfach in Ruhe durch.",
+                "Bu haber için soru yok - sadece sakince oku."),
             ["News_Cat_Berlin"] = L("Berlin", "Berlin"),
             ["News_Cat_Deutschland"] = L("Deutschland", "Almanya"),
             ["News_Cat_Welt"] = L("Welt", "Dünya"),

@@ -18,6 +18,59 @@ public sealed class RssNewsServiceTests
     }
 
     [Fact]
+    public void Atom_Eintrag_ohne_summary_liefert_den_content_als_Text()
+    {
+        // Atom erlaubt es, <summary> wegzulassen und nur <content> zu liefern - genau so baut
+        // heise online seinen Feed. Weil nur Summary ausgelesen wurde, blieb der Artikeltext
+        // dieser Quelle leer und die Verstaendnisfragen fehlten komplett (Fund aus dem
+        // Familienbetrieb).
+        const string xml = """
+            <?xml version="1.0" encoding="utf-8"?>
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title>Testfeed</title>
+              <entry>
+                <id>urn:uuid:1</id>
+                <title>Neues Betriebssystem erschienen</title>
+                <link rel="alternate" href="https://example.com/artikel" />
+                <updated>2026-07-16T10:15:00Z</updated>
+                <content type="text">Der Hersteller hat die neue Fassung veroeffentlicht. Sie bringt mehrere Verbesserungen mit.</content>
+              </entry>
+            </feed>
+            """;
+
+        var items = RssNewsService.ParseFeedContent(System.Text.Encoding.UTF8.GetBytes(xml));
+
+        var item = Assert.Single(items);
+        Assert.True(string.IsNullOrWhiteSpace(item.Summary?.Text), "Testvoraussetzung: dieser Eintrag hat bewusst kein <summary>.");
+        Assert.Contains("veroeffentlicht", RssNewsService.ExtractRawSummary(item));
+    }
+
+    [Fact]
+    public void Der_laengere_von_summary_und_content_gewinnt()
+    {
+        // Manche Feeds fuellen <summary> nur mit einer Zeile, waehrend <content> den ganzen
+        // Teaser enthaelt - fuer die Lueckentext-Frage ist der laengere Text der brauchbarere.
+        const string xml = """
+            <?xml version="1.0" encoding="utf-8"?>
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title>Testfeed</title>
+              <entry>
+                <id>urn:uuid:2</id>
+                <title>Kurz und lang</title>
+                <link rel="alternate" href="https://example.com/artikel" />
+                <updated>2026-07-16T10:15:00Z</updated>
+                <summary type="text">Kurzfassung.</summary>
+                <content type="text">Die ausfuehrliche Fassung enthaelt deutlich mehr Text und damit auch mehr Inhaltswoerter.</content>
+              </entry>
+            </feed>
+            """;
+
+        var items = RssNewsService.ParseFeedContent(System.Text.Encoding.UTF8.GetBytes(xml));
+
+        Assert.Contains("ausfuehrliche", RssNewsService.ExtractRawSummary(items[0]));
+    }
+
+    [Fact]
     public void ParseFeedReader_supports_standard_rss_and_dtd_entities()
     {
         const string xml = """
