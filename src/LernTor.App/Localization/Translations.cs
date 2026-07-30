@@ -92,6 +92,10 @@ public static class Translations
             ["Typing_ProgressLabel"] = L("Fortschritt", "İlerleme"),
             ["Typing_LessonsLabel"] = L("Lektionen", "Dersler"),
             ["Typing_StarsLabel"] = L("Sterne", "Yıldızlar"),
+            ["Typing_BackToOverview"] = L("← Zurück zur Übersicht", "← Genel bakışa dön"),
+            ["Typing_BackToOverviewHint"] = L(
+                "Abbrechen speichert nichts - dein bisheriger Bestwert für diese Lektion bleibt.",
+                "İptal etmek hiçbir şey kaydetmez - bu ders için en iyi sonucun korunur."),
             ["Typing_LessonsHeader"] = L("Deine Lektionen", "Derslerin"),
             ["Typing_StartLesson"] = L("Starten ▶", "Başla ▶"),
             ["Typing_LessonLocked"] = L("🔒 Erst vorherige Lektion abschließen", "🔒 Önceki dersi bitir"),

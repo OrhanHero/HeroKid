@@ -6,6 +6,17 @@
     <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
             <StackPanel HorizontalAlignment="Center" MaxWidth="1200">
+                <!-- Ausstieg aus der laufenden Übung: wer sich verklickt und eine schon bestandene
+                     Lektion öffnet, kam vorher nur durch Fertigtippen wieder heraus. Abbrechen
+                     speichert bewusst nichts (siehe BackToOverviewCommand). -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_BackToOverview]}"
+                        Style="{StaticResource OptionButton}" HorizontalAlignment="Left"
+                        Margin="0,0,0,4" Command="{Binding BackToOverviewCommand}"
+                        ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_BackToOverviewHint]}" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_BackToOverviewHint]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                           HorizontalAlignment="Left" TextWrapping="Wrap" Margin="2,0,0,12" />
+
                 <!-- Header -->
                 <TextBlock Text="⌨️" FontSize="60" HorizontalAlignment="Center" Margin="0,0,0,12" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Title]}"

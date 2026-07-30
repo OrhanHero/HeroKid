@@ -509,12 +509,26 @@ public sealed partial class MainViewModel : ObservableObject
         // Kern dieser beiden Fächer - ohne sie übt das Kind Grammatikregeln, aber keinen Wortschatz.
         var vocabulary = await BuildVocabularyQuestionsAsync(subject, grade);
 
+        // Reihenfolge nach Verbindlichkeit, nicht nach Zufall:
+        //   1. Fehler-Kartei  - Wiederholung hat Vorrang vor Neuem
+        //   2. Vokabeln       - von den Eltern gepflegte Wortlisten
+        //   3. eigene Aufgaben - was Eltern eintragen ODER aus einem Dokument übernehmen, MUSS
+        //      auch drankommen. Sie standen vorher hinter den generierten Aufgaben und wurden
+        //      deshalb vom Take() abgeschnitten - eingetragene Hausaufgaben tauchten im
+        //      schlechtesten Fall nie auf (Regression aus dem Vokabel-Commit).
+        //   4. generierte Aufgaben füllen den Rest auf.
+        var customForToday = custom.Where(q => !reviewPrompts.Contains(q.Prompt)).ToList();
+        var alreadyPlanned = vocabulary.Count + customForToday.Count;
+        var generatedFill = generated
+            .Where(q => !reviewPrompts.Contains(q.Prompt))
+            .Take(Math.Max(0, CurrentProfile!.ExercisesPerSubject - alreadyPlanned))
+            .ToList();
+
         var questions = review
             .Concat(vocabulary)
-            .Concat(generated.Concat(custom)
-                .Where(q => !reviewPrompts.Contains(q.Prompt))
-                .Take(Math.Max(0, CurrentProfile!.ExercisesPerSubject - vocabulary.Count))
-                .OrderBy(_ => _random.Next()))
+            // Eigene und generierte Aufgaben gemischt, damit die eigenen nicht immer am selben
+            // Platz stehen - abgeschnitten wird aber nur noch bei den generierten.
+            .Concat(customForToday.Concat(generatedFill).OrderBy(_ => _random.Next()))
             .ToList();
 
         return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject), _homeworkChat,

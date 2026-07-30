@@ -118,6 +118,20 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         // Dieser Command dient nur dazu, den "Weiter"-Button im XAML zu binden.
     }
 
+    /// <summary>
+    /// Zurück zur Lektionsübersicht, ohne die Übung zu Ende tippen zu müssen. Gedacht für den
+    /// Fall, dass ein Kind sich verklickt und eine bereits bestandene Lektion erneut öffnet -
+    /// vorher gab es aus der laufenden Übung keinen Ausweg. Ein Abbruch speichert bewusst
+    /// nichts: ein halb getippter Text ist kein Versuch, und ein absichtlich abgebrochener
+    /// Durchgang darf die Bestwerte nicht verschlechtern.
+    /// </summary>
+    [RelayCommand]
+    private void BackToOverview()
+    {
+        _timer.Stop();
+        _onLessonCompleted?.Invoke(null);
+    }
+
     partial void OnCurrentInputChanged(string value)
     {
         if (IsCompleted) return;
