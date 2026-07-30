@@ -1,4 +1,4 @@
-# LernTor – Status-Quo-Bericht (Stand: 2026-07-17)
+# LernTor – Status-Quo-Bericht (Stand: 2026-07-30)
 
 > **Hinweis**: Dieser Bericht basiert auf Code-Analyse. Die App läuft nur unter Windows (WPF + Win32 P/Invoke). Build-Verifikation erfolgt via GitHub Actions (`.github/workflows/build.yml` auf `windows-latest`).
 
@@ -9,10 +9,10 @@
 | Bereich | Status | Details |
 |---------|--------|---------|
 | **Core Domain** | ✅ Fertig | Enums, Models, `ProgressGateService`, `ScoringService`, `LearningStageSubjects.Map` |
-| **ContentGen (Generatoren)** | ✅ Fertig | 15 Fach-Generatoren, `QuizComposer`, Review-/Mastered-Logik |
+| **ContentGen (Generatoren)** | ✅ Fertig | 16 Fach-Generatoren (15 RLP-Fächer + KI-Wissen), `QuizComposer`, Review-/Mastered-Logik |
 | **News (RSS + Aufbereitung)** | ✅ Fertig | RSS-Loading, Vereinfachung, Verständnisfragen, Kategorisierung, Glossar, Bezirks-Erkennung |
 | **Data (EF Core SQLite)** | ✅ Fertig | Repositories: Progress, ActivityLog, MasteredPrompt, ReviewQuestion, CustomQuestion, Settings, Rewards, TypingProgress |
-| **Security (Kiosk)** | ✅ Fertig | Keyboard-Hook, TaskMgr-Policy, Autostart, Admin-Auth |
+| **Security (Kiosk)** | ✅ Fertig | Keyboard-Hook (inkl. Win+Kombos), TaskMgr-Policy, NoWinKeys-Policy, Autostart, Admin-Auth, Vordergrund-Wächter + Closing-Sperre in `MainWindow` |
 | **App (WPF/MVVM)** | ✅ Fertig | MainVM, alle Views (ProfileSelection, Welcome, News, Exercise, FinalQuiz, Result, ParentSettings), QuestionCard, KI-Chat, TTS (Piper), Lehrer-Import (PDF/Word → KI → Entwürfe), Belohnungen, Wochenbericht |
 | **Localization** | ✅ Fertig | DE/TR, String-Indexer, Live-Switch via `PropertyChanged("Item[]")` |
 | **Local LLM** | ✅ Fertig | LLamaSharp, GGUF-Autodownload (~2-4 GB), 2 Features: Lehrer-Import + KI-Hausaufgaben-Chat |
@@ -20,39 +20,46 @@
 
 ---
 
-## 2. Fach-Abdeckung nach Berliner Rahmenlehrplan (Klasse 6 & 9)
+## 2. Fach-Abdeckung nach Berliner Rahmenlehrplan (Klasse 6 / 7 / 9)
 
 **Legende**: ✅ = Topic mit ~20 kuratierten Fragen vorhanden, ⚠️ = Topic existiert aber unvollständig (< 20 Fragen), ❌ = Topic fehlt ganz, — = Fach nicht in App
 
-### ✅ Vollständig implementierte Fächer (15/17 RLP-Fächer)
+> **Doppeljahrgänge**: Der RLP ist in Doppeljahrgangsstufen gegliedert (7/8, 9/10). Die Pools
+> folgen dem - Klasse 7 deckt 7/8 ab, Klasse 9 deckt 9/10 ab. Profile mit Klasse 8 bzw. 10 sind
+> wählbar und greifen über die Übergangsregel in `ExerciseGeneratorBase.Generate` automatisch auf
+> den passenden Pool zu (siehe `GradeLevel`).
+
+### ✅ Vollständig implementierte Fächer (15/17 RLP-Fächer) + KI-Wissen
 
 *Diese Tabelle wurde direkt aus `TopicsByGrade` in den Generator-Dateien abgeleitet (siehe
 [docs/CURRICULUM.md](CURRICULUM.md) für die Themen-Detailtabellen und den vollständigen
 RLP-Haken-Abgleich), nicht geschätzt.*
 
-| Fach | Generator | Klasse 6 Topics | Klasse 9 Topics | Gesamt | Abdeckung RLP-Themenfelder |
-|------|-----------|----------------|----------------|--------|---------------------------|
-| **Mathematik** | `MathGenerator.cs` | 12 | 14 | 26 | Klasse 9: fehlt nur Stochastik-Baumdiagramme und darstellende Geometrie (Nischenthemen) |
-| **Deutsch** | `GermanGenerator.cs` | 12 | 15 | 27 | ✅ komplett (inkl. Drama-Analyse, Novelle, Parabel) |
-| **Türkisch** | `TurkishGenerator.cs` | 8 | 10 | 18 | ✅ komplett (alle 4 kommunikativen RLP-Themenfelder je Stufe) |
-| **Englisch** | `EnglischGenerator.cs` | 7 | 9 | 16 | ✅ komplett (beide Stufen 6/6) |
-| **Biologie** | `BiologieGenerator.cs` | 6 | 8 | 14 | ✅ komplett |
-| **Chemie** | `ChemieGenerator.cs` | 9 | 9 | 18 | ✅ komplett (beide Stufen 6/6) |
-| **Physik** | `PhysikGenerator.cs` | 10 | 7 | 17 | ✅ komplett (beide Stufen 6/6 bzw. 6/7) |
-| **Geschichte** | `GeschichteGenerator.cs` | 3 | 7 | 10 | ✅ komplett (inkl. Feindbilder/Propaganda-Bonusmodul) |
-| **Gewi** | `GewiGenerator.cs` | 9 | 3 | 12 | Klasse 6 komplett (6/6); Klasse 9 auf Kernthemen fokussiert |
-| **Politik** | `PolitikGenerator.cs` | 7 | 8 | 15 | ✅ komplett (beide Stufen 6/6) |
-| **Geografie** | `GeoGenerator.cs` | 7 | 9 | 16 | ✅ komplett (beide Stufen 4/4 bzw. 6/6) |
-| **Ethik** | `EthikGenerator.cs` | 6 | 10 | 16 | ✅ komplett (beide Stufen 6/6) |
-| **Kunst** | `KunstGenerator.cs` | 4 | 6 | 10 | ✅ |
-| **Musik** | `MusikGenerator.cs` | 5 | 6 | 11 | ✅ |
-| **ITG** | `ItgGenerator.cs` | 3 | 3 | 6 | Standardsoftware bewusst weggelassen (nicht quizbar) |
+| Fach | Generator | K6 | K7 | K9 | Gesamt | Abdeckung RLP-Themenfelder |
+|------|-----------|---:|---:|---:|-------:|---------------------------|
+| **Mathematik** | `MathGenerator.cs` | 12 | 9 | 14 | 35 | Klasse 9: fehlt nur Stochastik-Baumdiagramme und darstellende Geometrie (Nischenthemen) |
+| **Deutsch** | `GermanGenerator.cs` | 12 | 6 | 15 | 33 | ✅ komplett (inkl. Drama-Analyse, Novelle, Parabel) |
+| **Türkisch** | `TurkishGenerator.cs` | 8 | 6 | 10 | 24 | ✅ komplett (alle 4 kommunikativen RLP-Themenfelder je Stufe) |
+| **Chemie** | `ChemieGenerator.cs` | 9 | 6 | 9 | 24 | ✅ komplett |
+| **Physik** | `PhysikGenerator.cs` | 10 | 6 | 7 | 23 | ✅ komplett |
+| **Englisch** | `EnglischGenerator.cs` | 7 | 6 | 9 | 22 | ✅ komplett |
+| **Biologie** | `BiologieGenerator.cs` | 6 | 6 | 8 | 20 | ✅ komplett |
+| **Politik** | `PolitikGenerator.cs` | 7 | 4 | 8 | 19 | ✅ komplett |
+| **Geografie** | `GeoGenerator.cs` | 7 | 3 | 9 | 19 | ✅ komplett |
+| **Ethik** | `EthikGenerator.cs` | 6 | 3 | 10 | 19 | ✅ komplett |
+| **Gewi** | `GewiGenerator.cs` | 9 | 6 | 3 | 18 | Klasse 6 komplett; Klasse 9 auf Kernthemen fokussiert (Fach läuft dort in Geschichte/Geo/Politik aus) |
+| **Geschichte** | `GeschichteGenerator.cs` | 3 | 6 | 7 | 16 | ✅ komplett (inkl. Feindbilder/Propaganda-Bonusmodul) |
+| **Musik** | `MusikGenerator.cs` | 5 | 2 | 6 | 13 | ✅ (Klasse-7-Pool dünn: 2 Topics) |
+| **Kunst** | `KunstGenerator.cs` | 4 | 2 | 6 | 12 | ✅ (Klasse-7-Pool dünn: 2 Topics) |
+| **ITG** | `ItgGenerator.cs` | 3 | 2 | 3 | 8 | Standardsoftware bewusst weggelassen (nicht quizbar); Klasse-7-Pool dünn |
+| **KI-Wissen** | `KiWissenGenerator.cs` | 3 | – | 3 | 6 | Kein RLP-Fach, sondern eigener Bereich (siehe `KiContentService`); Klasse 8 nutzt den Klasse-6-Pool |
 
-**Gesamt: 232 Topics × ~20 Fragen = ~4.640 Fragen im Pool**
+**Gesamt: 311 Topics × ~20 Fragen ≈ 6.200 Fragen im Pool** (Mathematik würfelt zusätzlich echte
+Zahlenwerte, dort ist der Pool praktisch unbegrenzt).
 
-> Frühere Fassungen dieses Berichts nannten ~124 Topics und listeten Chemie/Politik/Geografie/Ethik
-> Klasse 9 sowie Deutsch-Drama als große Lücken. Die Generatoren wurden seither erweitert, ohne dass
-> dieser Bericht nachgezogen wurde - diese Fassung ist gegen den aktuellen Code verifiziert.
+> Die Zahlen sind aus `TopicsByGrade` in den Generator-Dateien ausgezählt, nicht geschätzt. Frühere
+> Fassungen dieses Berichts nannten 124 bzw. 232 Topics; der Klasse-7-Sprint und der KI-Bereich sind
+> seither dazugekommen.
 
 ---
 
@@ -86,6 +93,10 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | 🟡 **Mittel** | **Offline-Erst-Installation LLM** | Model-Download (~2-4 GB) passiert erst bei erstem Nutzen. Kein Pre-Bundle im Installer. |
 | ✅ **Erledigt** | **Eltern-Export/Backup** | Sicherung erstellen/wiederherstellen im Eltern-Bereich: Export als konsistente .db-Datei (`VACUUM INTO`), Import ersetzt die aktive DB nach Bestätigung (App-Neustart, Schema-Abgleich macht alte Sicherungen kompatibel). |
 | 🟢 **Niedrig** | **Multi-Device Sync** | Nicht vorgesehen (lokal-only, SQLite). |
+| ✅ **Erledigt** | **Kiosk-Ausbruch über Alt+Tab / Win+Tab** | Drei unabhängige Schichten: Vordergrund-Wächter (300ms-`DispatcherTimer`, vergleicht Prozess-IDs), `MainWindow.Closing`-Sperre solange `KioskLockService.IsLocked` (fängt den X-Button in der Windows-11-Alt+Tab-Vorschau, der ein reines `WM_CLOSE` ohne Tastendruck schickt) und Win-Kombo-Blockade im `KioskKeyboardHook` + `NoWinKeys`-Policy (`WindowsHotkeyPolicy`) gegen den Ausbruch via neuem virtuellem Desktop. |
+| ✅ **Erledigt** | **Tipptrainer verlangte faktisch 100%** | `TypingExerciseService.CheckInput` prüfte zusätzlich `correctChars >= targetText.Length` und hat damit das Eltern-Preset (25/50/75/100%) stillschweigend überschrieben. Die Zusatzbedingung ist entfernt - jetzt gilt nur noch die eingestellte Mindestgenauigkeit. |
+| ✅ **Erledigt** | **Lehrer-Import scheiterte an LLamaSharp-Nativebibliotheken** | Der Single-File-Publish hat `llama.dll`/`ggml*.dll` in die exe eingebettet, wo LLamaSharps eigene Pfadsuche sie nicht findet (`The type initializer for 'LLama.Native.NativeApi' threw an exception`). Ein MSBuild-Target hält `runtimes/win-x64/native/` als lose Dateien daneben. **Erfordert eine Neuinstallation der App**, nicht nur ein Update der DB. |
+| ✅ **Erledigt** | **Kinder nutzten den Längen-Bias der Antworten aus** | In 13 Generatoren war die richtige Antwort zu 70-93% die längste Option - die Kinder haben ohne Lesen die längste angeklickt. `scripts/balance-answer-lengths.py` hat die Distraktoren positionsbasiert angeglichen, `scripts/check-answer-length-bias.py` hält den Anteil in der CI dauerhaft unter 60% (Ist-Wert: ~35%). Bewusst **nicht** 0%, weil eine "die längste ist nie richtig"-Regel genauso ausnutzbar wäre. |
 | ✅ **Erledigt** | **News-Feed-URLs pflegen** | Wöchentlicher automatischer Healthcheck (`.github/workflows/feed-healthcheck.yml` + `scripts/check-feeds.py`): prüft alle URLs aus `NewsFeedSource.cs` montags, Lauf wird rot bei totem Feed. Zusätzlich 48h-Offline-Cache pro Feed in der App (`FeedCache`). |
 
 ### 3.2 UX / Pädagogische Lücken
@@ -96,6 +107,9 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | ✅ **Erledigt** | **Mathe: Offene Eingabe vs. MC** | Alle rechnerischen Topics nutzen `QuestionType.OpenText` (offene Zahleneingabe). Nur `Kongruenzabbildungen` und `Satz des Thales` bleiben bewusst Multiple-Choice: konzeptuelle Fragen mit Satz-Antworten, eine offene Eingabe wäre dort nicht sinnvoll validierbar. |
 | ✅ **Erledigt** | **Gamification: Streaks** | Optional umgesetzt: 🔥-Lernserie auf dem Willkommensbildschirm (`StreakCalculator`), Standard AUS und von Eltern einschaltbar. Bewusst reine Anzeige - keine Strafen/Erinnerungen bei verpassten Tagen, ein noch nicht gelernter heutiger Tag bricht die Serie nicht. |
 | 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
+| ✅ **Erledigt** | **KI-Bereich als eigenes Fach** | `KiContentService` (Core) liefert drei Lernmodule ("Was ist KI?", "KI im Alltag", "KI-Checkliste") mit DE/TR-Texten, `KiWissenGenerator` die zugehörigen Quizfragen. Vollständig offline - kein einziger externer API-Aufruf. |
+| ✅ **Erledigt** | **Zeit-/Umfangs-Settings im Eltern-Bereich** | Lesen, News und Fächer haben jetzt einstellbare Zeit- und Umfangsgrenzen sowie einen Ferien-/Pausenmodus - alles ohne neuen Build änderbar. |
+| ⚠️ **Bekannt dünn** | **Klasse-7-Pools in Kunst/Musik/ITG** | Je nur 2 Topics (~40 Fragen). Reicht für den Alltag, wäre aber die naheliegendste nächste Content-Runde. |
 
 ### 3.3 Content-Erweiterung (Nice-to-have)
 
@@ -122,6 +136,9 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 | **Lokal-only, keine Cloud/Telemetrie** | ✅ Final | Datenschutz, Offline-Fähigkeit, DSGVO-konform |
 | **LLamaSharp (CPU-only, GGUF)** | ✅ Final | Keine CUDA-Abhängigkeit; Qwen2.5-7B-Instruct (Apache-2.0) stark in DE/TR |
 | **RSS live laden (kein Cache)** | ✅ Final | Tagesaktuelle News; Offline-Fallback via Tagesarchiv (7 Tage) |
+| **Doppeljahrgangs-Pools statt Pool pro Klasse** | ✅ Final | Der RLP ist selbst in Doppeljahrgängen (7/8, 9/10) organisiert. Klasse 8/10 sind wählbar, nutzen aber über die Übergangsregel den Pool der unteren Stufe - Eltern tragen die echte Klasse ein, wir pflegen halb so viele Pools |
+| **Längen-Bias auf ~35% statt 0%** | ✅ Final | Ein hartes "längste Antwort ist nie richtig" wäre invers genauso ausnutzbar. ~35% liegt nahe am Zufall bei 3-4 Optionen |
+| **`scripts/preflight.py` statt Compiler** | ✅ Final | In der SDK-losen Entwicklungsumgebung ist die CI der einzige echte Compiler. Preflight kodiert die dokumentierten Fallstricke (Klammerbalance, `Run.Text`-Bindings, `HttpClient`-using, Shutdown/Unlock, Subject-Verdrahtung, EF-`DateTimeOffset`-Sortierung, Generator-Konsistenz) als ausführbare Prüfungen und fängt sie vor dem Push |
 
 ---
 
@@ -129,11 +146,16 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 | Test-Projekt | Tests | Abdeckung |
 |--------------|-------|-----------|
-| `LernTor.Tests` (xUnit) | ~110 | Core (ProgressGate, Scoring, Streaks, Spaced Repetition), ContentGen (alle 15 Generatoren: Musterlösungen prüfen), News (RSS-Parser RDF/Atom/RSS2, FeedCache, Vereinfachung, Kategorisierung, Glossar, Finanzwissen), Data (Repositories gegen echte SQLite-Dateien) |
-| `LernTor.UiTests` (xUnit, net8.0-windows) | ~14 | XAML-Load-Tests (jede View mit App-Ressourcen instanziieren + Layout - fängt die XamlParseException-Klasse) + Prozess-Smoke-Test (echte exe startet, Hauptfenster erscheint, kein Fehlerdialog) - läuft im selben windows-latest-CI-Lauf |
+| `LernTor.Tests` (xUnit) | 130 `[Fact]`/`[Theory]` | Core (ProgressGate, Scoring, Streaks, Spaced Repetition), ContentGen (alle 16 Generatoren: Musterlösungen prüfen, Klasse-7-Pools ohne Rückfall, Doppeljahrgangs-Regel, Sicherheitsnetz „jede Stufe liefert in jedem Fach Aufgaben"), News (RSS-Parser RDF/Atom/RSS2, FeedCache, Vereinfachung, Kategorisierung, Glossar, Finanzwissen), Data (Repositories gegen echte SQLite-Dateien) |
+| `LernTor.UiTests` (xUnit, net8.0-windows) | 5 `[Fact]`/`[Theory]` (davon eine Theory über alle Views) | XAML-Load-Tests (jede View mit App-Ressourcen instanziieren + Layout - fängt die XamlParseException-Klasse) + Prozess-Smoke-Test (echte exe startet, Hauptfenster erscheint, kein Fehlerdialog) - läuft im selben windows-latest-CI-Lauf |
 | Integrationstests | 0 | Manuell auf Windows getestet (siehe docs/PILOT-CHECKLISTE.md) |
+| `scripts/preflight.py` | 9 Prüfungen | Kein Test-Framework, sondern ein statischer Vorab-Check für die SDK-lose Entwicklungsumgebung: Klammerbalance (.cs), XAML-Wohlgeformtheit, `Run.Text` ohne `Mode=OneWay`, `HttpClient` ohne `using System.Net.Http;`, `Shutdown()` ohne vorheriges `Unlock()`, Subject-Verdrahtung, Generator-Konsistenz (`TopicsByGrade` ↔ Methoden), EF-`DateTimeOffset`-Sortierung, Konfigurationsdateien. Hat direkt beim ersten Lauf einen echten Bug gefunden (tote Bindings in `TypingExerciseView.xaml`). |
 
-**CI**: `.github/workflows/build.yml` baut auf `windows-latest` → Artefakt hochladen → manueller Smoke-Test auf Windows empfohlen.
+**CI**: `.github/workflows/build.yml` baut auf `windows-latest` → Artefakt hochladen → manueller Smoke-Test auf Windows empfohlen. Zusätzlich läuft `scripts/check-answer-length-bias.py` als Gate (Schwelle 60% je Generator).
+
+**Vor jedem Push** (siehe `.claude/skills/push-check/SKILL.md`): `python3 scripts/preflight.py` und
+`python3 scripts/check-answer-length-bias.py` - beide müssen grün sein, danach Push und
+CI-Lauf prüfen. Lokal kompilieren geht in dieser Umgebung nicht.
 
 ---
 
@@ -161,6 +183,18 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 - ~~**Feed-URL-Healthcheck**~~ ✅ erledigt (wöchentliche GitHub Action `feed-healthcheck.yml`)
 - ~~**Eltern-Export/Import**~~ ✅ erledigt (DB-Sicherung im Eltern-Bereich, siehe 3.1)
 
+### Sprint 5: Klasse 7 + Doppeljahrgänge ✅ ABGESCHLOSSEN
+17. ~~Klasse-7-Pools für alle 15 Fächer~~ ✅ erledigt (73 neue Topics, ~1.460 Fragen)
+18. ~~Klasse 8 und 10 wählbar machen~~ ✅ erledigt (`GradeLevel.Klasse8`/`Klasse10`, Übergangsregel greift auf 7er- bzw. 9er-Pool; dabei fiel auf, dass `KidNewsMetadata` für alle Stufen außer 6 und 9 leere Einordnungstexte lieferte - behoben)
+
+### Sprint 6: Familien-Feedback aus dem Pilotbetrieb ✅ ABGESCHLOSSEN
+19. ~~Zeit-/Umfangs-Settings + Ferienmodus im Eltern-Bereich~~ ✅ erledigt
+20. ~~Tipptrainer-Bestehensschwelle greift wirklich~~ ✅ erledigt (siehe 3.1)
+21. ~~Lehrer-Import (PDF) reparieren~~ ✅ erledigt (LLamaSharp-Natives, siehe 3.1)
+22. ~~Längen-Bias der Antworten entschärfen~~ ✅ erledigt (13 Generatoren, CI-Gate)
+23. ~~KI-Bereich als eigenes Fach~~ ✅ erledigt
+24. ~~Kiosk-Ausbruch über Alt+Tab und Win+Tab schließen~~ ✅ erledigt (drei Schichten, siehe 3.1)
+
 ### Sprint 4: Polish (1-2 Wochen)
 13. ~~Mathe: Offene Zahleneingabe (neuer Fragetyp)~~ ✅ bereits umgesetzt (alle rechnerischen Topics in `MathGenerator.cs` nutzen `OpenText`; `Kongruenzabbildungen`/`SatzDesThales` bleiben als konzeptuelle Fragen bewusst Multiple-Choice)
 14. ~~Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)~~ ✅ erledigt (`Erlkönig`, `Die Bürgschaft`, `Herr von Ribbeck auf Ribbeck im Havelland` in `ReadingContentProvider.cs`)
@@ -173,13 +207,19 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 **Die App ist funktionskomplett für den Kern-Zweck:**
 
-> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 15 aktive Fächer, ~20 Fragen/Topic; Richtiges pausiert per Spaced Repetition 7/30/90 Tage und kehrt zur Auffrischung zurück) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Noten/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
+> Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 16 aktive Fächer inkl. KI-Bereich, ~20 Fragen/Topic; Richtiges pausiert per Spaced Repetition 7/30/90 Tage und kehrt zur Auffrischung zurück) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Klassenstufe/Zeitgrenzen/Ferienmodus/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
 
 **Abdeckungsgrad RLP:** Alle 15 implementierten Fach-Generatoren decken ihre RLP-Themenfelder für
-Klasse 6 und 9 vollständig ab (232 Topics, ~4.640 Fragen im Pool) - inklusive der zuletzt
-geschlossenen Deutsch- (Novelle, Parabel) und Geschichte-Lücken (Feindbilder/Propaganda). Es gibt
-keine offene RLP-Content-Lücke mehr bei diesen 15 Fächern; nur bewusst ausgeklammerte Bereiche
-bleiben (Sport, WAT, Standardsoftware) - siehe Abschnitt 2.
+Klasse 6, 7 und 9 ab (311 Topics, ~6.200 Fragen im Pool), dazu kommt der KI-Bereich als eigenes,
+nicht-curriculares Fach. Über die Doppeljahrgangs-Regel sind damit alle fünf wählbaren Klassenstufen
+(6, 7, 8, 9, 10) versorgt. Es gibt keine offene RLP-Content-Lücke mehr; dünn sind nur die
+Klasse-7-Pools von Kunst, Musik und ITG (je 2 Topics), und bewusst ausgeklammert bleiben Sport, WAT
+und Standardsoftware - siehe Abschnitt 2.
+
+**Kiosk-Härtung:** Nach drei Runden Familien-Feedback sind Alt+Tab (inkl. X-Button der Windows-11-
+Vorschau) und Win+Tab/neuer virtueller Desktop geschlossen. Was in Software ehrlicherweise nicht zu
+lösen ist - Strg+Alt+Entf → "Abmelden"/"Benutzer wechseln", ein zweites Windows-Konto, USB-Boot,
+BIOS - ist organisatorisch in `docs/PILOT-CHECKLISTE.md` abgedeckt.
 
 **Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)** - bewusst auf die finale Version verschoben. Alles andere ist "Qualität/Content", kein Blocker.
 
