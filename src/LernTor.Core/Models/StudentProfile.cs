@@ -82,6 +82,22 @@ public sealed class StudentProfile
     /// </summary>
     public int QuizRetryQuestionCount { get; set; } = DefaultQuizRetryQuestionCount;
 
+    /// <summary>
+    /// Optionaler eigener Zieltext der Eltern für Lektion 6 (Einfache Sätze). Leer = eingebauter
+    /// Text. Länge und Bereinigung regelt <see cref="TypingTextOverrides"/>.
+    /// </summary>
+    public string? CustomTypingSentenceText { get; set; }
+
+    /// <summary>
+    /// Optionaler eigener Zieltext der Eltern für die Abschluss-Lektion des Tipptrainers.
+    /// Leer = der eingebaute, profil-spezifische Steckbrief-Text.
+    /// </summary>
+    public string? CustomTypingFinalText { get; set; }
+
+    /// <summary>Die bereinigten Text-Überschreibungen dieses Profils für den Tipptrainer.</summary>
+    public TypingTextOverrides TypingTextOverrides =>
+        TypingTextOverrides.From(CustomTypingSentenceText, CustomTypingFinalText);
+
     public const int DefaultReadingMinutes = 5;
     public const int DefaultNewsSecondsPerArticle = 10;
     public const int DefaultExerciseSecondsPerQuestion = 5;

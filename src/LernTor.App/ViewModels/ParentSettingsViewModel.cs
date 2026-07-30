@@ -447,6 +447,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         ExercisesPerSubject = value?.ExercisesPerSubject ?? StudentProfile.DefaultExercisesPerSubject;
         QuizQuestionCount = value?.QuizQuestionCount ?? StudentProfile.DefaultQuizQuestionCount;
         QuizRetryQuestionCount = value?.QuizRetryQuestionCount ?? StudentProfile.DefaultQuizRetryQuestionCount;
+        CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
+        CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -490,6 +492,50 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void SetQuizRetryThreshold(string percent)
     {
         QuizRetryThresholdPercent = int.TryParse(percent, out var parsed) ? parsed : 25;
+    }
+
+    // --- Eigene Tipptrainer-Texte (nur die beiden letzten Lektionen, siehe TypingTextOverrides) ---
+
+    /// <summary>Maximale Zeichenzahl eines eigenen Tipp-Textes - in der Oberfläche als Hinweis sichtbar.</summary>
+    public static int TypingTextMaxLength => TypingTextOverrides.MaxLength;
+
+    /// <summary>Mindestlänge, ab der ein eigener Text überhaupt greift.</summary>
+    public static int TypingTextMinLength => TypingTextOverrides.MinLength;
+
+    /// <summary>Eigener Zieltext für Lektion 6 (Einfache Sätze). Leer = eingebauter Text.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CustomTypingSentenceTextCounter))]
+    private string customTypingSentenceText = string.Empty;
+
+    /// <summary>Eigener Zieltext für die Abschluss-Lektion. Leer = eingebauter Steckbrief-Text.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CustomTypingFinalTextCounter))]
+    private string customTypingFinalText = string.Empty;
+
+    public string CustomTypingSentenceTextCounter => BuildTypingTextCounter(CustomTypingSentenceText);
+
+    public string CustomTypingFinalTextCounter => BuildTypingTextCounter(CustomTypingFinalText);
+
+    /// <summary>
+    /// Live-Anzeige unter dem Eingabefeld: aktuelle Länge, Maximum und - falls der Text zu kurz ist -
+    /// der Hinweis, dass dann der eingebaute Text stehen bleibt.
+    /// </summary>
+    private static string BuildTypingTextCounter(string? text)
+    {
+        var length = (text ?? string.Empty).Trim().Length;
+        var baseText = $"{length} / {TypingTextOverrides.MaxLength} Zeichen";
+
+        if (length == 0)
+        {
+            return baseText + " – leer lassen für den eingebauten Text.";
+        }
+
+        if (length < TypingTextOverrides.MinLength)
+        {
+            return baseText + $" – zu kurz (mindestens {TypingTextOverrides.MinLength}), der eingebaute Text bleibt aktiv.";
+        }
+
+        return baseText;
     }
 
     // --- Timer pro Profil (Pflicht-Lesezeit, Mindestzeiten News/Übungen) - wie die
@@ -736,10 +782,21 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             var quizFirstAttemptThreshold = QuizFirstAttemptThresholdPercent / 100.0;
             var quizRetryThreshold = QuizRetryThresholdPercent / 100.0;
 
+            // Die Bereinigung (Umbrüche raus, auf Maximallänge kürzen, zu kurze Texte verwerfen)
+            // macht TypingTextOverrides.Sanitize - der Rückgabewert wird auch ins geladene Profil
+            // gespiegelt, damit die Oberfläche denselben Wert zeigt, der in der DB steht.
+            var sentenceText = TypingTextOverrides.Sanitize(CustomTypingSentenceText);
+            var finalText = TypingTextOverrides.Sanitize(CustomTypingFinalText);
+
             await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold,
                 ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion,
-                ExercisesPerSubject, QuizQuestionCount, QuizRetryQuestionCount);
+                ExercisesPerSubject, QuizQuestionCount, QuizRetryQuestionCount,
+                sentenceText, finalText);
 
+            SelectedProfile.CustomTypingSentenceText = sentenceText;
+            SelectedProfile.CustomTypingFinalText = finalText;
+            CustomTypingSentenceText = sentenceText ?? string.Empty;
+            CustomTypingFinalText = finalText ?? string.Empty;
             SelectedProfile.TypingMinAccuracy = typingMinAccuracy;
             SelectedProfile.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
             SelectedProfile.QuizRetryThreshold = quizRetryThreshold;

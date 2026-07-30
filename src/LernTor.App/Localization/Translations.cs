@@ -342,6 +342,12 @@ public static class Translations
             ["Parent_Difficulty_Typing"] = L("Tipptrainer: Mindestgenauigkeit zum Bestehen", "Daktilo eğitimi: Geçmek için asgari doğruluk"),
             ["Parent_Difficulty_QuizFirst"] = L("Abschlussquiz: 1. Versuch", "Bitirme sınavı: 1. deneme"),
             ["Parent_Difficulty_QuizRetry"] = L("Abschlussquiz: 2. Versuch (Wiederholung)", "Bitirme sınavı: 2. deneme (tekrar)"),
+            ["Parent_TypingText_Title"] = L("Eigene Tipp-Texte (pro Profil)", "Kendi yazma metinleri (profile özel)"),
+            ["Parent_TypingText_Hint"] = L(
+                "Nur die beiden letzten Lektionen lassen sich frei gestalten - die Aufbaulektionen üben gezielt einzelne Tastenbereiche. Leer lassen heißt: eingebauter Text.",
+                "Yalnızca son iki ders serbestçe düzenlenebilir - temel dersler belirli tuş bölgelerini çalıştırır. Boş bırakırsanız yerleşik metin kullanılır."),
+            ["Parent_TypingText_Sentence"] = L("Lektion 6 (Sätze): eigener Text", "Ders 6 (cümleler): kendi metniniz"),
+            ["Parent_TypingText_Final"] = L("Abschluss-Lektion: eigener Text", "Bitirme dersi: kendi metniniz"),
             ["Parent_Timer_Title"] = L("Zeiten (pro Profil)", "Süreler (profile özel)"),
             ["Parent_Timer_Reading"] = L("Lesen: Pflicht-Lesezeit pro Tag", "Okuma: Günlük zorunlu okuma süresi"),
             ["Parent_Timer_News"] = L("News: Mindest-Lesezeit pro Artikel", "Haberler: Makale başına asgari okuma süresi"),

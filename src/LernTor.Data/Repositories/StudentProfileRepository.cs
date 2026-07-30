@@ -124,6 +124,8 @@ public sealed class StudentProfileRepository
         int exercisesPerSubject,
         int quizQuestionCount,
         int quizRetryQuestionCount,
+        string? customTypingSentenceText = null,
+        string? customTypingFinalText = null,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -132,6 +134,10 @@ public sealed class StudentProfileRepository
             return;
         }
 
+        // Bereinigt speichern (Zeilenumbrüche raus, auf Maximallänge gekürzt), damit ein zu langer
+        // oder zu kurzer Text gar nicht erst in die DB kommt.
+        entity.CustomTypingSentenceText = TypingTextOverrides.Sanitize(customTypingSentenceText);
+        entity.CustomTypingFinalText = TypingTextOverrides.Sanitize(customTypingFinalText);
         entity.TypingMinAccuracy = typingMinAccuracy;
         entity.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
         entity.QuizRetryThreshold = quizRetryThreshold;
@@ -163,6 +169,8 @@ public sealed class StudentProfileRepository
         ExerciseSecondsPerQuestion = entity.ExerciseSecondsPerQuestion > 0 ? entity.ExerciseSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion,
         ExercisesPerSubject = entity.ExercisesPerSubject > 0 ? entity.ExercisesPerSubject : StudentProfile.DefaultExercisesPerSubject,
         QuizQuestionCount = entity.QuizQuestionCount > 0 ? entity.QuizQuestionCount : StudentProfile.DefaultQuizQuestionCount,
-        QuizRetryQuestionCount = entity.QuizRetryQuestionCount > 0 ? entity.QuizRetryQuestionCount : StudentProfile.DefaultQuizRetryQuestionCount
+        QuizRetryQuestionCount = entity.QuizRetryQuestionCount > 0 ? entity.QuizRetryQuestionCount : StudentProfile.DefaultQuizRetryQuestionCount,
+        CustomTypingSentenceText = entity.CustomTypingSentenceText,
+        CustomTypingFinalText = entity.CustomTypingFinalText
     };
 }

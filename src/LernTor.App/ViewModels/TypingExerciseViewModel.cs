@@ -21,6 +21,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
     private readonly string _profileId;
     private readonly string _profileName;
     private readonly double _minAccuracy;
+    private readonly TypingTextOverrides _textOverrides;
     private readonly Action<string?> _onLessonCompleted;
     private readonly DispatcherTimer _timer;
 
@@ -31,9 +32,11 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
         string profileId,
         string profileName,
         double minAccuracy,
-        Action<string?> onLessonCompleted)
+        Action<string?> onLessonCompleted,
+        TypingTextOverrides? textOverrides = null)
     {
         Lesson = lesson;
+        _textOverrides = textOverrides ?? TypingTextOverrides.None;
         _service = service;
         _progressRepo = progressRepo;
         _profileId = profileId;
@@ -167,7 +170,7 @@ public sealed partial class TypingExerciseViewModel : ObservableObject
             Passed = IsPassed,
             Elapsed = Elapsed
         };
-        await _service.RecordAttemptAsync(_profileId, Lesson, result, _profileName);
+        await _service.RecordAttemptAsync(_profileId, Lesson, result, _profileName, _textOverrides);
 
         // Sterne berechnen
         int stars = CalculateStars(Accuracy, Wpm);

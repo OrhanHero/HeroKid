@@ -16,29 +16,18 @@ public static class TypingContentProvider
 {
     private static readonly IReadOnlyList<TypingLesson> Pool = new List<TypingLesson>
     {
-        #region Lektion 1: Grundreihe (ASDF JKL;)
+        #region Lektion 1: Grundreihe (ASDF JKLÖ)
         new TypingLesson
         {
             Id = "grundreihe_1",
             LessonType = TypingLessonType.Grundreihe,
-            Title = "Lektion 1: Grundreihe – ASDF JKL;",
-            InstructionDe = "Lege deine Finger auf die Grundreihe: Links ASDF, Rechts JKL;. Tippe die Buchstaben nacheinander.",
+            Title = "Lektion 1: Grundreihe – ASDF JKLÖ",
+            InstructionDe = "Lege deine Finger auf die Grundreihe: Links ASDF, Rechts JKLÖ. Tippe die Buchstaben nacheinander.",
             InstructionTr = "",
-            TargetText = "asdf jkl; asdf jkl; asdf jkl;",
-            FingerMapping = new List<TypingFinger>
-            {
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex,  // a s d f
-                TypingFinger.Thumb,                                                                    // space
-                TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky,   // j k l ;
-                TypingFinger.Thumb,                                                                    // space
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex,   // a s d f
-                TypingFinger.Thumb,                                                                    // space
-                TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky,   // j k l ;
-                TypingFinger.Thumb,                                                                    // space
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex,   // a s d f
-                TypingFinger.Thumb,                                                                    // space
-                TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky,   // j k l ;
-            },
+            // QWERTZ-Grundreihe ist A S D F G H J K L Ö Ä - das Semikolon der US-Tastatur gibt es
+            // hier nicht als eigene Taste (es liegt auf Umschalt+Komma).
+            TargetText = "asdf jklö asdf jklö asdf jklö",
+            FingerMapping = BuildFingerMapping("asdf jklö asdf jklö asdf jklö"),
             Difficulty = 1,
             EstimatedDurationSeconds = 60,
             MinimumAccuracy = 0.35,
@@ -52,18 +41,7 @@ public static class TypingContentProvider
             InstructionDe = "Jetzt bilden die Grundreihe-Buchstaben erste Wörter. Weiter so!",
             InstructionTr = "",
             TargetText = "fad sad dad jag lag had fas jad sal",
-            FingerMapping = new List<TypingFinger>
-            {
-                TypingFinger.LIndex, TypingFinger.LPinky, TypingFinger.LMiddle, TypingFinger.Thumb, // fad
-                TypingFinger.LMiddle, TypingFinger.LPinky, TypingFinger.LMiddle, TypingFinger.Thumb, // sad
-                TypingFinger.LMiddle, TypingFinger.LPinky, TypingFinger.LMiddle, TypingFinger.Thumb, // dad
-                TypingFinger.RIndex, TypingFinger.LPinky, TypingFinger.RMiddle, TypingFinger.Thumb, // jag
-                TypingFinger.LRing, TypingFinger.LPinky, TypingFinger.RMiddle, TypingFinger.Thumb, // lag
-                TypingFinger.RIndex, TypingFinger.LPinky, TypingFinger.LMiddle, TypingFinger.Thumb, // had
-                TypingFinger.LIndex, TypingFinger.LPinky, TypingFinger.LMiddle, TypingFinger.Thumb, // fas
-                TypingFinger.RIndex, TypingFinger.LPinky, TypingFinger.LMiddle, TypingFinger.Thumb, // jad
-                TypingFinger.LMiddle, TypingFinger.LPinky, TypingFinger.LRing,                    // sal
-            },
+            FingerMapping = BuildFingerMapping("fad sad dad jag lag had fas jad sal"),
             Difficulty = 1,
             EstimatedDurationSeconds = 60,
             MinimumAccuracy = 0.35,
@@ -76,8 +54,8 @@ public static class TypingContentProvider
             Title = "Lektion 1c: Grundreihe – Kombinationen",
             InstructionDe = "Mische die linke und rechte Hand. Konzentriere dich auf die richtigen Finger!",
             InstructionTr = "",
-            TargetText = "asdf jkl; sad fad jag lag had fas jad sal das glad",
-            FingerMapping = BuildFingerMapping("asdf jkl; sad fad jag lag had fas jad sal das glad"),
+            TargetText = "asdf jklö sad fad jag lag had fas jad sal das glad",
+            FingerMapping = BuildFingerMapping("asdf jklö sad fad jag lag had fas jad sal das glad"),
             Difficulty = 1,
             EstimatedDurationSeconds = 70,
             MinimumAccuracy = 0.35,
@@ -94,20 +72,7 @@ public static class TypingContentProvider
             InstructionDe = "Strecke deine Zeige- und Mittelfinger nach oben: QWERT (links) ZUIOPÜ+ (rechts).",
             InstructionTr = "",
             TargetText = "qwert zuiopü+ qwert zuiopü+ qwert zuiopü+",
-            FingerMapping = new List<TypingFinger>
-            {
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex, // q w e r t
-                TypingFinger.Thumb,                                                                                        // space
-                TypingFinger.RIndex, TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky, TypingFinger.RPinky, // z u i o p ü +
-                TypingFinger.Thumb,
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky, TypingFinger.RPinky,
-                TypingFinger.Thumb,
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky, TypingFinger.RPinky,
-            },
+            FingerMapping = BuildFingerMapping("qwert zuiopü+ qwert zuiopü+ qwert zuiopü+"),
             Difficulty = 2,
             EstimatedDurationSeconds = 70,
             MinimumAccuracy = 0.35,
@@ -138,20 +103,7 @@ public static class TypingContentProvider
             InstructionDe = "Bewege Zeige- und Mittelfinger nach unten: YXCVB (links) NM,.- (rechts).",
             InstructionTr = "",
             TargetText = "yxcvb nm,.- yxcvb nm,.- yxcvb nm,.-",
-            FingerMapping = new List<TypingFinger>
-            {
-                TypingFinger.RIndex, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex, // y x c v b
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RPinky, TypingFinger.RPinky, // n m , . -
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RPinky, TypingFinger.RPinky,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RPinky, TypingFinger.RPinky,
-            },
+            FingerMapping = BuildFingerMapping("yxcvb nm,.- yxcvb nm,.- yxcvb nm,.-"),
             Difficulty = 2,
             EstimatedDurationSeconds = 70,
             MinimumAccuracy = 0.35,
@@ -182,20 +134,7 @@ public static class TypingContentProvider
             InstructionDe = "Strecke alle Finger nach oben zur Zahlenreihe. Jeder Finger hat seine Zahl!",
             InstructionTr = "",
             TargetText = "12345 67890 12345 67890 12345 67890",
-            FingerMapping = new List<TypingFinger>
-            {
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex, // 1 2 3 4 5
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky, // 6 7 8 9 0
-                TypingFinger.Thumb,
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky,
-                TypingFinger.Thumb,
-                TypingFinger.LPinky, TypingFinger.LRing, TypingFinger.LMiddle, TypingFinger.LIndex, TypingFinger.LIndex,
-                TypingFinger.Thumb,
-                TypingFinger.RIndex, TypingFinger.RIndex, TypingFinger.RMiddle, TypingFinger.RRing, TypingFinger.RPinky,
-            },
+            FingerMapping = BuildFingerMapping("12345 67890 12345 67890 12345 67890"),
             Difficulty = 3,
             EstimatedDurationSeconds = 60,
             MinimumAccuracy = 0.35,
@@ -283,23 +222,60 @@ public static class TypingContentProvider
         MinimumCharacters = 80
     };
 
-    public static IReadOnlyList<TypingLesson> GetAllLessons()
+    /// <summary>Id der Lektion, deren Zieltext die Eltern über <see cref="TypingTextOverrides.SentenceText"/> ersetzen können.</summary>
+    public const string SentenceLessonId = "saetze_1";
+
+    public static IReadOnlyList<TypingLesson> GetAllLessons(TypingTextOverrides? overrides = null)
     {
-        return Pool;
+        if (overrides is null || overrides.IsEmpty) return Pool;
+        return Pool.Select(l => ApplyOverrides(l, overrides)).ToList();
     }
 
-    public static TypingLesson GetLessonById(string id)
+    public static TypingLesson GetLessonById(string id, TypingTextOverrides? overrides = null)
     {
         // Erst im Pool suchen
         var lesson = Pool.FirstOrDefault(l => l.Id == id);
-        if (lesson != null) return lesson;
+        if (lesson != null) return ApplyOverrides(lesson, overrides);
 
         // Profil-spezifische Abschluss-Lektionen
-        return id switch
+        var final = id switch
         {
             "abschluss_emirhan" => CreateEmirhanFinalLesson(),
             "abschluss_batuhan" => CreateBatuhanFinalLesson(),
-            _ => null!
+            _ => null
+        };
+
+        return final is null ? null! : ApplyOverrides(final, overrides);
+    }
+
+    /// <summary>
+    /// Setzt einen von den Eltern hinterlegten Text in die betroffene Lektion ein. Finger-Mapping
+    /// und Mindest-Zeichenzahl werden dabei aus dem neuen Text neu abgeleitet - sonst würde eine
+    /// kurze eigene Übung an einer Mindest-Zeichenzahl scheitern, die für den alten Text galt.
+    /// </summary>
+    private static TypingLesson ApplyOverrides(TypingLesson lesson, TypingTextOverrides? overrides)
+    {
+        if (overrides is null || overrides.IsEmpty) return lesson;
+
+        var replacement = lesson.LessonType == TypingLessonType.Abschluss
+            ? overrides.FinalText
+            : lesson.Id == SentenceLessonId ? overrides.SentenceText : null;
+
+        if (string.IsNullOrWhiteSpace(replacement) || replacement == lesson.TargetText) return lesson;
+
+        return new TypingLesson
+        {
+            Id = lesson.Id,
+            LessonType = lesson.LessonType,
+            Title = lesson.Title,
+            InstructionDe = lesson.InstructionDe,
+            InstructionTr = lesson.InstructionTr,
+            TargetText = replacement,
+            FingerMapping = BuildFingerMapping(replacement),
+            Difficulty = lesson.Difficulty,
+            EstimatedDurationSeconds = lesson.EstimatedDurationSeconds,
+            MinimumAccuracy = lesson.MinimumAccuracy,
+            MinimumCharacters = Math.Min(lesson.MinimumCharacters, replacement.Length)
         };
     }
 
@@ -312,16 +288,16 @@ public static class TypingContentProvider
     /// Ermittelt die nächste Lektion in der Sequenz.
     /// Für die Abschluss-Lektion wird der Profil-Name benötigt.
     /// </summary>
-    public static TypingLesson? GetNextLesson(string currentLessonId, string? profileName = null)
+    public static TypingLesson? GetNextLesson(string currentLessonId, string? profileName = null, TypingTextOverrides? overrides = null)
     {
         var current = Pool.FirstOrDefault(l => l.Id == currentLessonId);
-        if (current == null) return Pool.FirstOrDefault();
+        if (current == null) return ApplyOverrides(Pool.First(), overrides);
 
         var sameTypeLessons = Pool.Where(l => l.LessonType == current.LessonType).OrderBy(l => l.Id).ToList();
         var currentIndex = sameTypeLessons.FindIndex(l => l.Id == currentLessonId);
         if (currentIndex >= 0 && currentIndex + 1 < sameTypeLessons.Count)
         {
-            return sameTypeLessons[currentIndex + 1];
+            return ApplyOverrides(sameTypeLessons[currentIndex + 1], overrides);
         }
 
         // Nächster Typ
@@ -331,37 +307,38 @@ public static class TypingContentProvider
         // Wenn wir nach saetze_2 kommen (letztes reguläres Level), zur profil-spezifischen Abschluss-Lektion
         if (nextLesson == null && current.LessonType == TypingLessonType.Saetze)
         {
-            return GetFinalLessonForProfile(profileName);
+            return GetFinalLessonForProfile(profileName, overrides);
         }
 
-        return nextLesson;
+        return nextLesson is null ? null : ApplyOverrides(nextLesson, overrides);
     }
 
     /// <summary>
     /// Gibt die profil-spezifische Abschluss-Lektion zurück.
     /// </summary>
-    public static TypingLesson GetFinalLessonForProfile(string? profileName)
+    public static TypingLesson GetFinalLessonForProfile(string? profileName, TypingTextOverrides? overrides = null)
     {
-        return profileName?.Contains("Emirhan", StringComparison.OrdinalIgnoreCase) == true
+        var lesson = profileName?.Contains("Emirhan", StringComparison.OrdinalIgnoreCase) == true
             ? CreateEmirhanFinalLesson()
             : CreateBatuhanFinalLesson(); // Default: Batuhan
+        return ApplyOverrides(lesson, overrides);
     }
 
     /// <summary>
     /// Ermittelt die nächste freigeschaltete Lektion basierend auf dem Fortschritt.
     /// Für die Abschluss-Lektion wird der Profil-Name benötigt.
     /// </summary>
-    public static TypingLesson? GetNextUnlockedLesson(IReadOnlySet<string> completedLessonIds, string? profileName = null)
+    public static TypingLesson? GetNextUnlockedLesson(IReadOnlySet<string> completedLessonIds, string? profileName = null, TypingTextOverrides? overrides = null)
     {
         foreach (var lesson in Pool.OrderBy(l => (int)l.LessonType).ThenBy(l => l.Id))
         {
             if (!completedLessonIds.Contains(lesson.Id))
             {
-                return lesson;
+                return ApplyOverrides(lesson, overrides);
             }
         }
         // Alle regulären Lektionen abgeschlossen -> profil-spezifische Abschluss-Lektion
-        return GetFinalLessonForProfile(profileName);
+        return GetFinalLessonForProfile(profileName, overrides);
     }
 
     /// <summary>
@@ -395,13 +372,13 @@ public static class TypingContentProvider
             ' ' => TypingFinger.Thumb,
             '\t' => TypingFinger.Thumb,
             '\n' => TypingFinger.Thumb,
-            ',' => TypingFinger.RPinky,
-            '.' => TypingFinger.RPinky,
+            ',' => TypingFinger.RMiddle,
+            '.' => TypingFinger.RRing,
             '-' => TypingFinger.RPinky,
             '+' => TypingFinger.RPinky,
             'ü' => TypingFinger.RPinky,
-            'ö' => TypingFinger.RRing,
-            'ä' => TypingFinger.LPinky,
+            'ö' => TypingFinger.RPinky,
+            'ä' => TypingFinger.RPinky,
             'ß' => TypingFinger.RPinky,
             '?' => TypingFinger.RPinky,
             '!' => TypingFinger.RPinky,
@@ -437,7 +414,7 @@ public static class TypingContentProvider
             // Row 4 (lower):   < Y X C V B N M , . - (Shift)
 
             // Oberreihe (Row 2 - upper)
-            { 'q', TypingFinger.LPinky }, { 'w', TypingFinger.LRing }, { 'e', TypingFinger.LMiddle }, { 'r', TypingFinger.LIndex }, { 't', TypingFinger.LIndex }, { 'z', TypingFinger.LIndex },
+            { 'q', TypingFinger.LPinky }, { 'w', TypingFinger.LRing }, { 'e', TypingFinger.LMiddle }, { 'r', TypingFinger.LIndex }, { 't', TypingFinger.LIndex }, { 'z', TypingFinger.RIndex },
             { 'u', TypingFinger.RIndex }, { 'i', TypingFinger.RMiddle }, { 'o', TypingFinger.RRing }, { 'p', TypingFinger.RPinky }, { 'ü', TypingFinger.RPinky }, { '+', TypingFinger.RPinky },
 
             // Grundreihe / Home row (Row 3)
@@ -445,8 +422,10 @@ public static class TypingContentProvider
             { 'j', TypingFinger.RIndex }, { 'k', TypingFinger.RMiddle }, { 'l', TypingFinger.RRing }, { 'ö', TypingFinger.RPinky }, { 'ä', TypingFinger.RPinky }, { '#', TypingFinger.RPinky },
 
             // Unterreihe / Lower row (Row 4)
-            { 'y', TypingFinger.RIndex }, { 'x', TypingFinger.LRing }, { 'c', TypingFinger.LMiddle }, { 'v', TypingFinger.LIndex }, { 'b', TypingFinger.LIndex },
-            { 'n', TypingFinger.RIndex }, { 'm', TypingFinger.RMiddle }, { ',', TypingFinger.RPinky }, { '.', TypingFinger.RPinky }, { '-', TypingFinger.RPinky },
+            // Auf QWERTZ liegt Y links unten (kleiner Finger links) und Z in der Oberreihe rechts -
+            // genau umgekehrt zu QWERTY. Komma und Punkt gehören zum rechten Mittel- bzw. Ringfinger.
+            { 'y', TypingFinger.LPinky }, { 'x', TypingFinger.LRing }, { 'c', TypingFinger.LMiddle }, { 'v', TypingFinger.LIndex }, { 'b', TypingFinger.LIndex },
+            { 'n', TypingFinger.RIndex }, { 'm', TypingFinger.RMiddle }, { ',', TypingFinger.RMiddle }, { '.', TypingFinger.RRing }, { '-', TypingFinger.RPinky },
 
             // Numbers (Row 1)
             { '1', TypingFinger.LPinky }, { '2', TypingFinger.LRing }, { '3', TypingFinger.LMiddle }, { '4', TypingFinger.LIndex }, { '5', TypingFinger.LIndex },

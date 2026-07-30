@@ -20,6 +20,7 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
     private readonly Action _onContinueToNews;
     private readonly string _profileId;
     private readonly string _profileName;
+    private readonly TypingTextOverrides _textOverrides;
 
     public TypingDashboardViewModel(
         string profileId,
@@ -27,10 +28,13 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
         TypingProgressRepository progressRepo,
         TypingExerciseService service,
         Action<string> onLessonSelected,
-        Action onContinueToNews)
+        Action onContinueToNews,
+        TypingTextOverrides? textOverrides = null)
     {
         _profileId = profileId;
         _profileName = profileName;
+        _textOverrides = textOverrides ?? TypingTextOverrides.None;
+        AllLessons = TypingContentProvider.GetAllLessons(_textOverrides);
         _progressRepo = progressRepo;
         _service = service;
         _onLessonSelected = onLessonSelected;
@@ -38,7 +42,7 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
         Lessons = [];
     }
 
-    public IReadOnlyList<TypingLesson> AllLessons { get; } = TypingContentProvider.GetAllLessons();
+    public IReadOnlyList<TypingLesson> AllLessons { get; }
 
     [ObservableProperty]
     private IReadOnlyList<TypingLessonViewModel> lessons = [];
@@ -59,7 +63,7 @@ public sealed partial class TypingDashboardViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        var dashboardData = await _service.GetDashboardDataAsync(_profileId, _profileName);
+        var dashboardData = await _service.GetDashboardDataAsync(_profileId, _profileName, _textOverrides);
 
         // Map LessonState to TypingLessonViewModel
         var lessonVMs = dashboardData.Lessons.Select(ls =>

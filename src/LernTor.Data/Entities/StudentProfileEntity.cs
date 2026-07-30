@@ -23,4 +23,8 @@ public sealed class StudentProfileEntity
     public int ExercisesPerSubject { get; set; } = 6;
     public int QuizQuestionCount { get; set; } = 20;
     public int QuizRetryQuestionCount { get; set; } = 15;
+
+    // Eigene Tipptrainer-Texte der Eltern (optional, NULL = eingebauter Text).
+    public string? CustomTypingSentenceText { get; set; }
+    public string? CustomTypingFinalText { get; set; }
 }

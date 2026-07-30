@@ -285,14 +285,16 @@ public sealed partial class MainViewModel : ObservableObject
         var vm = new TypingDashboardViewModel(CurrentProfile!.Id, CurrentProfile!.Name, _typingProgressRepo, _typingService, lessonId =>
         {
             _ = NavigateToTypingExerciseAsync(lessonId);
-        }, () => _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen)));
+        }, () => _ = NavigateToStageAsync(_gate.GetNextStage(LearningStage.Tippen)),
+            CurrentProfile!.TypingTextOverrides);
         await vm.InitializeAsync();
         return vm;
     }
 
     private async Task NavigateToTypingExerciseAsync(string lessonId)
     {
-        var lesson = TypingContentProvider.GetLessonById(lessonId);
+        var overrides = CurrentProfile!.TypingTextOverrides;
+        var lesson = TypingContentProvider.GetLessonById(lessonId, overrides);
         if (lesson == null) return;
 
         var exerciseVm = new TypingExerciseViewModel(
@@ -302,7 +304,8 @@ public sealed partial class MainViewModel : ObservableObject
             CurrentProfile!.Id,
             CurrentProfile!.Name,
             CurrentProfile!.TypingMinAccuracy,
-            lessonId => OnTypingLessonCompleted(lessonId)
+            lessonId => OnTypingLessonCompleted(lessonId),
+            overrides
         );
         CurrentViewModel = exerciseVm;
     }
@@ -318,7 +321,7 @@ public sealed partial class MainViewModel : ObservableObject
         else
         {
             // Show completion screen
-            var lesson = TypingContentProvider.GetLessonById(lessonId);
+            var lesson = TypingContentProvider.GetLessonById(lessonId, CurrentProfile!.TypingTextOverrides);
             if (lesson != null)
             {
                 var progress = await _typingProgressRepo.GetProgressAsync(CurrentProfile!.Id);
@@ -338,7 +341,7 @@ public sealed partial class MainViewModel : ObservableObject
                         () =>
                         {
                             var completedLessonIds = progress.Where(kvp => kvp.Value.IsCompleted).Select(kvp => kvp.Key).ToHashSet();
-                            var nextLesson = TypingContentProvider.GetNextUnlockedLesson(completedLessonIds, CurrentProfile!.Name);
+                            var nextLesson = TypingContentProvider.GetNextUnlockedLesson(completedLessonIds, CurrentProfile!.Name, CurrentProfile!.TypingTextOverrides);
                             if (nextLesson != null)
                             {
                                 _ = NavigateToTypingExerciseAsync(nextLesson.Id);
