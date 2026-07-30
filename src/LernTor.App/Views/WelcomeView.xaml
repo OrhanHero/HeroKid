@@ -32,6 +32,31 @@
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
+            <!-- Wochenziel: reine Anzeige ohne Druck (siehe WeeklyGoalCalculator). Zwei getrennte
+                 Zeilen statt einer, damit "geschafft" auch als Erfolg gelesen wird. -->
+            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center"
+                       HorizontalAlignment="Center" Margin="0,0,0,12" TextWrapping="Wrap"
+                       Visibility="{Binding ShowWeeklyGoalReached, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_WeeklyGoalReached]" />
+                        <Binding Path="WeeklyGoalLearnedDays" Mode="OneWay" />
+                        <Binding Path="WeeklyGoalTarget" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center"
+                       HorizontalAlignment="Center" Margin="0,0,0,12" TextWrapping="Wrap"
+                       Visibility="{Binding ShowWeeklyGoalOpen, Converter={StaticResource BoolToVis}}">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatWithArg}">
+                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_WeeklyGoalOpen]" />
+                        <Binding Path="WeeklyGoalLearnedDays" Mode="OneWay" />
+                        <Binding Path="WeeklyGoalTarget" Mode="OneWay" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
             <!-- Fehler-Kartei: die falsch beantworteten Fragen früherer Tage kommen wieder. Bisher
                  passierte das unsichtbar - hier sehen die Kinder es, bevor sie in die Fächer gehen. -->
             <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center" HorizontalAlignment="Center"

@@ -126,6 +126,7 @@ public sealed class StudentProfileRepository
         int quizRetryQuestionCount,
         string? customTypingSentenceText = null,
         string? customTypingFinalText = null,
+        int weeklyGoalDays = 0,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -138,6 +139,7 @@ public sealed class StudentProfileRepository
         // oder zu kurzer Text gar nicht erst in die DB kommt.
         entity.CustomTypingSentenceText = TypingTextOverrides.Sanitize(customTypingSentenceText);
         entity.CustomTypingFinalText = TypingTextOverrides.Sanitize(customTypingFinalText);
+        entity.WeeklyGoalDays = weeklyGoalDays;
         entity.TypingMinAccuracy = typingMinAccuracy;
         entity.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
         entity.QuizRetryThreshold = quizRetryThreshold;
@@ -170,6 +172,7 @@ public sealed class StudentProfileRepository
         ExercisesPerSubject = entity.ExercisesPerSubject > 0 ? entity.ExercisesPerSubject : StudentProfile.DefaultExercisesPerSubject,
         QuizQuestionCount = entity.QuizQuestionCount > 0 ? entity.QuizQuestionCount : StudentProfile.DefaultQuizQuestionCount,
         QuizRetryQuestionCount = entity.QuizRetryQuestionCount > 0 ? entity.QuizRetryQuestionCount : StudentProfile.DefaultQuizRetryQuestionCount,
+        WeeklyGoalDays = entity.WeeklyGoalDays,
         CustomTypingSentenceText = entity.CustomTypingSentenceText,
         CustomTypingFinalText = entity.CustomTypingFinalText
     };

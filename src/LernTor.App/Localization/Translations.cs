@@ -390,6 +390,24 @@ public static class Translations
                 "Yalnızca son iki ders serbestçe düzenlenebilir - temel dersler belirli tuş bölgelerini çalıştırır. Boş bırakırsanız yerleşik metin kullanılır."),
             ["Parent_TypingText_Sentence"] = L("Lektion 6 (Sätze): eigener Text", "Ders 6 (cümleler): kendi metniniz"),
             ["Parent_TypingText_Final"] = L("Abschluss-Lektion: eigener Text", "Bitirme dersi: kendi metniniz"),
+            ["Parent_WeeklyGoal_Title"] = L("Wochenziel (pro Profil)", "Haftalık hedef (profile özel)"),
+            ["Parent_WeeklyGoal_Hint"] = L(
+                "An wie vielen Tagen pro Woche soll gelernt werden? Reine Anzeige - ein verfehltes Ziel hat keine Folgen, es gibt keine Sterne weniger und keine Mahnung. Anders als die Lernserie zerbricht ein Wochenziel nicht an einem einzigen verpassten Tag.",
+                "Haftada kaç gün öğrenilsin? Sadece gösterim - hedefe ulaşılmazsa bir sonucu olmaz, yıldız eksilmez ve uyarı gelmez. Öğrenme serisinin aksine haftalık hedef tek bir kaçırılan günde bozulmaz."),
+            ["Parent_WeeklyGoal_Off"] = L("Aus", "Kapalı"),
+            ["Parent_WeeklyGoal_Days"] = L("{0} Tage", "{0} gün"),
+            ["Parent_Report_WeeklyGoal"] = L(
+                "🎯 Wochenziel: {0} von {1} Tagen geschafft",
+                "🎯 Haftalık hedef: {1} günün {0} günü tamam"),
+            ["Parent_Report_WeeklyGoalOff"] = L(
+                "🎯 Wochenziel: nicht gesetzt.",
+                "🎯 Haftalık hedef: ayarlanmadı."),
+            ["Welcome_WeeklyGoalReached"] = L(
+                "🎯 Wochenziel geschafft: {0} von {1} Tagen!",
+                "🎯 Haftalık hedef tamam: {1} günün {0} günü!"),
+            ["Welcome_WeeklyGoalOpen"] = L(
+                "🎯 Diese Woche: {0} von {1} Tagen gelernt.",
+                "🎯 Bu hafta: {1} günün {0} günü öğrenildi."),
             ["Parent_Timer_Title"] = L("Zeiten (pro Profil)", "Süreler (profile özel)"),
             ["Parent_Timer_Reading"] = L("Lesen: Pflicht-Lesezeit pro Tag", "Okuma: Günlük zorunlu okuma süresi"),
             ["Parent_Timer_News"] = L("News: Mindest-Lesezeit pro Artikel", "Haberler: Makale başına asgari okuma süresi"),

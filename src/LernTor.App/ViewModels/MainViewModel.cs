@@ -201,7 +201,14 @@ public sealed partial class MainViewModel : ObservableObject
         // Fragen wiederkommen, bevor sie in die Fächer gehen - nicht erst, wenn sie dort auftauchen.
         var dueReviews = await _reviewRepo.GetDueCountAsync(CurrentProfile!.Id);
 
-        return new WelcomeViewModel(CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews);
+        // Wochenziel (0 = aus): reine Anzeige, siehe WeeklyGoalCalculator.
+        var weeklyGoal = WeeklyGoalCalculator.Evaluate(
+            await _activityLogRepo.GetLearningDaysAsync(CurrentProfile!.Id),
+            DateOnly.FromDateTime(DateTime.Today),
+            CurrentProfile!.WeeklyGoalDays);
+
+        return new WelcomeViewModel(
+            CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal);
     }
 
     /// <summary>Baut die fünf Makro-Etappen (Lesen/Tippen/News/Fächer/Quiz) für die Fortschrittsleiste neu auf.</summary>

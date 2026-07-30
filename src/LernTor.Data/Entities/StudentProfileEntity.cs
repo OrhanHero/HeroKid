@@ -24,6 +24,10 @@ public sealed class StudentProfileEntity
     public int QuizQuestionCount { get; set; } = 20;
     public int QuizRetryQuestionCount { get; set; } = 15;
 
+    // Wochenziel in Lerntagen; 0 = aus (auch der Wert, den Alt-Zeilen beim additiven
+    // Schema-Update bekommen - passt hier also ohne Sonderbehandlung).
+    public int WeeklyGoalDays { get; set; }
+
     // Eigene Tipptrainer-Texte der Eltern (optional, NULL = eingebauter Text).
     public string? CustomTypingSentenceText { get; set; }
     public string? CustomTypingFinalText { get; set; }

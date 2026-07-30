@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.Core.Enums;
+using LernTor.Core.Services;
 
 namespace LernTor.App.ViewModels;
 
@@ -28,16 +29,34 @@ public sealed partial class WelcomeViewModel : ObservableObject
 
     public bool ShowDueReviews => DueReviewCount > 0;
 
+    /// <summary>
+    /// Stand des Wochenziels (siehe WeeklyGoalCalculator). Reine Anzeige - ein verfehltes Ziel
+    /// hat keine Folgen. Ist kein Ziel gesetzt, bleibt die Zeile aus.
+    /// </summary>
+    public WeeklyGoalCalculator.WeeklyGoalStatus WeeklyGoal { get; }
+
+    public bool ShowWeeklyGoal => WeeklyGoal.IsActive;
+
+    public bool ShowWeeklyGoalReached => WeeklyGoal.IsReached;
+
+    public bool ShowWeeklyGoalOpen => WeeklyGoal.IsActive && !WeeklyGoal.IsReached;
+
+    public int WeeklyGoalLearnedDays => WeeklyGoal.LearnedDays;
+
+    public int WeeklyGoalTarget => WeeklyGoal.Goal;
+
     public WelcomeViewModel(
         string profileName,
         int currentStreak,
         Action onContinue,
         Action<AppLanguage> onSwitchLanguage,
-        int dueReviewCount = 0)
+        int dueReviewCount = 0,
+        WeeklyGoalCalculator.WeeklyGoalStatus weeklyGoal = default)
     {
         ProfileName = profileName;
         CurrentStreak = currentStreak;
         DueReviewCount = dueReviewCount;
+        WeeklyGoal = weeklyGoal;
         _onContinue = onContinue;
         _onSwitchLanguage = onSwitchLanguage;
     }

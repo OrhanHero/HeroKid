@@ -454,6 +454,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         ExercisesPerSubject = value?.ExercisesPerSubject ?? StudentProfile.DefaultExercisesPerSubject;
         QuizQuestionCount = value?.QuizQuestionCount ?? StudentProfile.DefaultQuizQuestionCount;
         QuizRetryQuestionCount = value?.QuizRetryQuestionCount ?? StudentProfile.DefaultQuizRetryQuestionCount;
+        WeeklyGoalDays = value?.WeeklyGoalDays ?? 0;
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
         CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
         _ = ReloadCustomReadingTextsAsync();
@@ -501,6 +502,18 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void SetQuizRetryThreshold(string percent)
     {
         QuizRetryThresholdPercent = int.TryParse(percent, out var parsed) ? parsed : 25;
+    }
+
+    // --- Wochenziel (reine Anzeige ohne Druckmechanik, siehe WeeklyGoalCalculator) ---
+
+    /// <summary>Wochenziel in Lerntagen; 0 = aus (Standard).</summary>
+    [ObservableProperty]
+    private int weeklyGoalDays;
+
+    [RelayCommand]
+    private void SetWeeklyGoal(string days)
+    {
+        WeeklyGoalDays = int.TryParse(days, out var parsed) ? parsed : 0;
     }
 
     // --- Eigene Tipptrainer-Texte (nur die beiden letzten Lektionen, siehe TypingTextOverrides) ---
@@ -697,6 +710,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     public bool HasPaceWarning => !string.IsNullOrEmpty(ReportPaceWarningDisplay);
 
+    /// <summary>Stand des Wochenziels im Bericht (leer, wenn kein Ziel gesetzt ist).</summary>
+    [ObservableProperty]
+    private string reportWeeklyGoalDisplay = string.Empty;
+
     [ObservableProperty]
     private bool hasReportData;
 
@@ -724,6 +741,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             ReportQuizTrendDisplay = string.Empty;
             ReportPaceDisplay = string.Empty;
             ReportPaceWarningDisplay = string.Empty;
+            ReportWeeklyGoalDisplay = string.Empty;
             return;
         }
 
@@ -783,6 +801,17 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             ReportPaceWarningDisplay = string.Empty;
         }
 
+        // Wochenziel: bewusst immer die AKTUELLE Woche, unabhängig vom gewählten Berichtszeitraum -
+        // "3 von 4 Tagen" über 30 Tage gerechnet wäre sinnlos.
+        var allLearningDays = _reportActivity
+            .Select(a => DateOnly.FromDateTime(a.Timestamp.LocalDateTime))
+            .ToHashSet();
+        var goal = WeeklyGoalCalculator.Evaluate(
+            allLearningDays, DateOnly.FromDateTime(DateTime.Today), SelectedProfile?.WeeklyGoalDays ?? 0);
+        ReportWeeklyGoalDisplay = goal.IsActive
+            ? string.Format(loc["Parent_Report_WeeklyGoal"], goal.LearnedDays, goal.Goal)
+            : loc["Parent_Report_WeeklyGoalOff"];
+
         var learnedDays = answers.Select(a => DateOnly.FromDateTime(a.Timestamp.LocalDateTime)).Distinct().Count();
         ReportLearnedDaysDisplay = string.Format(loc["Parent_Report_LearnedDays"], learnedDays, ReportDays);
 
@@ -830,8 +859,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold,
                 ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion,
                 ExercisesPerSubject, QuizQuestionCount, QuizRetryQuestionCount,
-                sentenceText, finalText);
+                sentenceText, finalText, WeeklyGoalDays);
 
+            SelectedProfile.WeeklyGoalDays = WeeklyGoalDays;
             SelectedProfile.CustomTypingSentenceText = sentenceText;
             SelectedProfile.CustomTypingFinalText = finalText;
             CustomTypingSentenceText = sentenceText ?? string.Empty;

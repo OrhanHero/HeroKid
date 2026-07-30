@@ -94,6 +94,13 @@ public sealed class StudentProfile
     /// </summary>
     public string? CustomTypingFinalText { get; set; }
 
+    /// <summary>
+    /// Wochenziel in Lerntagen (0 = aus, Standard). Reine Anzeige ohne Druckmechanik - siehe
+    /// WeeklyGoalCalculator. Pro Profil, weil ein Zehnjähriger und ein Fünfzehnjähriger
+    /// unterschiedlich viel schaffen.
+    /// </summary>
+    public int WeeklyGoalDays { get; set; }
+
     /// <summary>Die bereinigten Text-Überschreibungen dieses Profils für den Tipptrainer.</summary>
     public TypingTextOverrides TypingTextOverrides =>
         TypingTextOverrides.From(CustomTypingSentenceText, CustomTypingFinalText);
