@@ -252,11 +252,26 @@ deshalb bewusst nicht umgesetzt.
   ist Raten unsichtbar - bei drei Optionen liegt Raten in einem Drittel der Fälle richtig. Bewusst
   nur ein Hinweis für die Eltern, keine zusätzliche Sperre für das Kind: wer das Antworten selbst
   blockiert, bestraft auch das Kind, das die Antwort einfach sofort weiß.
+- **📰 Nachrichtenquellen wählbar**: alle 22 kuratierten Quellen einzeln an- und abschaltbar, mit
+  Region und Sprache als Einordnung. Aus jeder aktiven Quelle kommt eine Nachricht pro Tag - die
+  Zahl der aktiven Quellen steht direkt darüber, damit sichtbar ist, wie lang der News-Teil wird.
+  Sind alle abgeschaltet, greifen bewusst wieder alle: ein leerer News-Bereich wäre schlimmer als
+  eine ignorierte Einstellung.
+- **📚 Alle Lesetexte verwalten**: eine Liste über die eingebauten *und* die eigenen Texte, mit
+  Suche und Filter "nur eigene". Haken weg blendet einen Text dauerhaft aus. **📌 Anheften** stellt
+  einen Text jeden Tag an die erste Stelle, bis er wieder gelöst wird - gedacht zum sofortigen
+  Prüfen eines neu eingetragenen Textes und um ein Gedicht vor der Abfrage täglich üben zu lassen.
+  Eigene Texte sind auch nachträglich bearbeitbar.
 - **📖 Eigene Lesetexte pro Profil**: ein Gedicht, das gerade in der Schule dran ist, oder ein
   türkischer Text aus der Familie. Ein eigener Text belegt einen der beiden Vorlese-Plätze des
   Tages (mehrere wechseln sich täglich ab), damit er auch wirklich drankommt statt sich unter den
   63 eingebauten Texten zu verlieren. Es reicht eine Sprache; leere Sprachfassungen zeigen dem Kind
   einen kurzen Hinweis statt einer leeren Spalte.
+- **Eigene Aufgaben kommen garantiert dran**: was Eltern eintragen oder aus einem Dokument
+  übernehmen, wird bei der nächsten Lernrunde im gewählten Fach vollständig abgefragt - noch vor
+  den automatisch erzeugten Aufgaben. Zu beachten: die Klassenstufe der Aufgabe muss zur Stufe des
+  Profils passen, sonst sieht das Kind sie nie. Der Eltern-Bereich zeigt deshalb an, welches Profil
+  welche Stufe hat.
 - **🗂 Vokabeltrainer (Englisch/Türkisch)**: eigene Wortlisten je Profil, eingefügt als ganze Liste
   (eine Zeile je Vokabel, `=`/`;`/Tabulator/Bindestrich als Trenner). Die Vokabeln laufen in den
   bestehenden Fächern Englisch und Türkisch mit und ersetzen dort bis zur Hälfte der Aufgaben,

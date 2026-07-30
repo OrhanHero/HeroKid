@@ -194,6 +194,12 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   version of the CI check looked only in the root and produced a false failure. Don't "tidy up"
   the `runtimes/` folder next to the exe, and don't ship only the exe: without that folder the AI
   features are dead.
+- **Never set a WPF property both as an attribute and as a child element.** Writing
+  `<Button Style="{StaticResource X}" …>` *and* `<Button.Style>…</Button.Style>` on the same
+  element fails with `MC3024: 'Style' property has already been set and can be set only once` —
+  a compile error, so it only surfaces in CI from this SDK-less environment. It happens most often
+  when retrofitting a `Style.Trigger` onto a button that already had a `StaticResource` style.
+  `scripts/preflight.py` now checks for this (`xaml-doppelter-style`).
 - **Repository tests that back onto a real SQLite temp file must wrap the `File.Delete` in their
   `Dispose` in a `try`/`catch`.** `Microsoft.Data.Sqlite` pools connections, so the file handle can
   still be held after the `DbContext` is disposed — `File.Delete` then throws `IOException: The
