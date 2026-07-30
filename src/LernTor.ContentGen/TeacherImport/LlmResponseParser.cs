@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using LernTor.Core.Enums;
 
 namespace LernTor.ContentGen.TeacherImport;
@@ -47,7 +46,21 @@ internal static class LlmResponseParser
     public static IReadOnlyList<ExtractedQuestionDraft> ParseDrafts(string answerText, string documentText)
     {
         var json = ExtractJsonObject(answerText);
-        var parsed = JsonSerializer.Deserialize<AnswerDto>(json, SerializerOptions);
+
+        AnswerDto? parsed;
+        try
+        {
+            parsed = JsonSerializer.Deserialize<AnswerDto>(json, SerializerOptions);
+        }
+        catch (JsonException ex)
+        {
+            // Eltern sollen eine Erklärung sehen, keine .NET-Ausnahme: "'0x1B' is an invalid
+            // start of a value" hilft niemandem weiter.
+            throw new InvalidOperationException(
+                "Die KI hat keine verwertbaren Fragen geliefert (die Antwort war fehlerhaftes JSON). " +
+                "Bitte noch einmal versuchen - am besten mit einem Dokument, das durchgehenden " +
+                "Fließtext enthält. Rohantwort: " + Truncate(answerText, 400), ex);
+        }
 
         if (parsed?.Questions is null || parsed.Questions.Count == 0)
         {
@@ -76,14 +89,15 @@ internal static class LlmResponseParser
     /// <summary>
     /// LLM-Antworten enthalten das erwartete JSON-Objekt manchmal zusätzlich in Markdown-Codeblöcken
     /// (```json ... ```) oder mit erklärendem Text davor/danach - dieses Verfahren extrahiert robust
-    /// das erste vollständige {...}-Objekt aus der Antwort.
+    /// das erste vollständige {...}-Objekt aus der Antwort und repariert notfalls eine mittendrin
+    /// abgebrochene Antwort.
     /// </summary>
     internal static string ExtractJsonObject(string answerText)
     {
-        var match = Regex.Match(answerText, @"\{[\s\S]*\}", RegexOptions.None, TimeSpan.FromSeconds(2));
-        if (match.Success)
+        var complete = TryExtractBalancedObject(answerText);
+        if (complete is not null)
         {
-            return match.Value;
+            return complete;
         }
 
         // Abgeschnittene Antwort: das Token-Limit kann mitten in der Fragenliste zuschlagen.
@@ -103,26 +117,71 @@ internal static class LlmResponseParser
     }
 
     /// <summary>
+    /// Liefert das erste wirklich zu Ende geschriebene <c>{...}</c>-Objekt der Antwort, sonst
+    /// <c>null</c>.
+    ///
+    /// <para>Bewusst ein Klammerzähler und kein gieriger Regex (<c>\{[\s\S]*\}</c>): der fand auch
+    /// in einer mittendrin abgebrochenen Antwort noch einen "Treffer" - nämlich bis zur
+    /// schließenden Klammer der letzten fertigen Frage - und lieferte damit kaputtes JSON. Die
+    /// Reparatur weiter unten kam so nie zum Zug, und der Import scheiterte mit einer
+    /// JsonException statt mit den bereits brauchbaren Fragen.</para>
+    /// </summary>
+    private static string? TryExtractBalancedObject(string answerText)
+    {
+        var objectStart = answerText.IndexOf('{');
+        if (objectStart < 0)
+        {
+            return null;
+        }
+
+        foreach (var end in ObjectEndsAtDepthZero(answerText, objectStart))
+        {
+            return answerText[objectStart..(end + 1)];
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Repariert eine mittendrin abgebrochene Antwort der Form <c>{"questions":[{...},{...},{unvoll</c>,
     /// indem hinter der letzten vollständig geschlossenen Frage abgeschnitten und die Liste sowie
     /// das Objekt geschlossen werden. Liefert <c>null</c>, wenn nicht einmal eine Frage komplett ist.
     /// </summary>
     private static string? TryRepairTruncatedArray(string answerText)
     {
-        var arrayStart = answerText.IndexOf("[", StringComparison.Ordinal);
+        var arrayStart = answerText.IndexOf('[');
         if (arrayStart < 0)
         {
             return null;
         }
 
-        // Klammern zählen, um das Ende einer vollständigen Frage zu finden. Zeichenketten werden
-        // dabei übersprungen, damit eine geschweifte Klammer IM Fragetext nicht mitzählt.
-        int depth = 0, lastComplete = -1;
+        var lastComplete = -1;
+        foreach (var end in ObjectEndsAtDepthZero(answerText, arrayStart))
+        {
+            lastComplete = end;
+        }
+
+        return lastComplete < 0 ? null : answerText[..(lastComplete + 1)] + "]}";
+    }
+
+    /// <summary>
+    /// Läuft den Text ab <paramref name="start"/> durch und meldet jede Position, an der ein
+    /// <c>{...}</c>-Objekt auf Verschachtelungstiefe 0 geschlossen wird. Zeichenketten werden
+    /// übersprungen, damit eine geschweifte Klammer IM Fragetext (etwa "Was bedeutet {1,2,3}?")
+    /// nicht mitzählt.
+    ///
+    /// <para>Beginnt <paramref name="start"/> auf dem <c>{</c> des Gesamtobjekts, ist der erste
+    /// Treffer dessen Ende; beginnt er auf dem <c>[</c> der Fragenliste, ist jeder Treffer das
+    /// Ende einer vollständigen Frage.</para>
+    /// </summary>
+    private static IEnumerable<int> ObjectEndsAtDepthZero(string text, int start)
+    {
+        int depth = 0;
         bool inString = false, escaped = false;
 
-        for (int i = arrayStart; i < answerText.Length; i++)
+        for (int i = start; i < text.Length; i++)
         {
-            var c = answerText[i];
+            var c = text[i];
 
             if (inString)
             {
@@ -134,10 +193,8 @@ internal static class LlmResponseParser
 
             if (c == '"') inString = true;
             else if (c == '{') depth++;
-            else if (c == '}' && --depth == 0) lastComplete = i;
+            else if (c == '}' && depth > 0 && --depth == 0) yield return i;
         }
-
-        return lastComplete < 0 ? null : answerText[..(lastComplete + 1)] + "]}";
     }
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
