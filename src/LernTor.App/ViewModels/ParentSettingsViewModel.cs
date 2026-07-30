@@ -947,10 +947,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             var sentenceText = TypingTextOverrides.Sanitize(CustomTypingSentenceText);
             var finalText = TypingTextOverrides.Sanitize(CustomTypingFinalText);
 
+            // PinnedReadingTextKey MUSS mit durchgereicht werden: der Parameter ist optional und
+            // faellt sonst auf null zurueck - "Speichern" haette den angehefteten Lesetext also
+            // stillschweigend wieder geloest.
             await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold,
                 ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion,
                 ExercisesPerSubject, QuizQuestionCount, QuizRetryQuestionCount,
-                sentenceText, finalText, WeeklyGoalDays);
+                sentenceText, finalText, WeeklyGoalDays, SelectedProfile.PinnedReadingTextKey);
 
             SelectedProfile.WeeklyGoalDays = WeeklyGoalDays;
             SelectedProfile.CustomTypingSentenceText = sentenceText;

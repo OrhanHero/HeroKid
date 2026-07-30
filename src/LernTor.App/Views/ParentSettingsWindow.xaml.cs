@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using LernTor.App.ViewModels;
 
 namespace LernTor.App.Views;
@@ -34,14 +36,12 @@ public partial class ParentSettingsWindow : Window
     /// Ohne sie gingen Presets, Zeiten und eigene Tipp-Texte stillschweigend verloren - im
     /// Familienbetrieb ist genau das mehrfach passiert.
     /// </summary>
-    private async void ParentSettingsWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    private void ParentSettingsWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         if (_closeConfirmed || !_viewModel.HasUnsavedChanges)
         {
             return;
         }
-
-        e.Cancel = true;
 
         var answer = MessageBox.Show(
             this,
@@ -54,15 +54,39 @@ public partial class ParentSettingsWindow : Window
         switch (answer)
         {
             case MessageBoxResult.Yes:
-                // SaveAsync loest selbst RequestClose aus und setzt dabei _closeConfirmed.
-                await _viewModel.SaveCommand.ExecuteAsync(null);
+                // Speichern ist asynchron, das Fenster darf also erst danach zugehen. Der laufende
+                // Schliessvorgang wird abgebrochen und spaeter neu ausgeloest - Close() DARF hier
+                // nicht direkt aufgerufen werden, WPF wirft dann eine InvalidOperationException
+                // ("... while a Window is closing").
+                e.Cancel = true;
+                _ = SaveThenCloseAsync();
                 break;
-            case MessageBoxResult.No:
+
+            case MessageBoxResult.Cancel:
+                e.Cancel = true;
+                break;
+
+            // Nein: nichts abbrechen, der laufende Schliessvorgang laeuft einfach durch. Auch hier
+            // bewusst kein Close() - der Vorgang ist ja schon unterwegs.
+            default:
                 _closeConfirmed = true;
-                Close();
                 break;
-            // Abbrechen: Fenster bleibt offen, e.Cancel bleibt true.
         }
+    }
+
+    /// <summary>
+    /// Speichert und schließt danach. Läuft bewusst erst NACH dem abgebrochenen Schließvorgang an
+    /// (<see cref="Dispatcher"/>-Durchlauf abwarten), weil <see cref="Window.Close"/> währenddessen
+    /// nicht erlaubt ist. Das Schließen selbst übernimmt der RequestClose-Handler oben, den
+    /// <c>SaveAsync</c> am Ende auslöst.
+    /// </summary>
+    private async Task SaveThenCloseAsync()
+    {
+        // Leerer Callback mit niedriger Priorität = "warte, bis WPF mit dem Schließvorgang fertig
+        // ist". Bewusst InvokeAsync (Instanzmethode) statt des statischen Dispatcher.Yield, damit
+        // die Auflösung nicht an der Color-Color-Regel hängt.
+        await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
+        await _viewModel.SaveCommand.ExecuteAsync(null);
     }
 
     private async void LoginButton_Click(object sender, RoutedEventArgs e)
