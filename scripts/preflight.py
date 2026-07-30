@@ -147,6 +147,43 @@ def check_run_text_oneway() -> None:
                    f"-> XamlParseException beim Rendern")
 
 
+def check_duplicate_style_assignment() -> None:
+    """Style gleichzeitig als Attribut UND als <X.Style>-Element gesetzt.
+
+    WPF erlaubt jede Eigenschaft nur einmal je Element. Passiert typischerweise beim
+    Nachruesten eines Style-Triggers: das urspruengliche Style="{StaticResource ...}"
+    bleibt stehen, und der Compiler meldet erst in der CI
+    'MC3024: Style property has already been set and can be set only once'.
+    """
+    element_start = re.compile(r"<(\w+)\b((?:[^>\"]|\"[^\"]*\")*?)/?>", re.DOTALL)
+
+    for path in sorted(SRC.rglob("*.xaml")):
+        if "/obj/" in str(path) or "/bin/" in str(path):
+            continue
+
+        text = path.read_text(encoding="utf-8")
+        for match in element_start.finditer(text):
+            tag, attributes = match.group(1), match.group(2)
+            if not re.search(r"\bStyle\s*=", attributes):
+                continue
+
+            # Selbstschliessende Elemente (<X ... />) koennen gar kein Kind-Element enthalten -
+            # ohne diese Abfrage schlug die Pruefung beim Style eines spaeteren Geschwisters an.
+            if match.group(0).rstrip().endswith("/>"):
+                continue
+
+            # Setzt dasselbe Element weiter unten auch <Tag.Style>? Nur bis zum naechsten
+            # gleichnamigen Start-Tag suchen, damit Geschwister nicht mitzaehlen.
+            rest = text[match.end():]
+            next_same_tag = rest.find(f"<{tag} ")
+            scope = rest if next_same_tag < 0 else rest[:next_same_tag]
+            if f"<{tag}.Style>" in scope:
+                line = text[: match.start()].count("\n") + 1
+                report("xaml-doppelter-style", path,
+                       f"Zeile {line}: <{tag}> setzt Style als Attribut UND als <{tag}.Style>-Element "
+                       f"-> MC3024 beim Kompilieren")
+
+
 def check_httpclient_using() -> None:
     """net8.0-windows + UseWPF bekommt System.Net.Http NICHT als implicit using."""
     app_dir = SRC / "LernTor.App"
@@ -391,6 +428,7 @@ def main() -> int:
         ("Klammerbalance (.cs)", check_cs_balance),
         ("XAML-Wohlgeformtheit", check_xaml_wellformed),
         ("Run.Text Mode=OneWay", check_run_text_oneway),
+        ("XAML doppelter Style", check_duplicate_style_assignment),
         ("HttpClient-using", check_httpclient_using),
         ("Shutdown/Unlock", check_shutdown_unlocks),
         ("Konfigurationsdateien", check_config_files),
