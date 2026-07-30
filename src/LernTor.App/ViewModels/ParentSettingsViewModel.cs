@@ -491,7 +491,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             SubjectToggles.Add(new SubjectToggle(
                 subject,
                 LocalizationService.Instance[translationKey],
-                _settings.DisabledSubjects.Contains(subject)));
+                _settings.DisabledSubjects.Contains(subject),
+                MarkDirty));
         }
 
         Profiles.Clear();
@@ -518,8 +519,39 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(HasNoCustomQuestions));
     }
 
-    partial void OnSelectedProfileChanged(StudentProfile? value)
+    /// <summary>Zu welchem Profil die Werte in den Editor-Feldern gerade gehoeren.</summary>
+    private StudentProfile? _editorProfile;
+
+    partial void OnSelectedProfileChanged(StudentProfile? value) => _ = HandleProfileSwitchAsync(value);
+
+    /// <summary>
+    /// Übernimmt die Werte des gewählten Profils in die Editor-Felder.
+    ///
+    /// <para>Vorher werden ungespeicherte Änderungen des BISHERIGEN Profils abgefragt: die Felder
+    /// werden gleich überschrieben, und weil <see cref="_loadingSettings"/> dabei die
+    /// Änderungsmarkierung unterdrückt, wären sie lautlos weg gewesen - ein Profilwechsel zum
+    /// Nachschauen hat also stillschweigend die gerade eingestellten Zeiten verworfen.</para>
+    /// </summary>
+    private async Task HandleProfileSwitchAsync(StudentProfile? value)
     {
+        if (HasUnsavedChanges && _editorProfile is not null && !ReferenceEquals(_editorProfile, value))
+        {
+            var answer = System.Windows.MessageBox.Show(
+                $"Für \"{_editorProfile.Name}\" gibt es ungespeicherte Änderungen.\n\n" +
+                "Sollen sie gespeichert werden, bevor das Profil gewechselt wird?",
+                "Änderungen speichern?",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question,
+                System.Windows.MessageBoxResult.Yes);
+
+            if (answer == System.Windows.MessageBoxResult.Yes)
+            {
+                // Bewusst VOR ApplyProfileToEditor abgewartet: die Editor-Felder werden gleich
+                // ueberschrieben, und der geteilte DbContext vertraegt keine parallelen Zugriffe.
+                await SaveProfileEditorAsync(_editorProfile);
+            }
+        }
+
         // Werte kommen aus der DB, das ist keine Nutzeraenderung.
         _loadingSettings = true;
         try
@@ -530,7 +562,34 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         {
             _loadingSettings = false;
         }
+
+        _editorProfile = value;
+
+        // Die Felder zeigen jetzt exakt den Stand aus der Datenbank.
+        HasUnsavedChanges = false;
     }
+
+    /// <summary>
+    /// Schreibt die aktuellen Editor-Felder als Einstellungen des übergebenen Profils weg.
+    /// Die Werte werden beim Aufruf eingesammelt (Argumente werden vor dem ersten await
+    /// ausgewertet), das Ergebnis ist also unabhängig davon, was danach in den Feldern steht.
+    /// </summary>
+    private Task SaveProfileEditorAsync(StudentProfile profile) =>
+        _profileRepo.UpdateSettingsAsync(
+            profile.Id,
+            TypingMinAccuracyPercent / 100.0,
+            QuizFirstAttemptThresholdPercent / 100.0,
+            QuizRetryThresholdPercent / 100.0,
+            ReadingMinutes,
+            NewsSecondsPerArticle,
+            ExerciseSecondsPerQuestion,
+            ExercisesPerSubject,
+            QuizQuestionCount,
+            QuizRetryQuestionCount,
+            TypingTextOverrides.Sanitize(CustomTypingSentenceText),
+            TypingTextOverrides.Sanitize(CustomTypingFinalText),
+            WeeklyGoalDays,
+            profile.PinnedReadingTextKey);
 
     private void ApplyProfileToEditor(StudentProfile? value)
     {
@@ -947,13 +1006,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             var sentenceText = TypingTextOverrides.Sanitize(CustomTypingSentenceText);
             var finalText = TypingTextOverrides.Sanitize(CustomTypingFinalText);
 
-            // PinnedReadingTextKey MUSS mit durchgereicht werden: der Parameter ist optional und
-            // faellt sonst auf null zurueck - "Speichern" haette den angehefteten Lesetext also
-            // stillschweigend wieder geloest.
-            await _profileRepo.UpdateSettingsAsync(SelectedProfile.Id, typingMinAccuracy, quizFirstAttemptThreshold, quizRetryThreshold,
-                ReadingMinutes, NewsSecondsPerArticle, ExerciseSecondsPerQuestion,
-                ExercisesPerSubject, QuizQuestionCount, QuizRetryQuestionCount,
-                sentenceText, finalText, WeeklyGoalDays, SelectedProfile.PinnedReadingTextKey);
+            // Bewusst über dieselbe Methode wie der Profilwechsel: als beide Aufrufstellen die
+            // 14 Parameter einzeln aufzählten, hatte eine davon den angehefteten Lesetext
+            // vergessen - der Parameter ist optional und fiel still auf null zurück.
+            await SaveProfileEditorAsync(SelectedProfile);
 
             SelectedProfile.WeeklyGoalDays = WeeklyGoalDays;
             SelectedProfile.CustomTypingSentenceText = sentenceText;

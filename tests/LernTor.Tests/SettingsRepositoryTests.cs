@@ -79,9 +79,17 @@ public sealed class SettingsRepositoryTests : IDisposable
     public void Dispose()
     {
         Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-        if (File.Exists(_dbPath))
+        try
         {
-            File.Delete(_dbPath);
+            if (File.Exists(_dbPath))
+            {
+                File.Delete(_dbPath);
+            }
+        }
+        catch (IOException)
+        {
+            // Sqlite haelt den Dateizeiger manchmal noch - xUnit wuerde das sonst als
+            // Testfehler melden, obwohl der Test selbst durchgelaufen ist.
         }
     }
 

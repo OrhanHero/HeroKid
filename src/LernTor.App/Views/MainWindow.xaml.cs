@@ -105,5 +105,13 @@ public partial class MainWindow : Window
         }
 
         window.ShowDialog();
+
+        // Der Eltern-Bereich schreibt direkt in die Datenbank, die laufende Sitzung haelt aber
+        // eigene Kopien von Einstellungen und Profil. Ohne dieses Nachladen wirkten Aenderungen
+        // (Lesezeit, Zeiten, abgeschaltete Faecher) erst nach einem Neustart der App.
+        if (DataContext is MainViewModel mainVm)
+        {
+            _ = mainVm.ReloadSettingsAndProfileAsync();
+        }
     }
 }

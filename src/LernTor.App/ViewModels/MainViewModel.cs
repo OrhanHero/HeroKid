@@ -148,6 +148,37 @@ public sealed partial class MainViewModel : ObservableObject
         await NavigateToStageAsync(Progress.CurrentStage);
     }
 
+    /// <summary>
+    /// Liest die globalen Einstellungen und das aktive Profil nach dem Schließen des
+    /// Eltern-Bereichs neu aus der Datenbank.
+    ///
+    /// <para>Der Eltern-Bereich arbeitet auf eigenen Kopien (eigenes <c>AppSettings</c>, eigene
+    /// <c>StudentProfile</c>-Objekte aus <c>GetAllAsync</c>). Ohne dieses Nachladen lief die
+    /// bereits gestartete Sitzung mit den Werten vom App-Start weiter - eine im Eltern-Bereich
+    /// geänderte Lesezeit oder ein abgeschaltetes Fach wirkte erst nach einem Neustart der App,
+    /// obwohl in der Datenbank längst der neue Wert stand. Das sah von außen exakt so aus, als
+    /// wäre gar nicht gespeichert worden.</para>
+    ///
+    /// <para>Die gerade sichtbare Etappe behält bewusst ihre Werte (ein laufender Lese-Timer wird
+    /// nicht mitten im Lauf umgestellt) - ab der nächsten Etappe gelten die neuen.</para>
+    /// </summary>
+    public async Task ReloadSettingsAndProfileAsync()
+    {
+        Settings = await _settingsRepo.LoadAsync();
+
+        if (CurrentProfile is null)
+        {
+            return;
+        }
+
+        var refreshed = (await _profileRepo.GetAllAsync()).FirstOrDefault(p => p.Id == CurrentProfile.Id);
+        if (refreshed is not null)
+        {
+            CurrentProfile = refreshed;
+            ActiveProfileName = refreshed.Name;
+        }
+    }
+
     private async Task PersistProgressAsync()
     {
         await _progressRepo.SaveAsync(Progress);

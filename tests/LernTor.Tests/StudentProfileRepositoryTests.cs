@@ -97,12 +97,49 @@ public sealed class StudentProfileRepositoryTests : IDisposable
         Assert.Equal(StudentProfile.DefaultQuizRetryQuestionCount, reloaded.QuizRetryQuestionCount);
     }
 
+    [Fact]
+    public async Task Kurze_Lesezeit_und_angehefteter_Text_ueberstehen_den_Neustart()
+    {
+        // Gemeldet aus dem Familienbetrieb: Lesezeit auf 2 Minuten gestellt, nach dem Neustart
+        // stand wieder 5. Der angeheftete Lesetext ging zusaetzlich verloren, weil der Parameter
+        // optional ist und eine der beiden Aufrufstellen ihn nicht mitgab.
+        using (var db = CreateContext())
+        {
+            var repo = new StudentProfileRepository(db);
+            var profile = await repo.CreateAsync("Emirhan", 11, "6a", GradeLevel.Klasse6, "🧒");
+
+            await repo.UpdateSettingsAsync(profile.Id, 0.9, 0.5, 0.25,
+                readingMinutes: 2, newsSecondsPerArticle: 10, exerciseSecondsPerQuestion: 5,
+                exercisesPerSubject: 5, quizQuestionCount: 20, quizRetryQuestionCount: 15,
+                customTypingSentenceText: null, customTypingFinalText: null,
+                weeklyGoalDays: 3, pinnedReadingTextKey: "fest:Wandrers Nachtlied");
+        }
+
+        using (var db = CreateContext())
+        {
+            var reloaded = (await new StudentProfileRepository(db).GetAllAsync()).Single();
+
+            Assert.Equal(2, reloaded.ReadingMinutes);
+            Assert.Equal(3, reloaded.WeeklyGoalDays);
+            Assert.Equal("fest:Wandrers Nachtlied", reloaded.PinnedReadingTextKey);
+        }
+    }
+
     public void Dispose()
     {
         Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-        if (File.Exists(_dbPath))
+        try
         {
-            File.Delete(_dbPath);
+            if (File.Exists(_dbPath))
+            {
+                File.Delete(_dbPath);
+            }
+        }
+        catch (IOException)
+        {
+            // Sqlite haelt den Dateizeiger manchmal noch - xUnit wuerde das sonst als
+            // Testfehler melden, obwohl der Test selbst durchgelaufen ist. Das Temp-Verzeichnis
+            // raeumt das Betriebssystem ohnehin auf.
         }
     }
 }
