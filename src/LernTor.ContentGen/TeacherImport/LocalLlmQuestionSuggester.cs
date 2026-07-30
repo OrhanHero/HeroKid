@@ -21,6 +21,18 @@ public sealed class LocalLlmQuestionSuggester : ITeacherQuestionSuggester
         _modelHost = modelHost;
     }
 
+    /// <summary>
+    /// Wie viele Zeichen Dokumenttext höchstens in den Prompt wandern.
+    ///
+    /// <para>Das Kontextfenster (<c>LocalLlmOptions.ContextSize</c>, Standard 4096 Token) muss
+    /// Anweisung, Dokument UND Antwort fassen. Ein mehrseitiges PDF sprengt das um ein Vielfaches -
+    /// und weil ein 7B-Modell auf der CPU jedes Prompt-Token einzeln verarbeitet, hing der Import
+    /// dann minutenlang bis stundenlang bei "wird eingelesen…", ohne je fertig zu werden (realer
+    /// Fund aus dem Familienbetrieb). Rund 6000 Zeichen deutscher Text entsprechen grob 2000-2400
+    /// Token und lassen genug Platz für Anweisung und Antwort.</para>
+    /// </summary>
+    public const int MaxDocumentCharacters = 6000;
+
     public async Task<IReadOnlyList<ExtractedQuestionDraft>> SuggestQuestionsAsync(
         string documentText,
         Subject subject,
@@ -29,18 +41,45 @@ public sealed class LocalLlmQuestionSuggester : ITeacherQuestionSuggester
     {
         var executor = await _modelHost.GetExecutorAsync(cancellationToken);
 
-        var prompt = LlmResponseParser.BuildPrompt(subject, gradeLevel) + $"\n\nDokument:\n{documentText}";
+        var usedText = Shorten(documentText);
+        var prompt = LlmResponseParser.BuildPrompt(subject, gradeLevel) + $"\n\nDokument:\n{usedText}";
         var inferenceParams = new InferenceParams
         {
-            MaxTokens = 2048
+            // 1024 statt 2048: 6-10 Fragen als JSON brauchen keine 2048 Token, und jedes
+            // erzeugte Token kostet auf der CPU spürbar Zeit.
+            MaxTokens = 1024,
+            // Ohne Stop-Sequenzen schreibt das Modell nach dem JSON munter weiter und läuft in
+            // die MaxTokens-Grenze - dieselbe Falle wie im KI-Lernchat. Die schließende Klammer
+            // des JSON-Objekts gefolgt von einem Umbruch ist das natürliche Ende der Antwort.
+            AntiPrompts = new List<string> { "\n\n###", "\n###", "}\n\n" }
         };
 
         var answer = new StringBuilder();
         await foreach (var token in executor.InferAsync(prompt, inferenceParams, cancellationToken))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             answer.Append(token);
         }
 
-        return LlmResponseParser.ParseDrafts(answer.ToString(), documentText);
+        return LlmResponseParser.ParseDrafts(answer.ToString(), usedText);
+    }
+
+    /// <summary>
+    /// Kürzt zu lange Dokumente auf <see cref="MaxDocumentCharacters"/>, möglichst an einer
+    /// Satzgrenze - ein mitten im Wort abgeschnittener Text bringt das Modell aus dem Tritt.
+    /// </summary>
+    internal static string Shorten(string documentText)
+    {
+        var text = (documentText ?? string.Empty).Trim();
+        if (text.Length <= MaxDocumentCharacters)
+        {
+            return text;
+        }
+
+        var cut = text[..MaxDocumentCharacters];
+        var lastSentenceEnd = cut.LastIndexOfAny(new[] { '.', '!', '?' });
+
+        // Nur an einer Satzgrenze schneiden, wenn dadurch nicht der halbe Text wegfällt.
+        return lastSentenceEnd > MaxDocumentCharacters / 2 ? cut[..(lastSentenceEnd + 1)] : cut;
     }
 }

@@ -248,6 +248,10 @@ public static class Translations
             ["Parent_CustomQuestions_Intro"] = L(
                 "Ergänzt die generierten Aufgaben - z.B. aktuelle Hausaufgaben oder Themen, die die Lehrkraft gerade durchnimmt.",
                 "Üretilen soruları tamamlar - örn. güncel ödevler veya öğretmenin şu an işlediği konular."),
+            // Beantwortet die Frage "muss ich hoffen, dass diese Aufgaben irgendwann drankommen?"
+            ["Parent_CustomQuestions_When"] = L(
+                "Wann wird das abgefragt? Eigene Aufgaben kommen bei der nächsten Lernrunde im gewählten Fach dran - garantiert und vollständig, noch vor den automatisch erzeugten Aufgaben. Falsch beantwortete landen wie alle anderen in der Fehler-Kartei und kommen wieder.",
+                "Bunlar ne zaman sorulur? Kendi eklediğiniz sorular, seçilen derste bir sonraki öğrenme turunda çıkar - eksiksiz ve otomatik üretilen soruların önünde. Yanlış cevaplananlar diğerleri gibi hata kutusuna girer ve tekrar gelir."),
             ["Parent_CustomQuestions_Subject"] = L("Fach:", "Ders:"),
             ["Parent_CustomQuestions_Grade"] = L("Klassenstufe:", "Sınıf seviyesi:"),
             ["Parent_CustomQuestions_Type"] = L("Fragetyp:", "Soru türü:"),
@@ -287,6 +291,7 @@ public static class Translations
             ["Parent_Import_PickFile"] = L("Datei auswählen…", "Dosya seç…"),
             ["Parent_Import_NoFile"] = L("Keine eigene Datei - das oben gewählte Modell wird verwendet.", "Kendi dosya yok - yukarıda seçilen model kullanılacak."),
             ["Parent_Import_Run"] = L("Einlesen starten", "İçe aktarmayı başlat"),
+            ["Parent_Import_Cancel"] = L("Abbrechen", "İptal"),
             ["Parent_Import_Running"] = L("Wird eingelesen…", "İçe aktarılıyor…"),
             ["Parent_Import_ResultsTitle"] = L("Vorschläge zur Prüfung:", "Kontrol için öneriler:"),
             ["Parent_Import_Accept"] = L("Übernehmen", "Kabul et"),
@@ -370,6 +375,9 @@ public static class Translations
             ["Parent_Vocabulary_Intro"] = L(
                 "Eine Zeile je Vokabel, deutsch zuerst - z.B. \"Haus = house\". Als Trennzeichen funktionieren =, ;, Tabulator oder ein Bindestrich mit Leerzeichen ringsum. Die Vokabeln werden in Englisch bzw. Türkisch abgefragt, abwechselnd in beide Richtungen, und kehren nach 7/30/90 Tagen zur Auffrischung zurück. Eine bereits vorhandene Vokabel wird aktualisiert statt gedoppelt.",
                 "Her satıra bir kelime, önce Almanca - örn. \"Haus = house\". Ayırıcı olarak =, ;, sekme veya iki yanında boşluk olan tire kullanılabilir. Kelimeler İngilizce veya Türkçe derslerinde, dönüşümlü olarak iki yönde sorulur ve 7/30/90 gün sonra tekrar gelir. Var olan bir kelime çoğaltılmaz, güncellenir."),
+            ["Parent_Vocabulary_When"] = L(
+                "Wo tauchen die Vokabeln auf? Im Fach Englisch bzw. Türkisch der täglichen Lernrunde - nicht als eigener Bereich. Sie ersetzen dort bis zur Hälfte der Aufgaben, damit der Tag nicht länger wird. Voraussetzung: das Fach darf oben nicht deaktiviert sein und das Kind muss die Lernrunde bis dorthin durchlaufen.",
+                "Kelimeler nerede çıkar? Günlük öğrenme turunun İngilizce veya Türkçe dersinde - ayrı bir bölüm olarak değil. Orada soruların yarısına kadarını değiştirirler, böylece gün uzamaz. Koşul: ders yukarıda kapalı olmamalı ve çocuk öğrenme turunda oraya kadar gelmelidir."),
             ["Parent_Vocabulary_Subject"] = L("Fach:", "Ders:"),
             ["Parent_Vocabulary_Paste"] = L("Vokabelliste einfügen:", "Kelime listesini yapıştır:"),
             ["Parent_Vocabulary_Import"] = L("Vokabeln übernehmen", "Kelimeleri aktar"),

@@ -607,6 +607,8 @@
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Intro]}"
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_When]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,10" />
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Subject]}" FontSize="13" Margin="0,0,0,4" />
                 <ComboBox ItemsSource="{Binding VocabularySubjects}" SelectedItem="{Binding VocabularySubject}"
@@ -732,6 +734,10 @@
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Intro]}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_When]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding CustomQuestionProfileHint, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,10" />
 
                 <UniformGrid Columns="3" Margin="0,0,0,10">
                     <StackPanel Margin="0,0,12,0">
@@ -881,12 +887,20 @@
                     </TextBlock>
                 </StackPanel>
 
-                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Run]}"
-                        Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Margin="0,0,0,8"
-                        Command="{Binding RunImportCommand}" IsEnabled="{Binding IsImporting, Converter={StaticResource InverseBool}}" />
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Running]}"
-                           Style="{StaticResource BodyText}" Margin="0,0,0,8"
-                           Visibility="{Binding IsImporting, Converter={StaticResource BoolToVis}}" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Run]}"
+                            Style="{StaticResource RoundedButton}"
+                            Command="{Binding RunImportCommand}" IsEnabled="{Binding IsImporting, Converter={StaticResource InverseBool}}" />
+                    <!-- Ohne Abbrechen gab es aus einem haengenden Einlesen keinen Ausweg. -->
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_Cancel]}"
+                            Style="{StaticResource OptionButton}" Margin="12,0,0,0"
+                            Command="{Binding CancelImportCommand}"
+                            Visibility="{Binding IsImporting, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+                <!-- Laufzeit statt nur "wird eingelesen…": auf der CPU dauert das Minuten, ohne
+                     Anzeige wirkt es wie ein Absturz. -->
+                <TextBlock Text="{Binding ImportStatusMessage}" Style="{StaticResource BodyText}"
+                           TextWrapping="Wrap" Margin="0,0,0,8" />
                 <TextBlock Text="{Binding ImportErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,8" />
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Import_ResultsTitle]}"

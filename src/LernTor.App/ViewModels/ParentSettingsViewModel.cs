@@ -78,6 +78,31 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     public bool HasNoCustomQuestions => CustomQuestions.Count == 0;
 
+    /// <summary>
+    /// Erklärt in Klartext, welches Profil eine eigene Aufgabe überhaupt zu sehen bekommt.
+    /// Eigene Aufgaben werden nach Fach UND Klassenstufe gefiltert - eine für Klasse 6
+    /// eingetragene Aufgabe taucht bei einem Klasse-9-Kind nie auf. Ohne diesen Hinweis ist das
+    /// die häufigste stille Fehlbedienung (Rückmeldung aus dem Familienbetrieb).
+    /// </summary>
+    public string CustomQuestionProfileHint
+    {
+        get
+        {
+            if (Profiles.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var byGrade = Profiles
+                .GroupBy(p => p.GradeLevel)
+                .OrderBy(g => (int)g.Key)
+                .Select(g => $"{g.Key} → {string.Join(", ", g.Select(p => p.Name))}");
+
+            return "Wer bekommt was: " + string.Join("  |  ", byGrade) +
+                   ". Die Klassenstufe der Aufgabe muss zur Stufe des Profils passen.";
+        }
+    }
+
     /// <summary>Alle Fächer, für die eigene Aufgaben angelegt werden können (News hat keine Übungsaufgaben).</summary>
     public IReadOnlyList<Subject> AvailableSubjects { get; } = Enum.GetValues<Subject>().Where(s => s != Subject.News).ToList();
     public IReadOnlyList<GradeLevel> AvailableGradeLevels { get; } = Enum.GetValues<GradeLevel>().ToList();
@@ -144,6 +169,19 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string importErrorMessage = string.Empty;
+
+    /// <summary>Laufender Status während des Imports (Laufzeit + Schritt), damit nicht nur
+    /// "wird eingelesen…" dasteht, während das Modell auf der CPU rechnet.</summary>
+    [ObservableProperty]
+    private string importStatusMessage = string.Empty;
+
+    /// <summary>Erlaubt das Abbrechen eines laufenden Imports - vorher gab es keinen Ausweg.</summary>
+    private CancellationTokenSource? _importCancellation;
+
+    private readonly System.Windows.Threading.DispatcherTimer _importTimer = new()
+    {
+        Interval = TimeSpan.FromSeconds(1)
+    };
 
     public ObservableCollection<EditableDraftViewModel> ImportedDrafts { get; } = new();
 
@@ -426,6 +464,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         SelectedProfile = Profiles.FirstOrDefault(p => p.Id == PreselectProfileId) ?? Profiles.FirstOrDefault();
+        OnPropertyChanged(nameof(CustomQuestionProfileHint));
 
         await ReloadCustomQuestionsAsync();
     }
@@ -926,6 +965,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private async Task RunImportAsync()
     {
         ImportErrorMessage = string.Empty;
+        ImportStatusMessage = string.Empty;
 
         if (string.IsNullOrWhiteSpace(ImportFilePath) || !File.Exists(ImportFilePath))
         {
@@ -933,11 +973,26 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             return;
         }
 
+        _importCancellation?.Dispose();
+        _importCancellation = new CancellationTokenSource();
+        var token = _importCancellation.Token;
+
+        var started = DateTimeOffset.Now;
+        void Tick(object? _, EventArgs __) =>
+            ImportStatusMessage =
+                $"Die KI liest das Dokument… {(int)(DateTimeOffset.Now - started).TotalSeconds} s. " +
+                "Auf einem normalen PC dauert das je nach Modellgröße 1-5 Minuten.";
+
+        _importTimer.Tick += Tick;
+        Tick(null, EventArgs.Empty);
+        _importTimer.Start();
+
         IsImporting = true;
         try
         {
             await using var fileStream = File.OpenRead(ImportFilePath);
-            var drafts = await _teacherImportService.ImportAsync(fileStream, ImportFilePath, ImportSubject, ImportGrade);
+            var drafts = await _teacherImportService.ImportAsync(
+                fileStream, ImportFilePath, ImportSubject, ImportGrade, token);
 
             ImportedDrafts.Clear();
             foreach (var draft in drafts)
@@ -947,20 +1002,40 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
             OnPropertyChanged(nameof(HasNoImportedDrafts));
 
+            ImportStatusMessage = drafts.Count == 0
+                ? string.Empty
+                : $"{drafts.Count} Vorschläge erstellt - bitte unten einzeln prüfen und übernehmen.";
+
             if (drafts.Count == 0)
             {
-                ImportErrorMessage = "Die KI hat keine Fragenvorschläge aus diesem Dokument geliefert.";
+                ImportErrorMessage =
+                    "Die KI hat keine Fragenvorschläge aus diesem Dokument geliefert. Häufigster Grund: " +
+                    "das Dokument enthält kaum durchgehenden Text (z.B. ein eingescanntes Bild ohne " +
+                    "Texterkennung). Versuche es mit einer Datei, aus der sich Text markieren und " +
+                    "kopieren lässt.";
             }
+        }
+        catch (OperationCanceledException)
+        {
+            ImportStatusMessage = string.Empty;
+            ImportErrorMessage = "Einlesen abgebrochen.";
         }
         catch (Exception ex)
         {
+            ImportStatusMessage = string.Empty;
             ImportErrorMessage = ex.Message;
         }
         finally
         {
+            _importTimer.Stop();
+            _importTimer.Tick -= Tick;
             IsImporting = false;
         }
     }
+
+    /// <summary>Bricht ein laufendes Einlesen ab.</summary>
+    [RelayCommand]
+    private void CancelImport() => _importCancellation?.Cancel();
 
     /// <summary>Übernimmt einen geprüften (und ggf. inline korrigierten) Vorschlag als echte eigene
     /// Aufgabe. Bei Validierungsfehlern bleibt die Karte mit Fehlermeldung stehen.</summary>
