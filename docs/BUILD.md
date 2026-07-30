@@ -57,10 +57,24 @@ dort nicht - die App startet dann normal, nur KI-Chat und Lehrer-Import scheiter
 Familienbetrieb zweimal aufgetreten; ein erster Reparaturversuch über ein eigenes MSBuild-Target
 lief still ins Leere, weil das Publish-Kommando die Option gleichzeitig wieder aktivierte.
 
-Ohne die Option bleiben native Bibliotheken als lose Dateien neben der exe liegen (Standard seit
-.NET 6). Das Verzeichnis enthält dadurch mehr als nur die exe - das ist beabsichtigt. Der CI-Lauf
-prüft nach jedem Publish, ob `llama.dll` und mindestens eine `ggml-*.dll` wirklich lose vorliegen,
-damit dieser Fehler nicht ein drittes Mal erst beim Kind auffällt.
+Ohne die Option bleiben native Bibliotheken als lose Dateien liegen (Standard seit .NET 6). Der
+CI-Lauf prüft nach jedem Publish, ob `llama.dll` und mindestens eine `ggml-*.dll` wirklich lose
+vorliegen, damit dieser Fehler nicht ein drittes Mal erst beim Kind auffällt.
+
+**Wichtig für die Weitergabe:** Das Publish-Ergebnis ist deshalb *nicht* nur `LernTor.exe`. Neben
+der exe liegt ein Ordner `runtimes/` mit je einem Unterordner pro CPU-Variante:
+
+```
+runtimes/win-x64/native/noavx/    llama.dll, ggml.dll, ggml-base.dll, ggml-cpu.dll, mtmd.dll
+runtimes/win-x64/native/avx/      (dieselben Dateien)
+runtimes/win-x64/native/avx2/     (dieselben Dateien)
+runtimes/win-x64/native/avx512/   (dieselben Dateien)
+runtimes/win-arm64/native/        (für ARM-Geräte)
+```
+
+LLamaSharp wählt beim Start selbst die zur CPU passende Variante. Wird nur die exe kopiert oder der
+`runtimes`-Ordner "aufgeräumt", startet die App zwar normal, aber KI-Chat und Lehrer-Import fallen
+aus. Beim Aktualisieren einer bestehenden Installation deshalb immer das komplette ZIP entpacken.
 
 **Bewusst nicht aktiviert: `PublishTrimmed`.** WPF nutzt an vielen Stellen Reflection (Binding,
 `DataTemplate`-Auflösung, Converter), die der Trimmer nicht zuverlässig erkennt - ohne umfangreiche

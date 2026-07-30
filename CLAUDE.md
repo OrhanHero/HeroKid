@@ -177,17 +177,23 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   column** (`NotSupportedException` at query execution, not at compile time). Fetch rows first
   (`ToListAsync()`), then sort in memory.
 - **Never publish with `-p:IncludeNativeLibrariesForSelfExtract=true`.** LLamaSharp resolves
-  `llama.dll`/`ggml-*.dll` by *file path next to the exe*, not through the normal .NET loader. With
-  that flag the natives go into the single-file bundle and get self-extracted to a temp folder
+  `llama.dll`/`ggml-*.dll` by *file path relative to the exe*, not through the normal .NET loader.
+  With that flag the natives go into the single-file bundle and get self-extracted to a temp folder
   where LLamaSharp's own lookup can't see them — the app starts fine, only the AI chat and the
   teacher import fail with `The type initializer for 'LLama.Native.NativeApi' threw an exception`.
   This bit the family **twice**: the first fix added an MSBuild target setting
-  `ExcludeFromSingleFile` on files whose `RelativePath` contained `runtimes/win-x64/native/`, which
-  silently did nothing — RID-specific publish flattens those assets, so the path never matched, and
-  the publish command re-enabled the flag anyway. The flag is now gone from CI and `docs/BUILD.md`,
-  `IncludeNativeLibrariesForSelfExtract` is pinned to `false` in `LernTor.App.csproj`, and the CI
-  workflow **verifies after publishing** that `llama.dll` plus at least one `ggml-*.dll` really are
-  loose files. Don't "tidy up" the extra DLLs next to the exe — they have to be there.
+  `ExcludeFromSingleFile` on the native files, but the publish command re-enabled the flag on the
+  command line, which wins over anything the project file does. The flag is now gone from CI and
+  `docs/BUILD.md`, `IncludeNativeLibrariesForSelfExtract` is pinned to `false` in
+  `LernTor.App.csproj`, and the CI workflow **verifies after publishing** that `llama.dll` plus at
+  least one `ggml-*.dll` really are loose files.
+  **Verified layout** (CI log of run `65ac1a6`, LLamaSharp 0.27): the backend ships one folder per
+  CPU variant — `runtimes/win-x64/native/{noavx,avx,avx2,avx512}/` each containing `llama.dll`,
+  `ggml.dll`, `ggml-base.dll`, `ggml-cpu.dll`, `mtmd.dll`, plus a `runtimes/win-arm64/native/` set.
+  They are **not** flattened into the publish root, so any check for them must recurse — a first
+  version of the CI check looked only in the root and produced a false failure. Don't "tidy up"
+  the `runtimes/` folder next to the exe, and don't ship only the exe: without that folder the AI
+  features are dead.
 - **Repository tests that back onto a real SQLite temp file must wrap the `File.Delete` in their
   `Dispose` in a `try`/`catch`.** `Microsoft.Data.Sqlite` pools connections, so the file handle can
   still be held after the `DbContext` is disposed — `File.Delete` then throws `IOException: The
