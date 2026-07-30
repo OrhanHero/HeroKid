@@ -15,7 +15,7 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Datenschutz, SicherePasswoerter, Urheberrecht },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { AlgorithmenUndDigitaleWerkzeuge, DatenMedienUndWerkzeuge },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { AlgorithmenUndDigitaleWerkzeuge, DatenMedienUndWerkzeuge, HardwareUndNetzwerke, SicherheitUndVerantwortung },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Cybermobbing, FakeNewsErkennen, Algorithmen }
         };
 
@@ -465,6 +465,118 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
             Topic = "Daten, Medien und digitale Werkzeuge", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Digitaler Fußabdruck und Tracking; Recht auf Vergessenwerden. Lizenzen regeln Bildnutzung. Tabellenkalkulation rechnet automatisch; Diagramme können durch abgeschnittene Achsen täuschen."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] HardwareUndNetzwerkeListe =
+    {
+        ("Was ist die CPU eines Computers?", new[] { "Der Hauptprozessor, der die Rechenarbeit erledigt", "Der Speicher für alle dauerhaften Dateien", "Der Anschluss für den Bildschirm" }, "Der Hauptprozessor, der die Rechenarbeit erledigt",
+            "CPU steht für Central Processing Unit - das Rechenzentrum des Geräts."),
+        ("Worin unterscheiden sich Arbeitsspeicher (RAM) und Festplatte?", new[] { "RAM ist schnell, aber beim Ausschalten leer", "RAM speichert dauerhaft, die Festplatte nur kurz", "Beide arbeiten völlig gleich" }, "RAM ist schnell, aber beim Ausschalten leer",
+            "Deshalb sind ungespeicherte Dateien nach einem Stromausfall weg."),
+        ("Was ist ein Betriebssystem?", new[] { "Die Software, die Hardware und Programme verwaltet", "Ein einzelnes Programm zum Schreiben von Texten (was so in der Praxis nicht zutrifft)", "Ein Bauteil im Inneren des Gehäuses" }, "Die Software, die Hardware und Programme verwaltet",
+            "Windows, macOS, Linux und Android sind Betriebssysteme."),
+        ("Was bedeutet der Unterschied zwischen Hardware und Software?", new[] { "Hardware ist anfassbar, Software besteht aus Programmcode", "Hardware ist teurer als Software - eine verbreitete, aber falsche Annahme", "Beide Begriffe meinen dasselbe" }, "Hardware ist anfassbar, Software besteht aus Programmcode",
+            "Die Maus ist Hardware, der Browser darauf ist Software."),
+        ("Was ist ein Bit?", new[] { "Die kleinste Informationseinheit mit 0 oder 1", "Ein Bauteil auf der Hauptplatine", "Ein Kabeltyp für Netzwerke" }, "Die kleinste Informationseinheit mit 0 oder 1",
+            "Acht Bit ergeben ein Byte."),
+        ("Wie viele Byte hat ein Kilobyte nach der üblichen Rechnung?", new[] { "1024", "100", "10" }, "1024",
+            "Computer rechnen in Zweierpotenzen, deshalb 1024 und nicht 1000."),
+        ("Was ist eine IP-Adresse?", new[] { "Die Adresse eines Geräts im Netzwerk", "Das Passwort für den Router", "Der Name des Betriebssystems, was einer genaueren Pruefung nicht standhaelt" }, "Die Adresse eines Geräts im Netzwerk",
+            "Ohne sie wüssten Datenpakete nicht, wohin sie sollen."),
+        ("Wozu dient ein Router im Heimnetz?", new[] { "Er verbindet die Geräte untereinander und mit dem Internet", "Er speichert alle Dateien der Familie, obwohl das auf den ersten Blick plausibel klingt", "Er ersetzt den Bildschirm" }, "Er verbindet die Geräte untereinander und mit dem Internet",
+            "Er verteilt außerdem die lokalen IP-Adressen im Haushalt."),
+        ("Was macht ein DNS-Server?", new[] { "Er übersetzt Domainnamen in IP-Adressen", "Er speichert die Passwörter der Nutzer, was die eigentliche Bedeutung des Begriffs verfehlt", "Er beschleunigt den Prozessor" }, "Er übersetzt Domainnamen in IP-Adressen",
+            "Er funktioniert wie ein Telefonbuch des Internets."),
+        ("Was bedeutet das s in https?", new[] { "Die Verbindung ist verschlüsselt", "Die Seite lädt schneller", "Die Seite ist besonders neu und deshalb hier nicht zutrifft" }, "Die Verbindung ist verschlüsselt",
+            "Ohne https könnten Dritte im selben WLAN mitlesen."),
+        ("Was ist ein Server?", new[] { "Ein Computer, der anderen Geräten Dienste bereitstellt", "Ein besonders großer Bildschirm", "Ein Kabel zwischen zwei Rechnern" }, "Ein Computer, der anderen Geräten Dienste bereitstellt",
+            "Webseiten, E-Mails und Spiele laufen auf Servern."),
+        ("Was heißt Cloud im Alltag?", new[] { "Daten liegen auf fremden Servern im Internet", "Daten liegen ausschließlich auf dem eigenen Gerät", "Daten werden gelöscht statt gespeichert" }, "Daten liegen auf fremden Servern im Internet",
+            "Bequem und überall verfügbar - aber nicht mehr allein in eigener Hand."),
+        ("Was ist WLAN?", new[] { "Ein kabelloses lokales Netzwerk", "Ein besonders schnelles Netzwerkkabel", "Ein Programm zum Surfen" }, "Ein kabelloses lokales Netzwerk",
+            "Es reicht meist nur wenige Räume weit."),
+        ("Warum ist ein offenes öffentliches WLAN riskant?", new[] { "Unverschlüsselte Daten können mitgelesen werden", "Es ist immer besonders langsam", "Es funktioniert nur mit einem Kabel, was so nicht korrekt ist" }, "Unverschlüsselte Daten können mitgelesen werden",
+            "Für Bankgeschäfte sollte man es deshalb meiden."),
+        ("Was ist ein Browser?", new[] { "Ein Programm zum Anzeigen von Webseiten", "Eine Suchmaschine im Internet - eine haeufige, aber unzutreffende Vorstellung", "Ein Speichergerät für Fotos" }, "Ein Programm zum Anzeigen von Webseiten",
+            "Firefox und Chrome sind Browser, Google ist eine Suchmaschine darin."),
+        ("Was ist eine URL?", new[] { "Die vollständige Adresse einer Webseite", "Der Name des verwendeten Browsers", "Ein Dateiformat für Bilder" }, "Die vollständige Adresse einer Webseite",
+            "Die Endung wie .de oder .org gehört mit dazu."),
+        ("Was ist eine Datei-Endung wie .jpg oder .pdf?", new[] { "Ein Hinweis auf das Dateiformat", "Die Größe der Datei in Megabyte", "Der Name des Autors" }, "Ein Hinweis auf das Dateiformat",
+            "Sie sagt dem System, mit welchem Programm es öffnen soll."),
+        ("Warum ist ein Backup wichtig?", new[] { "Nach Defekt oder Löschung sind Daten sonst weg", "Es macht den Computer schneller", "Es ist gesetzlich vorgeschrieben, auch wenn das manche zunaechst vermuten wuerden" }, "Nach Defekt oder Löschung sind Daten sonst weg",
+            "Ein Backup gehört auf ein anderes Gerät als das Original."),
+        ("Was ist ein Peripheriegerät?", new[] { "Ein Gerät, das man an den Computer anschließt", "Ein Bauteil im Prozessor", "Ein Teil des Betriebssystems" }, "Ein Gerät, das man an den Computer anschließt",
+            "Maus, Tastatur, Drucker und Kopfhörer gehören dazu."),
+        ("Warum verbraucht Streaming mehr Datenvolumen als Musikhören?", new[] { "Videodaten sind deutlich umfangreicher als Tondaten", "Videos werden immer doppelt geladen, was bei genauerem Hinsehen nicht stimmt", "Musik wird gar nicht übertragen" }, "Videodaten sind deutlich umfangreicher als Tondaten",
+            "Eine niedrigere Auflösung spart entsprechend viel Volumen.")
+    };
+
+    private static QuizQuestion HardwareUndNetzwerke(Random r)
+    {
+        var f = HardwareUndNetzwerkeListe[r.Next(HardwareUndNetzwerkeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Hardware, Netzwerke und Internet", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "CPU rechnet, RAM ist schnell aber flüchtig, Festplatte speichert dauerhaft. 8 Bit = 1 Byte, 1024 Byte = 1 Kilobyte. DNS übersetzt Namen in IP-Adressen, https bedeutet verschlüsselt."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SicherheitUndVerantwortungListe =
+    {
+        ("Was ist Phishing?", new[] { "Der Versuch, mit gefälschten Nachrichten Daten zu erbeuten", "Ein Verfahren zum Sichern von Dateien", "Eine Technik zum Beschleunigen des Netzes (was so in der Praxis nicht zutrifft)" }, "Der Versuch, mit gefälschten Nachrichten Daten zu erbeuten",
+            "Typisch sind angebliche Paketbenachrichtigungen mit dringendem Handlungsdruck."),
+        ("Woran erkennt man eine Phishing-Mail oft?", new[] { "An Zeitdruck, Fehlern und einer seltsamen Absenderadresse", "Daran, dass sie ein Bild enthält - eine verbreitete, aber falsche Annahme", "Daran, dass sie morgens ankommt" }, "An Zeitdruck, Fehlern und einer seltsamen Absenderadresse",
+            "Im Zweifel die Seite selbst im Browser aufrufen statt den Link anzuklicken."),
+        ("Was ist Zwei-Faktor-Authentifizierung?", new[] { "Anmeldung mit Passwort plus zweitem Nachweis", "Zwei Passwörter direkt hintereinander, was einer genaueren Pruefung nicht standhaelt", "Ein Passwort mit doppelter Länge" }, "Anmeldung mit Passwort plus zweitem Nachweis",
+            "Selbst ein gestohlenes Passwort reicht dann nicht mehr aus."),
+        ("Was ist ein Passwort-Manager?", new[] { "Ein Programm, das Passwörter verschlüsselt verwahrt", "Eine Liste der Passwörter auf einem Zettel", "Ein Dienst, der Passwörter öffentlich macht" }, "Ein Programm, das Passwörter verschlüsselt verwahrt",
+            "So kann jeder Dienst ein eigenes langes Passwort bekommen."),
+        ("Warum sollte man für jeden Dienst ein eigenes Passwort nutzen?", new[] { "Ein Leck betrifft sonst gleich alle Konten", "Weil das Gesetz es vorschreibt, obwohl das auf den ersten Blick plausibel klingt", "Weil Passwörter sonst ablaufen" }, "Ein Leck betrifft sonst gleich alle Konten",
+            "Angreifer probieren geleakte Zugangsdaten automatisch bei anderen Diensten aus."),
+        ("Was ist Schadsoftware (Malware)?", new[] { "Programme, die Geräte schädigen oder ausspähen", "Programme, die zu viel Speicher brauchen", "Programme ohne deutsche Übersetzung" }, "Programme, die Geräte schädigen oder ausspähen",
+            "Viren, Trojaner und Ransomware sind Unterarten davon."),
+        ("Was macht Ransomware?", new[] { "Sie verschlüsselt Daten und fordert Lösegeld", "Sie beschleunigt den Computer heimlich", "Sie erstellt automatisch Sicherungskopien, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Sie verschlüsselt Daten und fordert Lösegeld",
+            "Ein aktuelles Backup ist der wirksamste Schutz dagegen."),
+        ("Warum sind Software-Updates wichtig?", new[] { "Sie schließen bekannt gewordene Sicherheitslücken", "Sie machen die Oberfläche bunter", "Sie verlängern die Akkulaufzeit garantiert und deshalb hier nicht zutrifft" }, "Sie schließen bekannt gewordene Sicherheitslücken",
+            "Viele Angriffe nutzen Lücken, für die längst ein Update existiert."),
+        ("Was sind Cookies im Browser?", new[] { "Kleine Dateien, die Webseiten auf dem Gerät ablegen", "Programme zum Blockieren von Werbung, was so nicht korrekt ist", "Ein Dateiformat für Bilder" }, "Kleine Dateien, die Webseiten auf dem Gerät ablegen",
+            "Manche merken sich nur die Anmeldung, andere verfolgen das Surfverhalten."),
+        ("Was ist Tracking im Internet?", new[] { "Das Verfolgen des Nutzerverhaltens über Seiten hinweg", "Das Messen der Internetgeschwindigkeit - eine haeufige, aber unzutreffende Vorstellung", "Das Sichern von Dateien in der Cloud" }, "Das Verfolgen des Nutzerverhaltens über Seiten hinweg",
+            "Daraus entstehen Profile für personalisierte Werbung."),
+        ("Was bedeutet Datensparsamkeit?", new[] { "Nur so viele Daten preisgeben wie nötig", "Möglichst wenig Speicherplatz zu belegen", "Das Internet selten zu nutzen" }, "Nur so viele Daten preisgeben wie nötig",
+            "Ein Formularfeld ohne Sternchen muss man meist nicht ausfüllen."),
+        ("Warum sollte man App-Berechtigungen prüfen?", new[] { "Viele Apps fordern mehr Zugriff als sie brauchen", "Berechtigungen kosten zusätzlich Geld", "Ohne Prüfung startet die App nicht" }, "Viele Apps fordern mehr Zugriff als sie brauchen",
+            "Eine Taschenlampen-App braucht keinen Zugriff auf die Kontakte."),
+        ("Was ist der digitale Fußabdruck?", new[] { "Die Spur an Daten, die man online hinterlässt", "Die Größe der installierten Programme", "Der Stromverbrauch eines Geräts" }, "Die Spur an Daten, die man online hinterlässt",
+            "Manches davon bleibt jahrelang auffindbar."),
+        ("Was ist ein VPN?", new[] { "Eine verschlüsselte Verbindung über einen fremden Server", "Ein besonders schnelles Netzwerkkabel", "Ein Programm zum Bearbeiten von Videos, auch wenn das manche zunaechst vermuten wuerden" }, "Eine verschlüsselte Verbindung über einen fremden Server",
+            "Es schützt im offenen WLAN - der VPN-Anbieter sieht den Verkehr allerdings selbst."),
+        ("Warum ist ein Screenshot einer privaten Nachricht heikel?", new[] { "Er kann ohne Zustimmung weiterverbreitet werden", "Er belegt sehr viel Speicherplatz", "Er lässt sich technisch nicht erstellen, was bei genauerem Hinsehen nicht stimmt" }, "Er kann ohne Zustimmung weiterverbreitet werden",
+            "Was in einer Gruppe landet, ist praktisch nicht mehr zurückzuholen."),
+        ("Was tun, wenn jemand online bedroht oder beleidigt wird?", new[] { "Beweise sichern, melden und Erwachsene einbeziehen", "Sofort mit gleicher Härte zurückschreiben", "Alles löschen und nichts erzählen" }, "Beweise sichern, melden und Erwachsene einbeziehen",
+            "Screenshots mit Datum sind später wichtig - Zurückpöbeln verschärft die Lage."),
+        ("Was ist ein Fake-Profil?", new[] { "Ein Konto mit erfundener oder gestohlener Identität", "Ein Konto ohne Profilbild", "Ein Konto mit wenigen Beiträgen" }, "Ein Konto mit erfundener oder gestohlener Identität",
+            "Wenig Verlauf, kaum echte Kontakte und gestohlene Fotos sind typische Anzeichen."),
+        ("Was ist ein In-App-Kauf?", new[] { "Ein Kauf innerhalb einer bereits installierten App", "Der Kauf der App im Store selbst", "Ein Abonnement für das Internet" }, "Ein Kauf innerhalb einer bereits installierten App",
+            "Gerade in kostenlosen Spielen summieren sich solche Käufe schnell."),
+        ("Was ist der Unterschied zwischen Löschen und Papierkorb?", new[] { "Im Papierkorb ist die Datei noch wiederherstellbar", "Beides löscht die Datei sofort endgültig", "Der Papierkorb löscht gründlicher" }, "Im Papierkorb ist die Datei noch wiederherstellbar",
+            "Erst das Leeren entfernt sie aus dem normalen Zugriff."),
+        ("Warum sollte man Quellen im Netz prüfen, bevor man sie teilt?", new[] { "Falschmeldungen verbreiten sich sonst weiter", "Das Teilen kostet sonst Datenvolumen (was so in der Praxis nicht zutrifft)", "Ungeprüfte Links laden langsamer" }, "Falschmeldungen verbreiten sich sonst weiter",
+            "Wer weiterleitet, wird Teil der Verbreitung - Impressum und Gegenquellen helfen.")
+    };
+
+    private static QuizQuestion SicherheitUndVerantwortung(Random r)
+    {
+        var f = SicherheitUndVerantwortungListe[r.Next(SicherheitUndVerantwortungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse7,
+            Topic = "IT-Sicherheit und digitale Verantwortung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Phishing arbeitet mit Zeitdruck und gefälschten Absendern. Zwei-Faktor schützt auch bei geklautem Passwort. Updates schließen Sicherheitslücken, Backups helfen gegen Ransomware."
         };
     }
 }

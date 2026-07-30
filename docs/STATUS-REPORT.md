@@ -49,12 +49,12 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Ethik** | `EthikGenerator.cs` | 6 | 3 | 10 | 19 | ✅ komplett |
 | **Gewi** | `GewiGenerator.cs` | 9 | 6 | 3 | 18 | Klasse 6 komplett; Klasse 9 auf Kernthemen fokussiert (Fach läuft dort in Geschichte/Geo/Politik aus) |
 | **Geschichte** | `GeschichteGenerator.cs` | 3 | 6 | 7 | 16 | ✅ komplett (inkl. Feindbilder/Propaganda-Bonusmodul) |
-| **Musik** | `MusikGenerator.cs` | 5 | 2 | 6 | 13 | ✅ (Klasse-7-Pool dünn: 2 Topics) |
-| **Kunst** | `KunstGenerator.cs` | 4 | 2 | 6 | 12 | ✅ (Klasse-7-Pool dünn: 2 Topics) |
-| **ITG** | `ItgGenerator.cs` | 3 | 2 | 3 | 8 | Standardsoftware bewusst weggelassen (nicht quizbar); Klasse-7-Pool dünn |
+| **Musik** | `MusikGenerator.cs` | 5 | 4 | 6 | 15 | ✅ komplett |
+| **Kunst** | `KunstGenerator.cs` | 4 | 4 | 6 | 14 | ✅ komplett |
+| **ITG** | `ItgGenerator.cs` | 3 | 4 | 3 | 10 | Standardsoftware bewusst weggelassen (nicht quizbar) |
 | **KI-Wissen** | `KiWissenGenerator.cs` | 3 | – | 3 | 6 | Kein RLP-Fach, sondern eigener Bereich (siehe `KiContentService`); Klasse 8 nutzt den Klasse-6-Pool |
 
-**Gesamt: 311 Topics × ~20 Fragen ≈ 6.200 Fragen im Pool** (Mathematik würfelt zusätzlich echte
+**Gesamt: 317 Topics × ~20 Fragen ≈ 6.340 Fragen im Pool** (Mathematik würfelt zusätzlich echte
 Zahlenwerte, dort ist der Pool praktisch unbegrenzt).
 
 > Die Zahlen sind aus `TopicsByGrade` in den Generator-Dateien ausgezählt, nicht geschätzt. Frühere
@@ -109,7 +109,7 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
 | ✅ **Erledigt** | **KI-Bereich als eigenes Fach** | `KiContentService` (Core) liefert drei Lernmodule ("Was ist KI?", "KI im Alltag", "KI-Checkliste") mit DE/TR-Texten, `KiWissenGenerator` die zugehörigen Quizfragen. Vollständig offline - kein einziger externer API-Aufruf. |
 | ✅ **Erledigt** | **Zeit-/Umfangs-Settings im Eltern-Bereich** | Lesen, News und Fächer haben jetzt einstellbare Zeit- und Umfangsgrenzen sowie einen Ferien-/Pausenmodus - alles ohne neuen Build änderbar. |
-| ⚠️ **Bekannt dünn** | **Klasse-7-Pools in Kunst/Musik/ITG** | Je nur 2 Topics (~40 Fragen). Reicht für den Alltag, wäre aber die naheliegendste nächste Content-Runde. |
+| ✅ **Erledigt** | **Klasse-7-Pools in Kunst/Musik/ITG** | Waren mit je 2 Topics die dünnsten Pools. Jetzt je 4 Topics: Kunst um "Bild des Menschen" und "Bild der Dinge", Musik um Instrumentenkunde und Musizieren/Zusammenspiel, ITG um Hardware/Netzwerke und IT-Sicherheit erweitert. |
 
 ### 3.3 Content-Erweiterung (Nice-to-have)
 
@@ -184,7 +184,7 @@ CI-Lauf prüfen. Lokal kompilieren geht in dieser Umgebung nicht.
 - ~~**Eltern-Export/Import**~~ ✅ erledigt (DB-Sicherung im Eltern-Bereich, siehe 3.1)
 
 ### Sprint 5: Klasse 7 + Doppeljahrgänge ✅ ABGESCHLOSSEN
-17. ~~Klasse-7-Pools für alle 15 Fächer~~ ✅ erledigt (73 neue Topics, ~1.460 Fragen)
+17. ~~Klasse-7-Pools für alle 15 Fächer~~ ✅ erledigt (79 neue Topics, ~1.580 Fragen - inklusive der Nacharbeit in Kunst, Musik und ITG)
 18. ~~Klasse 8 und 10 wählbar machen~~ ✅ erledigt (`GradeLevel.Klasse8`/`Klasse10`, Übergangsregel greift auf 7er- bzw. 9er-Pool; dabei fiel auf, dass `KidNewsMetadata` für alle Stufen außer 6 und 9 leere Einordnungstexte lieferte - behoben)
 
 ### Sprint 6: Familien-Feedback aus dem Pilotbetrieb ✅ ABGESCHLOSSEN
@@ -210,11 +210,11 @@ CI-Lauf prüfen. Lokal kompilieren geht in dieser Umgebung nicht.
 > Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 16 aktive Fächer inkl. KI-Bereich, ~20 Fragen/Topic; Richtiges pausiert per Spaced Repetition 7/30/90 Tage und kehrt zur Auffrischung zurück) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Klassenstufe/Zeitgrenzen/Ferienmodus/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
 
 **Abdeckungsgrad RLP:** Alle 15 implementierten Fach-Generatoren decken ihre RLP-Themenfelder für
-Klasse 6, 7 und 9 ab (311 Topics, ~6.200 Fragen im Pool), dazu kommt der KI-Bereich als eigenes,
+Klasse 6, 7 und 9 ab (317 Topics, ~6.340 Fragen im Pool), dazu kommt der KI-Bereich als eigenes,
 nicht-curriculares Fach. Über die Doppeljahrgangs-Regel sind damit alle fünf wählbaren Klassenstufen
-(6, 7, 8, 9, 10) versorgt. Es gibt keine offene RLP-Content-Lücke mehr; dünn sind nur die
-Klasse-7-Pools von Kunst, Musik und ITG (je 2 Topics), und bewusst ausgeklammert bleiben Sport, WAT
-und Standardsoftware - siehe Abschnitt 2.
+(6, 7, 8, 9, 10) versorgt. Es gibt keine offene RLP-Content-Lücke mehr - auch die zuletzt dünnen
+Klasse-7-Pools von Kunst, Musik und ITG stehen jetzt bei je vier Themen. Bewusst ausgeklammert
+bleiben Sport, WAT und Standardsoftware - siehe Abschnitt 2.
 
 **Kiosk-Härtung:** Nach drei Runden Familien-Feedback sind Alt+Tab (inkl. X-Button der Windows-11-
 Vorschau) und Win+Tab/neuer virtueller Desktop geschlossen. Was in Software ehrlicherweise nicht zu

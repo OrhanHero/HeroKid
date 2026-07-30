@@ -12,7 +12,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { GrundlagenDerMusik, FormUndGestaltung, GattungenUndGenres, WirkungUndFunktion, MusikImKulturellenKontext },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { MusiklehreUndMedien, MusikepochenUndStile },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MusiklehreUndMedien, MusikepochenUndStile, InstrumenteUndKlangfarbe, MusizierenUndZusammenspiel },
             [GradeLevel.Klasse9] = new List<TopicFactory> { HarmonielehreUndPartiturlesen, KompositionUndSatzweisen, MedienUndDigitaleProduktion, GattungenDerMusikgeschichte, FilmmusikUndProgrammmusik, MusikImGesellschaftlichenKontext }
         };
 
@@ -742,6 +742,118 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             Topic = "Musikepochen und Stilrichtungen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Barock (Bach, Fuge), Wiener Klassik (Haydn/Mozart/Beethoven, Sinfonie), Romantik (Kunstlied). Jazz aus Blues und Ragtime mit Improvisation. Hip-Hop: Rap über Beats mit Samples."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] InstrumenteUndKlangfarbeListe =
+    {
+        ("Zu welcher Instrumentenfamilie gehört die Geige?", new[] { "Zu den Streichinstrumenten", "Zu den Holzblasinstrumenten", "Zu den Schlaginstrumenten" }, "Zu den Streichinstrumenten",
+            "Der Ton entsteht, weil ein Bogen über die Saiten streicht."),
+        ("Warum zählt die Querflöte zu den Holzblasinstrumenten, obwohl sie aus Metall ist?", new[] { "Wegen der Bauart und der früheren Herstellung aus Holz", "Weil sie leiser als eine Trompete klingt (was so in der Praxis nicht zutrifft)", "Weil sie im Orchester hinten sitzt" }, "Wegen der Bauart und der früheren Herstellung aus Holz",
+            "Entscheidend ist die Art der Tonerzeugung, nicht das heutige Material."),
+        ("Was ist Klangfarbe?", new[] { "Das, was zwei gleich hohe Töne unterscheidbar macht", "Ein anderes Wort für die Lautstärke eines Tons", "Die Notenfarbe im gedruckten Notenblatt" }, "Das, was zwei gleich hohe Töne unterscheidbar macht",
+            "Deshalb erkennt man ein Klavier auch dann, wenn es dieselbe Note wie eine Gitarre spielt."),
+        ("Wie entsteht bei einem Blechblasinstrument der Ton?", new[] { "Durch die schwingenden Lippen im Mundstück", "Durch ein Rohrblatt aus Schilf - eine verbreitete, aber falsche Annahme", "Durch eine gespannte Membran" }, "Durch die schwingenden Lippen im Mundstück",
+            "Trompete, Posaune, Horn und Tuba funktionieren alle nach diesem Prinzip."),
+        ("Wovon hängt die Tonhöhe einer Saite ab?", new[] { "Von Länge, Spannung und Dicke der Saite", "Ausschließlich von der Farbe der Saite", "Ausschließlich vom Material des Instrumentenkorpus" }, "Von Länge, Spannung und Dicke der Saite",
+            "Kurz, straff und dünn klingt hoch - lang, locker und dick klingt tief."),
+        ("Was macht ein Dirigent oder eine Dirigentin?", new[] { "Tempo, Einsätze und Ausdruck des Ensembles leiten", "Ausschließlich die Noten für alle abschreiben", "Ausschließlich das Publikum begrüßen" }, "Tempo, Einsätze und Ausdruck des Ensembles leiten",
+            "Die rechte Hand schlägt meist den Takt, die linke gestaltet den Ausdruck."),
+        ("Welche vier Gruppen bilden ein klassisches Sinfonieorchester?", new[] { "Streicher, Holzbläser, Blechbläser und Schlagwerk", "Gitarren, Bass, Schlagzeug und Gesang, was einer genaueren Pruefung nicht standhaelt", "Sopran, Alt, Tenor und Bass" }, "Streicher, Holzbläser, Blechbläser und Schlagwerk",
+            "Die Streicher sitzen vorn, das Schlagwerk ganz hinten."),
+        ("Was ist ein Idiophon?", new[] { "Ein Instrument, dessen Körper selbst klingt", "Ein Instrument mit gespannter Membran", "Ein Instrument mit schwingender Luftsäule" }, "Ein Instrument, dessen Körper selbst klingt",
+            "Triangel, Xylofon und Klanghölzer gehören dazu."),
+        ("Was ist ein Membranophon?", new[] { "Ein Instrument mit schwingendem Fell", "Ein Instrument aus reinem Metall", "Ein Instrument mit gezupften Saiten" }, "Ein Instrument mit schwingendem Fell",
+            "Trommel, Pauke und Cajón fallen in diese Gruppe."),
+        ("Wie unterscheiden sich Cello und Kontrabass?", new[] { "Der Kontrabass ist größer und klingt tiefer", "Das Cello ist größer und klingt tiefer, obwohl das auf den ersten Blick plausibel klingt", "Beide klingen und wirken völlig gleich" }, "Der Kontrabass ist größer und klingt tiefer",
+            "Je größer der Klangkörper, desto tiefer klingt das Instrument."),
+        ("Was ist ein Synthesizer?", new[] { "Ein Gerät, das Klänge elektronisch erzeugt", "Ein besonders lautes akustisches Klavier", "Ein Mikrofon für Bühnengesang" }, "Ein Gerät, das Klänge elektronisch erzeugt",
+            "Er kann Instrumente nachahmen oder völlig neue Klänge bauen."),
+        ("Wozu dient ein Resonanzkörper?", new[] { "Er verstärkt den Klang der Schwingung", "Er stimmt das Instrument automatisch", "Er dämpft den Klang vollständig ab" }, "Er verstärkt den Klang der Schwingung",
+            "Eine Saite allein wäre kaum zu hören - erst der Korpus macht sie laut."),
+        ("Was ist eine Stimmgabel?", new[] { "Ein Werkzeug, das einen festen Referenzton gibt", "Ein Werkzeug zum Spannen der Saiten", "Ein Werkzeug zum Ablesen der Notenwerte, was die eigentliche Bedeutung des Begriffs verfehlt" }, "Ein Werkzeug, das einen festen Referenzton gibt",
+            "Sie liefert meist das Kammerton-a mit 440 Hertz."),
+        ("Was bedeutet die Angabe 440 Hz beim Kammerton a?", new[] { "Die Saite schwingt 440-mal pro Sekunde", "Der Ton wird 440 Sekunden lang gehalten", "Das Instrument hat 440 einzelne Saiten" }, "Die Saite schwingt 440-mal pro Sekunde",
+            "Mehr Schwingungen pro Sekunde bedeuten einen höheren Ton."),
+        ("Was ist ein Ensemble?", new[] { "Eine Gruppe, die gemeinsam musiziert", "Ein einzelner Musiker auf der Bühne und deshalb hier nicht zutrifft", "Ein Musikstück ohne Gesang" }, "Eine Gruppe, die gemeinsam musiziert",
+            "Ein Duo hat zwei, ein Quartett vier Mitglieder."),
+        ("Welche Stimmlagen gibt es im gemischten Chor?", new[] { "Sopran, Alt, Tenor und Bass", "Streicher, Bläser, Schlagwerk und Tasten", "Melodie, Begleitung, Rhythmus und Bass" }, "Sopran, Alt, Tenor und Bass",
+            "Sopran ist die höchste, Bass die tiefste Lage."),
+        ("Was ist eine A-cappella-Gruppe?", new[] { "Ein Ensemble, das ohne Instrumente singt", "Ein Chor mit sehr großem Orchester", "Eine Band nur mit elektronischen Klängen" }, "Ein Ensemble, das ohne Instrumente singt",
+            "Alle Klänge - auch Bass und Beat - entstehen mit der Stimme."),
+        ("Wie wirkt ein Instrument mit Dämpfer?", new[] { "Leiser und in der Klangfarbe verändert", "Deutlich lauter als ohne Dämpfer", "Genau gleich wie ohne Dämpfer" }, "Leiser und in der Klangfarbe verändert",
+            "Ein gedämpfter Trompetenton klingt näselnd und ist typisch für Jazz."),
+        ("Was ist ein Sampler?", new[] { "Ein Gerät, das aufgenommene Klänge abspielbar macht", "Ein Verstärker für elektrische Gitarren", "Ein Metronom für gleichmäßiges Üben" }, "Ein Gerät, das aufgenommene Klänge abspielbar macht",
+            "Im Hip-Hop werden damit Ausschnitte älterer Aufnahmen neu verwendet."),
+        ("Warum klingt dieselbe Melodie auf verschiedenen Instrumenten unterschiedlich?", new[] { "Weil jedes Instrument eigene Obertöne hat", "Weil die Noten dabei verändert werden", "Weil das Tempo automatisch anders wird, was so nicht korrekt ist" }, "Weil jedes Instrument eigene Obertöne hat",
+            "Die Mischung der Obertöne ergibt die Klangfarbe.")
+    };
+
+    private static QuizQuestion InstrumenteUndKlangfarbe(Random r)
+    {
+        var f = InstrumenteUndKlangfarbeListe[r.Next(InstrumenteUndKlangfarbeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Instrumentenkunde und Klangfarbe", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Orchestergruppen: Streicher, Holzbläser, Blechbläser, Schlagwerk. Klangfarbe entsteht durch Obertöne. Kammerton a = 440 Hz. Je größer der Klangkörper, desto tiefer der Ton."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MusizierenUndZusammenspielListe =
+    {
+        ("Was gibt der Takt in einem Musikstück an?", new[] { "Die regelmäßige Gliederung der Schläge", "Die Lautstärke des gesamten Stücks - eine haeufige, aber unzutreffende Vorstellung", "Die Tonhöhe der Melodie" }, "Die regelmäßige Gliederung der Schläge",
+            "Ein 4/4-Takt fasst jeweils vier Viertelschläge zu einer Einheit zusammen."),
+        ("Was bedeutet die Taktangabe 3/4?", new[] { "Drei Viertelnoten pro Takt", "Vier Dreitelnoten pro Takt", "Das Stück dauert drei Viertelstunden" }, "Drei Viertelnoten pro Takt",
+            "Der Walzer ist das bekannteste Beispiel für einen 3/4-Takt."),
+        ("Was ist das Metrum?", new[] { "Der gleichmäßige Grundschlag eines Stücks", "Die Anzahl der Töne in der Melodie", "Der Abstand zwischen zwei Instrumenten, auch wenn das manche zunaechst vermuten wuerden" }, "Der gleichmäßige Grundschlag eines Stücks",
+            "Man kann es mitklatschen - der Rhythmus liegt darüber."),
+        ("Wozu dient ein Metronom?", new[] { "Es gibt ein gleichmäßiges Tempo vor", "Es stimmt die Saiten eines Instruments", "Es verstärkt den Klang beim Auftritt" }, "Es gibt ein gleichmäßiges Tempo vor",
+            "Die Angabe 120 bpm bedeutet 120 Schläge pro Minute."),
+        ("Was ist eine Synkope?", new[] { "Eine Betonung gegen den erwarteten Schlag", "Eine besonders lange gehaltene Note", "Eine Pause am Ende eines Stücks" }, "Eine Betonung gegen den erwarteten Schlag",
+            "Sie bringt Spannung in den Rhythmus und ist typisch für Jazz und Pop."),
+        ("Wie viele Viertelnoten hat eine ganze Note?", new[] { "Vier", "Zwei", "Acht" }, "Vier",
+            "Halbe Note gleich zwei Viertel, ganze Note gleich vier Viertel."),
+        ("Was bewirkt ein Punkt hinter einer Note?", new[] { "Er verlängert sie um die Hälfte ihres Werts", "Er verkürzt sie auf die Hälfte", "Er macht sie deutlich lauter" }, "Er verlängert sie um die Hälfte ihres Werts",
+            "Eine punktierte Halbe dauert also drei Viertel."),
+        ("Was bedeutet forte in den Noten?", new[] { "Laut spielen", "Leise spielen", "Schnell spielen" }, "Laut spielen",
+            "Piano heißt leise, mezzoforte mittellaut."),
+        ("Was bedeutet crescendo?", new[] { "Allmählich lauter werden", "Allmählich leiser werden", "Immer schneller werden" }, "Allmählich lauter werden",
+            "Das Gegenstück heißt decrescendo oder diminuendo."),
+        ("Was bedeutet die Tempoangabe Allegro?", new[] { "Schnell und munter", "Sehr langsam und getragen", "Möglichst leise" }, "Schnell und munter",
+            "Adagio ist langsam, Andante schreitend, Presto sehr schnell."),
+        ("Was ist eine Fermate?", new[] { "Ein Zeichen zum Aushalten eines Tons", "Ein Zeichen für eine Wiederholung", "Ein Zeichen für lautes Spielen" }, "Ein Zeichen zum Aushalten eines Tons",
+            "Die Dauer bestimmt dabei die Leitung des Ensembles."),
+        ("Was sagt ein Wiederholungszeichen aus?", new[] { "Der eingeschlossene Abschnitt wird noch einmal gespielt", "Das Stück ist an dieser Stelle zu Ende", "Der Abschnitt wird ausgelassen" }, "Der eingeschlossene Abschnitt wird noch einmal gespielt",
+            "Zwei Punkte vor dem Taktstrich markieren das Ende der Wiederholung."),
+        ("Was ist ein Kanon?", new[] { "Dieselbe Melodie, zeitversetzt eingesetzt", "Zwei völlig verschiedene Melodien gleichzeitig", "Eine Melodie ohne jede Begleitung" }, "Dieselbe Melodie, zeitversetzt eingesetzt",
+            "Bruder Jakob ist der bekannteste Kanon im Musikunterricht."),
+        ("Was ist ein Auftakt?", new[] { "Ein unvollständiger Takt vor dem ersten vollen Takt", "Der letzte Takt eines Stücks", "Ein besonders lauter erster Ton, was bei genauerem Hinsehen nicht stimmt" }, "Ein unvollständiger Takt vor dem ersten vollen Takt",
+            "Viele Volkslieder beginnen mit einem Auftakt."),
+        ("Wie ist ein typischer Popsong aufgebaut?", new[] { "Strophe, Refrain, Strophe, Refrain, Bridge", "Ausschließlich als ein durchgehender Teil", "Immer als klassische Sonatenhauptsatzform" }, "Strophe, Refrain, Strophe, Refrain, Bridge",
+            "Der Refrain wiederholt sich - deshalb bleibt er im Ohr."),
+        ("Was ist eine Bridge in einem Song?", new[] { "Ein kontrastierender Teil vor dem letzten Refrain", "Der einleitende erste Ton des Stücks (was so in der Praxis nicht zutrifft)", "Ein anderes Wort für den Refrain" }, "Ein kontrastierender Teil vor dem letzten Refrain",
+            "Sie sorgt für Abwechslung, bevor der Refrain zurückkehrt."),
+        ("Warum ist das Aufeinanderhören beim Zusammenspiel wichtig?", new[] { "Nur so bleiben Tempo und Lautstärke stimmig", "Damit alle gleichzeitig aufhören dürfen", "Damit niemand die Noten mitlesen muss" }, "Nur so bleiben Tempo und Lautstärke stimmig",
+            "Wer nur auf sich hört, spielt schnell zu laut oder zu schnell."),
+        ("Was ist Improvisation?", new[] { "Musik, die im Moment des Spielens entsteht", "Musik, die vorher genau notiert wurde - eine verbreitete, aber falsche Annahme", "Das Abspielen einer Aufnahme" }, "Musik, die im Moment des Spielens entsteht",
+            "Im Jazz ist sie ein Kernbestandteil jedes Stücks."),
+        ("Was ist ein Ostinato?", new[] { "Eine ständig wiederholte kurze Figur", "Ein einzelner sehr hoher Ton", "Eine Pause zwischen zwei Sätzen, was einer genaueren Pruefung nicht standhaelt" }, "Eine ständig wiederholte kurze Figur",
+            "Der Loop in elektronischer Musik funktioniert genauso."),
+        ("Warum hilft langsames Üben beim Lernen eines Stücks?", new[] { "Bewegungsabläufe prägen sich fehlerfrei ein", "Das Stück wird dadurch automatisch kürzer", "Langsames Üben ist Pflicht in jedem Ensemble" }, "Bewegungsabläufe prägen sich fehlerfrei ein",
+            "Wer schnell übt, übt oft die Fehler mit ein.")
+    };
+
+    private static QuizQuestion MusizierenUndZusammenspiel(Random r)
+    {
+        var f = MusizierenUndZusammenspielListe[r.Next(MusizierenUndZusammenspielListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Musizieren: Rhythmus, Notation und Zusammenspiel", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "4/4 heißt vier Viertel pro Takt. Ganze Note = vier Viertel, Punkt verlängert um die Hälfte. forte laut, piano leise, crescendo lauter werdend. Allegro schnell, Adagio langsam."
         };
     }
 }

@@ -214,8 +214,8 @@ Rahmenlehrplan" weiter unten).
 |---|---|---|
 | Kunstwerke wahrnehmen und beschreiben | Perspektive, Farbe und Bildaufbau | Kunst als Intervention und Mahnung |
 | Material, Körper und Raum | Kunstepochen und Bildmedien | Medienkunst und bildhaftes Gestalten |
-| Medien und Verfahren |  | Architektur, Raum und Design |
-| Kunst und meine Lebenswelt |  | Materialästhetik und Transformation |
+| Medien und Verfahren | Bild des Menschen: Figur, Porträt und Inszenierung | Architektur, Raum und Design |
+| Kunst und meine Lebenswelt | Bild der Dinge: Objekt, Plastik und Design | Materialästhetik und Transformation |
 |  |  | Inszenierung und Kuration |
 |  |  | Kulturelle Identität und Vielfalt |
 
@@ -225,8 +225,8 @@ Rahmenlehrplan" weiter unten).
 |---|---|---|
 | Grundlagen der Musik | Musiklehre, Medien und Urheberrecht | Harmonielehre und Partiturlesen |
 | Form und Gestaltung | Musikepochen und Stilrichtungen | Komposition und Satzweisen |
-| Gattungen und Genres |  | Medien und digitale Produktion |
-| Wirkung und Funktion |  | Gattungen und Genres der Musikgeschichte |
+| Gattungen und Genres | Instrumentenkunde und Klangfarbe | Medien und digitale Produktion |
+| Wirkung und Funktion | Musizieren: Rhythmus, Notation und Zusammenspiel | Gattungen und Genres der Musikgeschichte |
 | Musik im kulturellen Kontext |  | Filmmusik und Programmmusik |
 |  |  | Musik im kulturellen und gesellschaftlichen Kontext |
 
@@ -248,7 +248,8 @@ Rahmenlehrplan" weiter unten).
 |---|---|---|
 | Datenschutz-Grundlagen | Algorithmen, Hardware und sicheres Arbeiten | Cybermobbing |
 | Sichere Passwörter | Daten, Medien und digitale Werkzeuge | Fake News erkennen |
-| Urheberrecht im Internet |  | Algorithmen-Grundbegriff |
+| Urheberrecht im Internet | Hardware, Netzwerke und Internet | Algorithmen-Grundbegriff |
+|  | IT-Sicherheit und digitale Verantwortung |  |
 
 ## KI-Bereich (`KiWissenGenerator.cs` + `KiContentService`)
 

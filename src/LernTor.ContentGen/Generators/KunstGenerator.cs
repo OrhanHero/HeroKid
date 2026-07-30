@@ -12,7 +12,7 @@ public sealed class KunstGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { KunstwerkeWahrnehmen, MaterialKoerperRaum, MedienUndVerfahren, KunstUndLebenswelt },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { PerspektiveUndFarbe, KunstepochenUndMedien },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { PerspektiveUndFarbe, KunstepochenUndMedien, BildDesMenschen, BildDerDinge },
             [GradeLevel.Klasse9] = new List<TopicFactory> { KunstAlsInterventionUndMahnung, MedienkunstUndBildhaftesGestalten, ArchitekturRaumUndDesign, MaterialaesthetikUndTransformation, InszenierungUndKuration, KulturelleIdentitaetUndVielfalt }
         };
 
@@ -686,6 +686,118 @@ public sealed class KunstGenerator : ExerciseGeneratorBase
             Topic = "Kunstepochen und Bildmedien", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Renaissance: Perspektive und Antike. Barock: Bewegung und Kontrast. Impressionismus: Lichteindruck. Expressionismus: Gefühl vor Wirklichkeit. Street Art nur mit Erlaubnis legal."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] BildDesMenschenListe =
+    {
+        ("Was ist ein Porträt?", new[] { "Die Darstellung eines bestimmten Menschen", "Jede Zeichnung, auf der irgendeine Figur zu sehen ist", "Eine Landschaft mit Personen im Hintergrund" }, "Die Darstellung eines bestimmten Menschen",
+            "Es geht um eine konkrete Person, nicht um den Menschen allgemein."),
+        ("Welches Größenverhältnis gilt als grobe Faustregel für einen stehenden Erwachsenen?", new[] { "Etwa sieben bis acht Kopflängen", "Genau vier Kopflängen, was einer genaueren Prüfung nicht standhält", "Zwölf Kopflängen" }, "Etwa sieben bis acht Kopflängen",
+            "Kinder haben im Verhältnis einen größeren Kopf - deshalb wirken Figuren mit fünf Kopflängen jünger."),
+        ("Wo liegen die Augen in einem Gesicht ungefähr?", new[] { "Auf halber Höhe des Kopfes", "Deutlich oberhalb der Kopfmitte, was so nicht korrekt ist", "Kurz unter dem Haaransatz" }, "Auf halber Höhe des Kopfes",
+            "Der häufigste Anfängerfehler ist, die Augen zu weit oben anzusetzen."),
+        ("Was ist eine Silhouette?", new[] { "Der reine Umriss einer Gestalt", "Ein Gesicht in sehr großer Nahaufnahme", "Ein Bild in besonders kräftigen Farben" }, "Der reine Umriss einer Gestalt",
+            "Sie zeigt nur die Kontur - und wirkt trotzdem oft sehr erkennbar."),
+        ("Was meint Mimik?", new[] { "Der Ausdruck des Gesichts", "Die Haltung des ganzen Körpers, was die eigentliche Bedeutung des Begriffs verfehlt", "Die Bewegung der Hände" }, "Der Ausdruck des Gesichts",
+            "Gestik meint dagegen die Hände, Körpersprache den ganzen Körper."),
+        ("Wie wirkt eine Figur, die von unten gezeigt wird (Froschperspektive)?", new[] { "Größer und mächtiger", "Kleiner und schutzbedürftig, obwohl das auf den ersten Blick plausibel klingt", "Genau gleich wie von vorn" }, "Größer und mächtiger",
+            "Die Vogelperspektive von oben lässt eine Figur dagegen kleiner wirken."),
+        ("Was ist eine Karikatur?", new[] { "Eine bewusst übertriebene Darstellung", "Ein besonders genaues, fotorealistisches Porträt", "Ein Bild, auf dem das Gesicht fehlt" }, "Eine bewusst übertriebene Darstellung",
+            "Sie übertreibt einzelne Merkmale, um eine Aussage zu treffen."),
+        ("Warum malten Künstlerinnen und Künstler Selbstporträts?", new[] { "Um sich selbst zu befragen und zu zeigen", "Weil das Arbeiten mit Modellen verboten war", "Weil es billiger als Landschaftsmalerei ist" }, "Um sich selbst zu befragen und zu zeigen",
+            "Rembrandt und Frida Kahlo haben sich über Jahrzehnte hinweg selbst gemalt."),
+        ("Was ist ein Akt in der Kunst?", new[] { "Die Darstellung des unbekleideten Körpers", "Eine einzelne Szene aus einem Theaterstück", "Ein Bild, das aus mehreren Teilen besteht" }, "Die Darstellung des unbekleideten Körpers",
+            "Der Akt diente jahrhundertelang dem Studium von Anatomie und Bewegung."),
+        ("Was ist an mittelalterlichen Bildern anders als an antiken?", new[] { "Wichtige Personen wurden größer dargestellt", "Alle Figuren wurden exakt gleich groß gemalt", "Menschen wurden gar nicht mehr dargestellt" }, "Wichtige Personen wurden größer dargestellt",
+            "Man nennt das Bedeutungsperspektive - die Größe zeigt den Rang, nicht die Entfernung."),
+        ("Was ist das Standbein-Spielbein-Motiv?", new[] { "Die Figur stützt sich auf ein Bein, das andere ist entlastet", "Beide Beine tragen exakt gleich viel Gewicht", "Die Figur steht auf einem Bein wie ein Storch" }, "Die Figur stützt sich auf ein Bein, das andere ist entlastet",
+            "Diese Haltung wurde in der griechischen Antike entwickelt und wirkt lebendig statt starr."),
+        ("Wie kann man in einer Zeichnung Bewegung andeuten?", new[] { "Durch Schräglagen, Überschneidungen und wehende Formen", "Ausschließlich durch sehr viele kräftige Farben", "Indem man die Figur genau in die Bildmitte setzt" }, "Durch Schräglagen, Überschneidungen und wehende Formen",
+            "Eine senkrechte, symmetrische Figur wirkt fast immer ruhig."),
+        ("Was ist ein Modell in der Kunst?", new[] { "Eine Person, die einer Künstlerin Modell steht", "Ein Werkzeug zum genauen Zeichnen von Linien", "Ein bereits fertiges Bild, das kopiert wird" }, "Eine Person, die einer Künstlerin Modell steht",
+            "Der Begriff meint daneben auch das kleine Probemodell einer Plastik."),
+        ("Was verrät ein Gruppenbild über eine Gesellschaft?", new[] { "Wer zusammengehört und wer im Zentrum steht", "Ausschließlich die Kleidermode der jeweiligen Zeit", "Ausschließlich das handwerkliche Können des Malers" }, "Wer zusammengehört und wer im Zentrum steht",
+            "Anordnung und Blickrichtung verraten Rangordnungen."),
+        ("Warum inszenieren sich Menschen in sozialen Netzwerken?", new[] { "Sie zeigen ein gewähltes Bild von sich, nicht ihren Alltag", "Sie zeigen dort immer die ganze Wahrheit über sich", "Filter sind dort technisch gar nicht möglich" }, "Sie zeigen ein gewähltes Bild von sich, nicht ihren Alltag",
+            "Das Selfie ist die heutige Form des Selbstporträts - mit denselben Fragen nach Absicht und Wirkung."),
+        ("Was ist eine Büste?", new[] { "Eine Plastik von Kopf und Brust", "Eine ganze Figur in voller Lebensgröße", "Ein flaches Relief an einer Hauswand" }, "Eine Plastik von Kopf und Brust",
+            "Büsten standen in Rom in fast jedem Haus als Erinnerung an Vorfahren."),
+        ("Wie beeinflusst Licht die Wirkung eines Gesichts?", new[] { "Licht von unten wirkt unheimlich, weiches Licht freundlich", "Licht hat auf die Wirkung überhaupt keinen Einfluss", "Es zählt allein die Farbe des Lichts" }, "Licht von unten wirkt unheimlich, weiches Licht freundlich",
+            "Filmemacher nutzen genau das, um Figuren zu charakterisieren."),
+        ("Was bezeichnet der Begriff Physiognomie?", new[] { "Die äußere Erscheinung des Gesichts", "Die Farbwahl eines gemalten Porträts", "Der Rahmen, in dem ein Bild hängt" }, "Die äußere Erscheinung des Gesichts",
+            "Aus dem Gesicht auf den Charakter zu schließen, gilt heute als überholt und gefährlich."),
+        ("Warum sind Körperbilder in der Werbung oft problematisch?", new[] { "Sie zeigen bearbeitete Körper als Normalfall", "Sie zeigen viel zu wenige echte Produkte", "Sie sind fast immer in Schwarz-Weiß gehalten" }, "Sie zeigen bearbeitete Körper als Normalfall",
+            "Wer weiß, wie stark retuschiert wird, vergleicht sich weniger mit diesen Bildern."),
+        ("Was macht ein gutes Porträt nach heutigem Verständnis aus?", new[] { "Es sagt etwas über die Person, nicht nur über ihr Aussehen", "Es trifft die Gesichtszüge so genau wie ein Foto", "Es zeigt die dargestellte Person immer lächelnd" }, "Es sagt etwas über die Person, nicht nur über ihr Aussehen",
+            "Seit der Fotografie muss Malerei nicht mehr abbilden - sie darf deuten.")
+    };
+
+    private static QuizQuestion BildDesMenschen(Random r)
+    {
+        var f = BildDesMenschenListe[r.Next(BildDesMenschenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Kunst, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Bild des Menschen: Figur, Porträt und Inszenierung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Erwachsene sind etwa sieben bis acht Kopflängen hoch, die Augen liegen auf halber Kopfhöhe. Froschperspektive lässt groß wirken, Vogelperspektive klein. Bedeutungsperspektive: Größe zeigt Rang, nicht Entfernung."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] BildDerDingeListe =
+    {
+        ("Was unterscheidet eine Plastik von einer Skulptur?", new[] { "Plastik wird aufgebaut, Skulptur herausgearbeitet", "Beides bezeichnet exakt dasselbe künstlerische Verfahren", "Skulpturen sind grundsätzlich kleiner als Plastiken" }, "Plastik wird aufgebaut, Skulptur herausgearbeitet",
+            "Ton aufbauen ist plastisch, Stein oder Holz wegnehmen ist skulptural."),
+        ("Was ist ein Relief?", new[] { "Eine erhabene Darstellung auf einer Fläche", "Eine freistehende Figur mitten im Raum", "Ein Bild, das aus Klebeband gestaltet wurde" }, "Eine erhabene Darstellung auf einer Fläche",
+            "Es steht zwischen Bild und Plastik: räumlich, aber an die Wand gebunden."),
+        ("Was ist ein Readymade?", new[] { "Ein Alltagsding, das zum Kunstwerk erklärt wird", "Ein besonders schnell gemaltes, skizzenhaftes Bild", "Eine originalgetreue Kopie eines berühmten Werks" }, "Ein Alltagsding, das zum Kunstwerk erklärt wird",
+            "Marcel Duchamp stellte 1917 ein Urinal aus und stellte damit die Frage, wer eigentlich bestimmt, was Kunst ist."),
+        ("Was bedeutet der Grundsatz \"Form follows function\"?", new[] { "Die Gestalt richtet sich nach dem Zweck", "Der Zweck richtet sich nach der schönen Gestalt", "Form und Funktion haben nichts miteinander zu tun" }, "Die Gestalt richtet sich nach dem Zweck",
+            "Das Bauhaus in Dessau machte diesen Grundsatz weltberühmt."),
+        ("Was ist Ergonomie?", new[] { "Die Anpassung von Dingen an den Körper", "Die farbliche Gestaltung eines Produkts", "Die Werbung, mit der ein Produkt beworben wird" }, "Die Anpassung von Dingen an den Körper",
+            "Ein guter Stuhl ist ergonomisch, auch wenn er schlicht aussieht."),
+        ("Was ist ein Prototyp?", new[] { "Ein erstes Probemodell zum Testen", "Das fertig produzierte Serienprodukt im Laden", "Die bedruckte Verpackung eines Produkts" }, "Ein erstes Probemodell zum Testen",
+            "Er darf ruhig aus Pappe sein - er soll Fehler zeigen, nicht schön sein."),
+        ("Warum wird beim Entwerfen zuerst skizziert?", new[] { "Skizzen sind schnell und lassen viele Ideen zu", "Skizzen sind beim Gestalten gesetzlich vorgeschrieben", "Weil Farbe erst deutlich später erfunden wurde" }, "Skizzen sind schnell und lassen viele Ideen zu",
+            "Zwanzig schnelle Skizzen bringen meist mehr als eine sorgfältige Zeichnung."),
+        ("Was zeigt ein Stillleben?", new[] { "Unbewegte Gegenstände statt Menschen", "Ausschließlich Motive ohne jede Farbe", "Ausschließlich Motive in schneller Bewegung" }, "Unbewegte Gegenstände statt Menschen",
+            "Früchte, Gefäße und Bücher sind typisch - oft mit einer versteckten Botschaft über Vergänglichkeit."),
+        ("Was bedeutet Vanitas in einem Stillleben?", new[] { "Ein Hinweis auf die Vergänglichkeit", "Ein besonders teures, seltenes Malmaterial", "Die eingearbeitete Signatur des Malers" }, "Ein Hinweis auf die Vergänglichkeit",
+            "Totenkopf, erloschene Kerze und welke Blume sind die bekanntesten Zeichen."),
+        ("Welche Rolle spielt das Material für die Wirkung eines Objekts?", new[] { "Es bestimmt Gewicht, Oberfläche und Bedeutung mit", "Material ist rein technisch und völlig ohne Wirkung", "Es zählt ausschließlich die Farbe des Objekts" }, "Es bestimmt Gewicht, Oberfläche und Bedeutung mit",
+            "Derselbe Stuhl aus Marmor oder aus Pappe erzählt zwei völlig verschiedene Geschichten."),
+        ("Was ist Upcycling?", new[] { "Aus Abfall etwas Hochwertigeres machen", "Abfall möglichst fachgerecht zu entsorgen", "Ein fertiges Produkt einfach teurer zu verkaufen" }, "Aus Abfall etwas Hochwertigeres machen",
+            "Aus einer Palette wird ein Regal - das Material bleibt sichtbar und wird Teil der Gestaltung."),
+        ("Wozu dient eine Mindmap beim Entwerfen?", new[] { "Zum Sammeln von Ideen rund um einen Begriff", "Als maßstabsgetreue technische Bauzeichnung", "Als vollständige Liste der benötigten Materialien" }, "Zum Sammeln von Ideen rund um einen Begriff",
+            "Sie hilft, vor der ersten Skizze breit zu denken."),
+        ("Was ist ein Piktogramm?", new[] { "Ein stark vereinfachtes Bildzeichen", "Ein besonders detailreiches, großes Gemälde", "Ein Foto, unter dem eine Bildunterschrift steht" }, "Ein stark vereinfachtes Bildzeichen",
+            "Es muss ohne Sprache verständlich sein - deshalb funktionieren Notausgangsschilder weltweit."),
+        ("Wozu dient ein Logo?", new[] { "Es macht eine Marke schnell wiedererkennbar", "Es beschreibt das Produkt möglichst genau", "Es ersetzt die Bedienungsanleitung des Produkts" }, "Es macht eine Marke schnell wiedererkennbar",
+            "Gute Logos funktionieren auch klein und einfarbig."),
+        ("Was ist eine Verpackung aus gestalterischer Sicht?", new[] { "Schutz und Werbeträger zugleich", "Ausschließlich ein Schutz vor Beschädigung", "Ausschließlich eine hübsche Dekoration" }, "Schutz und Werbeträger zugleich",
+            "Sie soll transportieren, informieren und im Regal auffallen."),
+        ("Was meint Nachhaltigkeit im Produktdesign?", new[] { "Langlebig, reparierbar und ressourcenschonend", "Ein möglichst schneller Austausch der Produkte", "Ein möglichst niedriger Verkaufspreis im Laden" }, "Langlebig, reparierbar und ressourcenschonend",
+            "Ein Gerät, dessen Akku man tauschen kann, lebt deutlich länger."),
+        ("Was unterscheidet eine Installation von einer Plastik?", new[] { "Sie bezieht den umgebenden Raum mit ein", "Sie besteht grundsätzlich immer aus Metall", "Sie ist grundsätzlich deutlich kleiner" }, "Sie bezieht den umgebenden Raum mit ein",
+            "Man betritt sie oft - der Raum selbst wird Teil des Werks."),
+        ("Was bedeutet der Modellmaßstab 1:10?", new[] { "Das Modell ist zehnmal kleiner als das Original", "Das Modell ist zehnmal größer als das Original", "Der Bau des Modells dauert zehnmal so lange" }, "Das Modell ist zehnmal kleiner als das Original",
+            "Zehn Zentimeter im Modell entsprechen also einem Meter in Wirklichkeit."),
+        ("Warum untersucht man beim Gestalten vorhandene Lösungen?", new[] { "Um ihre Stärken und Schwächen zu erkennen", "Um sie anschließend möglichst genau zu kopieren", "Weil der Rahmenlehrplan das ausdrücklich vorschreibt" }, "Um ihre Stärken und Schwächen zu erkennen",
+            "Wer weiß, warum eine Schere so geformt ist, entwirft die nächste besser."),
+        ("Was unterscheidet Kunst von Design am ehesten?", new[] { "Design hat einen Zweck, Kunst muss keinen haben", "Kunst ist im Verkauf grundsätzlich immer teurer", "Design kommt grundsätzlich ohne Farben aus" }, "Design hat einen Zweck, Kunst muss keinen haben",
+            "Die Grenze ist fließend - ein Designstuhl kann im Museum stehen.")
+    };
+
+    private static QuizQuestion BildDerDinge(Random r)
+    {
+        var f = BildDerDingeListe[r.Next(BildDerDingeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Kunst, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Bild der Dinge: Objekt, Plastik und Design", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Plastik wird aufgebaut, Skulptur herausgearbeitet. \"Form follows function\" stammt vom Bauhaus. Readymade: ein Alltagsding wird zur Kunst erklärt. Maßstab 1:10 heißt zehnmal kleiner."
         };
     }
 }
