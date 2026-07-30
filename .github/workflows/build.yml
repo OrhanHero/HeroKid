@@ -76,24 +76,32 @@ jobs:
         # angenommen.
         shell: pwsh
         run: |
-          # Bewusst keine feste Liste erwarteter ggml-Dateinamen: die ändern sich zwischen
-          # LLamaSharp-/llama.cpp-Versionen. Geprüft wird, was sicher da sein muss (llama.dll)
-          # plus mindestens eine ggml-Bibliothek; die vollständige Liste wird protokolliert,
-          # damit eine Änderung im Backend im Log sichtbar wird.
-          $found = Get-ChildItem publish/win-x64 -Filter *.dll -ErrorAction SilentlyContinue |
+          # REKURSIV suchen: LLamaSharp.Backend.Cpu liefert je CPU-Variante einen eigenen
+          # Unterordner (runtimes/win-x64/native/avx2/ usw.), die Dateien liegen also NICHT
+          # flach neben der EXE. Eine erste Fassung dieser Prüfung suchte nur im Wurzelordner
+          # und meldete deshalb fälschlich "keine gefunden".
+          # Bewusst keine feste Liste erwarteter Dateinamen: die ändern sich zwischen
+          # LLamaSharp-/llama.cpp-Versionen. Die Fundstellen werden protokolliert, damit eine
+          # Änderung am Backend-Layout im Log sichtbar wird, statt still zu passieren.
+          $found = Get-ChildItem publish/win-x64 -Recurse -Filter *.dll -ErrorAction SilentlyContinue |
                      Where-Object { $_.Name -match '^(llama|ggml|mtmd|llava)' }
-          Write-Host "Native KI-Bibliotheken neben der EXE:"
-          if ($found) { $found | ForEach-Object { Write-Host "  $($_.Name)" } } else { Write-Host "  (keine)" }
+          $root = (Resolve-Path publish/win-x64).Path
+          Write-Host "Gefundene native KI-Bibliotheken:"
+          if ($found) {
+            $found | ForEach-Object { Write-Host "  $($_.FullName.Substring($root.Length + 1))" }
+          } else {
+            Write-Host "  (keine)"
+          }
 
-          if (-not (Test-Path 'publish/win-x64/llama.dll')) {
-            Write-Error "llama.dll liegt nicht lose neben der EXE. LLamaSharp sucht sie per Dateipfad - ohne sie scheitern KI-Chat und Lehrer-Import auf dem Zielrechner mit 'The type initializer for LLama.Native.NativeApi threw an exception'."
+          if (-not ($found | Where-Object { $_.Name -eq 'llama.dll' })) {
+            Write-Error "llama.dll liegt nicht als lose Datei im Publish-Ordner. LLamaSharp sucht sie per Dateipfad neben der EXE - ohne sie scheitern KI-Chat und Lehrer-Import auf dem Zielrechner mit 'The type initializer for LLama.Native.NativeApi threw an exception'."
             exit 1
           }
           if (-not ($found | Where-Object { $_.Name -like 'ggml*' })) {
             Write-Error "Keine ggml-Bibliothek gefunden. llama.dll allein kann das Modell nicht laden."
             exit 1
           }
-          Write-Host "OK - die nativen KI-Bibliotheken liegen lose neben der EXE."
+          Write-Host "OK - die nativen KI-Bibliotheken liegen als lose Dateien im Artefakt."
 
       - name: Build-Artefakt hochladen
         uses: actions/upload-artifact@v4
