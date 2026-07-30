@@ -33,6 +33,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ActivityLogRepository _activityLogRepo;
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
+    private readonly CustomReadingTextRepository _customReadingRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
@@ -76,6 +77,7 @@ public sealed partial class MainViewModel : ObservableObject
         ActivityLogRepository activityLogRepo,
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
+        CustomReadingTextRepository customReadingRepo,
         ReviewQuestionRepository reviewRepo,
         MasteredPromptRepository masteredPromptRepo,
         ArchivedArticleRepository archiveRepo,
@@ -97,6 +99,7 @@ public sealed partial class MainViewModel : ObservableObject
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
         _customQuestionRepo = customQuestionRepo;
+        _customReadingRepo = customReadingRepo;
         _reviewRepo = reviewRepo;
         _masteredPromptRepo = masteredPromptRepo;
         _archiveRepo = archiveRepo;
@@ -162,7 +165,7 @@ public sealed partial class MainViewModel : ObservableObject
         CurrentViewModel = stage switch
         {
             LearningStage.Willkommen => await BuildWelcomeViewModelAsync(),
-            LearningStage.Vorlesen => BuildReadingViewModel(),
+            LearningStage.Vorlesen => await BuildReadingViewModelAsync(),
             LearningStage.Tippen => await BuildTypingDashboardViewModelAsync(),
             LearningStage.News => await BuildNewsViewModelAsync(),
             LearningStage.Abschlussquiz => await BuildFinalQuizViewModelAsync(),
@@ -256,11 +259,13 @@ public sealed partial class MainViewModel : ObservableObject
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Willkommen));
     }
 
-    private ReadingViewModel BuildReadingViewModel()
+    private async Task<ReadingViewModel> BuildReadingViewModelAsync()
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
-        var piece = ReadingContentProvider.GetForDate(today);
-        var secondPiece = ReadingContentProvider.GetSecondForDate(today);
+        // Eigene Eltern-Texte belegen, sofern vorhanden, den ersten der beiden Tagesplätze -
+        // siehe ReadingContentProvider.GetPairForDate.
+        var customPieces = await _customReadingRepo.GetForProfileAsync(CurrentProfile!.Id);
+        var (piece, secondPiece) = ReadingContentProvider.GetPairForDate(today, customPieces);
         return new ReadingViewModel(piece, secondPiece, OnReadingCompleted, _tts, CurrentProfile!.ReadingMinutes);
     }
 

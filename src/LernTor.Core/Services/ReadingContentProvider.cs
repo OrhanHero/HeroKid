@@ -1355,6 +1355,34 @@ public static class ReadingContentProvider
     }
 
     /// <summary>
+    /// Die beiden Lesetexte des Tages, inklusive der von den Eltern hinterlegten eigenen Texte.
+    ///
+    /// <para>Gibt es eigene Texte, belegen sie den <b>ersten</b> der beiden Tagesplätze und
+    /// rotieren untereinander; der zweite Platz kommt weiter aus dem eingebauten Pool. Grund:
+    /// Eltern tragen einen Text ein, weil er <em>jetzt</em> relevant ist (das Gedicht, das nächste
+    /// Woche in der Schule abgefragt wird). Würde er sich unter 63 eingebaute Stücke mischen, käme
+    /// er im Schnitt alle zwei Monate dran - also praktisch nie, wenn er gebraucht wird.</para>
+    ///
+    /// <para>Ohne eigene Texte verhält sich alles wie bisher.</para>
+    /// </summary>
+    public static (ReadingPiece First, ReadingPiece Second) GetPairForDate(
+        DateOnly date, IReadOnlyList<ReadingPiece>? customPieces = null)
+    {
+        if (customPieces is null || customPieces.Count == 0)
+        {
+            return (GetForDate(date), GetSecondForDate(date));
+        }
+
+        var custom = customPieces[date.DayOfYear % customPieces.Count];
+
+        // Der zweite Text soll die Kategorien weiter abwechseln. Eigene Texte zählen dabei als
+        // "literarisch", also kommt der Partner aus dem Pop-Kultur-Pool - so bleibt die Mischung
+        // aus Anspruch und Spaß erhalten, die auch ohne eigene Texte gilt.
+        var partner = PopKulturPool[date.DayOfYear % PopKulturPool.Count];
+        return (custom, partner);
+    }
+
+    /// <summary>
     /// Zweiter Lesetext des Tages: garantiert aus der jeweils anderen Kategorie (literarisch/
     /// Allgemeinwissen vs. Pop-Kultur) als <see cref="GetForDate"/>, damit täglich ein Text aus
     /// jeder Kategorie zusammenkommt. Wählt per Kategorie-eigenem Modulo statt über eine feste

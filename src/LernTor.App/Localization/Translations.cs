@@ -50,6 +50,11 @@ public static class Translations
                 "Sayaç bitince devam edebilirsin."),
             ["Reading_Continue"] = L("Weiter ➜", "Devam ➜"),
             ["Reading_TabAll"] = L("Alle Sprachen", "Tüm diller"),
+            // Eigene Eltern-Texte liegen oft nur in einer Sprache vor - dann steht das hier
+            // statt einer leeren Spalte, die wie ein Anzeigefehler aussähe.
+            ["Reading_CustomTextOnlyOneLanguage"] = L(
+                "(Dieser Text wurde von deinen Eltern eingetragen und liegt nur in einer Sprache vor.)",
+                "(Bu metni ailen ekledi ve yalnızca tek bir dilde mevcut.)"),
             ["Reading_ReadAloud"] = L("🔊 Vorlesen lassen", "🔊 Sesli oku"),
             ["Reading_StopReading"] = L("⏹ Stopp", "⏹ Durdur"),
 
@@ -352,6 +357,21 @@ public static class Translations
             ["Parent_Difficulty_Typing"] = L("Tipptrainer: Mindestgenauigkeit zum Bestehen", "Daktilo eğitimi: Geçmek için asgari doğruluk"),
             ["Parent_Difficulty_QuizFirst"] = L("Abschlussquiz: 1. Versuch", "Bitirme sınavı: 1. deneme"),
             ["Parent_Difficulty_QuizRetry"] = L("Abschlussquiz: 2. Versuch (Wiederholung)", "Bitirme sınavı: 2. deneme (tekrar)"),
+            ["Parent_ReadingText_Title"] = L("Eigene Lesetexte (pro Profil)", "Kendi okuma metinleri (profile özel)"),
+            ["Parent_ReadingText_Intro"] = L(
+                "Ein eigener Text belegt einen der beiden Vorlese-Plätze des Tages - so kommt das Gedicht, das nächste Woche in der Schule dran ist, auch wirklich dran. Mehrere Texte wechseln sich täglich ab. Es reicht eine Sprache; leere Sprachen zeigen dem Kind einen kurzen Hinweis.",
+                "Kendi metniniz günün iki okuma yerinden birini alır - böylece gelecek hafta okulda işlenecek şiir gerçekten sıraya gelir. Birden fazla metin günlük olarak dönüşür. Tek dil yeterlidir; boş diller çocuğa kısa bir not gösterir."),
+            ["Parent_ReadingText_TitleField"] = L("Titel:", "Başlık:"),
+            ["Parent_ReadingText_Author"] = L("Autor/Quelle (optional):", "Yazar/kaynak (isteğe bağlı):"),
+            ["Parent_ReadingText_De"] = L("Text auf Deutsch:", "Almanca metin:"),
+            ["Parent_ReadingText_Tr"] = L("Text auf Türkisch:", "Türkçe metin:"),
+            ["Parent_ReadingText_En"] = L("Text auf Englisch:", "İngilizce metin:"),
+            ["Parent_ReadingText_Add"] = L("Lesetext hinzufügen", "Okuma metni ekle"),
+            ["Parent_ReadingText_ExistingTitle"] = L("Hinterlegte Lesetexte", "Kayıtlı okuma metinleri"),
+            ["Parent_ReadingText_Empty"] = L(
+                "Noch keine eigenen Lesetexte - es gelten die eingebauten Texte.",
+                "Henüz kendi okuma metniniz yok - yerleşik metinler geçerli."),
+            ["Parent_ReadingText_Delete"] = L("Löschen", "Sil"),
             ["Parent_TypingText_Title"] = L("Eigene Tipp-Texte (pro Profil)", "Kendi yazma metinleri (profile özel)"),
             ["Parent_TypingText_Hint"] = L(
                 "Nur die beiden letzten Lektionen lassen sich frei gestalten - die Aufbaulektionen üben gezielt einzelne Tastenbereiche. Leer lassen heißt: eingebauter Text.",

@@ -77,8 +77,8 @@ public sealed partial class ReadingViewModel : ObservableObject
     public ReadingViewModel(ReadingPiece piece, ReadingPiece secondPiece, Action onCompleted, TextToSpeechService tts,
         int readingMinutes = StudentProfile.DefaultReadingMinutes)
     {
-        Piece = piece;
-        SecondPiece = secondPiece;
+        Piece = FillMissingLanguages(piece);
+        SecondPiece = FillMissingLanguages(secondPiece);
         _onCompleted = onCompleted;
         _tts = tts;
         RemainingTime = readingMinutes > 0 ? TimeSpan.FromMinutes(readingMinutes) : DefaultMinimumDuration;
@@ -87,6 +87,32 @@ public sealed partial class ReadingViewModel : ObservableObject
         _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += (_, _) => Tick();
         _timer.Start();
+    }
+
+    /// <summary>
+    /// Eigene Eltern-Texte liegen meist nur in einer Sprache vor. Die Drei-Spalten-Ansicht bindet
+    /// direkt auf TextDe/TextTr/TextEn - ohne Füllung stünde dort einfach eine leere Spalte, die
+    /// wie ein Fehler aussieht. Stattdessen kommt ein kurzer Hinweis hinein. Eingebaute Stücke
+    /// bleiben unangetastet (sie liegen immer dreisprachig vor).
+    /// </summary>
+    private static ReadingPiece FillMissingLanguages(ReadingPiece piece)
+    {
+        if (!piece.IsCustom)
+        {
+            return piece;
+        }
+
+        var note = Localization.LocalizationService.Instance["Reading_CustomTextOnlyOneLanguage"];
+        return new ReadingPiece
+        {
+            Title = piece.Title,
+            Author = piece.Author,
+            TextDe = string.IsNullOrWhiteSpace(piece.TextDe) ? note : piece.TextDe,
+            TextTr = string.IsNullOrWhiteSpace(piece.TextTr) ? note : piece.TextTr,
+            TextEn = string.IsNullOrWhiteSpace(piece.TextEn) ? note : piece.TextEn,
+            IsPopKultur = piece.IsPopKultur,
+            IsCustom = true
+        };
     }
 
     private void OnSpeakingChanged(bool speaking) => IsSpeaking = speaking;

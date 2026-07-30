@@ -23,6 +23,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly StudentProfileRepository _profileRepo;
     private readonly DatabaseMaintenanceRepository _maintenanceRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
+    private readonly CustomReadingTextRepository _customReadingRepo;
     private readonly KioskLockService _kioskLock;
     private readonly LocalLlmOptions _localLlmOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
@@ -261,6 +262,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         StudentProfileRepository profileRepo,
         DatabaseMaintenanceRepository maintenanceRepo,
         CustomQuestionRepository customQuestionRepo,
+        CustomReadingTextRepository customReadingRepo,
         KioskLockService kioskLock,
         LocalLlmOptions localLlmOptions,
         TeacherDocumentImportService teacherImportService,
@@ -273,6 +275,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _profileRepo = profileRepo;
         _maintenanceRepo = maintenanceRepo;
         _customQuestionRepo = customQuestionRepo;
+        _customReadingRepo = customReadingRepo;
         _kioskLock = kioskLock;
         _localLlmOptions = localLlmOptions;
         _teacherImportService = teacherImportService;
@@ -450,6 +453,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         QuizRetryQuestionCount = value?.QuizRetryQuestionCount ?? StudentProfile.DefaultQuizRetryQuestionCount;
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
         CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
+        _ = ReloadCustomReadingTextsAsync();
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -1221,6 +1225,120 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         await _customQuestionRepo.DeleteAsync(question.Id);
         await ReloadCustomQuestionsAsync();
+    }
+
+    // --- Eigene Lesetexte pro Profil (siehe CustomReadingTextRepository) ---
+
+    /// <summary>Maximale Länge eines eigenen Lesetextes je Sprache - als Hinweis in der Oberfläche.</summary>
+    public static int ReadingTextMaxLength => MaxReadingTextLength;
+
+    private const int MaxReadingTextLength = 4000;
+
+    public ObservableCollection<CustomReadingTextEntity> CustomReadingTexts { get; } = new();
+
+    public bool HasNoCustomReadingTexts => CustomReadingTexts.Count == 0;
+
+    [ObservableProperty]
+    private string newReadingTitle = string.Empty;
+
+    [ObservableProperty]
+    private string newReadingAuthor = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NewReadingCounter))]
+    private string newReadingTextDe = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NewReadingCounter))]
+    private string newReadingTextTr = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NewReadingCounter))]
+    private string newReadingTextEn = string.Empty;
+
+    [ObservableProperty]
+    private string customReadingErrorMessage = string.Empty;
+
+    /// <summary>Live-Anzeige der längsten der drei Sprachfassungen gegen das Maximum.</summary>
+    public string NewReadingCounter
+    {
+        get
+        {
+            var longest = Math.Max(
+                NewReadingTextDe.Trim().Length,
+                Math.Max(NewReadingTextTr.Trim().Length, NewReadingTextEn.Trim().Length));
+            return $"{longest} / {MaxReadingTextLength} Zeichen (längste Sprachfassung)";
+        }
+    }
+
+    private async Task ReloadCustomReadingTextsAsync()
+    {
+        CustomReadingTexts.Clear();
+        if (SelectedProfile is not null)
+        {
+            foreach (var text in await _customReadingRepo.GetEntitiesForProfileAsync(SelectedProfile.Id))
+            {
+                CustomReadingTexts.Add(text);
+            }
+        }
+
+        OnPropertyChanged(nameof(HasNoCustomReadingTexts));
+    }
+
+    /// <summary>
+    /// Legt einen eigenen Lesetext für das gewählte Profil an. Mindestens eine Sprachfassung ist
+    /// Pflicht - die übrigen bleiben leer und werden in der Leseansicht mit einem Hinweis gefüllt
+    /// (siehe ReadingViewModel.FillMissingLanguages).
+    /// </summary>
+    [RelayCommand]
+    private async Task AddCustomReadingTextAsync()
+    {
+        CustomReadingErrorMessage = string.Empty;
+
+        if (SelectedProfile is null)
+        {
+            CustomReadingErrorMessage = "Bitte oben ein Profil auswählen.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NewReadingTitle))
+        {
+            CustomReadingErrorMessage = "Bitte einen Titel eingeben.";
+            return;
+        }
+
+        var de = NewReadingTextDe.Trim();
+        var tr = NewReadingTextTr.Trim();
+        var en = NewReadingTextEn.Trim();
+
+        if (de.Length == 0 && tr.Length == 0 && en.Length == 0)
+        {
+            CustomReadingErrorMessage = "Bitte den Text in mindestens einer Sprache eingeben.";
+            return;
+        }
+
+        if (de.Length > MaxReadingTextLength || tr.Length > MaxReadingTextLength || en.Length > MaxReadingTextLength)
+        {
+            CustomReadingErrorMessage = $"Ein Text ist zu lang (max. {MaxReadingTextLength} Zeichen je Sprache).";
+            return;
+        }
+
+        await _customReadingRepo.AddAsync(SelectedProfile.Id, NewReadingTitle, NewReadingAuthor, de, tr, en);
+
+        NewReadingTitle = string.Empty;
+        NewReadingAuthor = string.Empty;
+        NewReadingTextDe = string.Empty;
+        NewReadingTextTr = string.Empty;
+        NewReadingTextEn = string.Empty;
+
+        await ReloadCustomReadingTextsAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteCustomReadingTextAsync(CustomReadingTextEntity text)
+    {
+        await _customReadingRepo.DeleteAsync(text.Id);
+        await ReloadCustomReadingTextsAsync();
     }
 
     private static IReadOnlyList<string> SplitCommaSeparated(string text) =>

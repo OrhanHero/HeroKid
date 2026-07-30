@@ -20,4 +20,25 @@ public sealed class ReadingPiece
     /// unabhängig von der Gesamtgröße des Pools garantiert ein Stück aus jeder Kategorie zu wählen.
     /// </summary>
     public bool IsPopKultur { get; init; }
+
+    /// <summary>
+    /// true = von den Eltern im Eltern-Bereich hinterlegter Text (siehe
+    /// <c>CustomReadingTextRepository</c>). Solche Texte bekommen bewusst einen der beiden
+    /// Tagesplätze, statt sich unter 63 eingebaute Stücke zu mischen - ein Gedicht, das nächste
+    /// Woche in der Schule dran ist, nützt nichts, wenn es erst in zwei Monaten drankommt.
+    /// </summary>
+    public bool IsCustom { get; init; }
+
+    /// <summary>
+    /// Ob für diese Sprache überhaupt ein Text vorliegt. Eltern haben ein Gedicht meist nur in
+    /// einer Sprache - die Leseansicht zeigt für leere Sprachen einen Hinweis statt einer
+    /// leeren Spalte.
+    /// </summary>
+    public bool HasText(string language) => language switch
+    {
+        "De" => !string.IsNullOrWhiteSpace(TextDe),
+        "Tr" => !string.IsNullOrWhiteSpace(TextTr),
+        "En" => !string.IsNullOrWhiteSpace(TextEn),
+        _ => false
+    };
 }

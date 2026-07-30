@@ -18,6 +18,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<RewardEntity> Rewards => Set<RewardEntity>();
     public DbSet<RewardRedemptionEntity> RewardRedemptions => Set<RewardRedemptionEntity>();
     public DbSet<TypingLessonProgressEntity> TypingLessonProgress => Set<TypingLessonProgressEntity>();
+    public DbSet<CustomReadingTextEntity> CustomReadingTexts => Set<CustomReadingTextEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -56,6 +57,12 @@ public sealed class LernTorDbContext : DbContext
         modelBuilder.Entity<CustomQuestionEntity>(e =>
         {
             e.HasKey(c => c.Id);
+        });
+
+        modelBuilder.Entity<CustomReadingTextEntity>(e =>
+        {
+            e.HasKey(c => c.Id);
+            e.HasIndex(c => c.ProfileId);
         });
 
         modelBuilder.Entity<ReviewQuestionEntity>(e =>
