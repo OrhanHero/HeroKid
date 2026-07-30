@@ -357,6 +357,18 @@ public static class Translations
             ["Parent_Difficulty_Typing"] = L("Tipptrainer: Mindestgenauigkeit zum Bestehen", "Daktilo eğitimi: Geçmek için asgari doğruluk"),
             ["Parent_Difficulty_QuizFirst"] = L("Abschlussquiz: 1. Versuch", "Bitirme sınavı: 1. deneme"),
             ["Parent_Difficulty_QuizRetry"] = L("Abschlussquiz: 2. Versuch (Wiederholung)", "Bitirme sınavı: 2. deneme (tekrar)"),
+            ["Parent_Vocabulary_Title"] = L("Vokabeltrainer (pro Profil)", "Kelime çalışması (profile özel)"),
+            ["Parent_Vocabulary_Intro"] = L(
+                "Eine Zeile je Vokabel, deutsch zuerst - z.B. \"Haus = house\". Als Trennzeichen funktionieren =, ;, Tabulator oder ein Bindestrich mit Leerzeichen ringsum. Die Vokabeln werden in Englisch bzw. Türkisch abgefragt, abwechselnd in beide Richtungen, und kehren nach 7/30/90 Tagen zur Auffrischung zurück. Eine bereits vorhandene Vokabel wird aktualisiert statt gedoppelt.",
+                "Her satıra bir kelime, önce Almanca - örn. \"Haus = house\". Ayırıcı olarak =, ;, sekme veya iki yanında boşluk olan tire kullanılabilir. Kelimeler İngilizce veya Türkçe derslerinde, dönüşümlü olarak iki yönde sorulur ve 7/30/90 gün sonra tekrar gelir. Var olan bir kelime çoğaltılmaz, güncellenir."),
+            ["Parent_Vocabulary_Subject"] = L("Fach:", "Ders:"),
+            ["Parent_Vocabulary_Paste"] = L("Vokabelliste einfügen:", "Kelime listesini yapıştır:"),
+            ["Parent_Vocabulary_Import"] = L("Vokabeln übernehmen", "Kelimeleri aktar"),
+            ["Parent_Vocabulary_ExistingTitle"] = L("Hinterlegte Vokabeln", "Kayıtlı kelimeler"),
+            ["Parent_Vocabulary_Empty"] = L(
+                "Noch keine Vokabeln für dieses Fach.",
+                "Bu ders için henüz kelime yok."),
+            ["Parent_Vocabulary_Delete"] = L("Löschen", "Sil"),
             ["Parent_ReadingText_Title"] = L("Eigene Lesetexte (pro Profil)", "Kendi okuma metinleri (profile özel)"),
             ["Parent_ReadingText_Intro"] = L(
                 "Ein eigener Text belegt einen der beiden Vorlese-Plätze des Tages - so kommt das Gedicht, das nächste Woche in der Schule dran ist, auch wirklich dran. Mehrere Texte wechseln sich täglich ab. Es reicht eine Sprache; leere Sprachen zeigen dem Kind einen kurzen Hinweis.",

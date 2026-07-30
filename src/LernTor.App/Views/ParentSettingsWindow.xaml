@@ -541,6 +541,67 @@
                 <!-- Eigene Lesetexte: gehören zum oben gewählten Profil. Ein eigener Text belegt
                      einen der beiden Tagesplätze (siehe ReadingContentProvider.GetPairForDate) -
                      ein Gedicht für nächste Woche nützt nichts, wenn es erst in zwei Monaten kommt. -->
+                <!-- Vokabeltrainer: Massen-Eingabe statt Einzelfelder - niemand tippt dreißig
+                     Wortpaare in einzelne Formulare. Die Vokabeln laufen in den bestehenden
+                     Fächern Englisch/Türkisch mit, ersetzen dort bis zur Hälfte der Aufgaben. -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Intro]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Subject]}" FontSize="13" Margin="0,0,0,4" />
+                <ComboBox ItemsSource="{Binding VocabularySubjects}" SelectedItem="{Binding VocabularySubject}"
+                          Padding="6" Margin="0,0,0,8" HorizontalAlignment="Left" MinWidth="180">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource SubjectToTitle}, Mode=OneWay}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Paste]}" FontSize="13" Margin="0,0,0,4" />
+                <TextBox Text="{Binding VocabularyBulkText, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" TextWrapping="Wrap" MinHeight="120" VerticalScrollBarVisibility="Auto"
+                         FontFamily="Consolas" Padding="6" Margin="0,0,0,8" />
+
+                <TextBlock Text="{Binding VocabularyStatusMessage}" Style="{StaticResource BodyText}"
+                           FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding VocabularyErrorMessage}" Foreground="{StaticResource ErrorBrush}"
+                           TextWrapping="Wrap" Margin="0,0,0,8" />
+
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Import]}"
+                        Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" Margin="0,0,0,16"
+                        Command="{Binding ImportVocabularyCommand}" />
+
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_ExistingTitle]}"
+                           FontWeight="Bold" FontSize="14" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Empty]}"
+                           Style="{StaticResource BodyText}" Margin="0,0,0,20"
+                           Visibility="{Binding HasNoVocabulary, Converter={StaticResource BoolToVis}}" />
+                <ItemsControl ItemsSource="{Binding VocabularyEntries}" Margin="0,0,0,20">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,6" Padding="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">
+                                        <Run Text="{Binding German, Mode=OneWay}" FontWeight="Bold" />
+                                        <Run Text=" – " />
+                                        <Run Text="{Binding Foreign, Mode=OneWay}" />
+                                    </TextBlock>
+                                    <Button Grid.Column="1" Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Vocabulary_Delete]}"
+                                            Style="{StaticResource OptionButton}" VerticalAlignment="Center"
+                                            Command="{Binding DataContext.DeleteVocabularyEntryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_Intro]}"

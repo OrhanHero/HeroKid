@@ -24,6 +24,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly DatabaseMaintenanceRepository _maintenanceRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly CustomReadingTextRepository _customReadingRepo;
+    private readonly VocabularyRepository _vocabularyRepo;
     private readonly KioskLockService _kioskLock;
     private readonly LocalLlmOptions _localLlmOptions;
     private readonly TeacherDocumentImportService _teacherImportService;
@@ -263,6 +264,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         DatabaseMaintenanceRepository maintenanceRepo,
         CustomQuestionRepository customQuestionRepo,
         CustomReadingTextRepository customReadingRepo,
+        VocabularyRepository vocabularyRepo,
         KioskLockService kioskLock,
         LocalLlmOptions localLlmOptions,
         TeacherDocumentImportService teacherImportService,
@@ -276,6 +278,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _maintenanceRepo = maintenanceRepo;
         _customQuestionRepo = customQuestionRepo;
         _customReadingRepo = customReadingRepo;
+        _vocabularyRepo = vocabularyRepo;
         _kioskLock = kioskLock;
         _localLlmOptions = localLlmOptions;
         _teacherImportService = teacherImportService;
@@ -454,6 +457,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
         CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
         _ = ReloadCustomReadingTextsAsync();
+        _ = ReloadVocabularyAsync();
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -1339,6 +1343,87 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         await _customReadingRepo.DeleteAsync(text.Id);
         await ReloadCustomReadingTextsAsync();
+    }
+
+    // --- Vokabeltrainer (Englisch/Türkisch, siehe VocabularyRepository) ---
+
+    /// <summary>Nur die beiden Sprachfächer haben Vokabeln.</summary>
+    public IReadOnlyList<Subject> VocabularySubjects { get; } = new[] { Subject.Englisch, Subject.Tuerkisch };
+
+    public ObservableCollection<VocabularyEntryEntity> VocabularyEntries { get; } = new();
+
+    public bool HasNoVocabulary => VocabularyEntries.Count == 0;
+
+    [ObservableProperty]
+    private Subject vocabularySubject = Subject.Englisch;
+
+    [ObservableProperty]
+    private string vocabularyBulkText = string.Empty;
+
+    [ObservableProperty]
+    private string vocabularyStatusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string vocabularyErrorMessage = string.Empty;
+
+    partial void OnVocabularySubjectChanged(Subject value) => _ = ReloadVocabularyAsync();
+
+    private async Task ReloadVocabularyAsync()
+    {
+        VocabularyEntries.Clear();
+        if (SelectedProfile is not null)
+        {
+            foreach (var entry in await _vocabularyRepo.GetAllForProfileAsync(SelectedProfile.Id, VocabularySubject))
+            {
+                VocabularyEntries.Add(entry);
+            }
+        }
+
+        OnPropertyChanged(nameof(HasNoVocabulary));
+    }
+
+    /// <summary>
+    /// Liest die eingefügte Vokabelliste ein (eine Zeile je Wortpaar, siehe
+    /// <see cref="VocabularyParser"/>). Bereits vorhandene deutsche Wörter werden aktualisiert
+    /// statt gedoppelt - eine korrigierte Liste ein zweites Mal einzufügen soll nicht jede Vokabel
+    /// verdoppeln.
+    /// </summary>
+    [RelayCommand]
+    private async Task ImportVocabularyAsync()
+    {
+        VocabularyErrorMessage = string.Empty;
+        VocabularyStatusMessage = string.Empty;
+
+        if (SelectedProfile is null)
+        {
+            VocabularyErrorMessage = "Bitte oben ein Profil auswählen.";
+            return;
+        }
+
+        var pairs = VocabularyParser.Parse(VocabularyBulkText);
+        if (pairs.Count == 0)
+        {
+            VocabularyErrorMessage =
+                "Keine Wortpaare erkannt. Erwartet wird eine Zeile je Vokabel, z.B. \"Haus = house\".";
+            return;
+        }
+
+        var added = await _vocabularyRepo.AddOrUpdateManyAsync(SelectedProfile.Id, VocabularySubject, pairs);
+        var updated = pairs.Count - added;
+
+        VocabularyBulkText = string.Empty;
+        VocabularyStatusMessage = updated > 0
+            ? $"{added} neue Vokabeln übernommen, {updated} bestehende aktualisiert."
+            : $"{added} Vokabeln übernommen.";
+
+        await ReloadVocabularyAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteVocabularyEntryAsync(VocabularyEntryEntity entry)
+    {
+        await _vocabularyRepo.DeleteAsync(entry.Id);
+        await ReloadVocabularyAsync();
     }
 
     private static IReadOnlyList<string> SplitCommaSeparated(string text) =>

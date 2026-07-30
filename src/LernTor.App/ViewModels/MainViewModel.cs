@@ -34,6 +34,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly StudentProfileRepository _profileRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly CustomReadingTextRepository _customReadingRepo;
+    private readonly VocabularyRepository _vocabularyRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
@@ -78,6 +79,7 @@ public sealed partial class MainViewModel : ObservableObject
         StudentProfileRepository profileRepo,
         CustomQuestionRepository customQuestionRepo,
         CustomReadingTextRepository customReadingRepo,
+        VocabularyRepository vocabularyRepo,
         ReviewQuestionRepository reviewRepo,
         MasteredPromptRepository masteredPromptRepo,
         ArchivedArticleRepository archiveRepo,
@@ -100,6 +102,7 @@ public sealed partial class MainViewModel : ObservableObject
         _profileRepo = profileRepo;
         _customQuestionRepo = customQuestionRepo;
         _customReadingRepo = customReadingRepo;
+        _vocabularyRepo = vocabularyRepo;
         _reviewRepo = reviewRepo;
         _masteredPromptRepo = masteredPromptRepo;
         _archiveRepo = archiveRepo;
@@ -494,9 +497,16 @@ public sealed partial class MainViewModel : ObservableObject
         var review = await _reviewRepo.GetDueQuestionsAsync(CurrentProfile!.Id, subject, maxCount: 3);
         var reviewPrompts = review.Select(r => r.Prompt).ToHashSet();
 
+        // Vokabeln (nur Englisch/Türkisch, nur wenn Eltern welche hinterlegt haben): sie ersetzen
+        // bis zur Hälfte der generierten Aufgaben, statt den Tag zu verlängern. Vokabeln sind der
+        // Kern dieser beiden Fächer - ohne sie übt das Kind Grammatikregeln, aber keinen Wortschatz.
+        var vocabulary = await BuildVocabularyQuestionsAsync(subject, grade);
+
         var questions = review
+            .Concat(vocabulary)
             .Concat(generated.Concat(custom)
                 .Where(q => !reviewPrompts.Contains(q.Prompt))
+                .Take(Math.Max(0, CurrentProfile!.ExercisesPerSubject - vocabulary.Count))
                 .OrderBy(_ => _random.Next()))
             .ToList();
 
@@ -504,9 +514,42 @@ public sealed partial class MainViewModel : ObservableObject
             CurrentProfile!.ExerciseSecondsPerQuestion);
     }
 
+    /// <summary>
+    /// Fällige Vokabeln des Fachs als Aufgaben. Höchstens die Hälfte der Tagesaufgaben, damit die
+    /// generierten Grammatik-/Textaufgaben nicht komplett verdrängt werden.
+    /// </summary>
+    private async Task<IReadOnlyList<QuizQuestion>> BuildVocabularyQuestionsAsync(Subject subject, GradeLevel grade)
+    {
+        if (subject != Subject.Englisch && subject != Subject.Tuerkisch)
+        {
+            return Array.Empty<QuizQuestion>();
+        }
+
+        var maxVocabulary = Math.Max(1, CurrentProfile!.ExercisesPerSubject / 2);
+        var due = await _vocabularyRepo.GetDueAsync(CurrentProfile!.Id, subject, maxVocabulary);
+        if (due.Count == 0)
+        {
+            return Array.Empty<QuizQuestion>();
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        return due.Select(entry => VocabularyQuestionFactory.Create(entry, grade, today)).ToList();
+    }
+
     private async void OnExerciseQuestionAnswered(Subject subject, QuestionOutcome outcome, QuizQuestion question)
     {
         await _activityLogRepo.LogAnswerAsync(CurrentProfile!.Id, outcome, question.Topic, question.Prompt);
+
+        // Vokabeln haben ihre eigene Wiederholungs-Steuerung (das Wortpaar bleibt dauerhaft im
+        // Bestand) und laufen deshalb NICHT über Fehler-Kartei und Meisterungs-Tabelle - dort
+        // würde ein Wortpaar nach zweimal richtig ganz verschwinden.
+        if (question.Id.StartsWith("vokabel-", StringComparison.Ordinal))
+        {
+            await _vocabularyRepo.RecordOutcomeAsync(
+                CurrentProfile!.Id, question.Id["vokabel-".Length..], outcome.WasCorrect);
+            return;
+        }
+
         // Fehler-Kartei pflegen: falsch → aufnehmen/zurücksetzen, richtig → Streak hoch, bei 2 gelernt.
         await _reviewRepo.RecordOutcomeAsync(CurrentProfile!.Id, question, outcome.WasCorrect);
         // Spaced Repetition: richtig → gemeistert (pausiert 7/30/90 Tage, kehrt zur Auffrischung
