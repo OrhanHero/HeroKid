@@ -42,19 +42,29 @@ public sealed class LocalLlmQuestionSuggester : ITeacherQuestionSuggester
         var executor = await _modelHost.GetExecutorAsync(cancellationToken);
 
         var usedText = Shorten(documentText);
-        var prompt = LlmResponseParser.BuildPrompt(subject, gradeLevel) + $"\n\nDokument:\n{usedText}";
+
+        // Reihenfolge bewusst: erst das Dokument, dann die Anweisung, dann der angefangene
+        // JSON-Anfang. Instruct-Modelle gewichten das ZULETZT Gelesene am stärksten - stand die
+        // Anweisung vor einem langen Dokument, ging sie unter und das Modell fasste den Text
+        // einfach zusammen.
+        var prompt =
+            $"### DOKUMENT\n{usedText}\n\n" +
+            LlmResponseParser.BuildPrompt(subject, gradeLevel) +
+            "\n\n### ANTWORT\n" +
+            LlmResponseParser.AnswerPrefill;
+
         var inferenceParams = new InferenceParams
         {
             // 1024 statt 2048: 6-10 Fragen als JSON brauchen keine 2048 Token, und jedes
             // erzeugte Token kostet auf der CPU spürbar Zeit.
             MaxTokens = 1024,
             // Ohne Stop-Sequenzen schreibt das Modell nach dem JSON munter weiter und läuft in
-            // die MaxTokens-Grenze - dieselbe Falle wie im KI-Lernchat. Die schließende Klammer
-            // des JSON-Objekts gefolgt von einem Umbruch ist das natürliche Ende der Antwort.
-            AntiPrompts = new List<string> { "\n\n###", "\n###", "}\n\n" }
+            // die MaxTokens-Grenze - dieselbe Falle wie im KI-Lernchat. Bewusst NICHT auf "}"
+            // stoppen: das würde die Liste nach der ersten Frage abschneiden.
+            AntiPrompts = new List<string> { "\n\n###", "\n###", "### DOKUMENT" }
         };
 
-        var answer = new StringBuilder();
+        var answer = new StringBuilder(LlmResponseParser.AnswerPrefill);
         await foreach (var token in executor.InferAsync(prompt, inferenceParams, cancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();

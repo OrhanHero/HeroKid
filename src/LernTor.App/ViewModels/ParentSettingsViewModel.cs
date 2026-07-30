@@ -296,6 +296,42 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     public event Action? RequestClose;
 
+    /// <summary>
+    /// Ob seit dem letzten Speichern etwas geaendert wurde, das nur ueber "Speichern" in die
+    /// Datenbank kommt (Presets, Zeiten, Fach-Schalter, eigene Tipp-Texte). Einstellungen, die
+    /// sofort speichern - Lesetexte, Nachrichtenquellen, Belohnungen, LLM-Auswahl - zaehlen
+    /// bewusst NICHT dazu, sonst waere die Rueckfrage beim Schliessen dauernd falsch positiv.
+    /// </summary>
+    public bool HasUnsavedChanges { get; private set; }
+
+    /// <summary>Unterdrueckt die Aenderungsmarkierung, waehrend Werte aus der DB geladen werden -
+    /// sonst gaelte schon das blosse Oeffnen des Eltern-Bereichs als Aenderung.</summary>
+    private bool _loadingSettings;
+
+    /// <summary>Markiert die Einstellungen als geaendert - von den betroffenen Eigenschaften aufgerufen.</summary>
+    private void MarkDirty()
+    {
+        if (!_loadingSettings)
+        {
+            HasUnsavedChanges = true;
+        }
+    }
+
+    // Diese Eigenschaften landen erst ueber "Speichern" in der Datenbank - jede Aenderung daran
+    // macht die Rueckfrage beim Schliessen noetig.
+    partial void OnTypingMinAccuracyPercentChanged(int value) => MarkDirty();
+    partial void OnQuizFirstAttemptThresholdPercentChanged(int value) => MarkDirty();
+    partial void OnQuizRetryThresholdPercentChanged(int value) => MarkDirty();
+    partial void OnReadingMinutesChanged(int value) => MarkDirty();
+    partial void OnNewsSecondsPerArticleChanged(int value) => MarkDirty();
+    partial void OnExerciseSecondsPerQuestionChanged(int value) => MarkDirty();
+    partial void OnExercisesPerSubjectChanged(int value) => MarkDirty();
+    partial void OnQuizQuestionCountChanged(int value) => MarkDirty();
+    partial void OnQuizRetryQuestionCountChanged(int value) => MarkDirty();
+    partial void OnWeeklyGoalDaysChanged(int value) => MarkDirty();
+    partial void OnCustomTypingSentenceTextChanged(string value) => MarkDirty();
+    partial void OnCustomTypingFinalTextChanged(string value) => MarkDirty();
+
     public ParentSettingsViewModel(
         SettingsRepository settingsRepo,
         ActivityLogRepository activityLogRepo,
@@ -483,6 +519,20 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     }
 
     partial void OnSelectedProfileChanged(StudentProfile? value)
+    {
+        // Werte kommen aus der DB, das ist keine Nutzeraenderung.
+        _loadingSettings = true;
+        try
+        {
+            ApplyProfileToEditor(value);
+        }
+        finally
+        {
+            _loadingSettings = false;
+        }
+    }
+
+    private void ApplyProfileToEditor(StudentProfile? value)
     {
         _ = ReloadActivityForSelectedProfileAsync();
 
@@ -918,6 +968,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             SelectedProfile.QuizRetryQuestionCount = QuizRetryQuestionCount;
         }
 
+        HasUnsavedChanges = false;
         RequestClose?.Invoke();
     }
 
@@ -1435,6 +1486,31 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         UpdateNewsFeedStatus();
     }
 
+    /// <summary>
+    /// Alle Quellen auf einmal an- oder abwaehlen. 22 Haken einzeln zu klicken ist muehselig -
+    /// der uebliche Ablauf ist "alle aus, dann drei wieder an".
+    /// </summary>
+    [RelayCommand]
+    private async Task SetAllNewsFeedsAsync(string enable)
+    {
+        var shouldEnable = enable == "1";
+
+        _settings.DisabledNewsFeeds.Clear();
+        foreach (var toggle in NewsFeedToggles)
+        {
+            // Setzt IsEnabled ohne den Einzel-Callback je Zeile auszuloesen (der wuerde 22-mal
+            // speichern) - deshalb wird die Menge hier direkt gepflegt und einmal gespeichert.
+            toggle.SetEnabledSilently(shouldEnable);
+            if (!shouldEnable)
+            {
+                _settings.DisabledNewsFeeds.Add(toggle.Name);
+            }
+        }
+
+        await _settingsRepo.SaveAsync(_settings);
+        UpdateNewsFeedStatus();
+    }
+
     private void UpdateNewsFeedStatus()
     {
         var active = NewsFeedToggles.Count(t => t.IsEnabled);
@@ -1560,6 +1636,38 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             SelectedProfile.CustomTypingFinalText,
             SelectedProfile.WeeklyGoalDays,
             key);
+    }
+
+    /// <summary>
+    /// Alle sichtbaren Zeilen der Lesetext-Liste auf einmal ein- oder ausblenden. Wirkt bewusst
+    /// nur auf die aktuell GEFILTERTE Liste - so laesst sich mit der Suche gezielt eine Gruppe
+    /// abwaehlen, statt immer alle 63 Texte auf einmal zu treffen.
+    /// </summary>
+    [RelayCommand]
+    private async Task SetAllReadingTextsAsync(string visible)
+    {
+        var shouldShow = visible == "1";
+
+        foreach (var row in ReadingLibrary)
+        {
+            row.SetVisibleSilently(shouldShow);
+            if (shouldShow)
+            {
+                _settings.HiddenReadingTextKeys.Remove(row.Key);
+            }
+            else
+            {
+                _settings.HiddenReadingTextKeys.Add(row.Key);
+                if (SelectedProfile?.PinnedReadingTextKey == row.Key)
+                {
+                    await SetPinnedReadingTextAsync(null);
+                    row.IsPinned = false;
+                }
+            }
+        }
+
+        await _settingsRepo.SaveAsync(_settings);
+        UpdateReadingLibraryStatus();
     }
 
     private void UpdateReadingLibraryStatus()

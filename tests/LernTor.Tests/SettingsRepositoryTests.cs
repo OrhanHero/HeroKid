@@ -84,4 +84,42 @@ public sealed class SettingsRepositoryTests : IDisposable
             File.Delete(_dbPath);
         }
     }
+
+    [Fact]
+    public async Task Ausgeblendete_Lesetexte_und_abgeschaltete_Quellen_ueberleben_den_Neustart()
+    {
+        // Genau das ging schief: die Felder standen nur im Modell, SettingsEntity hatte gar keine
+        // Spalten dafuer. Die Einstellungen waren nach dem Schliessen der App weg.
+        using (var db = CreateContext())
+        {
+            var repo = new SettingsRepository(db);
+            var settings = await repo.LoadAsync();
+
+            settings.HiddenReadingTextKeys.Add("fest:Wandrers Nachtlied");
+            settings.HiddenReadingTextKeys.Add("eigen:abc123");
+            settings.DisabledNewsFeeds.Add("heise online");
+
+            await repo.SaveAsync(settings);
+        }
+
+        using (var db = CreateContext())
+        {
+            var reloaded = await new SettingsRepository(db).LoadAsync();
+
+            Assert.Contains("fest:Wandrers Nachtlied", reloaded.HiddenReadingTextKeys);
+            Assert.Contains("eigen:abc123", reloaded.HiddenReadingTextKeys);
+            Assert.Contains("heise online", reloaded.DisabledNewsFeeds);
+        }
+    }
+
+    [Fact]
+    public async Task Frische_Einstellungen_haben_leere_Listen()
+    {
+        using var db = CreateContext();
+
+        var settings = await new SettingsRepository(db).LoadAsync();
+
+        Assert.Empty(settings.HiddenReadingTextKeys);
+        Assert.Empty(settings.DisabledNewsFeeds);
+    }
 }

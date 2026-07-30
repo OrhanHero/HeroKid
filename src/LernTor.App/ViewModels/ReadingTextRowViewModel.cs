@@ -74,5 +74,16 @@ public sealed partial class ReadingTextRowViewModel : ObservableObject
     [ObservableProperty]
     private bool isPinned;
 
+    /// <summary>
+    /// Setzt den Schalter, ohne den Einzel-Callback auszuloesen - fuer "alle an/aus", das sonst
+    /// je Zeile einmal speichern wuerde.
+    /// </summary>
+    public void SetVisibleSilently(bool value)
+    {
+        if (isVisible == value) return;
+        isVisible = value;
+        OnPropertyChanged(nameof(IsVisible));
+    }
+
     partial void OnIsVisibleChanged(bool value) => _onVisibilityChanged(this);
 }

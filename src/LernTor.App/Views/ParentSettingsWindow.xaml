@@ -614,6 +614,14 @@
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
                 <TextBlock Text="{Binding NewsFeedStatus, Mode=OneWay}"
                            Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_SelectAll]}"
+                            Style="{StaticResource OptionButton}" Margin="0,0,8,0"
+                            Command="{Binding SetAllNewsFeedsCommand}" CommandParameter="1" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_SelectNone]}"
+                            Style="{StaticResource OptionButton}"
+                            Command="{Binding SetAllNewsFeedsCommand}" CommandParameter="0" />
+                </StackPanel>
                 <ItemsControl ItemsSource="{Binding NewsFeedToggles}" Margin="0,0,0,20">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -639,6 +647,14 @@
                 <CheckBox Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_OnlyOwn]}"
                           IsChecked="{Binding ReadingLibraryOnlyOwn}" Margin="0,0,0,10" />
 
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_SelectAll]}"
+                            Style="{StaticResource OptionButton}" Margin="0,0,8,0"
+                            Command="{Binding SetAllReadingTextsCommand}" CommandParameter="1" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_SelectNone]}"
+                            Style="{StaticResource OptionButton}"
+                            Command="{Binding SetAllReadingTextsCommand}" CommandParameter="0" />
+                </StackPanel>
                 <ScrollViewer MaxHeight="420" VerticalScrollBarVisibility="Auto" Margin="0,0,0,20">
                     <ItemsControl ItemsSource="{Binding ReadingLibrary}">
                         <ItemsControl.ItemTemplate>

@@ -14,6 +14,15 @@ internal static class LlmResponseParser
 {
     /// <summary>Auf Qwen2.5-Instruct zugeschnitten (klare Abschnitte, nummerierte Regeln): das Modell
     /// hält strukturierte Formatvorgaben deutlich zuverlässiger ein als Fließtext-Anweisungen.</summary>
+    /// <summary>
+    /// Vorgabe der ersten Antwortzeichen ("Prefill"): der Prompt endet mitten im JSON, das Modell
+    /// kann also gar nicht anders, als es fortzusetzen. Ohne diesen Kniff hat Qwen2.5-7B den
+    /// Auftrag regelmäßig ignoriert und stattdessen eine Zusammenfassung des Dokuments geschrieben
+    /// - Ergebnis war die Meldung "Konnte in der LLM-Antwort kein JSON-Objekt finden" (realer Fund
+    /// aus dem Familienbetrieb). Der Wert wird beim Parsen wieder vorangestellt.
+    /// </summary>
+    public const string AnswerPrefill = "{\"questions\":[";
+
     public static string BuildPrompt(Subject subject, GradeLevel gradeLevel) =>
         "### AUFGABE\n" +
         $"Erstelle aus dem unten angehängten Dokument 6 bis 10 Quizfragen für ein Kind der {gradeLevel} " +
@@ -69,16 +78,66 @@ internal static class LlmResponseParser
     /// (```json ... ```) oder mit erklärendem Text davor/danach - dieses Verfahren extrahiert robust
     /// das erste vollständige {...}-Objekt aus der Antwort.
     /// </summary>
-    private static string ExtractJsonObject(string answerText)
+    internal static string ExtractJsonObject(string answerText)
     {
         var match = Regex.Match(answerText, @"\{[\s\S]*\}", RegexOptions.None, TimeSpan.FromSeconds(2));
-        if (!match.Success)
+        if (match.Success)
         {
-            throw new InvalidOperationException(
-                "Konnte in der LLM-Antwort kein JSON-Objekt finden. Rohantwort: " + Truncate(answerText, 500));
+            return match.Value;
         }
 
-        return match.Value;
+        // Abgeschnittene Antwort: das Token-Limit kann mitten in der Fragenliste zuschlagen.
+        // Statt alles zu verwerfen, wird bis zur letzten vollständig geschlossenen Frage gekürzt
+        // und die Struktur geschlossen - lieber vier brauchbare Vorschläge als eine Fehlermeldung
+        // nach mehreren Minuten Rechenzeit.
+        var repaired = TryRepairTruncatedArray(answerText);
+        if (repaired is not null)
+        {
+            return repaired;
+        }
+
+        throw new InvalidOperationException(
+            "Die KI hat keine verwertbaren Fragen geliefert (die Antwort war kein JSON). Häufigster " +
+            "Grund: das Dokument enthält kaum durchgehenden Fließtext. Rohantwort: " +
+            Truncate(answerText, 400));
+    }
+
+    /// <summary>
+    /// Repariert eine mittendrin abgebrochene Antwort der Form <c>{"questions":[{...},{...},{unvoll</c>,
+    /// indem hinter der letzten vollständig geschlossenen Frage abgeschnitten und die Liste sowie
+    /// das Objekt geschlossen werden. Liefert <c>null</c>, wenn nicht einmal eine Frage komplett ist.
+    /// </summary>
+    private static string? TryRepairTruncatedArray(string answerText)
+    {
+        var arrayStart = answerText.IndexOf("[", StringComparison.Ordinal);
+        if (arrayStart < 0)
+        {
+            return null;
+        }
+
+        // Klammern zählen, um das Ende einer vollständigen Frage zu finden. Zeichenketten werden
+        // dabei übersprungen, damit eine geschweifte Klammer IM Fragetext nicht mitzählt.
+        int depth = 0, lastComplete = -1;
+        bool inString = false, escaped = false;
+
+        for (int i = arrayStart; i < answerText.Length; i++)
+        {
+            var c = answerText[i];
+
+            if (inString)
+            {
+                if (escaped) escaped = false;
+                else if (c == '\\') escaped = true;
+                else if (c == '"') inString = false;
+                continue;
+            }
+
+            if (c == '"') inString = true;
+            else if (c == '{') depth++;
+            else if (c == '}' && --depth == 0) lastComplete = i;
+        }
+
+        return lastComplete < 0 ? null : answerText[..(lastComplete + 1)] + "]}";
     }
 
     private static readonly JsonSerializerOptions SerializerOptions = new()

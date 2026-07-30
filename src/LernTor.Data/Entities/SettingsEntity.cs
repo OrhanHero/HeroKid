@@ -16,4 +16,11 @@ public sealed class SettingsEntity
     public string? PauseUntilDate { get; set; }
     public string? LocalLlmModelPath { get; set; }
     public string? LocalLlmModelKey { get; set; }
+
+    /// <summary>JSON-Liste ausgeblendeter Lesetexte (ReadingPiece.Key). Als Spalte, nicht nur im
+    /// Modell: ohne sie gingen die Einstellungen beim Schließen der App verloren.</summary>
+    public string HiddenReadingTextKeysJson { get; set; } = "[]";
+
+    /// <summary>JSON-Liste abgeschalteter Nachrichtenquellen (Name aus CuratedNewsFeeds).</summary>
+    public string DisabledNewsFeedsJson { get; set; } = "[]";
 }

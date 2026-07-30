@@ -396,6 +396,8 @@ public static class Translations
             ["Parent_ReadingText_Tr"] = L("Text auf Türkisch:", "Türkçe metin:"),
             ["Parent_ReadingText_En"] = L("Text auf Englisch:", "İngilizce metin:"),
             ["Parent_ReadingText_Add"] = L("Lesetext hinzufügen", "Okuma metni ekle"),
+            ["Parent_SelectAll"] = L("Alle auswählen", "Tümünü seç"),
+            ["Parent_SelectNone"] = L("Alle abwählen", "Tümünü kaldır"),
             ["Parent_NewsFeeds_Title"] = L("Nachrichtenquellen", "Haber kaynakları"),
             ["Parent_NewsFeeds_Intro"] = L(
                 "Aus jeder aktiven Quelle kommt eine Nachricht pro Tag. Haken weg = die Quelle wird nicht mehr abgerufen. Gilt für alle Kinder. Sind alle abgeschaltet, greifen wieder alle - ein leerer News-Bereich wäre schlimmer.",

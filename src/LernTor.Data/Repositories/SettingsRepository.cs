@@ -35,7 +35,11 @@ public sealed class SettingsRepository
                 ? pauseUntil
                 : null,
             LocalLlmModelPath = entity.LocalLlmModelPath,
-            LocalLlmModelKey = entity.LocalLlmModelKey
+            LocalLlmModelKey = entity.LocalLlmModelKey,
+            HiddenReadingTextKeys = JsonSerializer.Deserialize<HashSet<string>>(
+                Fallback(entity.HiddenReadingTextKeysJson), JsonOptions.Default) ?? new(),
+            DisabledNewsFeeds = JsonSerializer.Deserialize<HashSet<string>>(
+                Fallback(entity.DisabledNewsFeedsJson), JsonOptions.Default) ?? new()
         };
     }
 
@@ -57,7 +61,15 @@ public sealed class SettingsRepository
         entity.PauseUntilDate = settings.PauseUntilDate?.ToString("yyyy-MM-dd");
         entity.LocalLlmModelPath = settings.LocalLlmModelPath;
         entity.LocalLlmModelKey = settings.LocalLlmModelKey;
+        entity.HiddenReadingTextKeysJson = JsonSerializer.Serialize(settings.HiddenReadingTextKeys, JsonOptions.Default);
+        entity.DisabledNewsFeedsJson = JsonSerializer.Serialize(settings.DisabledNewsFeeds, JsonOptions.Default);
 
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// Zeilen, die vor diesen Spalten angelegt wurden, bekommen beim additiven Schema-Abgleich
+    /// einen leeren String statt "[]" - der wirft beim Deserialisieren. Deshalb hier abfangen.
+    /// </summary>
+    private static string Fallback(string? json) => string.IsNullOrWhiteSpace(json) ? "[]" : json;
 }

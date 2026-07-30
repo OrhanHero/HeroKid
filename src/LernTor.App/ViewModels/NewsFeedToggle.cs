@@ -28,5 +28,16 @@ public sealed partial class NewsFeedToggle : ObservableObject
     [ObservableProperty]
     private bool isEnabled;
 
+    /// <summary>
+    /// Setzt den Schalter, ohne den Einzel-Callback auszuloesen - fuer "alle an/aus", das sonst
+    /// je Zeile einmal speichern wuerde.
+    /// </summary>
+    public void SetEnabledSilently(bool value)
+    {
+        if (isEnabled == value) return;
+        isEnabled = value;
+        OnPropertyChanged(nameof(IsEnabled));
+    }
+
     partial void OnIsEnabledChanged(bool value) => _onChanged(this);
 }
