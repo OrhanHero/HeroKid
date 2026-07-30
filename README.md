@@ -237,10 +237,35 @@ deshalb bewusst nicht umgesetzt.
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
 - Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
-- Fachbereiche einzeln deaktivieren, Klassenstufe (6/9) einstellen.
+- Fachbereiche einzeln deaktivieren, Klassenstufe (6/7/8/9/10) einstellen.
 - **Schwierigkeitsstufen pro Profil** (Presets statt Freitext, kein neuer Build nötig): Tipptrainer-
   Mindestgenauigkeit (25/50/75/85%, Standard 25%), Abschlussquiz-Bestehensschwelle für den 1. Versuch
   (50/75/85%, Standard 50%) und für den 2. Versuch/die Wiederholung (25/50%, Standard 25%).
+- **🎯 Wochenziel pro Profil (optional, Standard aus)**: 3 bis 7 Lerntage pro Woche. Wie die
+  Lernserie reine Anzeige ohne Druckmechanik - ein verfehltes Ziel kostet keine Sterne und erzeugt
+  keine Mahnung. Anders als eine Serie zerbricht es aber nicht an einem einzigen verpassten Tag:
+  wer Montag und Dienstag nicht kann, schafft die vier Tage immer noch. Die Woche beginnt am
+  Montag, damit "diese Woche" zum Stundenplan passt. Ist das Ziel rechnerisch nicht mehr
+  erreichbar, wird bewusst nichts Mahnendes angezeigt.
+- **⏱ Antworttempo im Wochenbericht**: zeigt, wie viele Antworten unter 3 Sekunden kamen, plus eine
+  Warnzeile, wenn das ab 10 Messwerten ein Drittel oder mehr sind. Im reinen Richtig/Falsch-Bericht
+  ist Raten unsichtbar - bei drei Optionen liegt Raten in einem Drittel der Fälle richtig. Bewusst
+  nur ein Hinweis für die Eltern, keine zusätzliche Sperre für das Kind: wer das Antworten selbst
+  blockiert, bestraft auch das Kind, das die Antwort einfach sofort weiß.
+- **📖 Eigene Lesetexte pro Profil**: ein Gedicht, das gerade in der Schule dran ist, oder ein
+  türkischer Text aus der Familie. Ein eigener Text belegt einen der beiden Vorlese-Plätze des
+  Tages (mehrere wechseln sich täglich ab), damit er auch wirklich drankommt statt sich unter den
+  63 eingebauten Texten zu verlieren. Es reicht eine Sprache; leere Sprachfassungen zeigen dem Kind
+  einen kurzen Hinweis statt einer leeren Spalte.
+- **🗂 Vokabeltrainer (Englisch/Türkisch)**: eigene Wortlisten je Profil, eingefügt als ganze Liste
+  (eine Zeile je Vokabel, `=`/`;`/Tabulator/Bindestrich als Trenner). Die Vokabeln laufen in den
+  bestehenden Fächern Englisch und Türkisch mit und ersetzen dort bis zur Hälfte der Aufgaben,
+  statt den Tag zu verlängern. Abgefragt wird abwechselnd in beide Richtungen; eine richtig
+  beantwortete Vokabel pausiert 7/30/90 Tage und kehrt dann zur Auffrischung zurück. Anders als bei
+  der Fehler-Kartei verschwindet eine Vokabel nie aus dem Bestand - sie gehört zum Wortschatz.
+- **⌨️ Eigene Tipp-Texte**: die Zieltexte der beiden letzten Tipptrainer-Lektionen (Sätze und
+  Abschluss) lassen sich selbst schreiben, max. 200 Zeichen mit Live-Zähler. Die Aufbaulektionen
+  bleiben bewusst fest - sie üben gezielt einzelne Tastenbereiche.
 - **🔥 Lernserie (optional, Standard aus)**: zeigt dem Kind auf dem Willkommensbildschirm die
   aufeinanderfolgenden Lerntage an (ab 2 Tagen). Bewusst reine Anzeige-Motivation ohne
   Druckmechanik - keine Strafen oder Erinnerungen bei verpassten Tagen (anders als z.B.

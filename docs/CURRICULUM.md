@@ -137,6 +137,13 @@ Rahmenlehrplan" weiter unten).
 | | | Vererbung beim Menschen (Humangenetik) |
 | | | Evolution – Theorien und Stammesgeschichte |
 
+> **Vokabeln**: Zusätzlich zu den Themenpools können Eltern im Eltern-Bereich eigene Wortlisten
+> für Englisch und Türkisch hinterlegen (`VocabularyRepository`). Diese Vokabeln laufen im
+> jeweiligen Fach mit und ersetzen dort bis zur Hälfte der generierten Aufgaben - sie verlängern
+> den Tag also nicht. Abgefragt wird abwechselnd in beide Richtungen, mit eigener
+> Wiederholungssteuerung (7/30/90 Tage, siehe `SpacedRepetitionSchedule`). Anders als bei der
+> Fehler-Kartei verschwindet eine Vokabel nie aus dem Bestand.
+
 ## Englisch (`EnglischGenerator.cs`)
 
 | Klasse 6 | Klasse 7 | Klasse 9 |

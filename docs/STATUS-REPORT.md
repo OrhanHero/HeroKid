@@ -1,4 +1,4 @@
-# LernTor – Status-Quo-Bericht (Stand: 2026-07-30)
+# LernTor – Status-Quo-Bericht (Stand: 2026-07-30, zweite Fassung)
 
 > **Hinweis**: Dieser Bericht basiert auf Code-Analyse. Die App läuft nur unter Windows (WPF + Win32 P/Invoke). Build-Verifikation erfolgt via GitHub Actions (`.github/workflows/build.yml` auf `windows-latest`).
 
@@ -16,7 +16,8 @@
 | **App (WPF/MVVM)** | ✅ Fertig | MainVM, alle Views (ProfileSelection, Welcome, News, Exercise, FinalQuiz, Result, ParentSettings), QuestionCard, KI-Chat, TTS (Piper), Lehrer-Import (PDF/Word → KI → Entwürfe), Belohnungen, Wochenbericht |
 | **Localization** | ✅ Fertig | DE/TR, String-Indexer, Live-Switch via `PropertyChanged("Item[]")` |
 | **Local LLM** | ✅ Fertig | LLamaSharp, GGUF-Autodownload (~2-4 GB), 2 Features: Lehrer-Import + KI-Hausaufgaben-Chat |
-| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion (Emirhan ODER Batuhan, je nach Profilname), nur Deutsch/QWERTZ, Mindestgenauigkeit pro Profil im Eltern-Bereich einstellbar (Presets 25/50/75/100%, Standard 25%) |
+| **Tipptrainer** | ✅ Fertig | 11 reguläre Lektionen + 1 profil-spezifische Abschluss-Lektion, nur Deutsch/QWERTZ, Mindestgenauigkeit pro Profil einstellbar (Presets 25/50/75/100%, Standard 25%). Die Zieltexte der beiden letzten Lektionen können Eltern selbst schreiben (max. 200 Zeichen, `TypingTextOverrides`) |
+| **Vokabeltrainer** | ✅ Fertig | Eigene Wortlisten je Profil für Englisch und Türkisch, Massen-Einfügen, beide Abfragerichtungen, Spaced Repetition 7/30/90 Tage |
 
 ---
 
@@ -88,7 +89,7 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | Priorität | Thema | Details |
 |-----------|-------|---------|
 | 🔴 **Hoch** | **EF Core Migrations fehlen** | Nutzt `EnsureCreated()` + `SqliteSchemaUpdater` (nur additive Änderungen). Bei Spalten-Umbennungen/Entfernung → manuelles DB-Löschen nötig. |
-| ⏸️ **Zurückgestellt** | **Installer Signing (EV-Zertifikat)** | Ohne Signatur → SmartScreen-Warnung bei Endnutzern. Bewusst auf die finale Version verschoben (Nutzer-Entscheidung). |
+| ⏸️ **Nicht relevant** | **Installer Signing (EV-Zertifikat)** | Die Familie installiert aus dem ZIP-Artefakt des CI-Laufs, nicht über den Inno-Setup-Installer (Nutzer-Entscheidung 2026-07-30). Ohne Weitergabe an Dritte gibt es keine SmartScreen-Hürde zu lösen. |
 | ✅ **Erledigt/gut genug** | **TTS Türkisch** | Aktuelle Piper-Stimme ist gut genug, bleibt vorerst unangetastet (Nutzer-Entscheidung). |
 | 🟡 **Mittel** | **Offline-Erst-Installation LLM** | Model-Download (~2-4 GB) passiert erst bei erstem Nutzen. Kein Pre-Bundle im Installer. |
 | ✅ **Erledigt** | **Eltern-Export/Backup** | Sicherung erstellen/wiederherstellen im Eltern-Bereich: Export als konsistente .db-Datei (`VACUUM INTO`), Import ersetzt die aktive DB nach Bestätigung (App-Neustart, Schema-Abgleich macht alte Sicherungen kompatibel). |
@@ -107,7 +108,11 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | ✅ **Erledigt** | **Lesestufen-Texte** | 63 Texte (33 literarisch/Allgemeinwissen + 30 Pop-Kultur), inkl. Klassiker-Ergänzung Goethe (Erlkönig), Schiller (Die Bürgschaft) und Fontane (Herr von Ribbeck auf Ribbeck im Havelland). |
 | ✅ **Erledigt** | **Mathe: Offene Eingabe vs. MC** | Alle rechnerischen Topics nutzen `QuestionType.OpenText` (offene Zahleneingabe). Nur `Kongruenzabbildungen` und `Satz des Thales` bleiben bewusst Multiple-Choice: konzeptuelle Fragen mit Satz-Antworten, eine offene Eingabe wäre dort nicht sinnvoll validierbar. |
 | ✅ **Erledigt** | **Gamification: Streaks** | Optional umgesetzt: 🔥-Lernserie auf dem Willkommensbildschirm (`StreakCalculator`), Standard AUS und von Eltern einschaltbar. Bewusst reine Anzeige - keine Strafen/Erinnerungen bei verpassten Tagen, ein noch nicht gelernter heutiger Tag bricht die Serie nicht. |
-| 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
+| ✅ **Erledigt** | **Eltern: Wochenziel** | Pro Profil einstellbar (3-7 Lerntage, Standard aus, `WeeklyGoalCalculator`). Reine Anzeige wie die Streaks - ein verfehltes Ziel kostet nichts. Anders als eine Serie zerbricht es nicht an einem einzigen verpassten Tag; ist es rechnerisch nicht mehr erreichbar, wird bewusst nichts Mahnendes angezeigt. Woche beginnt am Montag. |
+| ✅ **Erledigt** | **Antworttempo sichtbar machen** | Das Protokoll speicherte nur *was*, nicht *wie schnell* geantwortet wurde - im Richtig/Falsch-Bericht ist Raten damit unsichtbar (bei drei Optionen liegt Raten in einem Drittel der Fälle richtig). `AnswerPaceAnalyzer` zeigt "X von Y Antworten unter 3 Sekunden" plus Warnzeile ab einem Drittel. Bewusst Hinweis statt Sperre: wer das Antworten blockiert, bestraft auch das Kind, das die Antwort sofort weiß. Median statt Mittelwert (eine Pause verzerrt sonst alles), Alt-Einträge ohne Messung werden übersprungen. |
+| ✅ **Erledigt** | **Fehler-Kartei sichtbar machen** | Sie arbeitete unsichtbar im Hintergrund. Der Willkommensbildschirm zeigt jetzt vorher "🔁 Von früher noch offen: 3" - die Kinder sehen, dass Fehler wiederkommen, statt zu verschwinden. |
+| ✅ **Erledigt** | **Eigene Lesetexte der Eltern** | Pro Profil (`CustomReadingTextRepository`). Ein eigener Text belegt den **ersten** der beiden Tagesplätze, mehrere wechseln sich täglich ab - würden sie sich unter die 63 eingebauten mischen, käme ein Gedicht für nächste Woche erst in zwei Monaten dran. Die drei Sprachfelder sind einzeln optional; leere Sprachen zeigen einen Hinweis statt einer leeren Spalte. |
+| ✅ **Erledigt** | **Vokabeltrainer (Englisch/Türkisch)** | Massen-Einfügen einer Liste (`VocabularyParser` akzeptiert `=`, `;`, Tabulator und Bindestrich-mit-Leerzeichen; ein Bindestrich *im* Wort trennt nicht). Läuft in den bestehenden Fächern mit und ersetzt dort bis zur Hälfte der Aufgaben, statt eine eigene Lernstufe zu sein - Vokabeln *sind* der Kern dieser Fächer. Abwechselnd beide Abfragerichtungen, deterministisch je Vokabel und Tag. Eigene Wiederholungs-Steuerung (7/30/90 Tage): anders als bei der Fehler-Kartei verschwindet eine Vokabel nie, sie gehört zum Wortschatz. |
 | ✅ **Erledigt** | **KI-Bereich als eigenes Fach** | `KiContentService` (Core) liefert fünf Lernmodule mit DE/TR-Texten, `KiWissenGenerator` die zugehörigen Quizfragen. Vollständig offline - kein einziger externer API-Aufruf. |
 | ✅ **Erledigt** | **KI als Werkzeug, nicht als Lebensberater** | Zwei Module tragen diese Botschaft: "KI richtig nutzen" (erst selbst denken, gezielt fragen, nachprüfen, nicht abschreiben - inkl. der drei Prüffragen nach jeder Antwort) und "Wo KI nicht hingehört" (sie kennt dich nicht, ist kein Freund, kein Arzt, kein Schiedsrichter; bei Streit/Angst/Mobbing/Krankheit sind Menschen zuständig, Nummer gegen Kummer 116 111). Beide werden abgefragt, nicht nur gelesen. Zusätzlich ein dauerhafter Hinweis unter dem "🤖 KI fragen"-Knopf in jeder Aufgabe. |
 | ✅ **Erledigt** | **Zeit-/Umfangs-Settings im Eltern-Bereich** | Lesen, News und Fächer haben jetzt einstellbare Zeit- und Umfangsgrenzen sowie einen Ferien-/Pausenmodus - alles ohne neuen Build änderbar. |
@@ -148,7 +153,7 @@ Content vollständig - keine offenen RLP-Lücken mehr bei den 15 implementierten
 
 | Test-Projekt | Tests | Abdeckung |
 |--------------|-------|-----------|
-| `LernTor.Tests` (xUnit) | 130 `[Fact]`/`[Theory]` | Core (ProgressGate, Scoring, Streaks, Spaced Repetition), ContentGen (alle 16 Generatoren: Musterlösungen prüfen, Klasse-7-Pools ohne Rückfall, Doppeljahrgangs-Regel, Sicherheitsnetz „jede Stufe liefert in jedem Fach Aufgaben"), News (RSS-Parser RDF/Atom/RSS2, FeedCache, Vereinfachung, Kategorisierung, Glossar, Finanzwissen), Data (Repositories gegen echte SQLite-Dateien) |
+| `LernTor.Tests` (xUnit) | 188 `[Fact]`/`[Theory]` | Core (ProgressGate, Scoring, Streaks, Spaced Repetition), ContentGen (alle 16 Generatoren: Musterlösungen prüfen, Klasse-7-Pools ohne Rückfall, Doppeljahrgangs-Regel, Sicherheitsnetz „jede Stufe liefert in jedem Fach Aufgaben"), News (RSS-Parser RDF/Atom/RSS2, FeedCache, Vereinfachung, Kategorisierung, Glossar, Finanzwissen), Data (Repositories gegen echte SQLite-Dateien) |
 | `LernTor.UiTests` (xUnit, net8.0-windows) | 5 `[Fact]`/`[Theory]` (davon eine Theory über alle Views) | XAML-Load-Tests (jede View mit App-Ressourcen instanziieren + Layout - fängt die XamlParseException-Klasse) + Prozess-Smoke-Test (echte exe startet, Hauptfenster erscheint, kein Fehlerdialog) - läuft im selben windows-latest-CI-Lauf |
 | Integrationstests | 0 | Manuell auf Windows getestet (siehe docs/PILOT-CHECKLISTE.md) |
 | `scripts/preflight.py` | 9 Prüfungen | Kein Test-Framework, sondern ein statischer Vorab-Check für die SDK-lose Entwicklungsumgebung: Klammerbalance (.cs), XAML-Wohlgeformtheit, `Run.Text` ohne `Mode=OneWay`, `HttpClient` ohne `using System.Net.Http;`, `Shutdown()` ohne vorheriges `Unlock()`, Subject-Verdrahtung, Generator-Konsistenz (`TopicsByGrade` ↔ Methoden), EF-`DateTimeOffset`-Sortierung, Konfigurationsdateien. Hat direkt beim ersten Lauf einen echten Bug gefunden (tote Bindings in `TypingExerciseView.xaml`). |
@@ -197,6 +202,15 @@ CI-Lauf prüfen. Lokal kompilieren geht in dieser Umgebung nicht.
 23. ~~KI-Bereich als eigenes Fach~~ ✅ erledigt
 24. ~~Kiosk-Ausbruch über Alt+Tab und Win+Tab schließen~~ ✅ erledigt (drei Schichten, siehe 3.1)
 
+### Sprint 7: Steuerung und eigene Inhalte ✅ ABGESCHLOSSEN
+25. ~~Antwortzeit mitschreiben und im Elternbericht auswerten~~ ✅ erledigt (`AnswerPaceAnalyzer`)
+26. ~~Fehler-Kartei im Willkommensbildschirm sichtbar machen~~ ✅ erledigt
+27. ~~Eigene Lesetexte pro Profil~~ ✅ erledigt (`CustomReadingTextRepository`)
+28. ~~Vokabeltrainer für Englisch/Türkisch~~ ✅ erledigt (`VocabularyRepository`, `VocabularyParser`)
+29. ~~Wochenziel pro Profil~~ ✅ erledigt (`WeeklyGoalCalculator`)
+30. ~~QWERTZ-Fehler im Tipptrainer (jkl; statt jklö, Y/Z vertauscht, zu kurze Finger-Listen)~~ ✅ erledigt
+31. ~~Eigene Tipp-Texte für die beiden letzten Lektionen~~ ✅ erledigt (`TypingTextOverrides`)
+
 ### Sprint 4: Polish (1-2 Wochen)
 13. ~~Mathe: Offene Zahleneingabe (neuer Fragetyp)~~ ✅ bereits umgesetzt (alle rechnerischen Topics in `MathGenerator.cs` nutzen `OpenText`; `Kongruenzabbildungen`/`SatzDesThales` bleiben als konzeptuelle Fragen bewusst Multiple-Choice)
 14. ~~Lesetexte Klasse 9: Klassiker-Ergänzung (Goethe, Schiller, Fontane)~~ ✅ erledigt (`Erlkönig`, `Die Bürgschaft`, `Herr von Ribbeck auf Ribbeck im Havelland` in `ReadingContentProvider.cs`)
@@ -223,7 +237,9 @@ Vorschau) und Win+Tab/neuer virtueller Desktop geschlossen. Was in Software ehrl
 lösen ist - Strg+Alt+Entf → "Abmelden"/"Benutzer wechseln", ein zweites Windows-Konto, USB-Boot,
 BIOS - ist organisatorisch in `docs/PILOT-CHECKLISTE.md` abgedeckt.
 
-**Blocker für Produktions-Rollout:** Nur **Installer-Signing (EV-Zertifikat)** - bewusst auf die finale Version verschoben. Alles andere ist "Qualität/Content", kein Blocker.
+**Blocker für Produktions-Rollout:** Keiner. Die Familie installiert aus dem ZIP-Artefakt des
+GitHub-Actions-Laufs, nicht über den Inno-Setup-Installer - das Installer-Signing (EV-Zertifikat)
+ist damit gegenstandslos, solange das so bleibt. Alles andere ist "Qualität/Content".
 
 ---
 

@@ -23,7 +23,9 @@ Der Trainer besteht aus 11 regulären Lektionen + 1 profil-spezifischer Abschlus
 `TypingContentProvider.cs` für den Lektionspool):
 
 ### Reguläre Lektionen (für alle Profile gleich)
-1. **Grundreihe** (3 Lektionen): ASDF JKL; → erste Wörter → Kombinationen
+1. **Grundreihe** (3 Lektionen): ASDF JKLÖ → erste Wörter → Kombinationen
+   (bis Juli 2026 stand hier fälschlich `ASDF JKL;` - das Semikolon ist die US-Belegung, auf
+   QWERTZ liegt an dieser Position das Ö)
 2. **Oberreihe** (2 Lektionen): QWERTZUIOPÜ+ → Wörter
 3. **Unterreihe** (2 Lektionen): YXCVBNM,.- → Wörter
 4. **Zahlenreihe** (2 Lektionen): 1234567890 → Kombinationen (Telefonnummern, PLZ, Daten)
@@ -49,6 +51,31 @@ im Namen → Emirhans Text, sonst Batuhans Text als Standard):
 
 Beide Abschlusstexte wurden gekürzt (~110 Zeichen weniger als ursprünglich) und laufen ebenfalls mit
 der pro Profil eingestellten Mindestgenauigkeit.
+
+### Eigene Zieltexte der Eltern
+Die Zieltexte der **beiden letzten** Lektionen lassen sich im Eltern-Bereich pro Profil selbst
+schreiben (`TypingTextOverrides`, gespeichert auf dem Profil):
+- **Lektion 6 (Einfache Sätze)** → `CustomTypingSentenceText`
+- **Abschluss-Lektion** → `CustomTypingFinalText`
+
+Bewusst nur diese beiden: die Aufbaulektionen (Grundreihe, Oberreihe, Unterreihe, Zahlen) üben
+gezielt einzelne Tastenbereiche - ein freier Text würde diesen Zweck zerstören. Lektion 6 und der
+Abschluss sind ohnehin freie Fließtexte.
+
+`TypingTextOverrides.Sanitize` hält die Eingabe im Rahmen: Zeilenumbrüche und Mehrfach-Leerzeichen
+werden zusammengefasst (unsichtbare Zeichen kann ein Kind nicht tippen), bei **200 Zeichen** wird
+gekürzt, unter **20 Zeichen** wird der Text verworfen und der eingebaute bleibt stehen. Das
+Eingabefeld begrenzt zusätzlich per `MaxLength`, darunter läuft ein Live-Zähler. Finger-Mapping und
+Mindest-Zeichenzahl werden für eigene Texte neu aus dem Text abgeleitet.
+
+### Finger-Zuordnung (QWERTZ, DIN 2137)
+`BuildFingerMapping` leitet die Finger für jedes Zeichen aus dem Zieltext ab - hartkodierte Listen
+gab es früher, sie waren in zwei Lektionen kürzer als ihr Text und zeigten ab der Abweichung den
+falschen Finger. Zwei Belegungen weichen von QWERTY ab und waren entsprechend lange falsch
+eingetragen:
+- **Y** liegt unten links → linker kleiner Finger (auf QWERTY ist dort das Z)
+- **Z** liegt oben rechts → rechter Zeigefinger (auf QWERTY ist dort das Y)
+- **Komma** → rechter Mittelfinger, **Punkt** → rechter Ringfinger (nicht beide am kleinen Finger)
 
 **Nur deutsches QWERTZ-Layout** – alle türkischen/englischen Lektionen wurden entfernt.
 
