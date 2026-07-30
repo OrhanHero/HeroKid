@@ -1366,21 +1366,56 @@ public static class ReadingContentProvider
     /// <para>Ohne eigene Texte verhält sich alles wie bisher.</para>
     /// </summary>
     public static (ReadingPiece First, ReadingPiece Second) GetPairForDate(
-        DateOnly date, IReadOnlyList<ReadingPiece>? customPieces = null)
+        DateOnly date,
+        IReadOnlyList<ReadingPiece>? customPieces = null,
+        IReadOnlySet<string>? hiddenKeys = null,
+        string? pinnedKey = null)
     {
-        if (customPieces is null || customPieces.Count == 0)
-        {
-            return (GetForDate(date), GetSecondForDate(date));
-        }
+        var custom = customPieces ?? Array.Empty<ReadingPiece>();
+        var hidden = hiddenKeys ?? (IReadOnlySet<string>)new HashSet<string>();
 
-        var custom = customPieces[date.DayOfYear % customPieces.Count];
+        bool IsVisible(ReadingPiece p) => !hidden.Contains(p.Key);
 
-        // Der zweite Text soll die Kategorien weiter abwechseln. Eigene Texte zählen dabei als
-        // "literarisch", also kommt der Partner aus dem Pop-Kultur-Pool - so bleibt die Mischung
-        // aus Anspruch und Spaß erhalten, die auch ohne eigene Texte gilt.
-        var partner = PopKulturPool[date.DayOfYear % PopKulturPool.Count];
-        return (custom, partner);
+        // Angehefteter Text: bleibt Tag für Tag der erste Text, bis die Eltern ihn wieder lösen.
+        // Genau dafür gedacht, einen frisch eingetragenen Text sofort prüfen zu können und ein
+        // Gedicht, das nächste Woche abgefragt wird, gezielt jeden Tag üben zu lassen.
+        var pinned = pinnedKey is null
+            ? null
+            : custom.Concat(Pool).FirstOrDefault(p => p.Key == pinnedKey);
+
+        var visibleCustom = custom.Where(IsVisible).ToList();
+        var visiblePop = PopKulturPool.Where(IsVisible).ToList();
+        var visibleLiterarisch = LiterarischPool.Where(IsVisible).ToList();
+        var visibleAll = Pool.Where(IsVisible).ToList();
+
+        // Erster Text: angeheftet > eigener Text > eingebauter Text des Tages.
+        var first = pinned
+            ?? (visibleCustom.Count > 0 ? visibleCustom[date.DayOfYear % visibleCustom.Count] : null)
+            ?? PickOrFallback(visibleAll, date);
+
+        // Zweiter Text: aus der jeweils anderen Kategorie, damit Anspruch und Spaß gemischt
+        // bleiben - und nie derselbe Text wie der erste.
+        var partnerPool = first.IsPopKultur ? visibleLiterarisch : visiblePop;
+        var second = PickOrFallback(partnerPool, date, exclude: first)
+            ?? PickOrFallback(visibleAll, date, exclude: first)
+            // Letzter Ausweg: haben die Eltern fast alles ausgeblendet, ist ein doppelter Text
+            // immer noch besser als ein leerer Lesebereich.
+            ?? first;
+
+        return (first, second);
     }
+
+    private static ReadingPiece PickOrFallback(IReadOnlyList<ReadingPiece> pool, DateOnly date) =>
+        pool.Count > 0 ? pool[date.DayOfYear % pool.Count] : Pool[date.DayOfYear % Pool.Count];
+
+    private static ReadingPiece? PickOrFallback(IReadOnlyList<ReadingPiece> pool, DateOnly date, ReadingPiece exclude)
+    {
+        var usable = pool.Where(p => p.Key != exclude.Key).ToList();
+        return usable.Count > 0 ? usable[date.DayOfYear % usable.Count] : null;
+    }
+
+    /// <summary>Alle eingebauten Stücke - für die Verwaltungsliste im Eltern-Bereich.</summary>
+    public static IReadOnlyList<ReadingPiece> GetAllBuiltIn() => Pool;
 
     /// <summary>
     /// Zweiter Lesetext des Tages: garantiert aus der jeweils anderen Kategorie (literarisch/

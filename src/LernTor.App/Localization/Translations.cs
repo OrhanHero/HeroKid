@@ -396,6 +396,17 @@ public static class Translations
             ["Parent_ReadingText_Tr"] = L("Text auf Türkisch:", "Türkçe metin:"),
             ["Parent_ReadingText_En"] = L("Text auf Englisch:", "İngilizce metin:"),
             ["Parent_ReadingText_Add"] = L("Lesetext hinzufügen", "Okuma metni ekle"),
+            ["Parent_ReadingText_LibraryTitle"] = L("Alle Lesetexte verwalten", "Tüm okuma metinlerini yönet"),
+            ["Parent_ReadingText_LibraryIntro"] = L(
+                "Hier stehen alle Texte: die eingebauten und deine eigenen. Haken weg = der Text kommt nicht mehr vor. 📌 heftet einen Text an - er steht dann jeden Tag an erster Stelle, bis du ihn wieder löst. Genau dafür gedacht, einen neu eingetragenen Text sofort zu prüfen oder ein Gedicht vor der Abfrage täglich üben zu lassen.",
+                "Burada tüm metinler var: yerleşik olanlar ve kendi metinleriniz. İşareti kaldırın = metin artık çıkmaz. 📌 bir metni sabitler - siz çözene kadar her gün ilk sırada olur. Yeni eklediğiniz bir metni hemen denemek veya bir şiiri sınavdan önce her gün çalıştırmak için."),
+            ["Parent_ReadingText_Search"] = L("Suchen (Titel oder Autor):", "Ara (başlık veya yazar):"),
+            ["Parent_ReadingText_OnlyOwn"] = L("Nur eigene Texte zeigen", "Yalnızca kendi metinlerimi göster"),
+            ["Parent_ReadingText_Pin"] = L("📌 Anheften", "📌 Sabitle"),
+            ["Parent_ReadingText_Unpin"] = L("📌 Angeheftet", "📌 Sabitlendi"),
+            ["Parent_ReadingText_Edit"] = L("Bearbeiten", "Düzenle"),
+            ["Parent_ReadingText_SaveEdit"] = L("Änderungen speichern", "Değişiklikleri kaydet"),
+            ["Parent_ReadingText_CancelEdit"] = L("Bearbeiten abbrechen", "Düzenlemeyi iptal et"),
             ["Parent_ReadingText_ExistingTitle"] = L("Hinterlegte Lesetexte", "Kayıtlı okuma metinleri"),
             ["Parent_ReadingText_Empty"] = L(
                 "Noch keine eigenen Lesetexte - es gelten die eingebauten Texte.",

@@ -30,6 +30,19 @@ public sealed class ReadingPiece
     public bool IsCustom { get; init; }
 
     /// <summary>
+    /// Datenbank-Id bei eigenen Texten der Eltern; bei eingebauten Stücken <c>null</c>.
+    /// </summary>
+    public string? SourceId { get; init; }
+
+    /// <summary>
+    /// Stabiler Schlüssel für Einstellungen, die sich auf einen einzelnen Text beziehen
+    /// (ausblenden, als Tagestext anheften). Eigene Texte nutzen ihre Datenbank-Id, eingebaute
+    /// ihren Titel - der ändert sich nicht, und eine laufende Nummer wäre gefährlich: schon das
+    /// Einsortieren eines neuen Gedichts würde sonst alle bestehenden Einstellungen verschieben.
+    /// </summary>
+    public string Key => SourceId is not null ? $"eigen:{SourceId}" : $"fest:{Title}";
+
+    /// <summary>
     /// Ob für diese Sprache überhaupt ein Text vorliegt. Eltern haben ein Gedicht meist nur in
     /// einer Sprache - die Leseansicht zeigt für leere Sprachen einen Hinweis statt einer
     /// leeren Spalte.

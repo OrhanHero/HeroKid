@@ -127,8 +127,98 @@ public sealed class CustomReadingTextRepositoryTests : IDisposable
         }
     }
 
+    [Fact]
+    public void Angehefteter_Text_steht_jeden_Tag_an_erster_Stelle()
+    {
+        // Loest das gemeldete Problem: einen frisch eingetragenen Text konnte man nicht gezielt
+        // aufrufen und damit auch nicht pruefen, ob er ueberhaupt ankommt.
+        var eigene = new[] { Custom("A"), Custom("Mein Gedicht"), Custom("C") };
+        var pin = eigene[1].Key;
+
+        for (int offset = 0; offset < 10; offset++)
+        {
+            var (first, _) = ReadingContentProvider.GetPairForDate(
+                new DateOnly(2026, 1, 1).AddDays(offset), eigene, pinnedKey: pin);
+
+            Assert.Equal("Mein Gedicht", first.Title);
+        }
+    }
+
+    [Fact]
+    public void Auch_ein_eingebauter_Text_laesst_sich_anheften()
+    {
+        var eingebaut = ReadingContentProvider.GetAllBuiltIn()[5];
+
+        var (first, second) = ReadingContentProvider.GetPairForDate(
+            new DateOnly(2026, 4, 2), customPieces: null, hiddenKeys: null, pinnedKey: eingebaut.Key);
+
+        Assert.Equal(eingebaut.Title, first.Title);
+        Assert.NotEqual(first.Key, second.Key);
+    }
+
+    [Fact]
+    public void Ausgeblendete_Texte_kommen_nicht_mehr_vor()
+    {
+        var alle = ReadingContentProvider.GetAllBuiltIn();
+        var ausgeblendet = alle.Take(20).Select(p => p.Key).ToHashSet();
+
+        for (int offset = 0; offset < 30; offset++)
+        {
+            var (first, second) = ReadingContentProvider.GetPairForDate(
+                new DateOnly(2026, 1, 1).AddDays(offset), customPieces: null, hiddenKeys: ausgeblendet);
+
+            Assert.DoesNotContain(first.Key, ausgeblendet);
+            Assert.DoesNotContain(second.Key, ausgeblendet);
+        }
+    }
+
+    [Fact]
+    public void Die_beiden_Tagestexte_sind_nie_derselbe()
+    {
+        for (int offset = 0; offset < 40; offset++)
+        {
+            var (first, second) = ReadingContentProvider.GetPairForDate(new DateOnly(2026, 1, 1).AddDays(offset));
+            Assert.NotEqual(first.Key, second.Key);
+        }
+    }
+
+    [Fact]
+    public void Fast_alles_ausgeblendet_liefert_trotzdem_einen_Text()
+    {
+        // Ein leerer Lesebereich waere schlimmer als ein doppelter Text.
+        var alle = ReadingContentProvider.GetAllBuiltIn();
+        var ausgeblendet = alle.Skip(1).Select(p => p.Key).ToHashSet();
+
+        var (first, second) = ReadingContentProvider.GetPairForDate(
+            new DateOnly(2026, 6, 6), customPieces: null, hiddenKeys: ausgeblendet);
+
+        Assert.False(string.IsNullOrWhiteSpace(first.Title));
+        Assert.False(string.IsNullOrWhiteSpace(second.Title));
+    }
+
+    [Fact]
+    public async Task Eigene_Texte_haben_einen_stabilen_Schluessel()
+    {
+        // Der Schluessel wandert in die Einstellungen (ausblenden/anheften) und darf sich beim
+        // Bearbeiten des Titels NICHT aendern - sonst zeigt der Lesebereich still wieder etwas
+        // anderes an.
+        using var db = CreateContext();
+        var repo = new CustomReadingTextRepository(db);
+
+        var id = await repo.AddAsync("p1", "Alter Titel", "", "Ein Text zum Vorlesen.", "", "");
+        var vorher = (await repo.GetForProfileAsync("p1")).Single().Key;
+
+        await repo.UpdateAsync(id, "Neuer Titel", "Neuer Autor", "Ein geänderter Text.", "", "");
+        var nachher = (await repo.GetForProfileAsync("p1")).Single();
+
+        Assert.Equal(vorher, nachher.Key);
+        Assert.Equal("Neuer Titel", nachher.Title);
+        Assert.Equal("Ein geänderter Text.", nachher.TextDe);
+    }
+
     private static ReadingPiece Custom(string title) => new()
     {
+        SourceId = title,
         Title = title,
         Author = "Eltern",
         TextDe = "Ein eigener Text zum Vorlesen.",

@@ -28,6 +28,9 @@ public sealed class StudentProfileEntity
     // Schema-Update bekommen - passt hier also ohne Sonderbehandlung).
     public int WeeklyGoalDays { get; set; }
 
+    // Angehefteter Lesetext (ReadingPiece.Key); NULL = kein Text angeheftet.
+    public string? PinnedReadingTextKey { get; set; }
+
     // Eigene Tipptrainer-Texte der Eltern (optional, NULL = eingebauter Text).
     public string? CustomTypingSentenceText { get; set; }
     public string? CustomTypingFinalText { get; set; }

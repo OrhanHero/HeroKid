@@ -84,8 +84,33 @@ public sealed class CustomReadingTextRepository
         await _db.SaveChangesAsync(cancellationToken);
     }
 
+    /// <summary>Ändert einen bestehenden eigenen Text (Titel, Autor, Sprachfassungen).</summary>
+    public async Task UpdateAsync(
+        string id,
+        string title,
+        string author,
+        string textDe,
+        string textTr,
+        string textEn,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.CustomReadingTexts.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        entity.Title = (title ?? string.Empty).Trim();
+        entity.Author = (author ?? string.Empty).Trim();
+        entity.TextDe = (textDe ?? string.Empty).Trim();
+        entity.TextTr = (textTr ?? string.Empty).Trim();
+        entity.TextEn = (textEn ?? string.Empty).Trim();
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
     private static ReadingPiece ToModel(CustomReadingTextEntity entity) => new()
     {
+        SourceId = entity.Id,
         Title = entity.Title,
         Author = entity.Author,
         TextDe = entity.TextDe,

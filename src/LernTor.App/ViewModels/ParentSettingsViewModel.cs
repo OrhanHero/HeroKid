@@ -1392,6 +1392,136 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(HasNoCustomReadingTexts));
+        await ReloadReadingLibraryAsync();
+    }
+
+    // --- Lesetext-Verwaltung: EINE Liste aus eigenen und eingebauten Texten ---
+
+    /// <summary>Alle Lesetexte des gewählten Profils - eigene zuerst, dann die eingebauten.</summary>
+    public ObservableCollection<ReadingTextRowViewModel> ReadingLibrary { get; } = new();
+
+    [ObservableProperty]
+    private string readingLibraryFilter = string.Empty;
+
+    [ObservableProperty]
+    private bool readingLibraryOnlyOwn;
+
+    [ObservableProperty]
+    private string readingLibraryStatus = string.Empty;
+
+    partial void OnReadingLibraryFilterChanged(string value) => _ = ReloadReadingLibraryAsync();
+
+    partial void OnReadingLibraryOnlyOwnChanged(bool value) => _ = ReloadReadingLibraryAsync();
+
+    private async Task ReloadReadingLibraryAsync()
+    {
+        ReadingLibrary.Clear();
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        var own = await _customReadingRepo.GetForProfileAsync(SelectedProfile.Id);
+        var all = ReadingLibraryOnlyOwn
+            ? own
+            : own.Concat(ReadingContentProvider.GetAllBuiltIn()).ToList();
+
+        var filter = ReadingLibraryFilter.Trim();
+        if (filter.Length > 0)
+        {
+            all = all.Where(p =>
+                    p.Title.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                    p.Author.Contains(filter, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        foreach (var piece in all)
+        {
+            ReadingLibrary.Add(new ReadingTextRowViewModel(
+                piece,
+                isHidden: _settings.HiddenReadingTextKeys.Contains(piece.Key),
+                isPinned: SelectedProfile.PinnedReadingTextKey == piece.Key,
+                onVisibilityChanged: OnReadingRowVisibilityChanged));
+        }
+
+        UpdateReadingLibraryStatus();
+    }
+
+    /// <summary>
+    /// Ausblenden wirkt global (siehe AppSettings.HiddenReadingTextKeys) und wird sofort
+    /// gespeichert - eine Einstellung, die erst beim Verlassen des Eltern-Bereichs greift,
+    /// lädt zum Vergessen ein.
+    /// </summary>
+    private async void OnReadingRowVisibilityChanged(ReadingTextRowViewModel row)
+    {
+        if (row.IsVisible)
+        {
+            _settings.HiddenReadingTextKeys.Remove(row.Key);
+        }
+        else
+        {
+            _settings.HiddenReadingTextKeys.Add(row.Key);
+
+            // Ein ausgeblendeter Text darf nicht gleichzeitig angeheftet bleiben.
+            if (SelectedProfile?.PinnedReadingTextKey == row.Key)
+            {
+                await SetPinnedReadingTextAsync(null);
+                row.IsPinned = false;
+            }
+        }
+
+        await _settingsRepo.SaveAsync(_settings);
+        UpdateReadingLibraryStatus();
+    }
+
+    /// <summary>Heftet einen Text als Tagestext an bzw. löst ihn wieder.</summary>
+    [RelayCommand]
+    private async Task TogglePinnedReadingTextAsync(ReadingTextRowViewModel row)
+    {
+        var newKey = row.IsPinned ? null : row.Key;
+
+        foreach (var other in ReadingLibrary)
+        {
+            other.IsPinned = other.Key == newKey;
+        }
+
+        await SetPinnedReadingTextAsync(newKey);
+        UpdateReadingLibraryStatus();
+    }
+
+    private async Task SetPinnedReadingTextAsync(string? key)
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        SelectedProfile.PinnedReadingTextKey = key;
+        await _profileRepo.UpdateSettingsAsync(
+            SelectedProfile.Id,
+            SelectedProfile.TypingMinAccuracy,
+            SelectedProfile.QuizFirstAttemptThreshold,
+            SelectedProfile.QuizRetryThreshold,
+            SelectedProfile.ReadingMinutes,
+            SelectedProfile.NewsSecondsPerArticle,
+            SelectedProfile.ExerciseSecondsPerQuestion,
+            SelectedProfile.ExercisesPerSubject,
+            SelectedProfile.QuizQuestionCount,
+            SelectedProfile.QuizRetryQuestionCount,
+            SelectedProfile.CustomTypingSentenceText,
+            SelectedProfile.CustomTypingFinalText,
+            SelectedProfile.WeeklyGoalDays,
+            key);
+    }
+
+    private void UpdateReadingLibraryStatus()
+    {
+        var visible = ReadingLibrary.Count(r => r.IsVisible);
+        var pinned = ReadingLibrary.FirstOrDefault(r => r.IsPinned);
+
+        ReadingLibraryStatus = pinned is not null
+            ? $"{visible} von {ReadingLibrary.Count} Texten aktiv. Angeheftet: \"{pinned.Title}\" - dieser Text steht jeden Tag an erster Stelle, bis du ihn wieder löst."
+            : $"{visible} von {ReadingLibrary.Count} Texten aktiv. Kein Text angeheftet - es gilt die normale Tagesrotation (eigene Texte zuerst).";
     }
 
     /// <summary>
@@ -1432,7 +1562,15 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             return;
         }
 
-        await _customReadingRepo.AddAsync(SelectedProfile.Id, NewReadingTitle, NewReadingAuthor, de, tr, en);
+        if (IsEditingReadingText)
+        {
+            await _customReadingRepo.UpdateAsync(EditingReadingTextId, NewReadingTitle, NewReadingAuthor, de, tr, en);
+            EditingReadingTextId = string.Empty;
+        }
+        else
+        {
+            await _customReadingRepo.AddAsync(SelectedProfile.Id, NewReadingTitle, NewReadingAuthor, de, tr, en);
+        }
 
         NewReadingTitle = string.Empty;
         NewReadingAuthor = string.Empty;
@@ -1447,7 +1585,54 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private async Task DeleteCustomReadingTextAsync(CustomReadingTextEntity text)
     {
         await _customReadingRepo.DeleteAsync(text.Id);
+
+        // War der gelöschte Text angeheftet, muss die Anheftung mit weg - sonst zeigt der
+        // Lesebereich still wieder die normale Rotation, ohne dass klar wäre warum.
+        if (SelectedProfile?.PinnedReadingTextKey == $"eigen:{text.Id}")
+        {
+            await SetPinnedReadingTextAsync(null);
+        }
+
+        if (EditingReadingTextId == text.Id)
+        {
+            CancelEditReadingText();
+        }
+
         await ReloadCustomReadingTextsAsync();
+    }
+
+    // --- Bearbeiten eines eigenen Lesetextes ---
+
+    /// <summary>Id des gerade bearbeiteten Textes; leer = das Formular legt einen neuen an.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsEditingReadingText))]
+    private string editingReadingTextId = string.Empty;
+
+    public bool IsEditingReadingText => !string.IsNullOrEmpty(EditingReadingTextId);
+
+    /// <summary>Lädt einen bestehenden Text ins Formular - dasselbe Formular dient dem Anlegen.</summary>
+    [RelayCommand]
+    private void EditCustomReadingText(CustomReadingTextEntity text)
+    {
+        EditingReadingTextId = text.Id;
+        NewReadingTitle = text.Title;
+        NewReadingAuthor = text.Author;
+        NewReadingTextDe = text.TextDe;
+        NewReadingTextTr = text.TextTr;
+        NewReadingTextEn = text.TextEn;
+        CustomReadingErrorMessage = string.Empty;
+    }
+
+    [RelayCommand]
+    private void CancelEditReadingText()
+    {
+        EditingReadingTextId = string.Empty;
+        NewReadingTitle = string.Empty;
+        NewReadingAuthor = string.Empty;
+        NewReadingTextDe = string.Empty;
+        NewReadingTextTr = string.Empty;
+        NewReadingTextEn = string.Empty;
+        CustomReadingErrorMessage = string.Empty;
     }
 
     // --- Vokabeltrainer (Englisch/Türkisch, siehe VocabularyRepository) ---

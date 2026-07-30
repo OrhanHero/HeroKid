@@ -275,7 +275,11 @@ public sealed partial class MainViewModel : ObservableObject
         // Eigene Eltern-Texte belegen, sofern vorhanden, den ersten der beiden Tagesplätze -
         // siehe ReadingContentProvider.GetPairForDate.
         var customPieces = await _customReadingRepo.GetForProfileAsync(CurrentProfile!.Id);
-        var (piece, secondPiece) = ReadingContentProvider.GetPairForDate(today, customPieces);
+        var (piece, secondPiece) = ReadingContentProvider.GetPairForDate(
+            today,
+            customPieces,
+            Settings.HiddenReadingTextKeys,
+            CurrentProfile!.PinnedReadingTextKey);
         return new ReadingViewModel(piece, secondPiece, OnReadingCompleted, _tts, CurrentProfile!.ReadingMinutes);
     }
 

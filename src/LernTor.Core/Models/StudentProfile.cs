@@ -101,6 +101,13 @@ public sealed class StudentProfile
     /// </summary>
     public int WeeklyGoalDays { get; set; }
 
+    /// <summary>
+    /// Angehefteter Lesetext (siehe <c>ReadingPiece.Key</c>): steht Tag für Tag als erster Text
+    /// im Vorlese-Bereich, bis die Eltern ihn wieder lösen. Pro Profil, weil auch die eigenen
+    /// Texte pro Profil hinterlegt werden.
+    /// </summary>
+    public string? PinnedReadingTextKey { get; set; }
+
     /// <summary>Die bereinigten Text-Überschreibungen dieses Profils für den Tipptrainer.</summary>
     public TypingTextOverrides TypingTextOverrides =>
         TypingTextOverrides.From(CustomTypingSentenceText, CustomTypingFinalText);

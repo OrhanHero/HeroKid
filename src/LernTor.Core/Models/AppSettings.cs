@@ -12,6 +12,13 @@ public sealed class AppSettings
     /// <summary>Fachbereiche, die Eltern temporär deaktivieren können (übersprungen, gelten als erledigt).</summary>
     public HashSet<Subject> DisabledSubjects { get; set; } = new();
 
+    /// <summary>
+    /// Schlüssel der Lesetexte, die im Vorlese-Bereich nicht mehr erscheinen sollen (siehe
+    /// <c>ReadingPiece.Key</c>). Global statt pro Profil: ein Text, den Eltern für ungeeignet
+    /// halten, ist das für alle Kinder.
+    /// </summary>
+    public HashSet<string> HiddenReadingTextKeys { get; set; } = new();
+
     public bool HardLockShellReplacementEnabled { get; set; } = false;
 
     /// <summary>Zeigt dem Kind die 🔥-Lernserie (aufeinanderfolgende Lerntage) auf dem

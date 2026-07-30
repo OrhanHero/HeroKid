@@ -127,6 +127,7 @@ public sealed class StudentProfileRepository
         string? customTypingSentenceText = null,
         string? customTypingFinalText = null,
         int weeklyGoalDays = 0,
+        string? pinnedReadingTextKey = null,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -140,6 +141,7 @@ public sealed class StudentProfileRepository
         entity.CustomTypingSentenceText = TypingTextOverrides.Sanitize(customTypingSentenceText);
         entity.CustomTypingFinalText = TypingTextOverrides.Sanitize(customTypingFinalText);
         entity.WeeklyGoalDays = weeklyGoalDays;
+        entity.PinnedReadingTextKey = pinnedReadingTextKey;
         entity.TypingMinAccuracy = typingMinAccuracy;
         entity.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
         entity.QuizRetryThreshold = quizRetryThreshold;
@@ -173,6 +175,7 @@ public sealed class StudentProfileRepository
         QuizQuestionCount = entity.QuizQuestionCount > 0 ? entity.QuizQuestionCount : StudentProfile.DefaultQuizQuestionCount,
         QuizRetryQuestionCount = entity.QuizRetryQuestionCount > 0 ? entity.QuizRetryQuestionCount : StudentProfile.DefaultQuizRetryQuestionCount,
         WeeklyGoalDays = entity.WeeklyGoalDays,
+        PinnedReadingTextKey = entity.PinnedReadingTextKey,
         CustomTypingSentenceText = entity.CustomTypingSentenceText,
         CustomTypingFinalText = entity.CustomTypingFinalText
     };
