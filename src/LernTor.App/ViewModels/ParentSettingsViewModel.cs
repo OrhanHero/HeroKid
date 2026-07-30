@@ -304,14 +304,19 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     /// </summary>
     public bool HasUnsavedChanges { get; private set; }
 
-    /// <summary>Unterdrueckt die Aenderungsmarkierung, waehrend Werte aus der DB geladen werden -
-    /// sonst gaelte schon das blosse Oeffnen des Eltern-Bereichs als Aenderung.</summary>
-    private bool _loadingSettings;
+    /// <summary>Unterdrueckt die Aenderungsmarkierung, waehrend die Editor-Felder mit den Werten
+    /// des gewaehlten Profils befuellt werden - sonst gaelte schon ein Profilwechsel als Aenderung.</summary>
+    private bool _loadingProfileEditor;
 
-    /// <summary>Markiert die Einstellungen als geaendert - von den betroffenen Eigenschaften aufgerufen.</summary>
+    /// <summary>
+    /// Markiert die Einstellungen als geaendert - von den betroffenen Eigenschaften aufgerufen.
+    /// Beide Ladevorgaenge muessen stumm bleiben: das Befuellen der Editor-Felder beim
+    /// Profilwechsel UND das Laden der globalen Einstellungen in InitializeAsync (Lernserie,
+    /// Pausenmodus) - sonst stuende die Rueckfrage schon beim blossen Oeffnen an.
+    /// </summary>
     private void MarkDirty()
     {
-        if (!_loadingSettings)
+        if (!_loadingProfileEditor && !_isLoadingSettings)
         {
             HasUnsavedChanges = true;
         }
@@ -528,7 +533,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     /// Übernimmt die Werte des gewählten Profils in die Editor-Felder.
     ///
     /// <para>Vorher werden ungespeicherte Änderungen des BISHERIGEN Profils abgefragt: die Felder
-    /// werden gleich überschrieben, und weil <see cref="_loadingSettings"/> dabei die
+    /// werden gleich überschrieben, und weil <see cref="_loadingProfileEditor"/> dabei die
     /// Änderungsmarkierung unterdrückt, wären sie lautlos weg gewesen - ein Profilwechsel zum
     /// Nachschauen hat also stillschweigend die gerade eingestellten Zeiten verworfen.</para>
     /// </summary>
@@ -553,14 +558,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         // Werte kommen aus der DB, das ist keine Nutzeraenderung.
-        _loadingSettings = true;
+        _loadingProfileEditor = true;
         try
         {
             ApplyProfileToEditor(value);
         }
         finally
         {
-            _loadingSettings = false;
+            _loadingProfileEditor = false;
         }
 
         _editorProfile = value;
@@ -622,7 +627,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool streaksEnabled;
 
-    partial void OnStreaksEnabledChanged(bool value) => _settings.StreaksEnabled = value;
+    partial void OnStreaksEnabledChanged(bool value)
+    {
+        _settings.StreaksEnabled = value;
+        MarkDirty();
+    }
 
     /// <summary>Preset-Werte für die Tipptrainer-Mindestgenauigkeit (siehe TabPillButton-Gruppe im Eltern-Bereich).</summary>
     [ObservableProperty]
@@ -786,8 +795,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     /// <summary>Zeigt den Aktiv-Hinweis, solange das gesetzte Datum heute oder in der Zukunft liegt.</summary>
     public bool IsPauseActive => PauseUntil is { } until && until.Date >= DateTime.Today;
 
-    partial void OnPauseUntilChanged(DateTime? value) =>
+    partial void OnPauseUntilChanged(DateTime? value)
+    {
         _settings.PauseUntilDate = value is { } d ? DateOnly.FromDateTime(d) : null;
+        MarkDirty();
+    }
 
     [RelayCommand]
     private void ClearPauseUntil() => PauseUntil = null;
