@@ -56,17 +56,31 @@ public sealed partial class ProfileSelectionViewModel : ObservableObject
         set { if (value) NewProfileGrade = GradeLevel.Klasse7; }
     }
 
+    public bool NewProfileIsGrade8
+    {
+        get => NewProfileGrade == GradeLevel.Klasse8;
+        set { if (value) NewProfileGrade = GradeLevel.Klasse8; }
+    }
+
     public bool NewProfileIsGrade9
     {
         get => NewProfileGrade == GradeLevel.Klasse9;
         set { if (value) NewProfileGrade = GradeLevel.Klasse9; }
     }
 
+    public bool NewProfileIsGrade10
+    {
+        get => NewProfileGrade == GradeLevel.Klasse10;
+        set { if (value) NewProfileGrade = GradeLevel.Klasse10; }
+    }
+
     partial void OnNewProfileGradeChanged(GradeLevel value)
     {
         OnPropertyChanged(nameof(NewProfileIsGrade6));
         OnPropertyChanged(nameof(NewProfileIsGrade7));
+        OnPropertyChanged(nameof(NewProfileIsGrade8));
         OnPropertyChanged(nameof(NewProfileIsGrade9));
+        OnPropertyChanged(nameof(NewProfileIsGrade10));
     }
 
     [ObservableProperty]

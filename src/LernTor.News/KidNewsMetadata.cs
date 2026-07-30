@@ -60,8 +60,21 @@ public static class KidNewsMetadata
         };
     }
 
+    /// <summary>
+    /// Bildet eine beliebige Klassenstufe auf die zwei vorhandenen Textvarianten ab.
+    ///
+    /// Die Standardtexte unten gibt es nur für Klasse 6 (direkt, alltagsnah) und Klasse 9
+    /// (abstrakter, gesellschaftlicher Kontext). Ohne diese Abbildung fielen alle anderen Stufen
+    /// in den Standardzweig der Mustervergleiche und lieferten LEERE Texte - genau das passierte
+    /// nach Einführung von Klasse 7. Die Regel ist dieselbe wie im
+    /// <see cref="RuleBasedTextSimplifier"/>: nur Klasse 6 bekommt die einfache Variante,
+    /// alle höheren Stufen die anspruchsvollere.
+    /// </summary>
+    private static GradeLevel ToTextVariant(GradeLevel gradeLevel) =>
+        gradeLevel == GradeLevel.Klasse6 ? GradeLevel.Klasse6 : GradeLevel.Klasse9;
+
     /// <summary>"Warum ist das wichtig?" je Rubrik und Klassenstufe.</summary>
-    public static string WhyImportantFor(NewsCategory category, GradeLevel gradeLevel) => (category, gradeLevel) switch
+    public static string WhyImportantFor(NewsCategory category, GradeLevel gradeLevel) => (category, ToTextVariant(gradeLevel)) switch
     {
         // Klasse 6: direkt, wir-betrifft-mich, einfach
         (NewsCategory.Berlin, GradeLevel.Klasse6) =>
@@ -140,7 +153,7 @@ public static class KidNewsMetadata
     };
 
     /// <summary>"Was bedeutet das für dich?" je Rubrik und Klassenstufe.</summary>
-    public static string MeaningForKidsFor(NewsCategory category, GradeLevel gradeLevel) => (category, gradeLevel) switch
+    public static string MeaningForKidsFor(NewsCategory category, GradeLevel gradeLevel) => (category, ToTextVariant(gradeLevel)) switch
     {
         // Klasse 6: konkret, alltagsnah, "du"
         (NewsCategory.Berlin, GradeLevel.Klasse6) =>

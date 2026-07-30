@@ -69,16 +69,42 @@ public class MathGeneratorTests
         Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
 
-    [Fact]
-    public void Fach_ohne_eigenen_Pool_faellt_auf_die_naechstniedrigere_Stufe_zurueck()
+    [Theory]
+    [InlineData(GradeLevel.Klasse8, GradeLevel.Klasse7)]
+    [InlineData(GradeLevel.Klasse10, GradeLevel.Klasse9)]
+    public void Doppeljahrgang_nutzt_den_Pool_der_unteren_Stufe(GradeLevel profil, GradeLevel erwartet)
     {
-        // Inzwischen hat jedes Fach einen Klasse-7-Pool. Die Übergangsregel bleibt aber wichtig
-        // für künftige Stufen (Klasse 8/10): eine Stufe ohne eigenen Pool liefert Aufgaben der
-        // nächstniedrigeren vorhandenen Stufe, statt das Fach still zu überspringen.
-        var questions = new MusikGenerator().Generate((GradeLevel)8, 5, new Random(7));
+        // Der Berliner Rahmenlehrplan ist in Doppeljahrgängen gegliedert (7/8 und 9/10).
+        // Klasse 8 und 10 haben deshalb bewusst keine eigenen Pools - die Übergangsregel in
+        // ExerciseGeneratorBase greift auf die passende untere Stufe zu.
+        var questions = new MusikGenerator().Generate(profil, 5, new Random(7));
 
         Assert.Equal(5, questions.Count);
-        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
+        Assert.All(questions, q => Assert.Equal(erwartet, q.GradeLevel));
+    }
+
+    [Fact]
+    public void Jede_Klassenstufe_liefert_in_jedem_Fach_Aufgaben()
+    {
+        // Sicherheitsnetz: kein Profil darf in irgendeinem Fach vor einer leeren Aufgabenliste
+        // stehen - egal welche Klassenstufe eingetragen ist.
+        var generators = new IExerciseGenerator[]
+        {
+            new MathGenerator(), new GermanGenerator(), new TurkishGenerator(), new EnglischGenerator(),
+            new BiologieGenerator(), new ChemieGenerator(), new PhysikGenerator(), new GeschichteGenerator(),
+            new GewiGenerator(), new PolitikGenerator(), new GeoGenerator(), new EthikGenerator(),
+            new KunstGenerator(), new MusikGenerator(), new ItgGenerator(), new KiWissenGenerator()
+        };
+
+        foreach (var generator in generators)
+        {
+            foreach (var grade in Enum.GetValues<GradeLevel>())
+            {
+                var questions = generator.Generate(grade, 5, new Random(7));
+                Assert.True(questions.Count > 0,
+                    $"{generator.GetType().Name} liefert für {grade} keine Aufgaben.");
+            }
+        }
     }
 
     [Fact]

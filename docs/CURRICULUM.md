@@ -1,4 +1,4 @@
-# Lehrplan-Zuordnung (Berliner Rahmenlehrplan, Klasse 6 & 9)
+# Lehrplan-Zuordnung (Berliner Rahmenlehrplan, Klasse 6 / 7 / 9 + Doppeljahrgänge 8 & 10)
 
 Diese Übersicht zeigt, welche Themen die Generatoren in `src/LernTor.ContentGen/Generators`
 aktuell abdecken. Es handelt sich um eine **repräsentative Auswahl** zentraler Themen je Fach und
@@ -20,6 +20,15 @@ Wiederholungs-Vermeidung in `ExerciseGeneratorBase.Generate` schnell ins Leere, 
 sah dieselben Fragen bereits nach 1-2 Tagen wieder. Alle 14 Fächer mit fester Beispiel-Liste
 (Deutsch, Englisch, Türkisch, ITG, Politik, Physik, Biologie, Chemie, Geografie, Gewi, Ethik, Kunst,
 Musik, Geschichte) sind inzwischen auf diesen Zielwert gebracht.
+
+**Klassenstufen und Doppeljahrgänge**: Der Berliner Rahmenlehrplan ist in Doppeljahrgangsstufen
+gegliedert. Die Aufgabenpools folgen dieser Gliederung: **Klasse 7 deckt inhaltlich 7/8 ab,
+Klasse 9 deckt 9/10 ab.** Eltern können im Profil trotzdem die tatsächliche Klasse (6, 7, 8, 9
+oder 10) eintragen - für Klasse 8 und 10 gibt es bewusst keine eigenen Pools, stattdessen greift
+die Übergangsregel in `ExerciseGeneratorBase.Generate` auf die nächstniedrigere vorhandene Stufe
+zu und trifft damit automatisch den passenden Doppeljahrgang (8 → Klasse-7-Pool, 10 →
+Klasse-9-Pool, also der Stoff, der auch zum MSA führt). Die Tabellen unten zeigen deshalb drei
+Spalten (Klasse 6 / 7 / 9), decken über diese Regel aber alle fünf wählbaren Stufen ab.
 
 ## Mathematik (`MathGenerator.cs`)
 

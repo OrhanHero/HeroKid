@@ -7,7 +7,8 @@ im Eltern-Bereich fest, welche der 15 verfügbaren Fächer für den Tag/das Prof
 sind (siehe "Bereiche deaktivieren").
 
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
-am Berliner Rahmenlehrplan, Klasse 6 und 9 vollständig, Klasse 7 im Aufbau - Mathematik hat
+am Berliner Rahmenlehrplan, Klasse 6, 7 und 9 vollständig ausgebaut; Klasse 8 und 10 nutzen die
+Pools ihres Doppeljahrgangs (7/8 bzw. 9/10) - Mathematik hat
 bereits einen eigenen Klasse-7-Pool, alle übrigen Fächer wiederholen für Klasse-7-Profile
 übergangsweise ihren Klasse-6-Stoff (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
 
@@ -121,7 +122,7 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    (beides im Fehlerprotokoll vermerkt). (Eine frühere Lesezeichen-/Suchfunktion im News-Teil wurde auf
    Nutzerwunsch wieder entfernt - im geführten Pflicht-Ablauf brachte sie keinen Mehrwert und
    verschob das Layout.)
-5. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klasse 6/9): Mathematik, Deutsch, Türkisch,
+5. **Fachbereiche** (alle nicht von den Eltern deaktivierten, Klassenstufe des Profils): Mathematik, Deutsch, Türkisch,
    Englisch, Biologie, Chemie, Physik, Gesellschaftswissenschaften (Gewi), Politik, Geografie, Ethik,
    Medienbildung (ITG) – siehe [docs/CURRICULUM.md](docs/CURRICULUM.md) für die genauen Themen je Fach.
    Bei offenen Mathematik-Aufgaben steht ein Taschenrechner zur Verfügung; Aufgaben mit hinterlegtem

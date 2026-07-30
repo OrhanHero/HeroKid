@@ -189,7 +189,15 @@ public class KidNewsMetadataTests
     {
         foreach (var category in Enum.GetValues<NewsCategory>())
         {
-            Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.WhyImportantFor(category, GradeLevel.Klasse6)));
+            // Für JEDE Klassenstufe, nicht nur Klasse 6: nach Einführung von Klasse 7 lieferten
+            // die Mustervergleiche für unbekannte Stufen stillschweigend leere Texte.
+            foreach (var grade in Enum.GetValues<GradeLevel>())
+            {
+                Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.WhyImportantFor(category, grade)),
+                    $"WhyImportantFor({category}, {grade}) ist leer.");
+                Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.MeaningForKidsFor(category, grade)),
+                    $"MeaningForKidsFor({category}, {grade}) ist leer.");
+            }
             Assert.False(string.IsNullOrWhiteSpace(KidNewsMetadata.MeaningForKidsFor(category, GradeLevel.Klasse6)));
         }
     }

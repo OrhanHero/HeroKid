@@ -142,9 +142,13 @@
                 </TextBox>
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_GradeLevelLabel]}" Style="{StaticResource BodyText}" Margin="0,0,0,4" />
+                <!-- Klasse 8 und 10 nutzen die Pools der Doppeljahrgänge 7/8 bzw. 9/10
+                     (siehe GradeLevel) - Eltern tragen einfach die echte Klasse ein. -->
                 <RadioButton Content="Klasse 6" IsChecked="{Binding NewProfileIsGrade6}" FontSize="16" Margin="0,4" />
                 <RadioButton Content="Klasse 7" IsChecked="{Binding NewProfileIsGrade7}" FontSize="16" Margin="0,4" />
-                <RadioButton Content="Klasse 9" IsChecked="{Binding NewProfileIsGrade9}" FontSize="16" Margin="0,4,0,16" />
+                <RadioButton Content="Klasse 8" IsChecked="{Binding NewProfileIsGrade8}" FontSize="16" Margin="0,4" />
+                <RadioButton Content="Klasse 9" IsChecked="{Binding NewProfileIsGrade9}" FontSize="16" Margin="0,4" />
+                <RadioButton Content="Klasse 10" IsChecked="{Binding NewProfileIsGrade10}" FontSize="16" Margin="0,4,0,16" />
 
                 <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,12" />
 
