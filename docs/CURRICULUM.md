@@ -253,17 +253,30 @@ Rahmenlehrplan" weiter unten).
 
 ## KI-Bereich (`KiWissenGenerator.cs` + `KiContentService`)
 
-> Kein Rahmenlehrplan-Fach, sondern KI-/Medienkompetenz als eigener Modulbereich: erst drei
-> Lernmodule ("Was ist KI?", "KI im Alltag", "Sicher mit KI" - Texte in `KiContentService`,
-> DE/TR), dann die "KI-Checkliste" als normale Übung. Klasse 7 nutzt über die Übergangsregel
-> den Klasse-6-Pool. Distraktoren sind bewusst längen-balanciert
-> (siehe `scripts/check-answer-length-bias.py`).
+> Kein Rahmenlehrplan-Fach, sondern KI-/Medienkompetenz als eigener Modulbereich: erst fünf
+> Lernmodule (Texte in `KiContentService`, DE/TR), dann die "KI-Checkliste" als normale Übung.
+> Klasse 7 nutzt über die Übergangsregel den Klasse-6-Pool. Distraktoren sind bewusst
+> längen-balanciert (siehe `scripts/check-answer-length-bias.py`).
+>
+> Die Lernmodule bauen aufeinander auf: **Was ist KI?** (Werkzeug, kein Wesen) → **KI im Alltag**
+> (wo sie schon überall steckt) → **Sicher mit KI** (Halluzinationen, Bias, Daten, Deepfakes) →
+> **KI richtig nutzen** (die Arbeitsweise: erst selbst denken, gezielt fragen, nachprüfen, nicht
+> abschreiben) → **Wo KI nicht hingehört** (sie kennt dich nicht, ist kein Freund, kein Arzt, kein
+> Schiedsrichter; bei echten Sorgen sind Menschen zuständig - inklusive der Nummer gegen Kummer
+> 116 111).
+>
+> Die letzten beiden Module sind die inhaltliche Mitte des Bereichs: KI als Werkzeug beherrschen,
+> **ohne sie zur Referenz fürs eigene Leben zu machen**. Beide werden auch abgefragt - ein reiner
+> Lesetext würde durchgeklickt. Zusätzlich steht unter dem "🤖 KI fragen"-Knopf in jeder Aufgabe
+> dauerhaft der Hinweis, dass die KI sich irren kann und man die Aufgabe erst selbst versuchen
+> soll (`Exercise_AiDisclaimer`) - dort, wo das Kind die KI tatsächlich benutzt.
 
 | Klasse 6 | Klasse 9 |
 |---|---|
 | Wie KI funktioniert | Halluzinationen und Fakten-Check |
 | KI im Alltag | Bias und Verantwortung |
-| KI-Checkliste: Sicher nutzen | Deepfakes und Datenschutz |
+| KI-Checkliste: Sicher nutzen | Wo KI nicht hingehört |
+| KI richtig nutzen | Deepfakes und Datenschutz |
 
 ## News (`LernTor.News`)
 

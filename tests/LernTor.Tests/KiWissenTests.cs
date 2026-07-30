@@ -50,7 +50,7 @@ public sealed class KiWissenTests
     {
         var modules = KiContentService.GetModules();
 
-        Assert.Equal(3, modules.Count);
+        Assert.Equal(5, modules.Count);
         Assert.All(modules, m =>
         {
             Assert.False(string.IsNullOrWhiteSpace(m.TitleDe));
@@ -71,5 +71,37 @@ public sealed class KiWissenTests
     {
         var ids = KiContentService.GetModules().Select(m => m.Id).ToList();
         Assert.Equal(ids.Count, ids.Distinct().Count());
+    }
+
+    [Theory]
+    [InlineData("ki-richtig-nutzen")]
+    [InlineData("ki-ist-kein-leben")]
+    public void Arbeitsweise_und_Grenzen_sind_eigene_Module(string modulId)
+    {
+        // Die beiden Module tragen die Kernbotschaft des KI-Bereichs: KI ist ein Werkzeug, das man
+        // richtig bedienen muss - und kein Ersatz für echte Menschen. Sie dürfen nicht wegfallen.
+        Assert.Contains(KiContentService.GetModules(), m => m.Id == modulId);
+    }
+
+    [Fact]
+    public void Grenzen_Modul_nennt_die_Nummer_gegen_Kummer()
+    {
+        // Ein Kind in Not soll nicht erst suchen müssen - die Nummer steht im Lerntext selbst.
+        var modul = KiContentService.GetModules().Single(m => m.Id == "ki-ist-kein-leben");
+
+        Assert.Contains(modul.Sections, s => s.BodyDe.Contains("116 111") && s.BodyTr.Contains("116 111"));
+    }
+
+    [Fact]
+    public void Beide_Klassenstufen_pruefen_den_verantwortlichen_Umgang()
+    {
+        // Lerntexte allein reichen nicht - die Themen müssen auch abgefragt werden, sonst
+        // klickt das Kind sie durch und behält nichts.
+        var random = new Random(4711);
+        var klasse6 = _generator.Generate(GradeLevel.Klasse6, 60, random);
+        var klasse9 = _generator.Generate(GradeLevel.Klasse9, 60, random);
+
+        Assert.Contains(klasse6, q => q.Topic == "KI richtig nutzen");
+        Assert.Contains(klasse9, q => q.Topic == "Wo KI nicht hingehört");
     }
 }

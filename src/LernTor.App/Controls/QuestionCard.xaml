@@ -36,6 +36,13 @@
                         Style="{StaticResource OptionButton}" HorizontalAlignment="Left"
                         Command="{Binding ToggleChatCommand}" />
 
+                <!-- Dauerhaft sichtbar, nicht nur bei geöffnetem Chat: der KI-Bereich erklärt die
+                     Regeln ausführlich, aber sie wirken erst, wenn sie da stehen, wo das Kind die
+                     KI tatsächlich benutzt. -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AiDisclaimer]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                           TextWrapping="Wrap" Margin="2,4,0,0" />
+
                 <Border Visibility="{Binding IsChatOpen, Converter={StaticResource BoolToVis}}"
                         Style="{StaticResource CardBorder}" Padding="12" Margin="0,8,0,0">
                     <StackPanel>

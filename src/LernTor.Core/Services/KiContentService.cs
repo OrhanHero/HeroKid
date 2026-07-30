@@ -134,6 +134,116 @@ public static class KiContentService
                     "Detaylara dikkat et: tuhaf eller veya kulaklar, arka planda bulanık yazılar, " +
                     "fazla pürüzsüz cilt, imkansız yönlerden gelen ışık. Ve her zaman kendine sor: " +
                     "Bunu kim paylaştı - ve neden? Şüphedeysen: iletme.")
+            }),
+        new KiModule(
+            "ki-richtig-nutzen", "🧭",
+            "KI richtig nutzen", "Yapay zekayı doğru kullanmak",
+            new List<KiSection>
+            {
+                new(
+                    "Erst selbst denken, dann fragen", "Önce kendin düşün, sonra sor",
+                    "Wer sofort die KI fragt, überspringt genau den Teil, in dem das Lernen passiert. " +
+                    "Probier eine Aufgabe erst selbst - auch wenn es hakt. Frag die KI danach: " +
+                    "\"Ich habe so gerechnet, wo ist mein Fehler?\" Dann lernst du etwas. " +
+                    "Fragst du nur \"Was ist die Lösung?\", hast du am Ende ein Ergebnis, aber nichts gekonnt.",
+                    "Hemen yapay zekaya soran, öğrenmenin gerçekleştiği kısmı atlar. Bir soruyu önce " +
+                    "kendin dene - takılsan bile. Sonra yapay zekaya sor: \"Ben böyle hesapladım, " +
+                    "hatam nerede?\" O zaman bir şey öğrenirsin. Sadece \"Cevap ne?\" diye sorarsan, " +
+                    "sonunda bir sonuç olur ama hiçbir şey bilmezsin."),
+                new(
+                    "Eine gute Frage ist die halbe Antwort", "İyi bir soru cevabın yarısıdır",
+                    "\"Erklär mir Bruchrechnung\" bringt einen langen Text. \"Erklär mir an einem " +
+                    "Beispiel mit Pizza, warum man beim Addieren von Brüchen den Nenner gleich machen " +
+                    "muss\" bringt genau das, was du brauchst. Sag, was du schon weißt, was dich " +
+                    "verwirrt und wie alt du bist - je genauer die Frage, desto brauchbarer die Antwort.",
+                    "\"Bana kesirleri anlat\" uzun bir metin getirir. \"Pizza örneğiyle, kesirleri " +
+                    "toplarken neden paydayı eşitlemek gerektiğini anlat\" tam ihtiyacın olanı getirir. " +
+                    "Ne bildiğini, neyin kafanı karıştırdığını ve kaç yaşında olduğunu söyle - soru ne " +
+                    "kadar net olursa cevap o kadar işe yarar."),
+                new(
+                    "Nachprüfen ist Pflicht, nicht Kür", "Kontrol etmek zorunludur, seçenek değil",
+                    "Eine KI-Antwort ist ein Vorschlag, kein Beweis. Bei Zahlen, Jahreszahlen, Namen " +
+                    "und Formeln gilt: im Schulbuch, im Heft oder auf einer seriösen Seite " +
+                    "gegenprüfen. Merksatz: Die KI ist der erste Schritt, nie der letzte.",
+                    "Yapay zeka cevabı bir öneridir, kanıt değil. Sayılar, yıllar, isimler ve " +
+                    "formüller için geçerli: ders kitabından, defterden veya güvenilir bir siteden " +
+                    "kontrol et. Kural: Yapay zeka ilk adımdır, asla son adım değil."),
+                new(
+                    "Abschreiben merkt man - und es bringt nichts", "Kopyalamak belli olur - ve işe yaramaz",
+                    "Einen KI-Text als eigenen abzugeben ist Täuschung, genau wie vom Nachbarn " +
+                    "abzuschreiben. Lehrkräfte erkennen das oft am Stil. Viel wichtiger: In der " +
+                    "Klassenarbeit sitzt keine KI neben dir. Was du mit KI \"geschafft\" hast, ohne es " +
+                    "zu verstehen, fehlt dir dort. Nutze sie zum Verstehen, nicht zum Erledigen.",
+                    "Yapay zeka metnini kendi metnin gibi vermek, komşundan kopyalamak gibi bir " +
+                    "aldatmacadır. Öğretmenler bunu genellikle üsluptan anlar. Daha önemlisi: Sınavda " +
+                    "yanında yapay zeka oturmuyor. Anlamadan yapay zekayla \"başardığın\" şey orada " +
+                    "eksik kalır. Onu anlamak için kullan, işi bitirmek için değil."),
+                new(
+                    "Die drei Fragen nach jeder Antwort", "Her cevaptan sonraki üç soru",
+                    "1. Verstehe ich, warum die Antwort stimmt - oder glaube ich sie nur? " +
+                    "2. Kann ich das in eigenen Worten erklären? " +
+                    "3. Habe ich mindestens eine Zahl oder einen Namen nachgeprüft? " +
+                    "Dreimal Ja heißt: Du hast die KI benutzt. Dreimal Nein heißt: Sie hat dich benutzt.",
+                    "1. Cevabın neden doğru olduğunu anlıyor muyum - yoksa sadece inanıyor muyum? " +
+                    "2. Bunu kendi kelimelerimle anlatabilir miyim? " +
+                    "3. En az bir sayıyı veya ismi kontrol ettim mi? " +
+                    "Üç kez evet: Yapay zekayı sen kullandın. Üç kez hayır: O seni kullandı.")
+            }),
+        new KiModule(
+            "ki-ist-kein-leben", "🧡",
+            "Wo KI nicht hingehört", "Yapay zekanın yeri olmadığı yerler",
+            new List<KiSection>
+            {
+                new(
+                    "Die KI kennt dich nicht", "Yapay zeka seni tanımıyor",
+                    "Sie weiß nicht, wie dein Tag war, wie deine Familie ist, wie es in deiner Klasse " +
+                    "zugeht oder was in deinem Kiez passiert. Sie hat dich noch nie gesehen. Wenn sie " +
+                    "trotzdem antwortet, als würde sie dich kennen, ist das ein Muster aus Texten " +
+                    "über andere Menschen - nicht über dich.",
+                    "Gününün nasıl geçtiğini, ailenin nasıl olduğunu, sınıfında neler olduğunu veya " +
+                    "mahallende ne olup bittiğini bilmez. Seni hiç görmedi. Buna rağmen seni " +
+                    "tanıyormuş gibi cevap veriyorsa, bu başka insanlar hakkındaki metinlerden çıkan " +
+                    "bir kalıptır - senin hakkında değil."),
+                new(
+                    "Sie ist kein Freund", "O bir arkadaş değil",
+                    "Eine KI ist immer freundlich, immer verfügbar, widerspricht selten. Das fühlt " +
+                    "sich angenehm an - aber es ist keine Freundschaft. Sie erinnert sich morgen nicht " +
+                    "an dich, sie vermisst dich nicht, sie freut sich nicht. Echte Freunde " +
+                    "widersprechen dir auch mal, und genau das macht sie wertvoll.",
+                    "Yapay zeka her zaman kibardır, her zaman müsaittir, nadiren karşı çıkar. Bu hoş " +
+                    "hissettirir - ama arkadaşlık değildir. Yarın seni hatırlamaz, seni özlemez, " +
+                    "sevinmez. Gerçek arkadaşlar sana karşı da çıkar, onları değerli kılan tam da budur."),
+                new(
+                    "Bei echten Sorgen: echte Menschen", "Gerçek dertlerde: gerçek insanlar",
+                    "Bei Streit, Angst, Traurigkeit, Mobbing, Krankheit oder wenn dir jemand wehtut, " +
+                    "ist eine KI die falsche Adresse. Sie kann nichts tun - sie kann niemanden anrufen, " +
+                    "niemanden holen, dich nicht in den Arm nehmen. Sprich mit deinen Eltern, einer " +
+                    "Lehrkraft oder einer Vertrauensperson. In Deutschland hilft auch die " +
+                    "\"Nummer gegen Kummer\": 116 111, kostenlos und anonym.",
+                    "Kavga, korku, üzüntü, zorbalık, hastalık veya biri sana zarar veriyorsa yapay " +
+                    "zeka yanlış adrestir. Hiçbir şey yapamaz - kimseyi arayamaz, kimseyi getiremez, " +
+                    "sana sarılamaz. Ailenle, bir öğretmenle veya güvendiğin biriyle konuş. " +
+                    "Almanya'da \"Nummer gegen Kummer\" de yardım eder: 116 111, ücretsiz ve isimsiz."),
+                new(
+                    "Kein Arzt, kein Anwalt, kein Schiedsrichter", "Ne doktor, ne avukat, ne hakem",
+                    "Was dir fehlt, wenn du krank bist, ob etwas erlaubt ist, wer in einem Streit " +
+                    "recht hat - das entscheidet keine KI. Sie hat keine Verantwortung und keine " +
+                    "Ausbildung, sie kann sich irren und trotzdem sicher klingen. Für so etwas gibt " +
+                    "es Menschen, die dafür geradestehen müssen.",
+                    "Hasta olduğunda neyin olduğunu, bir şeyin izinli olup olmadığını, bir " +
+                    "anlaşmazlıkta kimin haklı olduğunu yapay zeka belirlemez. Sorumluluğu ve eğitimi " +
+                    "yoktur, yanılabilir ve yine de emin görünebilir. Bunun için, sonucundan sorumlu " +
+                    "olmak zorunda olan insanlar vardır."),
+                new(
+                    "Was das Leben ausmacht, lernst du draußen", "Hayatı oluşturan şeyleri dışarıda öğrenirsin",
+                    "Wie sich ein Ball anfühlt, wie deine Oma kocht, wie es riecht, wenn es in Berlin " +
+                    "regnet, wie man sich nach einem Streit wieder verträgt - das steht in keinem " +
+                    "Trainingstext. Eine KI kann darüber reden, aber sie hat nichts davon erlebt. " +
+                    "Deine Erfahrungen sind etwas, das sie nie haben wird.",
+                    "Bir topun nasıl hissettirdiğini, büyükannenin nasıl yemek yaptığını, Berlin'de " +
+                    "yağmur yağınca nasıl koktuğunu, kavgadan sonra nasıl barışıldığını - bunlar " +
+                    "hiçbir eğitim metninde yazmaz. Yapay zeka bunlar hakkında konuşabilir ama " +
+                    "hiçbirini yaşamamıştır. Senin deneyimlerin, onun asla sahip olamayacağı şeylerdir.")
             })
     };
 }

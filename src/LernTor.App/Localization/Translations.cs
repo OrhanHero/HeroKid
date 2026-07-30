@@ -170,6 +170,11 @@ public static class Translations
                 "Yapay zeka düşünüyor… (ilk soru en uzun sürer: model bir kez indirilir ve her " +
                 "uygulama başlangıcında belleğe yeniden yüklenir)"),
             ["Exercise_SendChat"] = L("Senden", "Gönder"),
+            // Dauerhaft unter dem KI-Chat sichtbar - der KI-Bereich erklärt das ausführlich, aber
+            // gelernt wird es erst, wenn es genau dort steht, wo das Kind die KI tatsächlich benutzt.
+            ["Exercise_AiDisclaimer"] = L(
+                "Die KI kann sich irren. Prüf Zahlen und Namen nach - und versuch die Aufgabe erst selbst.",
+                "Yapay zeka yanılabilir. Sayıları ve isimleri kontrol et - ve soruyu önce kendin dene."),
             ["Exercise_MinTimeCountdown"] = L(
                 "⏳ Nimm dir Zeit zum Lesen – weiter in {0} s",
                 "⏳ Okumak için zaman ayır – {0} sn sonra devam"),

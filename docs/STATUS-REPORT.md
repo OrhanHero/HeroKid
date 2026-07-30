@@ -52,9 +52,9 @@ RLP-Haken-Abgleich), nicht geschätzt.*
 | **Musik** | `MusikGenerator.cs` | 5 | 4 | 6 | 15 | ✅ komplett |
 | **Kunst** | `KunstGenerator.cs` | 4 | 4 | 6 | 14 | ✅ komplett |
 | **ITG** | `ItgGenerator.cs` | 3 | 4 | 3 | 10 | Standardsoftware bewusst weggelassen (nicht quizbar) |
-| **KI-Wissen** | `KiWissenGenerator.cs` | 3 | – | 3 | 6 | Kein RLP-Fach, sondern eigener Bereich (siehe `KiContentService`); Klasse 8 nutzt den Klasse-6-Pool |
+| **KI-Wissen** | `KiWissenGenerator.cs` | 4 | – | 4 | 8 | Kein RLP-Fach, sondern eigener Bereich mit fünf Lernmodulen (siehe `KiContentService`); Klasse 7/8 nutzen den Klasse-6-Pool |
 
-**Gesamt: 317 Topics × ~20 Fragen ≈ 6.340 Fragen im Pool** (Mathematik würfelt zusätzlich echte
+**Gesamt: 319 Topics × ~20 Fragen ≈ 6.380 Fragen im Pool** (Mathematik würfelt zusätzlich echte
 Zahlenwerte, dort ist der Pool praktisch unbegrenzt).
 
 > Die Zahlen sind aus `TopicsByGrade` in den Generator-Dateien ausgezählt, nicht geschätzt. Frühere
@@ -94,6 +94,7 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | ✅ **Erledigt** | **Eltern-Export/Backup** | Sicherung erstellen/wiederherstellen im Eltern-Bereich: Export als konsistente .db-Datei (`VACUUM INTO`), Import ersetzt die aktive DB nach Bestätigung (App-Neustart, Schema-Abgleich macht alte Sicherungen kompatibel). |
 | 🟢 **Niedrig** | **Multi-Device Sync** | Nicht vorgesehen (lokal-only, SQLite). |
 | ✅ **Erledigt** | **Kiosk-Ausbruch über Alt+Tab / Win+Tab** | Drei unabhängige Schichten: Vordergrund-Wächter (300ms-`DispatcherTimer`, vergleicht Prozess-IDs), `MainWindow.Closing`-Sperre solange `KioskLockService.IsLocked` (fängt den X-Button in der Windows-11-Alt+Tab-Vorschau, der ein reines `WM_CLOSE` ohne Tastendruck schickt) und Win-Kombo-Blockade im `KioskKeyboardHook` + `NoWinKeys`-Policy (`WindowsHotkeyPolicy`) gegen den Ausbruch via neuem virtuellem Desktop. |
+| ✅ **Erledigt** | **Tipptrainer übte eine Taste, die es auf QWERTZ nicht gibt** | Die Grundreihen-Lektionen ließen "asdf jkl;" tippen - das ist die US-Belegung, auf einer deutschen Tastatur liegt dort das Ö. Beim Nachprüfen fielen zwei weitere Fehler in derselben Datei auf: Y und Z waren in der Finger-Zuordnung vertauscht (QWERTY statt QWERTZ), Komma und Punkt hingen beide am kleinen Finger, und zwei Lektionen hatten hartkodierte Finger-Listen, die kürzer waren als ihr Zieltext. Alle Listen werden jetzt aus dem Text abgeleitet. |
 | ✅ **Erledigt** | **Tipptrainer verlangte faktisch 100%** | `TypingExerciseService.CheckInput` prüfte zusätzlich `correctChars >= targetText.Length` und hat damit das Eltern-Preset (25/50/75/100%) stillschweigend überschrieben. Die Zusatzbedingung ist entfernt - jetzt gilt nur noch die eingestellte Mindestgenauigkeit. |
 | ✅ **Erledigt** | **Lehrer-Import scheiterte an LLamaSharp-Nativebibliotheken** | Der Single-File-Publish hat `llama.dll`/`ggml*.dll` in die exe eingebettet, wo LLamaSharps eigene Pfadsuche sie nicht findet (`The type initializer for 'LLama.Native.NativeApi' threw an exception`). Ein MSBuild-Target hält `runtimes/win-x64/native/` als lose Dateien daneben. **Erfordert eine Neuinstallation der App**, nicht nur ein Update der DB. |
 | ✅ **Erledigt** | **Kinder nutzten den Längen-Bias der Antworten aus** | In 13 Generatoren war die richtige Antwort zu 70-93% die längste Option - die Kinder haben ohne Lesen die längste angeklickt. `scripts/balance-answer-lengths.py` hat die Distraktoren positionsbasiert angeglichen, `scripts/check-answer-length-bias.py` hält den Anteil in der CI dauerhaft unter 60% (Ist-Wert: ~35%). Bewusst **nicht** 0%, weil eine "die längste ist nie richtig"-Regel genauso ausnutzbar wäre. |
@@ -107,7 +108,8 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 | ✅ **Erledigt** | **Mathe: Offene Eingabe vs. MC** | Alle rechnerischen Topics nutzen `QuestionType.OpenText` (offene Zahleneingabe). Nur `Kongruenzabbildungen` und `Satz des Thales` bleiben bewusst Multiple-Choice: konzeptuelle Fragen mit Satz-Antworten, eine offene Eingabe wäre dort nicht sinnvoll validierbar. |
 | ✅ **Erledigt** | **Gamification: Streaks** | Optional umgesetzt: 🔥-Lernserie auf dem Willkommensbildschirm (`StreakCalculator`), Standard AUS und von Eltern einschaltbar. Bewusst reine Anzeige - keine Strafen/Erinnerungen bei verpassten Tagen, ein noch nicht gelernter heutiger Tag bricht die Serie nicht. |
 | 🟢 **Niedrig** | **Eltern: Wochenziel-Übersicht** | Wochenbericht existiert, aber keine Zielsetzung (z. B. "3 Fächer diese Woche"). |
-| ✅ **Erledigt** | **KI-Bereich als eigenes Fach** | `KiContentService` (Core) liefert drei Lernmodule ("Was ist KI?", "KI im Alltag", "KI-Checkliste") mit DE/TR-Texten, `KiWissenGenerator` die zugehörigen Quizfragen. Vollständig offline - kein einziger externer API-Aufruf. |
+| ✅ **Erledigt** | **KI-Bereich als eigenes Fach** | `KiContentService` (Core) liefert fünf Lernmodule mit DE/TR-Texten, `KiWissenGenerator` die zugehörigen Quizfragen. Vollständig offline - kein einziger externer API-Aufruf. |
+| ✅ **Erledigt** | **KI als Werkzeug, nicht als Lebensberater** | Zwei Module tragen diese Botschaft: "KI richtig nutzen" (erst selbst denken, gezielt fragen, nachprüfen, nicht abschreiben - inkl. der drei Prüffragen nach jeder Antwort) und "Wo KI nicht hingehört" (sie kennt dich nicht, ist kein Freund, kein Arzt, kein Schiedsrichter; bei Streit/Angst/Mobbing/Krankheit sind Menschen zuständig, Nummer gegen Kummer 116 111). Beide werden abgefragt, nicht nur gelesen. Zusätzlich ein dauerhafter Hinweis unter dem "🤖 KI fragen"-Knopf in jeder Aufgabe. |
 | ✅ **Erledigt** | **Zeit-/Umfangs-Settings im Eltern-Bereich** | Lesen, News und Fächer haben jetzt einstellbare Zeit- und Umfangsgrenzen sowie einen Ferien-/Pausenmodus - alles ohne neuen Build änderbar. |
 | ✅ **Erledigt** | **Klasse-7-Pools in Kunst/Musik/ITG** | Waren mit je 2 Topics die dünnsten Pools. Jetzt je 4 Topics: Kunst um "Bild des Menschen" und "Bild der Dinge", Musik um Instrumentenkunde und Musizieren/Zusammenspiel, ITG um Hardware/Netzwerke und IT-Sicherheit erweitert. |
 
@@ -210,7 +212,7 @@ CI-Lauf prüfen. Lokal kompilieren geht in dieser Umgebung nicht.
 > Kind loggt sich ein → **Lesen** (2 Texte, 3 Sprachen, Vorlesen) → **Tippen** (11 Lektionen + persönlicher Abschluss) → **News** (~22 Artikel: 1 pro Feed aus 22 RSS-Quellen + tägliches Finanzwissen-Erklärstück, altersgerecht) → **Fächer** (bis zu 16 aktive Fächer inkl. KI-Bereich, ~20 Fragen/Topic; Richtiges pausiert per Spaced Repetition 7/30/90 Tage und kehrt zur Auffrischung zurück) → **Abschlussquiz** (dynamisch verteilt, Bestehensschwelle pro Profil einstellbar, Standard ≥50% = PC frei) → Eltern steuern Fächer/Klassenstufe/Zeitgrenzen/Ferienmodus/LLM/Belohnungen/Schwierigkeitsstufen, sehen Wochenbericht.
 
 **Abdeckungsgrad RLP:** Alle 15 implementierten Fach-Generatoren decken ihre RLP-Themenfelder für
-Klasse 6, 7 und 9 ab (317 Topics, ~6.340 Fragen im Pool), dazu kommt der KI-Bereich als eigenes,
+Klasse 6, 7 und 9 ab (319 Topics, ~6.380 Fragen im Pool), dazu kommt der KI-Bereich als eigenes,
 nicht-curriculares Fach. Über die Doppeljahrgangs-Regel sind damit alle fünf wählbaren Klassenstufen
 (6, 7, 8, 9, 10) versorgt. Es gibt keine offene RLP-Content-Lücke mehr - auch die zuletzt dünnen
 Klasse-7-Pools von Kunst, Musik und ITG stehen jetzt bei je vier Themen. Bewusst ausgeklammert

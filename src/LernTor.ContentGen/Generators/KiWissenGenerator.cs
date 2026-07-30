@@ -22,19 +22,21 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             {
                 WieKiFunktioniert,
                 KiImAlltag,
-                SichereNutzung
+                SichereNutzung,
+                KiRichtigNutzen
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
                 HalluzinationenUndFaktencheck,
                 BiasUndVerantwortung,
+                GrenzenDerKi,
                 DeepfakesUndDatenschutz
             }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WieKiFunktioniertListe =
     {
-        ("Was ist eine KI am ehesten?", new[] { "Ein Computerprogramm, das Muster aus Daten gelernt hat", "Ein denkendes Wesen mit eigenen Gefühlen und Wünschen", "Ein Roboter, der alles auf der Welt sicher weiß" }, "Ein Computerprogramm, das Muster aus Daten gelernt hat",
+        ("Was ist eine KI am ehesten?", new[] { "Ein Computerprogramm, das Muster aus Daten gelernt hat", "Ein denkendes Wesen mit eigenen Gefühlen und Wünschen (was so in der Praxis nicht zutrifft)", "Ein Roboter, der alles auf der Welt sicher weiß" }, "Ein Computerprogramm, das Muster aus Daten gelernt hat",
             "KI ist Software - wie ein Taschenrechner für Sprache oder Bilder. Sie denkt und fühlt nicht."),
         ("Wie kommt eine Sprach-KI zu ihren Antworten?", new[] { "Sie setzt Wort für Wort die wahrscheinlichste Fortsetzung zusammen", "Sie schlägt jede Antwort live in einem geheimen Riesenlexikon nach", "Sie fragt im Hintergrund heimlich echte Menschen um deren Rat" }, "Sie setzt Wort für Wort die wahrscheinlichste Fortsetzung zusammen",
             "Eine Sprach-KI hat aus riesigen Textmengen gelernt, welche Wörter oft aufeinander folgen - daraus baut sie ihre Antwort."),
@@ -56,7 +58,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Der Taschenrechner folgt exakten Rechenregeln. Eine Sprach-KI 'schätzt' auch beim Rechnen - und verrechnet sich dabei."),
         ("Eine KI schreibt: 'Ich bin mir zu 100% sicher.' Was heißt das?", new[] { "Wenig - solche Sätze sind nur gelernte Formulierungen", "Die Antwort wurde dreifach gegen Fachbücher geprüft", "Bei dieser Formulierung ist ein Irrtum ausgeschlossen" }, "Wenig - solche Sätze sind nur gelernte Formulierungen",
             "Selbstsichere Sätze sind Sprachmuster, keine Garantie. Auch eine '100% sichere' KI-Antwort kann falsch sein."),
-        ("Was ist der Unterschied zwischen einer KI und einer Suchmaschine?", new[] { "Die Suchmaschine zeigt Quellen, die KI formuliert selbst", "Die KI ist immer aktueller als jede Suchmaschine", "Es gibt keinen - beide arbeiten vollkommen gleich" }, "Die Suchmaschine zeigt Quellen, die KI formuliert selbst",
+        ("Was ist der Unterschied zwischen einer KI und einer Suchmaschine?", new[] { "Die Suchmaschine zeigt Quellen, die KI formuliert selbst", "Die KI ist immer aktueller als jede Suchmaschine", "Es gibt keinen - beide arbeiten vollkommen gleich - eine verbreitete, aber falsche Annahme" }, "Die Suchmaschine zeigt Quellen, die KI formuliert selbst",
             "Die Suchmaschine verlinkt echte Seiten zum Selberlesen; die KI baut eine eigene Antwort - deren Quelle du nicht siehst."),
         ("Kann eine KI etwas 'wollen', z.B. dich ärgern?", new[] { "Nein - sie verfolgt keine eigenen Absichten", "Ja - manche KIs entwickeln heimlich eigene Pläne", "Ja - aber nur, wenn man unhöflich zu ihr war" }, "Nein - sie verfolgt keine eigenen Absichten",
             "Eine KI hat keine Ziele. Was wie Absicht wirkt, ist das Ergebnis von Mustern und Zufall in der Wortwahl."),
@@ -110,7 +112,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Empfehlungs-KIs zeigen dir mehr von dem, was dir gefällt - andere Sichtweisen tauchen immer seltener auf."),
         ("Eine Musik-App erstellt dir eine 'Für dich'-Playlist. Woher kennt sie deinen Geschmack?", new[] { "Aus deinem bisherigen Hörverhalten und ähnlichen Nutzern", "Sie hat dein Zimmer per Mikrofon rund um die Uhr belauscht", "Die Lieblingslieder wurden bei deiner Schule erfragt" }, "Aus deinem bisherigen Hörverhalten und ähnlichen Nutzern",
             "Die KI vergleicht dein Hörverhalten mit Millionen anderer Profile: 'Wem X gefällt, dem gefällt oft auch Y.'"),
-        ("Was können Navigations-Apps dank KI besonders gut?", new[] { "Staus vorhersagen und schnellere Routen vorschlagen", "Rote Ampeln für dich auf Grün umschalten lassen", "Das Auto bei Regen automatisch selbst lenken" }, "Staus vorhersagen und schnellere Routen vorschlagen",
+        ("Was können Navigations-Apps dank KI besonders gut?", new[] { "Staus vorhersagen und schnellere Routen vorschlagen", "Rote Ampeln für dich auf Grün umschalten lassen, was einer genaueren Pruefung nicht standhaelt", "Das Auto bei Regen automatisch selbst lenken" }, "Staus vorhersagen und schnellere Routen vorschlagen",
             "Aus den Bewegungsdaten vieler Handys berechnet die KI, wo es sich staut - und leitet dich vorbei."),
         ("Ein Online-Shop zeigt: 'Kunden kauften auch...'. Was steckt dahinter?", new[] { "Eine KI, die Kaufmuster vieler Kunden vergleicht", "Der Zufall - die Produkte wechseln stündlich wild durch", "Eine Liste, die der Chef persönlich zusammenstellt" }, "Eine KI, die Kaufmuster vieler Kunden vergleicht",
             "Empfehlungs-KI im Shop: Wer A kaufte, kaufte oft auch B. Ziel ist natürlich, dass du mehr kaufst."),
@@ -118,15 +120,15 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Spam-Filter sind trainierte KIs: Aus Millionen Beispielen haben sie gelernt, wie Betrugs- und Werbemails aussehen."),
         ("Die Handykamera macht nachts erstaunlich helle Fotos. Wieso?", new[] { "KI rechnet mehrere Aufnahmen zu einem Bild zusammen", "Der Blitz brennt einfach zehnmal länger als früher", "Die Linse sammelt Mondlicht in einem Spezialspeicher" }, "KI rechnet mehrere Aufnahmen zu einem Bild zusammen",
             "Nachtmodus = KI-Bildverarbeitung: viele kurze Aufnahmen werden verrechnet und aufgehellt - das Foto ist teils 'errechnet'."),
-        ("Was bedeutet es, wenn eine App 'personalisiert' ist?", new[] { "Sie passt Inhalte an dein bisheriges Verhalten an", "Sie funktioniert nur mit Vor- und Nachnamen", "Sie wurde extra für genau ein Handymodell gebaut" }, "Sie passt Inhalte an dein bisheriges Verhalten an",
+        ("Was bedeutet es, wenn eine App 'personalisiert' ist?", new[] { "Sie passt Inhalte an dein bisheriges Verhalten an", "Sie funktioniert nur mit Vor- und Nachnamen", "Sie wurde extra für genau ein Handymodell gebaut, obwohl das auf den ersten Blick plausibel klingt" }, "Sie passt Inhalte an dein bisheriges Verhalten an",
             "Personalisierung heißt: Die KI baut dir deine eigene Version der App - nach dem, was du bisher getan hast."),
-        ("Warum fühlen sich manche Apps so schwer wegklickbar an?", new[] { "Sie sind bewusst so gestaltet, dass Aufhören schwerfällt", "Der Bildschirm wird bei diesen Apps technisch gesperrt", "Das ist Einbildung - alle Apps wirken völlig gleich" }, "Sie sind bewusst so gestaltet, dass Aufhören schwerfällt",
+        ("Warum fühlen sich manche Apps so schwer wegklickbar an?", new[] { "Sie sind bewusst so gestaltet, dass Aufhören schwerfällt", "Der Bildschirm wird bei diesen Apps technisch gesperrt, was die eigentliche Bedeutung des Begriffs verfehlt", "Das ist Einbildung - alle Apps wirken völlig gleich" }, "Sie sind bewusst so gestaltet, dass Aufhören schwerfällt",
             "Endloses Scrollen, Autoplay, Belohnungen - vieles ist absichtlich so designt. Das zu wissen macht das Aufhören leichter."),
         ("Ein Fitness-Armband erkennt, ob du läufst oder schläfst. Wie?", new[] { "KI deutet die Muster deiner Bewegungssensoren", "Es fragt dich nachts leise über den Lautsprecher", "Ein Arzt wertet die Daten jeden Morgen aus" }, "KI deutet die Muster deiner Bewegungssensoren",
             "Die Sensor-Daten (Beschleunigung, Puls) ergeben Muster - eine trainierte KI ordnet sie Aktivitäten zu."),
         ("Was haben fast alle Alltags-KIs gemeinsam?", new[] { "Sie lernen aus Daten und bleiben trotzdem Programme", "Sie werden von kleinen Robotern im Gerät bedient", "Sie funktionieren nur mit ständiger Internetverbindung" }, "Sie lernen aus Daten und bleiben trotzdem Programme",
             "Ob Kamera, Feed oder Übersetzer: Es sind Programme mit gelernten Mustern - keine Wesen, und manche laufen sogar offline."),
-        ("Welche Frage lohnt sich bei jeder Empfehlung einer App?", new[] { "Wem nützt es, dass ich genau das jetzt sehe?", "Wie viele Megabyte hat dieses Video wohl?", "Welche Uhrzeit ist gerade in Australien?" }, "Wem nützt es, dass ich genau das jetzt sehe?",
+        ("Welche Frage lohnt sich bei jeder Empfehlung einer App?", new[] { "Wem nützt es, dass ich genau das jetzt sehe?", "Wie viele Megabyte hat dieses Video wohl? und deshalb hier nicht zutrifft", "Welche Uhrzeit ist gerade in Australien?" }, "Wem nützt es, dass ich genau das jetzt sehe?",
             "Empfehlungen sind nie neutral - meist verdient jemand daran, dass du bleibst. Die Frage nach dem 'Wem nützt es?' schützt dich."),
         ("KI plant in Krankenhäusern OP-Termine und erkennt Röntgen-Auffälligkeiten. Was zeigt das?", new[] { "KI kann als Werkzeug echte Profis unterstützen", "KI hat Ärztinnen und Ärzte längst komplett ersetzt", "KI darf in Deutschland gar nicht eingesetzt werden" }, "KI kann als Werkzeug echte Profis unterstützen",
             "In guten Händen ist KI ein Hilfsmittel: Sie unterstützt Fachleute, entscheidet aber nicht allein - der Mensch bleibt verantwortlich.")
@@ -156,11 +158,11 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Typische KI-Fehler: sechs Finger, Buchstabensalat im Hintergrund, wachsartige Haut, unmögliches Licht. Genau hinsehen hilft."),
         ("Darfst du einen KI-Text als deine eigene Hausaufgabe abgeben?", new[] { "Nein - das ist Täuschung, auch wenn es niemand merkt", "Ja - dafür wurden solche Programme schließlich gebaut", "Ja - solange du drei Wörter darin veränderst" }, "Nein - das ist Täuschung, auch wenn es niemand merkt",
             "Fremde Texte als eigene ausgeben ist Täuschung - egal ob von KI oder Mitschüler. KI darf dir beim Verstehen helfen, nicht beim Schummeln."),
-        ("Wofür ist KI bei Hausaufgaben eine gute Hilfe?", new[] { "Erklären lassen, was du nicht verstanden hast", "Alle Aufgaben komplett für dich lösen lassen", "Ausreden erfinden, warum die Mappe fehlt" }, "Erklären lassen, was du nicht verstanden hast",
+        ("Wofür ist KI bei Hausaufgaben eine gute Hilfe?", new[] { "Erklären lassen, was du nicht verstanden hast", "Alle Aufgaben komplett für dich lösen lassen, was so nicht korrekt ist", "Ausreden erfinden, warum die Mappe fehlt" }, "Erklären lassen, was du nicht verstanden hast",
             "KI als Erklär-Helfer nutzen ('Erkläre mir Brüche einfacher') ist schlau - abschreiben lernt für dich nicht."),
         ("Ein KI-Chat schreibt etwas, das dich verletzt oder erschreckt. Was tust du?", new[] { "Den Chat beenden und einem Erwachsenen davon erzählen", "Höflich bleiben, damit die KI nicht beleidigt ist", "So lange weiterschreiben, bis sie sich entschuldigt" }, "Den Chat beenden und einem Erwachsenen davon erzählen",
             "Du schuldest einer KI nichts - sie fühlt nichts. Bei komischen oder verletzenden Antworten: raus und Bescheid sagen."),
-        ("Warum solltest du KI-Antworten zu Gesundheitsfragen besonders misstrauen?", new[] { "Falsche Tipps können hier direkt schaden - das ist Arztsache", "Gesundheitsthemen sind für KI-Programme zu langweilig", "Solche Antworten sind immer kostenpflichtig" }, "Falsche Tipps können hier direkt schaden - das ist Arztsache",
+        ("Warum solltest du KI-Antworten zu Gesundheitsfragen besonders misstrauen?", new[] { "Falsche Tipps können hier direkt schaden - das ist Arztsache", "Gesundheitsthemen sind für KI-Programme zu langweilig - eine haeufige, aber unzutreffende Vorstellung", "Solche Antworten sind immer kostenpflichtig" }, "Falsche Tipps können hier direkt schaden - das ist Arztsache",
             "Bei Gesundheit, Medikamenten oder Verletzungen gilt: echte Fachleute fragen. Eine halluzinierte Dosierung kann gefährlich sein."),
         ("Was bedeutet es, dass die LernTor-KI 'lokal' läuft?", new[] { "Sie arbeitet nur auf diesem PC, ohne Internet-Versand", "Sie funktioniert nur im Umkreis deiner Stadt", "Sie wurde von einer Firma aus der Nachbarschaft gebaut" }, "Sie arbeitet nur auf diesem PC, ohne Internet-Versand",
             "Lokal = das Modell liegt auf dem PC, deine Fragen verlassen ihn nicht. Bei Online-KIs weißt du nie genau, was gespeichert wird."),
@@ -180,7 +182,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Viele Dienste nutzen Hochgeladenes weiter, z.B. fürs Training. Lade nur hoch, was fremd gesehen werden dürfte - eigene Fotos besser nicht."),
         ("Deine KI-Antwort widerspricht deinem Schulbuch. Was gilt?", new[] { "Erst mal dem geprüften Schulbuch - und nachfragen", "Immer der KI, denn sie ist moderner als Bücher", "Keinem von beiden - das Thema einfach weglassen" }, "Erst mal dem geprüften Schulbuch - und nachfragen",
             "Schulbücher sind von Fachleuten geprüft, KI-Antworten nicht. Bei Widerspruch: Buch schlägt Bot - und die Lehrkraft fragen."),
-        ("Was ist 'Quellenkritik' in einem Satz?", new[] { "Prüfen, wer etwas sagt und wie vertrauenswürdig das ist", "Möglichst viele Quellen wortwörtlich abschreiben", "Nur Quellen nutzen, die deine Meinung bestätigen" }, "Prüfen, wer etwas sagt und wie vertrauenswürdig das ist",
+        ("Was ist 'Quellenkritik' in einem Satz?", new[] { "Prüfen, wer etwas sagt und wie vertrauenswürdig das ist", "Möglichst viele Quellen wortwörtlich abschreiben, auch wenn das manche zunaechst vermuten wuerden", "Nur Quellen nutzen, die deine Meinung bestätigen" }, "Prüfen, wer etwas sagt und wie vertrauenswürdig das ist",
             "Quellenkritik fragt: Wer sagt das? Woher weiß er es? Wem nützt es? Das funktioniert bei Webseiten wie bei KI-Antworten."),
         ("Ein Freund glaubt alles, was 'seine' KI sagt. Was rätst du ihm?", new[] { "KI ist ein Helfer mit Fehlern - wichtige Sachen prüfen", "Recht hat er - Computer irren sich grundsätzlich nie", "Er soll lieber einer anderen, klügeren KI glauben" }, "KI ist ein Helfer mit Fehlern - wichtige Sachen prüfen",
             "Blindes Vertrauen ist der häufigste KI-Fehler von uns Menschen. Werkzeug ja, Wahrheitsmaschine nein."),
@@ -220,7 +222,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Seriosität erkennt man an Verantwortlichen und Belegen - nicht an Design oder Lautstärke der Sprache."),
         ("Die KI beantwortet deine Frage zur gestrigen Wahl. Was ist zu bedenken?", new[] { "Ihr Wissen endet am Trainings-Stichtag - Aktuelles kann erfunden sein", "Wahlergebnisse ändern sich sowieso noch wochenlang und sind deshalb nie zitierfähig", "Politik ist für KI-Systeme gesetzlich gesperrt" }, "Ihr Wissen endet am Trainings-Stichtag - Aktuelles kann erfunden sein",
             "Nach dem Stichtag ist alles Vermutung. Für Aktuelles: Nachrichtenquellen statt Sprachmodell."),
-        ("Was bedeutet 'plausibel klingt nicht gleich wahr'?", new[] { "Gut Formuliertes kann trotzdem komplett falsch sein", "Nur komplizierte Sätze enthalten echte Wahrheit", "Wahre Sätze erkennt man an ihrer Länge" }, "Gut Formuliertes kann trotzdem komplett falsch sein",
+        ("Was bedeutet 'plausibel klingt nicht gleich wahr'?", new[] { "Gut Formuliertes kann trotzdem komplett falsch sein", "Nur komplizierte Sätze enthalten echte Wahrheit, was bei genauerem Hinsehen nicht stimmt", "Wahre Sätze erkennt man an ihrer Länge" }, "Gut Formuliertes kann trotzdem komplett falsch sein",
             "KI ist Weltmeister im Plausibel-Klingen. Deine Prüfung muss beim Inhalt ansetzen, nicht beim Stil."),
         ("Wann ist eine KI-Antwort besonders fehleranfällig?", new[] { "Bei sehr speziellen Nischenthemen mit wenig Trainingsmaterial", "Bei einfachen Alltagsfragen wie Kochrezepten oder bekannten Sprichwörtern", "Direkt nach Mitternacht wegen der Serverwartung" }, "Bei sehr speziellen Nischenthemen mit wenig Trainingsmaterial",
             "Wenig Trainingsdaten = wenig gelernte Muster = mehr Lücken, die das Modell mit Erfundenem füllt."),
@@ -232,7 +234,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Die KI täuscht nicht absichtlich, sie produziert fehlerhafte Muster. Für dich bleibt die Folge gleich: prüfen."),
         ("Für ein Referat übernimmst du drei KI-'Fakten' ungeprüft. Was riskierst du?", new[] { "Vor der Klasse mit erfundenen Angaben dazustehen", "Nichts - im Unterricht prüft solche Details niemand", "Eine Urheberrechtsklage des KI-Herstellers" }, "Vor der Klasse mit erfundenen Angaben dazustehen",
             "Halluzinierte Fakten fliegen oft auf - spätestens, wenn jemand nachfragt. Der Fakten-Check vorher ist dein Schutz."),
-        ("Welcher Arbeitsablauf mit KI ist am sinnvollsten?", new[] { "KI für Entwurf und Ideen, dann selbst prüfen und überarbeiten", "KI-Ergebnis direkt abgeben, Zeit ist schließlich Geld", "Erst alles selbst schreiben, dann von der KI loben lassen" }, "KI für Entwurf und Ideen, dann selbst prüfen und überarbeiten",
+        ("Welcher Arbeitsablauf mit KI ist am sinnvollsten?", new[] { "KI für Entwurf und Ideen, dann selbst prüfen und überarbeiten", "KI-Ergebnis direkt abgeben, Zeit ist schließlich Geld", "Erst alles selbst schreiben, dann von der KI loben lassen (was so in der Praxis nicht zutrifft)" }, "KI für Entwurf und Ideen, dann selbst prüfen und überarbeiten",
             "KI liefert Rohmaterial. Prüfen, korrigieren und verantworten musst du - so entsteht ehrliche, gute Arbeit."),
         ("Warum erfinden KIs manchmal Details zu realen Personen?", new[] { "Sie mischen gelernte Muster verschiedener Personen zusammen", "Prominente bezahlen für geschönte KI-Beschreibungen", "Personendaten sind im Training grundsätzlich verboten" }, "Sie mischen gelernte Muster verschiedener Personen zusammen",
             "Ähnliche Namen, ähnliche Berufe - die Muster verschwimmen. Deshalb bei Personenangaben besonders vorsichtig sein."),
@@ -270,7 +272,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Weniger Trainingsdaten zu einer Sprache oder Kultur = dünnere Muster = mehr Fehler und Klischees genau dort."),
         ("Wer trägt die Verantwortung, wenn eine KI diskriminierende Ergebnisse liefert?", new[] { "Die Menschen und Firmen, die sie bauen und einsetzen", "Niemand - Software kann man nicht verantwortlich machen", "Die Nutzer, weil sie die falschen Fragen stellen" }, "Die Menschen und Firmen, die sie bauen und einsetzen",
             "KI ist ein Produkt. Für Auswahl der Daten, Tests und Einsatz haften Menschen - 'das war der Algorithmus' zählt nicht."),
-        ("Was ist eine Filterblase im Zusammenhang mit Bias?", new[] { "Die KI zeigt dir bevorzugt, was deine Sicht bestätigt", "Ein Schutzprogramm gegen Viren in sozialen Medien", "Eine Funktion, die alle Meinungen gleich oft zeigt" }, "Die KI zeigt dir bevorzugt, was deine Sicht bestätigt",
+        ("Was ist eine Filterblase im Zusammenhang mit Bias?", new[] { "Die KI zeigt dir bevorzugt, was deine Sicht bestätigt", "Ein Schutzprogramm gegen Viren in sozialen Medien", "Eine Funktion, die alle Meinungen gleich oft zeigt - eine verbreitete, aber falsche Annahme" }, "Die KI zeigt dir bevorzugt, was deine Sicht bestätigt",
             "Empfehlungs-KIs verstärken, was dir gefällt. So entsteht der Eindruck, 'alle' dächten wie du - ein Bias deines Feeds."),
         ("Wie kannst du Bias in KI-Antworten selbst entlarven?", new[] { "Gegenfragen stellen und bewusst andere Perspektiven suchen", "Die Antwort mehrfach kopieren und die Kopien Wort für Wort miteinander vergleichen", "Nur noch Ja/Nein-Fragen an die KI stellen" }, "Gegenfragen stellen und bewusst andere Perspektiven suchen",
             "Frag aktiv nach anderen Sichtweisen ('Wie sehen das andere Gruppen?') und prüfe, wessen Perspektive in der Antwort fehlt."),
@@ -286,7 +288,7 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Wenn über ein Thema vor allem Werbung oder Klischees geschrieben wurden, lernt die KI genau dieses verzerrte Bild."),
         ("Warum sollten wichtige Entscheidungen nie allein einer KI überlassen werden?", new[] { "Sie kann Schieflagen enthalten und trägt keine Verantwortung", "Menschen entscheiden grundsätzlich immer fehlerfrei", "KIs sind zu langsam für wichtige Entscheidungen" }, "Sie kann Schieflagen enthalten und trägt keine Verantwortung",
             "KI kann unterstützen - aber prüfen, abwägen und verantworten muss ein Mensch. Genau das fordern auch neue KI-Gesetze."),
-        ("Was bedeutet 'Repräsentation' in Trainingsdaten?", new[] { "Ob alle Gruppen angemessen und realistisch vorkommen", "Wie schön die Daten grafisch dargestellt werden", "Die Anzahl der Server, auf denen Daten liegen" }, "Ob alle Gruppen angemessen und realistisch vorkommen",
+        ("Was bedeutet 'Repräsentation' in Trainingsdaten?", new[] { "Ob alle Gruppen angemessen und realistisch vorkommen", "Wie schön die Daten grafisch dargestellt werden, was einer genaueren Pruefung nicht standhaelt", "Die Anzahl der Server, auf denen Daten liegen" }, "Ob alle Gruppen angemessen und realistisch vorkommen",
             "Fehlt eine Gruppe in den Daten oder kommt nur im Klischee vor, behandelt die KI sie später genau so - lückenhaft oder verzerrt."),
         ("Ein Übersetzer macht aus dem neutralen türkischen 'o' automatisch 'er' beim Arzt und 'sie' bei der Pflegekraft. Was zeigt das?", new[] { "Rollen-Klischees aus den Trainingsdaten wirken in der Übersetzung fort", "Die türkische Sprache lässt sich von Computern grundsätzlich nicht korrekt übersetzen", "Das Programm kennt den Buchstaben O nicht richtig" }, "Rollen-Klischees aus den Trainingsdaten wirken in der Übersetzung fort",
             "Türkisch kennt kein er/sie - die KI ergänzt es nach gelernten Klischees. Ein Bias-Beispiel direkt aus deiner Sprachwelt."),
@@ -352,9 +354,9 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             "Die EU verlangt u.a., dass KI-generierte Inhalte erkennbar sind und riskante Systeme strenger geprüft werden - Verantwortung per Gesetz."),
         ("Warum ist 'Das Video war doch so echt!' keine Entschuldigung fürs Weiterleiten?", new[] { "Gerade weil Fakes echt wirken, ist Prüfen vor dem Teilen Pflicht", "Videos gelten rechtlich nicht als Information und dürfen darum frei geteilt werden", "Weiterleiten ist technisch gar nicht rückverfolgbar" }, "Gerade weil Fakes echt wirken, ist Prüfen vor dem Teilen Pflicht",
             "'Wirkt echt' ist bei Deepfakes der Normalfall. Verantwortung heißt: erst prüfen, dann teilen - oder eben nicht teilen."),
-        ("Welche Einstellung schützt deine Daten bei neuen Apps am meisten?", new[] { "Nur die nötigsten Berechtigungen erteilen und Rest ablehnen", "Alle Berechtigungen erlauben, um Fehler zu vermeiden", "Die App bewerten, bevor man sie ausprobiert" }, "Nur die nötigsten Berechtigungen erteilen und Rest ablehnen",
+        ("Welche Einstellung schützt deine Daten bei neuen Apps am meisten?", new[] { "Nur die nötigsten Berechtigungen erteilen und Rest ablehnen", "Alle Berechtigungen erlauben, um Fehler zu vermeiden, obwohl das auf den ersten Blick plausibel klingt", "Die App bewerten, bevor man sie ausprobiert" }, "Nur die nötigsten Berechtigungen erteilen und Rest ablehnen",
             "Datensparsamkeit: Jede App bekommt nur, was sie für ihre Aufgabe wirklich braucht. Alles Weitere kannst du später immer noch erlauben."),
-        ("Was ist die wichtigste Erkenntnis aus dem Thema Deepfakes?", new[] { "Sehen ist kein Beweis mehr - Quellen und Kontext zählen", "Alle Videos im Internet sind ausnahmslos gefälscht", "Nur Profis können überhaupt noch getäuscht werden" }, "Sehen ist kein Beweis mehr - Quellen und Kontext zählen",
+        ("Was ist die wichtigste Erkenntnis aus dem Thema Deepfakes?", new[] { "Sehen ist kein Beweis mehr - Quellen und Kontext zählen", "Alle Videos im Internet sind ausnahmslos gefälscht, was die eigentliche Bedeutung des Begriffs verfehlt", "Nur Profis können überhaupt noch getäuscht werden" }, "Sehen ist kein Beweis mehr - Quellen und Kontext zählen",
             "'Ich hab's doch gesehen' reicht nicht mehr. Wer nach Quelle, Kontext und Motiv fragt, lässt sich nicht so leicht täuschen.")
     };
 
@@ -367,6 +369,118 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             Topic = "Deepfakes und Datenschutz", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Deepfake = KI-gefälschtes Bild/Video/Stimme. Schutz: Quelle prüfen, Rückruf über bekannte Nummern, Familien-Codewort, nichts Ungeprüftes weiterleiten, Datensparsamkeit."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ArbeitsweiseListe =
+    {
+        ("Was solltest du tun, bevor du die KI zu einer Aufgabe fragst?", new[] { "Die Aufgabe erst selbst versuchen", "Direkt die fertige Lösung erfragen", "Die Aufgabe überspringen und später fragen" }, "Die Aufgabe erst selbst versuchen",
+            "Beim eigenen Versuch passiert das Lernen. Wer sofort fragt, überspringt genau diesen Teil."),
+        ("Welche Frage bringt dir mehr?", new[] { "\"Ich habe so gerechnet, wo ist mein Fehler?\"", "\"Was ist die richtige Lösung?\"", "\"Kannst du das für mich machen?\"" }, "\"Ich habe so gerechnet, wo ist mein Fehler?\"",
+            "Nach dem Fehler zu fragen erklärt dir den Weg. Nach der Lösung zu fragen gibt dir nur ein Ergebnis."),
+        ("Warum ist eine genaue Frage besser als eine allgemeine?", new[] { "Die Antwort passt dann zu deinem Problem", "Die KI antwortet dann schneller", "Kurze Fragen sind technisch verboten" }, "Die Antwort passt dann zu deinem Problem",
+            "Sag, was du schon weißt und was dich verwirrt - dann bekommst du genau das, was fehlt."),
+        ("Eine KI nennt dir eine Jahreszahl für dein Referat. Was tust du?", new[] { "In einer zweiten Quelle nachprüfen", "Sie direkt übernehmen, sie klang sicher", "Eine andere KI dasselbe fragen" }, "In einer zweiten Quelle nachprüfen",
+            "Schulbuch, Heft oder eine seriöse Seite. Zwei KIs können denselben Fehler machen."),
+        ("Was bedeutet der Merksatz \"Die KI ist der erste Schritt, nie der letzte\"?", new[] { "Ihre Antwort ist ein Anfang, den du prüfst", "Man darf sie nur einmal am Tag fragen", "Man soll sie erst ganz zum Schluss fragen" }, "Ihre Antwort ist ein Anfang, den du prüfst",
+            "Sie liefert einen Vorschlag. Was daraus wird, entscheidest du durch Nachprüfen."),
+        ("Du gibst einen KI-Text als eigenen Aufsatz ab. Was ist das?", new[] { "Täuschung, wie vom Nachbarn abschreiben", "Erlaubt, weil die KI kein Mensch ist", "Erlaubt, solange du etwas umstellst" }, "Täuschung, wie vom Nachbarn abschreiben",
+            "Lehrkräfte erkennen das oft am Stil - und in der Klassenarbeit sitzt keine KI neben dir."),
+        ("Warum schadet dir \"Erledigen lassen\" mehr als es nutzt?", new[] { "In der Klassenarbeit fehlt dir das Können", "Es dauert am Ende länger als selbst zu rechnen", "Die KI merkt sich, dass du gefragt hast" }, "In der Klassenarbeit fehlt dir das Können",
+            "Was du nie verstanden hast, kannst du auch nicht abrufen, wenn es zählt."),
+        ("Welche der drei Prüffragen nach einer KI-Antwort gehört dazu?", new[] { "Kann ich das in eigenen Worten erklären?", "Hat die KI schnell geantwortet?", "War die Antwort lang genug?" }, "Kann ich das in eigenen Worten erklären?",
+            "Die drei Fragen: Verstehe ich das Warum? Kann ich es erklären? Habe ich etwas nachgeprüft?"),
+        ("Was heißt es, wenn du eine KI-Antwort nicht erklären kannst?", new[] { "Du hast sie noch nicht verstanden", "Die Antwort war bestimmt falsch", "Die KI hat zu kompliziert geantwortet" }, "Du hast sie noch nicht verstanden",
+            "Erklären können ist der beste Test dafür, ob etwas wirklich angekommen ist."),
+        ("Die KI erklärt dir etwas und du verstehst es nicht. Was hilft?", new[] { "Nachfragen: einfacher, mit Beispiel", "Die Erklärung trotzdem abschreiben", "Zur nächsten Aufgabe weitergehen" }, "Nachfragen: einfacher, mit Beispiel",
+            "Du darfst so oft nachfragen, wie du willst - genau dafür ist der Chat da."),
+        ("Warum ist es sinnvoll, der KI dein Alter zu nennen?", new[] { "Sie erklärt dann passend für dich", "Sie antwortet dann schneller", "Sie speichert dich dann als Nutzer" }, "Sie erklärt dann passend für dich",
+            "\"Erklär es für einen Zwölfjährigen\" verändert die Antwort deutlich."),
+        ("Was ist ein guter Einsatz der KI bei einer Vokabelübung?", new[] { "Sich abfragen und Fehler erklären lassen", "Sich die Vokabeln vorsagen lassen", "Die Hausaufgabe komplett schreiben lassen" }, "Sich abfragen und Fehler erklären lassen",
+            "Als Trainingspartner ist sie stark - als Ersatz für das Üben nutzlos."),
+        ("Die KI widerspricht deinem Schulbuch. Wem glaubst du zuerst?", new[] { "Dem Schulbuch, und du fragst nach", "Der KI, sie ist aktueller und deshalb hier nicht zutrifft", "Keinem von beiden" }, "Dem Schulbuch, und du fragst nach",
+            "Das Schulbuch wurde geprüft. Bei Widerspruch fragst du am besten die Lehrkraft."),
+        ("Was solltest du tun, wenn die KI sehr sicher klingt?", new[] { "Genauso prüfen wie sonst auch", "Ihr dann besonders vertrauen", "Die Antwort sofort weitergeben" }, "Genauso prüfen wie sonst auch",
+            "Sicher klingen und richtig liegen sind zwei verschiedene Dinge."),
+        ("Wozu ist die KI im LernTor besonders gut geeignet?", new[] { "Zum Nachfragen, wenn du hängst", "Zum Ausfüllen der Antwortfelder", "Zum Überspringen von Aufgaben" }, "Zum Nachfragen, wenn du hängst",
+            "Sie ist als Nachhilfe gedacht, die nie ungeduldig wird - nicht als Abkürzung."),
+        ("Was macht eine Antwort für dich wertvoll?", new[] { "Dass du danach etwas kannst", "Dass sie besonders lang ist", "Dass sie schnell kam" }, "Dass du danach etwas kannst",
+            "Der einzige Maßstab: Bist du hinterher schlauer als vorher?"),
+        ("Warum ist \"Erklär mir das mit einem Beispiel\" eine starke Nachfrage?", new[] { "Beispiele machen Abstraktes greifbar", "Beispiele sind immer kürzer", "Die KI darf dann keine Fehler machen" }, "Beispiele machen Abstraktes greifbar",
+            "An einem Pizza-Beispiel versteht man Brüche schneller als an einer Regel."),
+        ("Du sollst einen Text zusammenfassen. Wie nutzt du die KI sinnvoll?", new[] { "Selbst zusammenfassen, dann vergleichen", "Die KI zusammenfassen lassen", "Den Text gar nicht erst lesen" }, "Selbst zusammenfassen, dann vergleichen",
+            "Der Vergleich zeigt dir, was du übersehen hast - das ist die eigentliche Übung."),
+        ("Was ist der Unterschied zwischen \"Hilf mir\" und \"Mach es\"?", new[] { "Beim Helfen bleibst du derjenige, der lernt", "Es ist derselbe Auftrag anders formuliert", "\"Mach es\" liefert genauere Ergebnisse" }, "Beim Helfen bleibst du derjenige, der lernt",
+            "Dieselbe KI, zwei völlig verschiedene Ergebnisse für dich."),
+        ("Wie merkst du, dass du die KI gut genutzt hast?", new[] { "Du kannst die Aufgabe allein noch einmal", "Du warst besonders schnell fertig", "Du musstest nur einmal fragen" }, "Du kannst die Aufgabe allein noch einmal",
+            "Mach die Probe: dieselbe Art Aufgabe ohne Hilfe. Klappt sie, hat es funktioniert.")
+    };
+
+    private static QuizQuestion KiRichtigNutzen(Random r)
+    {
+        var f = ArbeitsweiseListe[r.Next(ArbeitsweiseListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.KiWissen, GradeLevel = GradeLevel.Klasse6,
+            Topic = "KI richtig nutzen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Erst selbst versuchen, dann gezielt fragen, danach nachprüfen. Die drei Prüffragen: Verstehe ich das Warum? Kann ich es erklären? Habe ich etwas nachgeprüft? Die KI ist der erste Schritt, nie der letzte."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GrenzenListe =
+    {
+        ("Warum kann eine KI dich nicht wirklich kennen?", new[] { "Sie hat dich nie erlebt, nur Texte gelesen", "Sie darf persönliche Daten nicht speichern", "Sie vergisst alles nach einer Stunde" }, "Sie hat dich nie erlebt, nur Texte gelesen",
+            "Was sie über dich sagt, sind Muster aus Texten über andere Menschen."),
+        ("Eine KI antwortet immer freundlich. Warum ist das keine Freundschaft?", new[] { "Sie erinnert sich morgen nicht an dich", "Freundschaft braucht mindestens drei Jahre", "Freundlichkeit allein ist verdächtig" }, "Sie erinnert sich morgen nicht an dich",
+            "Sie vermisst dich nicht und freut sich nicht. Echte Freunde widersprechen dir auch mal."),
+        ("Du hast Streit mit einem Freund. Wen fragst du?", new[] { "Einen Menschen, der euch beide kennt", "Die KI, sie bleibt neutral", "Niemanden, das regelt sich" }, "Einen Menschen, der euch beide kennt",
+            "Die KI kennt weder dich noch deinen Freund noch das, was vorgefallen ist."),
+        ("Jemand mobbt dich online. Was ist der richtige Schritt?", new[] { "Beweise sichern und Erwachsene einbeziehen", "Die KI um Rat fragen und abwarten", "Zurückschreiben und es aussitzen" }, "Beweise sichern und Erwachsene einbeziehen",
+            "Eine KI kann niemanden anrufen und niemanden holen. Ein Mensch kann das."),
+        ("Welche Nummer hilft in Deutschland kostenlos und anonym bei Sorgen?", new[] { "116 111 (Nummer gegen Kummer)", "112 (Feuerwehr und Rettung)", "110 (Polizeinotruf)" }, "116 111 (Nummer gegen Kummer)",
+            "Die 116 111 ist für Kinder und Jugendliche da. 110 und 112 sind für akute Notfälle."),
+        ("Du fühlst dich seit Wochen traurig. Wer hilft dir wirklich?", new[] { "Eltern, Lehrkraft oder Vertrauensperson", "Die KI, sie hat immer Zeit, was so nicht korrekt ist", "Ein Forum im Internet" }, "Eltern, Lehrkraft oder Vertrauensperson",
+            "Ein Mensch kann handeln, begleiten und da sein - eine KI kann nur Sätze bilden."),
+        ("Du hast Bauchschmerzen. Warum ist die KI hier die falsche Adresse?", new[] { "Sie kann dich nicht untersuchen", "Sie kennt sich mit Medizin nicht aus", "Sie antwortet zu langsam" }, "Sie kann dich nicht untersuchen",
+            "Sie sieht dich nicht, kann nicht messen und trägt keine Verantwortung. Das kann nur ein Arzt."),
+        ("Was fehlt einer KI, das ein Arzt oder Anwalt hat?", new[] { "Ausbildung und Verantwortung für den Rat", "Zugang zu aktuellen Informationen", "Die Fähigkeit, lange Texte zu lesen - eine haeufige, aber unzutreffende Vorstellung" }, "Ausbildung und Verantwortung für den Rat",
+            "Fachleute müssen für ihren Rat geradestehen. Eine KI muss das nie."),
+        ("Warum reicht es nicht, dass eine KI sicher klingt?", new[] { "Sicher klingen ist keine Prüfung", "Sie klingt nur bei falschen Antworten sicher", "Sie klingt immer unsicher" }, "Sicher klingen ist keine Prüfung",
+            "Der überzeugte Tonfall entsteht aus Sprachmustern, nicht aus Wissen."),
+        ("Was kann eine KI über deinen Kiez in Berlin wissen?", new[] { "Nur, was irgendwo darüber geschrieben wurde", "Alles, sie hat Zugriff auf Kameras", "Nichts, sie kennt keine Städte" }, "Nur, was irgendwo darüber geschrieben wurde",
+            "Wie es dort heute tatsächlich ist, weißt du - nicht sie."),
+        ("Was hat eine KI nie erlebt?", new[] { "Wie sich Regen auf der Haut anfühlt", "Wie man einen Satz bildet", "Wie man eine Zahl addiert" }, "Wie sich Regen auf der Haut anfühlt",
+            "Sie hat über alles gelesen und nichts davon erfahren. Deine Erfahrungen bleiben deine."),
+        ("Eine KI sagt dir, was du tun sollst. Wer entscheidet?", new[] { "Du - zusammen mit Menschen, die dir wichtig sind", "Die KI, sie hat mehr Wissen", "Wer zuerst spricht" }, "Du - zusammen mit Menschen, die dir wichtig sind",
+            "Ein Vorschlag ist kein Befehl. Die Verantwortung bleibt bei dir."),
+        ("Warum sind Freunde wertvoll, obwohl sie dir widersprechen?", new[] { "Widerspruch zeigt dir andere Blickwinkel", "Weil Streit zum Alltag gehört", "Weil sie sonst langweilig wären, auch wenn das manche zunaechst vermuten wuerden" }, "Widerspruch zeigt dir andere Blickwinkel",
+            "Eine KI stimmt dir meistens zu. Das fühlt sich gut an, bringt dich aber nicht weiter."),
+        ("Was ist der Unterschied zwischen Zuhören und Antworten-Erzeugen?", new[] { "Zuhören heißt, den Menschen zu meinen", "Es gibt technisch keinen Unterschied, was bei genauerem Hinsehen nicht stimmt", "Antworten-Erzeugen dauert länger" }, "Zuhören heißt, den Menschen zu meinen",
+            "Die KI reagiert auf Wörter. Ein Mensch reagiert auf dich."),
+        ("Du sollst entscheiden, welche Schule du wählst. Wie hilft die KI sinnvoll?", new[] { "Sie sammelt Fragen, die du Menschen stellst", "Sie entscheidet anhand deiner Noten", "Sie meldet dich direkt an" }, "Sie sammelt Fragen, die du Menschen stellst",
+            "Als Vorbereitung für ein echtes Gespräch ist sie brauchbar - als Entscheider nicht."),
+        ("Jemand im Netz will dich treffen und sagt, er sei ein Kind. Was tust du?", new[] { "Sofort Eltern oder Lehrkraft einbeziehen", "Die KI fragen, ob das echt klingt", "Erst mal weiterschreiben und beobachten (was so in der Praxis nicht zutrifft)" }, "Sofort Eltern oder Lehrkraft einbeziehen",
+            "Wer du im Netz wirklich vor dir hast, kann keine KI beurteilen - und kein Kind allein."),
+        ("Warum sollte man wichtige Entscheidungen nicht allein mit KI treffen?", new[] { "Sie kennt deine Lage und Folgen nicht", "Sie braucht dafür zu lange", "Sie darf das rechtlich nicht - eine verbreitete, aber falsche Annahme" }, "Sie kennt deine Lage und Folgen nicht",
+            "Sie sieht weder deine Familie noch dein Geld noch deine Gefühle - alles, worauf es ankommt."),
+        ("Was ist gemeint mit \"KI ist ein Werkzeug, kein Vorbild\"?", new[] { "Sie hilft beim Tun, sagt nicht wie man lebt", "Sie ist noch nicht gut genug dafür", "Vorbilder müssen Menschen sein, das ist Gesetz" }, "Sie hilft beim Tun, sagt nicht wie man lebt",
+            "Ein Hammer ist nützlich - aber niemand fragt ihn, wie man ein guter Mensch wird."),
+        ("Woran merkst du, dass du zu viel mit der KI redest?", new[] { "Du meidest Gespräche mit echten Menschen", "Du stellst besonders viele Fragen", "Du nutzt sie täglich für die Schule" }, "Du meidest Gespräche mit echten Menschen",
+            "Als Werkzeug täglich zu nutzen ist völlig in Ordnung. Als Ersatz für Menschen nicht."),
+        ("Was bleibt immer deine Aufgabe, egal wie gut die KI wird?", new[] { "Selbst denken, prüfen und entscheiden", "Die Fragen möglichst kurz zu halten", "Die Antworten wörtlich zu behalten" }, "Selbst denken, prüfen und entscheiden",
+            "Ein Werkzeug nimmt dir Arbeit ab, nie die Verantwortung.")
+    };
+
+    private static QuizQuestion GrenzenDerKi(Random r)
+    {
+        var f = GrenzenListe[r.Next(GrenzenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.KiWissen, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Wo KI nicht hingehört", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Die KI kennt dich nicht und hat nichts erlebt. Bei Streit, Angst, Mobbing, Krankheit und wichtigen Entscheidungen sind Menschen zuständig - Eltern, Lehrkräfte, Ärzte. Nummer gegen Kummer: 116 111."
         };
     }
 }
