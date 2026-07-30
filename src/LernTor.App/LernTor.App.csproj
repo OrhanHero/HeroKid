@@ -35,20 +35,24 @@
     <PackageReference Include="System.Speech" Version="8.0.0" />
   </ItemGroup>
 
-  <!-- LLamaSharp sucht seine nativen Bibliotheken (llama.dll/ggml*.dll) selbst per Dateipfad unter
-       runtimes/win-x64/native/<variante>/ relativ zur EXE. Im Single-File-Bundle sind sie zwar
-       eingebettet und extrahiert, aber für diese EIGENE Pfadsuche unsichtbar - Folge auf
-       installierten Rechnern: "The type initializer for 'LLama.Native.NativeApi' threw an
-       exception" (realer Bug aus dem Familientest). Daher bleiben genau diese Dateien beim Publish
-       als lose Dateien mit Ordnerstruktur neben der EXE liegen. -->
-  <Target Name="KeepLlamaNativeLibsOutsideSingleFileBundle"
-          AfterTargets="ComputeResolvedFilesToPublishList"
-          Condition="'$(PublishSingleFile)' == 'true'">
-    <ItemGroup>
-      <ResolvedFileToPublish Condition="$([System.String]::Copy('%(ResolvedFileToPublish.RelativePath)').Replace('\','/').Contains('runtimes/win-x64/native/'))">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
+  <!-- LLamaSharp sucht seine nativen Bibliotheken (llama.dll/ggml*.dll) selbst per Dateipfad
+       relativ zur EXE, statt sie über den normalen .NET-Ladeweg aufzulösen. Steckten sie im
+       Single-File-Bundle, wären sie für diese eigene Suche unsichtbar - Folge auf installierten
+       Rechnern: "The type initializer for 'LLama.Native.NativeApi' threw an exception"
+       (realer Bug aus dem Familientest, zweimal aufgetreten).
+
+       Deshalb bleiben native Bibliotheken beim Single-File-Publish als lose Dateien neben der EXE
+       liegen. Das ist seit .NET 6 ohnehin das Standardverhalten - der frühere Versuch, das über
+       einen eigenen MSBuild-Target mit ExcludeFromSingleFile zu erzwingen, lief ins Leere, weil
+       das Publish-Kommando gleichzeitig IncludeNativeLibrariesForSelfExtract=true setzte und
+       RID-spezifische Assets ihren runtimes/-Pfad beim Publish ohnehin verlieren.
+
+       Die Eigenschaft steht hier zusätzlich explizit, damit auch ein von Hand ausgeführtes
+       `dotnet publish` ohne die dokumentierten Flags ein funktionierendes Ergebnis liefert.
+       Ein -p:IncludeNativeLibrariesForSelfExtract=true auf der Kommandozeile würde sie allerdings
+       überstimmen - deshalb prüft der CI-Lauf zusätzlich, ob llama.dll wirklich lose vorliegt. -->
+  <PropertyGroup>
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
 
 </Project>

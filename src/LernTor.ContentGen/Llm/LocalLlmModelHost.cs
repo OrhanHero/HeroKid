@@ -70,29 +70,28 @@ public sealed class LocalLlmModelHost : IDisposable
             // Modellwechsel im Eltern-Bereich oder Erstladung: alte Gewichte freigeben, bevor neu geladen wird.
             _weights?.Dispose();
 
-            var modelParams = new ModelParams(modelPath)
-            {
-                ContextSize = _options.ContextSize,
-                // Absichtlich reines CPU-Backend (Paket LLamaSharp.Backend.Cpu) - keine CUDA/GPU-Abhängigkeit
-                // im Kiosk-Setup, das auf beliebiger Eltern-Hardware laufen muss.
-                GpuLayerCount = 0
-            };
-
+            // Die native Initialisierung kann bereits beim Bauen der ModelParams zuschlagen, nicht
+            // erst beim Laden der Gewichte - deshalb liegt ALLES, was LLamaSharp anfasst, im
+            // selben try-Block. Vorher stand new ModelParams(...) außerhalb, weshalb der Fehler
+            // ungefiltert als "The type initializer for 'LLama.Native.NativeApi' threw an
+            // exception" beim Kind bzw. bei den Eltern ankam.
             try
             {
+                var modelParams = new ModelParams(modelPath)
+                {
+                    ContextSize = _options.ContextSize,
+                    // Absichtlich reines CPU-Backend (Paket LLamaSharp.Backend.Cpu) - keine CUDA/GPU-Abhängigkeit
+                    // im Kiosk-Setup, das auf beliebiger Eltern-Hardware laufen muss.
+                    GpuLayerCount = 0
+                };
+
                 _weights = LLamaWeights.LoadFromFile(modelParams);
+                _executor = new StatelessExecutor(_weights, modelParams);
             }
-            catch (TypeInitializationException ex)
+            catch (Exception ex) when (IsNativeLoadFailure(ex))
             {
-                // Tritt auf, wenn die native llama.dll nicht gefunden/geladen werden kann (z.B.
-                // ältere Single-File-Installation ohne lose runtimes/-Dateien, siehe
-                // LernTor.App.csproj "KeepLlamaNativeLibsOutsideSingleFileBundle").
-                throw new InvalidOperationException(
-                    "Die lokale KI-Komponente (llama.dll) konnte nicht geladen werden. Bitte die " +
-                    "neueste LernTor-Version installieren; danach muss neben LernTor.exe ein Ordner " +
-                    "\"runtimes\" liegen.", ex);
+                throw new InvalidOperationException(NativeLoadFailureMessage, ex);
             }
-            _executor = new StatelessExecutor(_weights, modelParams);
             _loadedModelPath = modelPath;
 
             return _executor;
@@ -101,6 +100,37 @@ public sealed class LocalLlmModelHost : IDisposable
         {
             _lock.Release();
         }
+    }
+
+    /// <summary>
+    /// Klartext für Eltern statt der rohen .NET-Meldung. Nennt bewusst den konkreten nächsten
+    /// Schritt - "The type initializer for 'LLama.Native.NativeApi' threw an exception" sagt
+    /// niemandem, was zu tun ist.
+    /// </summary>
+    private const string NativeLoadFailureMessage =
+        "Die lokale KI-Komponente (llama.dll) konnte nicht geladen werden. Bitte die aktuelle " +
+        "LernTor-Version neu entpacken bzw. installieren - neben LernTor.exe müssen die Dateien " +
+        "llama.dll und ggml-*.dll liegen. Die heruntergeladenen Modelldateien sind davon nicht " +
+        "betroffen und bleiben erhalten.";
+
+    /// <summary>
+    /// Erkennt das Fehlschlagen der nativen Initialisierung. Der erste Zugriff wirft eine
+    /// <see cref="TypeInitializationException"/>; jeder weitere Zugriff im selben Prozess wirft
+    /// dieselbe zwischengespeicherte Ausnahme erneut. Fehlt die DLL schlicht, kommt stattdessen
+    /// eine <see cref="DllNotFoundException"/> oder <see cref="BadImageFormatException"/>
+    /// (32/64-Bit-Verwechslung) - alle drei bedeuten für die Eltern dasselbe.
+    /// </summary>
+    private static bool IsNativeLoadFailure(Exception ex)
+    {
+        for (var current = ex; current is not null; current = current.InnerException)
+        {
+            if (current is TypeInitializationException or DllNotFoundException or BadImageFormatException)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private async Task<string> EnsureModelFileAsync(CancellationToken cancellationToken)

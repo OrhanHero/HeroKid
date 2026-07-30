@@ -40,7 +40,7 @@ dotnet run --project src/LernTor.App
 # (the lock is also auto-skipped when a debugger is attached, e.g. F5 in Visual Studio)
 
 # Self-contained release build (single-file, ReadyToRun — see docs/BUILD.md for why PublishTrimmed is deliberately not used)
-dotnet publish src/LernTor.App/LernTor.App.csproj --configuration Release --runtime win-x64 --self-contained true --output publish/win-x64 -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true
+dotnet publish src/LernTor.App/LernTor.App.csproj --configuration Release --runtime win-x64 --self-contained true --output publish/win-x64 -p:PublishSingleFile=true -p:PublishReadyToRun=true
 
 # Installer (requires Inno Setup's iscc.exe)
 iscc src\LernTor.Installer\setup.iss
@@ -176,6 +176,18 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
 - **EF Core's Sqlite provider cannot translate `OrderBy`/`OrderByDescending` on a `DateTimeOffset`
   column** (`NotSupportedException` at query execution, not at compile time). Fetch rows first
   (`ToListAsync()`), then sort in memory.
+- **Never publish with `-p:IncludeNativeLibrariesForSelfExtract=true`.** LLamaSharp resolves
+  `llama.dll`/`ggml-*.dll` by *file path next to the exe*, not through the normal .NET loader. With
+  that flag the natives go into the single-file bundle and get self-extracted to a temp folder
+  where LLamaSharp's own lookup can't see them — the app starts fine, only the AI chat and the
+  teacher import fail with `The type initializer for 'LLama.Native.NativeApi' threw an exception`.
+  This bit the family **twice**: the first fix added an MSBuild target setting
+  `ExcludeFromSingleFile` on files whose `RelativePath` contained `runtimes/win-x64/native/`, which
+  silently did nothing — RID-specific publish flattens those assets, so the path never matched, and
+  the publish command re-enabled the flag anyway. The flag is now gone from CI and `docs/BUILD.md`,
+  `IncludeNativeLibrariesForSelfExtract` is pinned to `false` in `LernTor.App.csproj`, and the CI
+  workflow **verifies after publishing** that `llama.dll` plus at least one `ggml-*.dll` really are
+  loose files. Don't "tidy up" the extra DLLs next to the exe — they have to be there.
 - **Repository tests that back onto a real SQLite temp file must wrap the `File.Delete` in their
   `Dispose` in a `try`/`catch`.** `Microsoft.Data.Sqlite` pools connections, so the file handle can
   still be held after the `DbContext` is disposed — `File.Delete` then throws `IOException: The

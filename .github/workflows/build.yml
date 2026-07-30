@@ -56,6 +56,10 @@ jobs:
         # Identische Flags wie der dokumentierte Release-Build (docs/BUILD.md), damit das
         # CI-Artefakt wirklich dem entspricht, was auch installiert wird: Single-File +
         # ReadyToRun (schneller Kaltstart nach dem Autostart-Login).
+        # BEWUSST OHNE IncludeNativeLibrariesForSelfExtract: LLamaSharp sucht llama.dll/ggml*.dll
+        # selbst per Dateipfad neben der EXE. Landen sie im Bundle, findet es sie nicht und die
+        # KI-Funktionen scheitern mit "The type initializer for 'LLama.Native.NativeApi' threw an
+        # exception" - siehe LernTor.App.csproj.
         run: >
           dotnet publish src/LernTor.App/LernTor.App.csproj
           --configuration Release
@@ -63,8 +67,33 @@ jobs:
           --self-contained true
           -p:PublishSingleFile=true
           -p:PublishReadyToRun=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
           --output publish/win-x64
+
+      - name: Prüfen, dass die KI-Bibliotheken lose neben der EXE liegen
+        # Diese Bug-Klasse fällt sonst erst beim Kind auf: die App startet normal, nur der
+        # KI-Chat und der Lehrer-Import scheitern. Der vorherige Versuch, das per MSBuild-Target
+        # zu lösen, lief still ins Leere - deshalb wird das Ergebnis hier hart geprüft statt
+        # angenommen.
+        shell: pwsh
+        run: |
+          # Bewusst keine feste Liste erwarteter ggml-Dateinamen: die ändern sich zwischen
+          # LLamaSharp-/llama.cpp-Versionen. Geprüft wird, was sicher da sein muss (llama.dll)
+          # plus mindestens eine ggml-Bibliothek; die vollständige Liste wird protokolliert,
+          # damit eine Änderung im Backend im Log sichtbar wird.
+          $found = Get-ChildItem publish/win-x64 -Filter *.dll -ErrorAction SilentlyContinue |
+                     Where-Object { $_.Name -match '^(llama|ggml|mtmd|llava)' }
+          Write-Host "Native KI-Bibliotheken neben der EXE:"
+          if ($found) { $found | ForEach-Object { Write-Host "  $($_.Name)" } } else { Write-Host "  (keine)" }
+
+          if (-not (Test-Path 'publish/win-x64/llama.dll')) {
+            Write-Error "llama.dll liegt nicht lose neben der EXE. LLamaSharp sucht sie per Dateipfad - ohne sie scheitern KI-Chat und Lehrer-Import auf dem Zielrechner mit 'The type initializer for LLama.Native.NativeApi threw an exception'."
+            exit 1
+          }
+          if (-not ($found | Where-Object { $_.Name -like 'ggml*' })) {
+            Write-Error "Keine ggml-Bibliothek gefunden. llama.dll allein kann das Modell nicht laden."
+            exit 1
+          }
+          Write-Host "OK - die nativen KI-Bibliotheken liegen lose neben der EXE."
 
       - name: Build-Artefakt hochladen
         uses: actions/upload-artifact@v4

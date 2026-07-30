@@ -41,16 +41,26 @@ dotnet publish src/LernTor.App/LernTor.App.csproj `
   --self-contained true `
   --output publish/win-x64 `
   -p:PublishSingleFile=true `
-  -p:PublishReadyToRun=true `
-  -p:IncludeNativeLibrariesForSelfExtract=true
+  -p:PublishReadyToRun=true
 ```
 
 Das Ergebnis in `publish/win-x64` ist eigenständig lauffähig (keine separate .NET-Installation auf dem
 Ziel-PC nötig) und liegt für den Kiosk-Einsatz als eine einzelne `LernTor.exe`
 (`PublishSingleFile`) vor, die dank `PublishReadyToRun` (vorab-JIT-kompiliert für win-x64) auch
-nach dem automatischen Autostart-Login schneller hochfährt. `IncludeNativeLibrariesForSelfExtract`
-bettet native Abhängigkeiten (z.B. von System.Speech/WPF) direkt in die exe ein, statt sie beim
-ersten Start in einen Temp-Ordner zu extrahieren.
+nach dem automatischen Autostart-Login schneller hochfährt.
+
+**Bewusst nicht gesetzt: `IncludeNativeLibrariesForSelfExtract`.** Mit dieser Option landen native
+Bibliotheken in der exe und werden beim Start in einen Temp-Ordner entpackt. LLamaSharp sucht seine
+Bibliotheken (`llama.dll`, `ggml-*.dll`) aber selbst per Dateipfad neben der exe und findet sie
+dort nicht - die App startet dann normal, nur KI-Chat und Lehrer-Import scheitern mit
+`The type initializer for 'LLama.Native.NativeApi' threw an exception`. Genau dieser Fehler ist im
+Familienbetrieb zweimal aufgetreten; ein erster Reparaturversuch über ein eigenes MSBuild-Target
+lief still ins Leere, weil das Publish-Kommando die Option gleichzeitig wieder aktivierte.
+
+Ohne die Option bleiben native Bibliotheken als lose Dateien neben der exe liegen (Standard seit
+.NET 6). Das Verzeichnis enthält dadurch mehr als nur die exe - das ist beabsichtigt. Der CI-Lauf
+prüft nach jedem Publish, ob `llama.dll` und mindestens eine `ggml-*.dll` wirklich lose vorliegen,
+damit dieser Fehler nicht ein drittes Mal erst beim Kind auffällt.
 
 **Bewusst nicht aktiviert: `PublishTrimmed`.** WPF nutzt an vielen Stellen Reflection (Binding,
 `DataTemplate`-Auflösung, Converter), die der Trimmer nicht zuverlässig erkennt - ohne umfangreiche
