@@ -1007,6 +1007,21 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             TopicReportRows.Add(row);
         }
 
+        // Lernzeit je Fach: die Trefferquote allein sagt nicht, WARUM ein Fach schlecht laeuft.
+        // Schnell und falsch heisst geraten, langsam und falsch heisst nicht verstanden - zwei
+        // verschiedene Probleme mit zwei verschiedenen Antworten.
+        SubjectTimeRows.Clear();
+        var timeStats = SubjectTimeAnalyzer.Analyze(answers.Select(a =>
+            new SubjectTimeAnalyzer.Entry(a.Subject, a.WasCorrect, a.AnswerDurationMs)));
+
+        foreach (var stat in timeStats)
+        {
+            SubjectTimeRows.Add(new SubjectTimeRowViewModel(stat, loc[$"Stage_{stat.Subject}"]));
+        }
+
+        HasSubjectTimeData = SubjectTimeRows.Count > 0;
+        OnPropertyChanged(nameof(SubjectTimeSummary));
+
         // Antworttempo: im reinen Richtig/Falsch-Bericht ist Raten unsichtbar, weil es bei drei
         // Optionen in einem Drittel der Fälle "richtig" ergibt. Die Dauer macht es sichtbar.
         var pace = AnswerPaceAnalyzer.Analyze(answers.Select(a => (a.AnswerDurationMs, a.WasCorrect)));
@@ -2373,6 +2388,34 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             ExamStatus = $"Einlesen fehlgeschlagen: {ex.Message}";
+        }
+    }
+
+    // --- Lernzeit je Fach (Eltern-Bericht) ---
+
+    /// <summary>Zeitbilanz je Fach, zeitaufwendigstes zuerst.</summary>
+    public ObservableCollection<SubjectTimeRowViewModel> SubjectTimeRows { get; } = new();
+
+    [ObservableProperty]
+    private bool hasSubjectTimeData;
+
+    /// <summary>Fasst zusammen, worauf die Eltern schauen sollten - oder dass alles unauffaellig ist.</summary>
+    public string SubjectTimeSummary
+    {
+        get
+        {
+            if (SubjectTimeRows.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var auffaellig = SubjectTimeRows.Where(r => r.NeedsAttention).ToList();
+            if (auffaellig.Count == 0)
+            {
+                return "Kein Fach fällt aus dem Rahmen.";
+            }
+
+            return "Genauer hinschauen bei: " + string.Join(", ", auffaellig.Select(r => r.SubjectLabel));
         }
     }
 

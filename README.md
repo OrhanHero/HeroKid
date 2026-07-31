@@ -271,6 +271,13 @@ deshalb bewusst nicht umgesetzt.
   ist Raten unsichtbar - bei drei Optionen liegt Raten in einem Drittel der Fälle richtig. Bewusst
   nur ein Hinweis für die Eltern, keine zusätzliche Sperre für das Kind: wer das Antworten selbst
   blockiert, bestraft auch das Kind, das die Antwort einfach sofort weiß.
+- **⏱ Lernzeit je Fach** (`SubjectTimeAnalyzer`): wie viel Zeit ein Fach gekostet hat, die
+  typische Dauer je Aufgabe (Median) und - der eigentliche Punkt - was beides *zusammen* mit der
+  Trefferquote bedeutet. Eine niedrige Quote allein unterscheidet nicht zwischen **geraten**
+  (schnell und falsch) und **nicht verstanden** (langsam und falsch); das sind zwei verschiedene
+  Probleme mit zwei verschiedenen Reaktionen. "Schnell" und "langsam" sind dabei **relativ zum
+  Kind selbst** definiert (Vergleich mit dem Median über alle seine Fächer) - ein gründliches Kind
+  braucht überall länger, das darf nicht jedes Fach als Problem markieren.
 - **🩺 Feed-Gesundheit**: an jeder Quelle steht, wie der letzte tatsächliche Abruf ausging
   (`FeedHealthLog`, gespeichert in `%LOCALAPPDATA%\LernTor\feedhealth.json`) - "✓ heute geladen"
   oder "⚠ vor 3 Tagen fehlgeschlagen: …", fehlgeschlagene rot. Der Zeitpunkt steht bewusst dabei:
