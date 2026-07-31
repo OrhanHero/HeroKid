@@ -83,18 +83,18 @@ public static class CuratedNewsFeeds
         // Wissenschaft auf Deutsch: erklärt Zusammenhänge, statt nur Ereignisse zu melden -
         // dankbares Material für Verständnisfragen.
         new NewsFeedSource("Spektrum.de", "https://www.spektrum.de/alias/rss/spektrum-de-rss-feed/996406",
-            NewsRegionFocus.International, NewsFeedLanguage.Deutsch, NewsCategory.Welt),
+            NewsRegionFocus.International, NewsFeedLanguage.Deutsch, NewsCategory.Wissen),
         new NewsFeedSource("MDR Wissen", "https://www.mdr.de/wissen/rss-feed-wissen-100.xml",
-            NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Deutschland),
+            NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Wissen),
         new NewsFeedSource("Max-Planck-Gesellschaft", "https://www.mpg.de/rss/pressReleases",
-            NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Deutschland),
+            NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Wissen),
         new NewsFeedSource("Umweltbundesamt", "https://www.umweltbundesamt.de/rss/pressemitteilungen",
             NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Deutschland),
 
         // Sport: die einzige Rubrik, die vorher gar nicht vorkam, obwohl sie für die Altersgruppe
         // oft der Einstieg ins Nachrichtenlesen überhaupt ist.
         new NewsFeedSource("Sportschau", "https://www.sportschau.de/index~rss2.xml",
-            NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Deutschland),
+            NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Sport),
 
         // KI/Technik-Quelle: Digital-/KI-Themen sind für Kinder/Jugendliche zunehmend
         // alltagsrelevant; der NewsCategoryClassifier sortiert die Artikel in die KI-Rubrik.
@@ -135,7 +135,7 @@ public static class CuratedNewsFeeds
         new NewsFeedSource("Anadolu Ajansı Bilim-Teknoloji", "https://www.aa.com.tr/tr/rss/default?cat=bilim-teknoloji",
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
         new NewsFeedSource("Anadolu Ajansı Spor", "https://www.aa.com.tr/tr/rss/default?cat=spor",
-            NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
+            NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Sport),
         new NewsFeedSource("TRT Haber", "https://www.trthaber.com/sondakika.rss",
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
         new NewsFeedSource("TRT Haber Bilim ve Teknoloji", "https://www.trthaber.com/bilim_teknoloji.rss",
@@ -157,17 +157,17 @@ public static class CuratedNewsFeeds
         new NewsFeedSource("BBC News World", "https://feeds.bbci.co.uk/news/world/rss.xml",
             NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
         new NewsFeedSource("BBC Science & Environment", "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
-            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
+            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Wissen),
         new NewsFeedSource("DW English", "https://rss.dw.com/xml/rss-en-all",
             NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
         new NewsFeedSource("Euronews English", "https://www.euronews.com/rss",
             NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
         new NewsFeedSource("NASA Breaking News", "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
+            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Wissen),
         new NewsFeedSource("ESA Space News", "https://www.esa.int/rssfeed/Our_Activities/Space_News",
-            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
+            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Wissen),
         new NewsFeedSource("ScienceDaily", "https://www.sciencedaily.com/rss/all.xml",
-            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Welt),
+            NewsRegionFocus.International, NewsFeedLanguage.Englisch, NewsCategory.Wissen),
     };
 
     /// <summary>Schlüsselwörter zur Priorisierung von Artikeln nach den gewünschten Regionen/Themen.</summary>

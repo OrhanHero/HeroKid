@@ -25,7 +25,18 @@ public enum NewsCategory
     Ki,
     Spiele,
     Finanzen,
-    Wetter
+    Wetter,
+
+    // Ans ENDE angehaengt: die Rubrik wird in ArchivedArticleEntity als String gespeichert, ein
+    // Einschieben in der Mitte waere also unkritisch - aber die Reihenfolge ist zugleich die
+    // Anzeigereihenfolge, und neue Rubriken gehoeren hinter die etablierten.
+
+    /// <summary>Wissenschaft und Forschung - fuellt sich aus Spektrum, MDR Wissen, Max-Planck,
+    /// NASA, ESA und ScienceDaily, die vorher pauschal unter Deutschland/Welt liefen.</summary>
+    Wissen,
+
+    /// <summary>Sport. Fuer die Altersgruppe oft der Einstieg ins Nachrichtenlesen ueberhaupt.</summary>
+    Sport
 }
 
 /// <summary>Geschätzter Schwierigkeitsgrad eines Artikels (Satz-/Wortlängen-Heuristik) -

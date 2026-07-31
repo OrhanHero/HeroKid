@@ -14,7 +14,9 @@ namespace LernTor.News;
 public static class NewsCategoryClassifier
 {
     // Reihenfolge = Priorität: das erste Thema mit Treffer gewinnt. Spiele vor KI, damit
-    // "KI-Gegner in Mario Kart" bei Spielen landet; Wetter zuletzt der Themen-Rubriken, weil
+    // "KI-Gegner in Mario Kart" bei Spielen landet; Sport vor Wissen, damit die "Studie zur
+    // Belastung von Fußballprofis" beim Sport landet, wo Kinder sie suchen; Wissen vor Wetter,
+    // weil Klimaforschung sonst als Wetter durchginge; Wetter zuletzt der Themen-Rubriken, weil
     // Wetter-Wörter ("Sturm") oft nur Beiwerk anderer Meldungen sind.
     private static readonly (NewsCategory Category, string[] Keywords)[] TopicKeywords =
     {
@@ -22,7 +24,11 @@ public static class NewsCategoryClassifier
         {
             "Nintendo", "Minecraft", "Roblox", "Fortnite", "Pokémon", "Pokemon", "PlayStation",
             "Playstation", "Xbox", "Videospiel", "Computerspiel", "Gaming", "Spielkonsole",
-            "Konsole", "Zelda", "Super Mario", "E-Sport", "Esport", "Steam Deck", "Gamescom"
+            // "Mario Kart" ausdruecklich: das Beispiel im Kommentar oben ("KI-Gegner in Mario
+            // Kart" gehoert zu Spielen) traf jahrelang NICHT zu, weil nur "Super Mario" in der
+            // Liste stand und "Mario" allein zu riskant waere ("Marionettentheater").
+            "Konsole", "Zelda", "Super Mario", "Mario Kart", "E-Sport", "Esport", "Steam Deck",
+            "Gamescom"
         }),
         (NewsCategory.Ki, new[]
         {
@@ -36,6 +42,28 @@ public static class NewsCategoryClassifier
             "Preise steigen", "Preiserhöhung", "Wirtschaftswachstum", "Rezession", "Gehalt",
             "Mindestlohn", "Sparen", "Sparkonto", "Steuern", "Haushalt der Regierung", "enflasyon",
             "Kryptowährung", "Bitcoin"
+        }),
+        (NewsCategory.Sport, new[]
+        {
+            // KEINE kurzen Kuerzel wie "EM-": die Suche arbeitet auf Teilzeichenketten, und
+            // "System-Update" oder "Problem-Loesung" enthalten "em-". Ausgeschriebene Woerter sind
+            // hier die einzige sichere Variante.
+            "Bundesliga", "Champions League", "Weltmeisterschaft", "Europameisterschaft",
+            "Olympia", "Olympische", "Fußball", "Fussball", "Handball", "Basketball",
+            "Formel 1", "Tennis", "Leichtathletik", "Turnier", "Pokalfinale", "Nationalmannschaft",
+            "Trainer", "Stadion", "futbol", "şampiyona", "milli takım",
+            "football", "Olympics", "World Cup", "championship"
+        }),
+        (NewsCategory.Wissen, new[]
+        {
+            "Forschende", "Forscher", "Forschung", "Studie", "Wissenschaftler", "Wissenschaft",
+            "Universität", "Max-Planck", "Teleskop", "Weltraum", "Raumfahrt", "Astronomie",
+            "Planet", "Galaxie", "Klimaforschung", "Archäolog", "Evolution", "Impfstoff",
+            // "Genom" waere in "hat genommen"/"abgenommen" gelandet, "ESA" in "insgesamt" -
+            // beides alltaegliche deutsche Woerter. Stattdessen eindeutige Begriffe.
+            "Erbgut", "Genanalyse", "DNA-",
+            "araştırma", "bilim insanları",
+            "researchers", "scientists", "study finds", "spacecraft", "telescope"
         }),
         (NewsCategory.Wetter, new[]
         {
@@ -56,6 +84,8 @@ public static class NewsCategoryClassifier
         NewsCategory.Spiele => "🎮",
         NewsCategory.Finanzen => "💰",
         NewsCategory.Wetter => "⛅",
+        NewsCategory.Wissen => "🔬",
+        NewsCategory.Sport => "⚽",
         _ => "📰"
     };
 

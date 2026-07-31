@@ -20,6 +20,8 @@ public sealed class NewsCategoryToTitleConverter : IValueConverter
             NewsCategory.Spiele => "News_Cat_Spiele",
             NewsCategory.Finanzen => "News_Cat_Finanzen",
             NewsCategory.Wetter => "News_Cat_Wetter",
+            NewsCategory.Wissen => "News_Cat_Wissen",
+            NewsCategory.Sport => "News_Cat_Sport",
             _ => string.Empty
         };
 

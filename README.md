@@ -76,7 +76,7 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    aufbereitet (sprachliches Vorbild: logo!/Checker-Sendungen). **Rubriken**: 🐻 Berlin (wichtigste
   regionale Rubrik, garantierte Plätze), 🇩🇪 Deutschland, 🌍 Welt, 🇹🇷 Türkei (täglich garantierte
   Plätze; seriöse Quellen: Anadolu Ajansı, TRT Haber, DW Türkçe – bewusst keine Boulevardquellen),
-  🤖 KI & Technik, 🎮 Spiele, ⛅ Wetter.
+  🤖 KI & Technik, 🎮 Spiele, 🔬 Wissen, ⚽ Sport, ⛅ Wetter.
   Themen-Rubriken werden zusätzlich per Schlüsselwort-Klassifikation quer über alle Quellen erkannt
   (`NewsCategoryClassifier`) - eine Minecraft-Meldung von tagesschau.de landet trotzdem in 🎮 Spiele.
   Der Katalog umfasst **44 Quellen in drei Sprachen** (Deutsch, Türkisch, Englisch - Englisch als

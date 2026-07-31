@@ -173,6 +173,8 @@ public static class Translations
             ["News_Cat_Spiele"] = L("Spiele", "Oyunlar"),
             ["News_Cat_Finanzen"] = L("Finanzen", "Finans"),
             ["News_Cat_Wetter"] = L("Wetter", "Hava durumu"),
+            ["News_Cat_Wissen"] = L("Wissen", "Bilim"),
+            ["News_Cat_Sport"] = L("Sport", "Spor"),
             ["News_Diff_Leicht"] = L("🟢 Leicht", "🟢 Kolay"),
             ["News_Diff_Mittel"] = L("🟡 Mittel", "🟡 Orta"),
             ["News_Diff_Schwer"] = L("🔴 Schwer", "🔴 Zor"),
