@@ -17,6 +17,7 @@ Es ersetzt KEINEN Compiler - es prüft nur bekannte, statisch erkennbare Fallen:
   6. Vollständigkeit der Fach-Checkliste bei neuen `Subject`-Werten
   7. `OrderBy`/`OrderByDescending` auf DateTimeOffset-Spalten in Repositories (EF-Sqlite)
   8. JSON-/YAML-Gültigkeit der Konfigurations- und Zustandsdateien
+  9. Zwei Typen gleichen Namens im selben Namensraum (CS0101)
 
 Nutzung:  python3 scripts/preflight.py            (alles prüfen)
           python3 scripts/preflight.py --quick    (ohne die langsameren Repo-weiten Scans)
@@ -399,6 +400,42 @@ def check_ef_datetimeoffset_ordering() -> None:
 # 8: Konfigurationsdateien
 # --------------------------------------------------------------------------------------
 
+def check_duplicate_type_names() -> None:
+    """Zwei Typen gleichen Namens im selben Namensraum (CS0101).
+
+    Kostet sonst einen kompletten CI-Durchlauf: der Fehler faellt erst beim Kompilieren auf, und
+    er entsteht leicht, weil Testklassen nicht zwingend in einer gleichnamigen Datei stehen -
+    NewsCategoryClassifierTests lag in KidNewsEnrichmentTests.cs, eine Dateisuche fand sie also
+    nicht.
+    """
+    namespace_pattern = re.compile(r"^\s*namespace\s+([\w.]+)\s*[;{]", re.MULTILINE)
+    type_pattern = re.compile(
+        r"^\s*(?:public|internal)\s+(?:sealed\s+|static\s+|abstract\s+|partial\s+)*"
+        r"(?:class|record|struct|interface|enum)\s+(\w+)",
+        re.MULTILINE)
+
+    seen: dict[tuple[str, str], list[str]] = {}
+
+    for path in sorted(SRC.rglob("*.cs")) + sorted(TESTS.rglob("*.cs")):
+        if "/obj/" in str(path) or "/bin/" in str(path):
+            continue
+        text = path.read_text(encoding="utf-8")
+        namespace_match = namespace_pattern.search(text)
+        namespace = namespace_match.group(1) if namespace_match else "<global>"
+
+        for name in set(type_pattern.findall(text)):
+            # partial: dieselbe Klasse darf bewusst auf mehrere Dateien verteilt sein.
+            if re.search(rf"partial\s+(?:class|record|struct)\s+{re.escape(name)}\b", text):
+                continue
+            seen.setdefault((namespace, name), []).append(str(path.relative_to(ROOT)))
+
+    for (namespace, name), paths in sorted(seen.items()):
+        if len(paths) > 1:
+            findings.append(
+                f"CS0101: '{name}' ist in '{namespace}' mehrfach definiert - "
+                + ", ".join(sorted(paths)))
+
+
 def check_config_files() -> None:
     state = ROOT / "docs" / "CLAUDE_STATE.json"
     if state.exists():
@@ -432,6 +469,7 @@ def main() -> int:
         ("HttpClient-using", check_httpclient_using),
         ("Shutdown/Unlock", check_shutdown_unlocks),
         ("Konfigurationsdateien", check_config_files),
+        ("Doppelte Typnamen", check_duplicate_type_names),
     ]
     if not args.quick:
         checks += [

@@ -5,11 +5,14 @@ using Xunit;
 namespace LernTor.Tests;
 
 /// <summary>
-/// Rubrik-Zuordnung der Nachrichten. Die Erkennung arbeitet auf TEILZEICHENKETTEN - deshalb sind
-/// die Fehltreffer-Tests hier wichtiger als die Treffer-Tests: ein zu kurzes Stichwort verschiebt
+/// Die Rubriken Wissen und Sport. Die Erkennung arbeitet auf TEILZEICHENKETTEN - deshalb sind die
+/// Fehltreffer-Tests hier wichtiger als die Treffer-Tests: ein zu kurzes Stichwort verschiebt
 /// stillschweigend halbe Tagesausgaben in die falsche Rubrik.
+///
+/// <para>Eigene Klasse neben <c>NewsCategoryClassifierTests</c> (in KidNewsEnrichmentTests.cs) -
+/// die bestehenden Faelle bleiben dort, hier steht nur, was mit den neuen Rubriken dazukam.</para>
 /// </summary>
-public sealed class NewsCategoryClassifierTests
+public sealed class NewsCategoryWissenSportTests
 {
     private static NewsCategory Rubrik(string title, NewsCategory fallback = NewsCategory.Deutschland) =>
         NewsCategoryClassifier.Classify(title, summary: null, fallback);
