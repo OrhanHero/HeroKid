@@ -47,6 +47,10 @@ public sealed class WorksheetExportTests
         Explanation = "Nomen werden großgeschrieben."
     };
 
+    /// <summary>Das Umbruch-ELEMENT, nicht das blosse Wort: "pagebreak" steht auch in der
+    /// CSS-Regel im &lt;head&gt; und damit vor allem anderen.</summary>
+    private const string UmbruchElement = "<div class=\"pagebreak\">";
+
     private static string Blatt(params QuizQuestion[] fragen) =>
         WorksheetExport.ToHtml(fragen, "Mathematik", GradeLevel.Klasse6, Heute, new Random(1));
 
@@ -80,7 +84,7 @@ public sealed class WorksheetExportTests
         var html = Blatt(Auswahlfrage());
 
         var aufgabe = html.IndexOf("Was ist 2 + 2?", StringComparison.Ordinal);
-        var umbruch = html.IndexOf("pagebreak", StringComparison.Ordinal);
+        var umbruch = html.IndexOf(UmbruchElement, StringComparison.Ordinal);
         var loesungen = html.IndexOf("<h1>Lösungen</h1>", StringComparison.Ordinal);
 
         Assert.True(aufgabe < umbruch, "Die Aufgabe muss vor dem Seitenumbruch stehen.");
@@ -155,7 +159,7 @@ public sealed class WorksheetExportTests
             new[] { Diktatfrage() }, "Deutsch", GradeLevel.Klasse6, Heute, new Random(1));
 
         var satz = html.IndexOf("Der Hund bellt laut im Garten.", StringComparison.Ordinal);
-        var umbruch = html.IndexOf("pagebreak", StringComparison.Ordinal);
+        var umbruch = html.IndexOf(UmbruchElement, StringComparison.Ordinal);
 
         Assert.True(satz > umbruch, "Der Diktatsatz darf erst auf dem Lösungsblatt auftauchen.");
         Assert.Contains("Zum Vorlesen", html);
