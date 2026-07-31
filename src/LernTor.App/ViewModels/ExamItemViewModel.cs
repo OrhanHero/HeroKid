@@ -20,9 +20,11 @@ public sealed class ExamItemViewModel
 
     public string Id => Exam.Id;
 
-    public string Title => string.IsNullOrWhiteSpace(Exam.Title)
-        ? $"{Exam.Subject}-Klausur"
-        : Exam.Title;
+    /// <summary>Ob ein eigener Titel eingetragen wurde. Ohne ihn wuerde in der Kind-Ansicht
+    /// sonst "Mathematik" doppelt untereinander stehen (Fach und Ersatztitel).</summary>
+    public bool HasOwnTitle => !string.IsNullOrWhiteSpace(Exam.Title);
+
+    public string Title => HasOwnTitle ? Exam.Title : $"{Exam.Subject}-Klausur";
 
     public string SubjectName => Exam.Subject.ToString();
 

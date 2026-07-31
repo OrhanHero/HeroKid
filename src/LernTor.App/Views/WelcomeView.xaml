@@ -89,8 +89,12 @@
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding IsCompleted}" Margin="0,4" VerticalContentAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
+                                        <!-- Fach auch hier: dieselbe Luecke wie bei den Klausuren. -->
+                                        <TextBlock Text="{Binding Task.Subject, Converter={StaticResource SubjectToTitle}, Mode=OneWay}"
+                                                   Style="{StaticResource BodyText}" FontWeight="Bold"
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" />
                                         <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}"
-                                                   TextWrapping="Wrap" MaxWidth="380" VerticalAlignment="Center" />
+                                                   TextWrapping="Wrap" MaxWidth="320" VerticalAlignment="Center" />
                                         <!-- Style NUR als Element: zusaetzlich als Attribut waere MC3024
                                              ("Style property has already been set"), siehe CLAUDE.md. -->
                                         <TextBlock Text="{Binding DueLabel, Mode=OneWay}"
@@ -146,8 +150,15 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
+                                        <!-- Das FACH zuerst und fett: "in 7 Tagen" hilft nur, wenn
+                                             man weiss, worin. Der selbst getippte Titel steht
+                                             darunter - er ist die Ergaenzung, nicht die Hauptsache. -->
+                                        <TextBlock Text="{Binding Exam.Subject, Converter={StaticResource SubjectToTitle}, Mode=OneWay}"
+                                                   Style="{StaticResource BodyText}" FontWeight="Bold"
+                                                   TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding Title, Mode=OneWay}" Style="{StaticResource BodyText}"
-                                                   FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                   FontSize="13" TextWrapping="Wrap"
+                                                   Visibility="{Binding HasOwnTitle, Converter={StaticResource BoolToVis}}" />
                                         <TextBlock Text="{Binding Topics, Mode=OneWay}" Style="{StaticResource BodyText}"
                                                    FontSize="12" Opacity="0.7" TextWrapping="Wrap"
                                                    Visibility="{Binding HasTopics, Converter={StaticResource BoolToVis}}" />
