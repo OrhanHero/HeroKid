@@ -125,6 +125,43 @@ public sealed class StudentProfileRepositoryTests : IDisposable
         }
     }
 
+    [Fact]
+    public async Task Filterschaerfe_ueberlebt_den_Neustart()
+    {
+        using (var db = CreateContext())
+        {
+            var repo = new StudentProfileRepository(db);
+            var profile = await repo.CreateAsync("Batuhan", 15, "9a", GradeLevel.Klasse9, "🚀");
+
+            await repo.UpdateSettingsAsync(profile.Id, 0.5, 0.5, 0.25,
+                readingMinutes: 5, newsSecondsPerArticle: 10, exerciseSecondsPerQuestion: 5,
+                exercisesPerSubject: 6, quizQuestionCount: 20, quizRetryQuestionCount: 15,
+                customTypingSentenceText: null, customTypingFinalText: null,
+                weeklyGoalDays: 0, pinnedReadingTextKey: null, newsArticleCount: 12,
+                newsFilterStrictness: NewsFilterStrictness.Streng);
+        }
+
+        using (var db = CreateContext())
+        {
+            var reloaded = (await new StudentProfileRepository(db).GetAllAsync()).Single();
+            Assert.Equal(NewsFilterStrictness.Streng, reloaded.NewsFilterStrictness);
+        }
+    }
+
+    [Fact]
+    public async Task Alt_Zeile_ohne_Filterstufe_faellt_auf_Normal_zurueck()
+    {
+        // Bestehende Datenbanken bekommen die Spalte per additivem Schema-Update leer.
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+        var profile = await repo.CreateAsync("Alt", 12, null, GradeLevel.Klasse6, "🧒");
+
+        db.Profiles.Single(p => p.Id == profile.Id).NewsFilterStrictness = string.Empty;
+        await db.SaveChangesAsync();
+
+        Assert.Equal(NewsFilterStrictness.Normal, (await repo.GetAllAsync()).Single().NewsFilterStrictness);
+    }
+
     public void Dispose()
     {
         Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();

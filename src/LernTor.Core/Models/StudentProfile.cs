@@ -71,6 +71,13 @@ public sealed class StudentProfile
     public int NewsArticleCount { get; set; } = DefaultNewsArticleCount;
 
     /// <summary>
+    /// Wie streng der Jugendschutz-Filter im News-Bereich arbeitet, von den Eltern einstellbar.
+    /// Vorher hing das allein am Alter - eine Entscheidung, die Eltern treffen sollten und nicht
+    /// ein Geburtsdatum. Die harte Sperre gilt in jeder Stufe.
+    /// </summary>
+    public NewsFilterStrictness NewsFilterStrictness { get; set; } = NewsFilterStrictness.Normal;
+
+    /// <summary>
     /// Mindestzeit pro Übungsaufgabe in den Fächern in Sekunden, von den Eltern als Preset
     /// (3/5/10/15 s) einstellbar - verhindert Durchklicken ohne Lesen (ExerciseViewModel).
     /// </summary>

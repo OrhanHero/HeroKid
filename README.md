@@ -86,12 +86,15 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
   Plätze über die Sprachen und wandert über die Tage durch den ganzen Katalog. Die Auswahl ist
   aus dem Datum abgeleitet und innerhalb eines Tages stabil - beim zweiten Öffnen stehen dieselben
   Artikel da. Aus jeder ausgewählten Quelle kommt genau der neueste Artikel.
-   **Jugendschutz** (`NewsSuitability`): zwei Stufen. Hart gesperrt und nie ausgewählt ist, was in
-  einer Kinder-App nichts zu suchen hat (sexualisierte Gewalt, Suizid, Folter, Missbrauch,
-  Massaker). Heikle Themen (Krieg, Kriminalität, Unfälle) sind erlaubt - sie gehören zum
-  Rahmenlehrplan - werden aber nachrangig behandelt: aus einer Quelle gewinnt der unbedenklichste
-  Artikel, erst bei Gleichstand entscheidet die Aktualität. Unter zehn Jahren sind auch heikle
-  Themen gesperrt. Die Stichwortlisten sind **nach Sprache getrennt** und prüfen **ganze Wörter** -
+   **Jugendschutz** (`NewsSuitability`): hart gesperrt und nie ausgewählt ist, was in einer
+  Kinder-App nichts zu suchen hat (sexualisierte Gewalt, Suizid, Folter, Missbrauch, Massaker) -
+  das gilt in **jeder** Filterstufe. Der Umgang mit heiklen, aber lehrplanrelevanten Themen
+  (Krieg, Kriminalität, Unfälle) ist dagegen **pro Kind im Eltern-Bereich einstellbar**
+  (`NewsFilterStrictness`): *Streng* sperrt sie ganz, *Normal* (Voreinstellung) lässt sie zu,
+  behandelt sie aber nachrangig - aus einer Quelle gewinnt der unbedenklichste Artikel, erst bei
+  Gleichstand entscheidet die Aktualität -, *Locker* wertet nur noch die harte Sperre aus. Unter
+  zehn Jahren gilt unabhängig von der Einstellung immer *Streng*: eine Einstellung soll den Schutz
+  für ein Grundschulkind nicht aushebeln können. Die Stichwortlisten sind **nach Sprache getrennt** und prüfen **ganze Wörter** -
   sonst hätte das englische "war" jeden deutschen Satz mit "war" getroffen.
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
    (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes

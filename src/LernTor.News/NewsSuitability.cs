@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using LernTor.Core.Enums;
 
 namespace LernTor.News;
 
@@ -28,8 +29,21 @@ public static class NewsSuitability
     /// <param name="SensitiveHits">Wie viele heikle Stichwörter vorkommen (0 = unbedenklich).</param>
     public sealed record Verdict(bool IsBlocked, int SensitiveHits);
 
-    /// <summary>Ab diesem Alter werden heikle Themen zugelassen (aber nachrangig behandelt).</summary>
-    public const int SensitiveTopicsAllowedFromAge = 10;
+    /// <summary>
+    /// Unter diesem Alter gilt immer <see cref="NewsFilterStrictness.Streng"/>, egal was im
+    /// Eltern-Bereich eingestellt ist. Eine Einstellung soll den Schutz für ein Grundschulkind
+    /// nicht versehentlich aushebeln - lockerer als "streng" muss man dort nicht können.
+    /// </summary>
+    public const int AlwaysStrictBelowAge = 10;
+
+    /// <summary>
+    /// Welche Strenge tatsächlich gilt: die eingestellte, aber nie lockerer als das Alter erlaubt.
+    /// (<see cref="NewsFilterStrictness.Streng"/> ist der kleinste Enum-Wert, deshalb Math.Min.)
+    /// </summary>
+    public static NewsFilterStrictness EffectiveStrictness(NewsFilterStrictness configured, int? childAge) =>
+        childAge is { } age && age < AlwaysStrictBelowAge
+            ? NewsFilterStrictness.Streng
+            : configured;
 
     // Hart gesperrt - unabhängig vom Alter des Kindes.
     private static readonly IReadOnlyDictionary<NewsFeedLanguage, string[]> HardBlockedWords =
@@ -100,12 +114,21 @@ public static class NewsSuitability
     /// <summary>
     /// Prüft Titel und Anrisstext eines Artikels.
     /// </summary>
-    /// <param name="childAge">
-    /// Alter des Kindes; unter <see cref="SensitiveTopicsAllowedFromAge"/> werden auch heikle
-    /// Themen gesperrt. <c>null</c> (Alter nicht hinterlegt) wird wie "alt genug" behandelt -
-    /// sonst bliebe der News-Teil für Profile ohne Altersangabe fast leer.
+    /// <param name="strictness">
+    /// Von den Eltern pro Kind eingestellt. Die harte Sperre gilt in jeder Stufe; einstellbar ist
+    /// nur der Umgang mit heiklen, aber lehrplanrelevanten Themen.
     /// </param>
-    public static Verdict Evaluate(string? title, string? summary, NewsFeedLanguage language, int? childAge)
+    /// <param name="childAge">
+    /// Alter des Kindes; unter <see cref="AlwaysStrictBelowAge"/> gilt immer "streng", auch wenn
+    /// etwas anderes eingestellt ist. <c>null</c> (kein Alter hinterlegt) ändert nichts an der
+    /// Einstellung - sonst bliebe der News-Teil für Profile ohne Altersangabe grundlos leer.
+    /// </param>
+    public static Verdict Evaluate(
+        string? title,
+        string? summary,
+        NewsFeedLanguage language,
+        NewsFilterStrictness strictness = NewsFilterStrictness.Normal,
+        int? childAge = null)
     {
         var text = $"{title} {summary}";
         if (string.IsNullOrWhiteSpace(text))
@@ -118,10 +141,21 @@ public static class NewsSuitability
             return new Verdict(IsBlocked: true, SensitiveHits: int.MaxValue);
         }
 
+        var effective = EffectiveStrictness(strictness, childAge);
         var sensitiveHits = Matches(SensitivePattern, language, text);
-        var blockSensitive = childAge is { } age && age < SensitiveTopicsAllowedFromAge;
 
-        return new Verdict(IsBlocked: blockSensitive && sensitiveHits > 0, sensitiveHits);
+        return effective switch
+        {
+            // Streng: heikle Themen kommen gar nicht vor.
+            NewsFilterStrictness.Streng => new Verdict(sensitiveHits > 0, sensitiveHits),
+
+            // Locker: nur die harte Sperre zaehlt, die Reihenfolge entscheidet allein die
+            // Aktualitaet - deshalb ohne Treffer zurueckmelden.
+            NewsFilterStrictness.Locker => new Verdict(IsBlocked: false, SensitiveHits: 0),
+
+            // Normal: erlaubt, aber nachrangig.
+            _ => new Verdict(IsBlocked: false, sensitiveHits)
+        };
     }
 
     private static int Matches(

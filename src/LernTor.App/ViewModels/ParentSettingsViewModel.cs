@@ -330,6 +330,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     partial void OnQuizRetryThresholdPercentChanged(int value) => MarkDirty();
     partial void OnReadingMinutesChanged(int value) => MarkDirty();
     partial void OnNewsSecondsPerArticleChanged(int value) => MarkDirty();
+    partial void OnNewsFilterStrictnessChanged(NewsFilterStrictness value) => MarkDirty();
+
     partial void OnNewsArticleCountChanged(int value)
     {
         MarkDirty();
@@ -606,7 +608,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             TypingTextOverrides.Sanitize(CustomTypingFinalText),
             WeeklyGoalDays,
             profile.PinnedReadingTextKey,
-            NewsArticleCount);
+            NewsArticleCount,
+            NewsFilterStrictness);
 
     private void ApplyProfileToEditor(StudentProfile? value)
     {
@@ -618,6 +621,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         ReadingMinutes = value?.ReadingMinutes ?? StudentProfile.DefaultReadingMinutes;
         NewsSecondsPerArticle = value?.NewsSecondsPerArticle ?? StudentProfile.DefaultNewsSecondsPerArticle;
         NewsArticleCount = value?.NewsArticleCount ?? StudentProfile.DefaultNewsArticleCount;
+        NewsFilterStrictness = value?.NewsFilterStrictness ?? NewsFilterStrictness.Normal;
+        OnPropertyChanged(nameof(NewsFilterStrictnessHint));
         ExerciseSecondsPerQuestion = value?.ExerciseSecondsPerQuestion ?? StudentProfile.DefaultExerciseSecondsPerQuestion;
         ExercisesPerSubject = value?.ExercisesPerSubject ?? StudentProfile.DefaultExercisesPerSubject;
         QuizQuestionCount = value?.QuizQuestionCount ?? StudentProfile.DefaultQuizQuestionCount;
@@ -751,6 +756,33 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     /// <summary>Anzahl der täglichen Nachrichten (Presets 6/10/15/20).</summary>
     [ObservableProperty]
     private int newsArticleCount = StudentProfile.DefaultNewsArticleCount;
+
+    /// <summary>Wie streng der Jugendschutz-Filter arbeitet (Streng/Normal/Locker).</summary>
+    [ObservableProperty]
+    private NewsFilterStrictness newsFilterStrictness = NewsFilterStrictness.Normal;
+
+    /// <summary>Erklaert die gewaehlte Stufe im Klartext - "Normal" allein sagt niemandem etwas.</summary>
+    public string NewsFilterStrictnessHint => NewsFilterStrictness switch
+    {
+        NewsFilterStrictness.Streng =>
+            "Streng: Krieg, Kriminalität und Unfälle kommen gar nicht vor. An nachrichtenschweren Tagen bleiben dadurch spürbar weniger Artikel übrig.",
+        NewsFilterStrictness.Locker =>
+            "Locker: nur die harte Sperre greift, sonst zählt allein die Aktualität. Für ältere Jugendliche, die Nachrichten bewusst mitverfolgen sollen.",
+        _ =>
+            "Normal: Krieg, Kriminalität und Unfälle dürfen vorkommen (sie gehören zum Rahmenlehrplan), werden aber nachrangig behandelt - aus einer Quelle gewinnt der unbedenklichste Artikel."
+    } + " Sexualisierte Gewalt, Suizid, Folter, Missbrauch und Massaker sind in JEDER Stufe gesperrt."
+      + (SelectedProfile?.Age is { } age && age < NewsSuitability.AlwaysStrictBelowAge
+            ? $" Hinweis: {SelectedProfile.Name} ist {age} - unter {NewsSuitability.AlwaysStrictBelowAge} gilt immer \"Streng\", unabhängig von dieser Einstellung."
+            : string.Empty);
+
+    [RelayCommand]
+    private void SetNewsFilterStrictness(string strictness)
+    {
+        NewsFilterStrictness = Enum.TryParse<NewsFilterStrictness>(strictness, out var parsed)
+            ? parsed
+            : NewsFilterStrictness.Normal;
+        OnPropertyChanged(nameof(NewsFilterStrictnessHint));
+    }
 
     [RelayCommand]
     private void SetReadingMinutes(string minutes)
@@ -1058,6 +1090,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             SelectedProfile.ReadingMinutes = ReadingMinutes;
             SelectedProfile.NewsSecondsPerArticle = NewsSecondsPerArticle;
             SelectedProfile.NewsArticleCount = NewsArticleCount;
+            SelectedProfile.NewsFilterStrictness = NewsFilterStrictness;
             SelectedProfile.ExerciseSecondsPerQuestion = ExerciseSecondsPerQuestion;
             SelectedProfile.ExercisesPerSubject = ExercisesPerSubject;
             SelectedProfile.QuizQuestionCount = QuizQuestionCount;

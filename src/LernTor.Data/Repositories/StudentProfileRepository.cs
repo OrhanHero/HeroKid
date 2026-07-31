@@ -129,6 +129,7 @@ public sealed class StudentProfileRepository
         int weeklyGoalDays = 0,
         string? pinnedReadingTextKey = null,
         int newsArticleCount = 0,
+        NewsFilterStrictness newsFilterStrictness = NewsFilterStrictness.Normal,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -149,6 +150,7 @@ public sealed class StudentProfileRepository
         entity.ReadingMinutes = readingMinutes;
         entity.NewsSecondsPerArticle = newsSecondsPerArticle;
         entity.NewsArticleCount = newsArticleCount;
+        entity.NewsFilterStrictness = newsFilterStrictness.ToString();
         entity.ExerciseSecondsPerQuestion = exerciseSecondsPerQuestion;
         entity.ExercisesPerSubject = exercisesPerSubject;
         entity.QuizQuestionCount = quizQuestionCount;
@@ -173,6 +175,11 @@ public sealed class StudentProfileRepository
         ReadingMinutes = entity.ReadingMinutes > 0 ? entity.ReadingMinutes : StudentProfile.DefaultReadingMinutes,
         NewsSecondsPerArticle = entity.NewsSecondsPerArticle > 0 ? entity.NewsSecondsPerArticle : StudentProfile.DefaultNewsSecondsPerArticle,
         NewsArticleCount = entity.NewsArticleCount > 0 ? entity.NewsArticleCount : StudentProfile.DefaultNewsArticleCount,
+        // Alt-Zeilen haben hier den leeren String (additives Schema-Update) - der faellt auf
+        // Normal zurueck, also auf das bisherige Verhalten.
+        NewsFilterStrictness = Enum.TryParse<NewsFilterStrictness>(entity.NewsFilterStrictness, out var strictness)
+            ? strictness
+            : NewsFilterStrictness.Normal,
         ExerciseSecondsPerQuestion = entity.ExerciseSecondsPerQuestion > 0 ? entity.ExerciseSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion,
         ExercisesPerSubject = entity.ExercisesPerSubject > 0 ? entity.ExercisesPerSubject : StudentProfile.DefaultExercisesPerSubject,
         QuizQuestionCount = entity.QuizQuestionCount > 0 ? entity.QuizQuestionCount : StudentProfile.DefaultQuizQuestionCount,

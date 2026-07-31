@@ -1,3 +1,4 @@
+using LernTor.Core.Enums;
 using LernTor.News;
 using Xunit;
 
@@ -10,8 +11,11 @@ namespace LernTor.Tests;
 public sealed class NewsSuitabilityTests
 {
     private static NewsSuitability.Verdict Pruefe(
-        string title, NewsFeedLanguage language = NewsFeedLanguage.Deutsch, int? childAge = 12) =>
-        NewsSuitability.Evaluate(title, summary: null, language, childAge);
+        string title,
+        NewsFeedLanguage language = NewsFeedLanguage.Deutsch,
+        int? childAge = 12,
+        NewsFilterStrictness strictness = NewsFilterStrictness.Normal) =>
+        NewsSuitability.Evaluate(title, summary: null, language, strictness, childAge);
 
     [Theory]
     [InlineData("Prozess wegen Vergewaltigung beginnt in Berlin")]
@@ -58,6 +62,56 @@ public sealed class NewsSuitabilityTests
     {
         Assert.True(Pruefe("Krieg in der Ukraine", childAge: 8).IsBlocked);
         Assert.False(Pruefe("Krieg in der Ukraine", childAge: 12).IsBlocked);
+    }
+
+    [Fact]
+    public void Streng_sperrt_heikle_Themen_auch_bei_aelteren_Kindern()
+    {
+        Assert.True(Pruefe("Krieg in der Ukraine", childAge: 14,
+            strictness: NewsFilterStrictness.Streng).IsBlocked);
+    }
+
+    [Fact]
+    public void Locker_laesst_heikle_Themen_gleichrangig_durch()
+    {
+        // Bei "Locker" entscheidet allein die Aktualitaet - deshalb keine Treffer melden,
+        // sonst wuerde die Sortierung heikle Artikel weiterhin nach hinten schieben.
+        var verdict = Pruefe("Krieg in der Ukraine", childAge: 15, strictness: NewsFilterStrictness.Locker);
+
+        Assert.False(verdict.IsBlocked);
+        Assert.Equal(0, verdict.SensitiveHits);
+    }
+
+    [Fact]
+    public void Die_harte_Sperre_gilt_in_jeder_Stufe()
+    {
+        foreach (var stufe in Enum.GetValues<NewsFilterStrictness>())
+        {
+            Assert.True(
+                Pruefe("Prozess wegen Vergewaltigung", childAge: 15, strictness: stufe).IsBlocked,
+                $"Stufe {stufe} liess einen hart gesperrten Artikel durch.");
+        }
+    }
+
+    [Fact]
+    public void Junges_Alter_sticht_die_Einstellung()
+    {
+        // Eine Einstellung darf den Schutz fuer ein Grundschulkind nicht aushebeln.
+        Assert.Equal(
+            NewsFilterStrictness.Streng,
+            NewsSuitability.EffectiveStrictness(NewsFilterStrictness.Locker, childAge: 8));
+
+        Assert.Equal(
+            NewsFilterStrictness.Locker,
+            NewsSuitability.EffectiveStrictness(NewsFilterStrictness.Locker, childAge: 14));
+    }
+
+    [Fact]
+    public void Ohne_Alter_gilt_die_Einstellung_unveraendert()
+    {
+        Assert.Equal(
+            NewsFilterStrictness.Locker,
+            NewsSuitability.EffectiveStrictness(NewsFilterStrictness.Locker, childAge: null));
     }
 
     [Fact]
@@ -112,7 +166,7 @@ public sealed class NewsSuitabilityTests
     [Fact]
     public void Leerer_Text_ist_unbedenklich()
     {
-        var verdict = NewsSuitability.Evaluate(null, null, NewsFeedLanguage.Deutsch, 12);
+        var verdict = NewsSuitability.Evaluate(null, null, NewsFeedLanguage.Deutsch);
 
         Assert.False(verdict.IsBlocked);
         Assert.Equal(0, verdict.SensitiveHits);

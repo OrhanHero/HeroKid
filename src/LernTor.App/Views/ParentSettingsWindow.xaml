@@ -652,6 +652,43 @@
                      Stuecke waren im Eltern-Bereich vorher gar nicht sichtbar, und ein frisch
                      eingetragener eigener Text liess sich nicht gezielt aufrufen - das Anheften
                      loest genau das. -->
+                <!-- Jugendschutz-Stufe: die harte Sperre gilt immer, einstellbar ist nur der
+                     Umgang mit heiklen, aber lehrplanrelevanten Themen. -->
+                <TextBlock Text="🛡 News-Filter (für das oben gewählte Kind)"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <Button Content="Streng" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SetNewsFilterStrictnessCommand}" CommandParameter="Streng">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="Streng" />
+                                <Binding Path="NewsFilterStrictness" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="Normal" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SetNewsFilterStrictnessCommand}" CommandParameter="Normal">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="Normal" />
+                                <Binding Path="NewsFilterStrictness" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="Locker" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SetNewsFilterStrictnessCommand}" CommandParameter="Locker">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Source="Locker" />
+                                <Binding Path="NewsFilterStrictness" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                </StackPanel>
+                <TextBlock Text="{Binding NewsFilterStrictnessHint, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.8"
+                           TextWrapping="Wrap" Margin="0,0,0,8" />
+
                 <!-- Hausaufgaben mit Stichtag: gehoeren zum oben gewaehlten Profil. Anders als die
                      eigenen Aufgaben weiter oben werden sie NICHT abgefragt - sie erinnern nur an
                      etwas, das ausserhalb der App zu erledigen ist. -->

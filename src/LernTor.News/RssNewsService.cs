@@ -44,11 +44,13 @@ public sealed class RssNewsService
     /// Extrasammlungen - einzige Ausnahme ist das tägliche, fest angehängte Finanzwissen-Erklärstück
     /// (siehe <see cref="FinanceKnowledgeArticles"/>), da es dafür keinen verlässlichen RSS-Feed gibt.
     /// </summary>
-    /// <param name="childAge">Alter des aktiven Kind-Profils für den automatischen Altersfilter:
-    /// bis einschließlich 9 Jahren werden Artikel mit verstörenden Schlüsselwörtern KOMPLETT
-    /// ausgefiltert statt nur herabgestuft ("keine Angstmache" gilt für die Jüngsten strikt);
-    /// ab 10 bleibt das mildere Herabstufen, weil sonst an nachrichtenschweren Tagen zu wenige
-    /// Artikel übrig blieben. null = kein Alter bekannt, Standardverhalten.</param>
+    /// <param name="childAge">Alter des aktiven Kind-Profils. Dient nur noch als Untergrenze für
+    /// den Jugendschutz: unter 10 Jahren gilt immer "streng", egal was eingestellt ist
+    /// (siehe <see cref="NewsSuitability.AlwaysStrictBelowAge"/>). null = kein Alter hinterlegt.</param>
+    /// <param name="filterStrictness">Von den Eltern pro Kind eingestellte Filterschärfe
+    /// (siehe <see cref="NewsFilterStrictness"/>). Die harte Sperre für klar ungeeignete Themen
+    /// gilt in jeder Stufe; einstellbar ist nur der Umgang mit heiklen, aber lehrplanrelevanten
+    /// Themen wie Krieg und Kriminalität.</param>
     /// <param name="gradeLevel">Klassenstufe (6 oder 9) für altersgerechte Textvereinfachung:
     /// Klasse 6 = stark vereinfacht (kurze Sätze, einfaches Vokabular, Aktiv statt Passiv),
     /// Klasse 9 = mild vereinfacht (normale Satzstruktur, nur schwierigste Wörter ersetzt).</param>
@@ -60,6 +62,7 @@ public sealed class RssNewsService
         int? childAge = null,
         GradeLevel gradeLevel = GradeLevel.Klasse6,
         IReadOnlySet<string>? disabledFeedNames = null,
+        NewsFilterStrictness filterStrictness = NewsFilterStrictness.Normal,
         CancellationToken cancellationToken = default)
     {
         var articles = new List<NewsArticle>();
@@ -84,7 +87,7 @@ public sealed class RssNewsService
             {
                 var items = await FetchFeedAsync(source, cancellationToken);
 
-                var latestItem = SelectLatestItem(items, childAge, source.Language);
+                var latestItem = SelectLatestItem(items, childAge, source.Language, filterStrictness);
                 if (latestItem is not null)
                 {
                     articles.Add(BuildArticle(latestItem, source, gradeLevel));
@@ -252,13 +255,17 @@ public sealed class RssNewsService
     /// den Rechner zuklappen lässt.</para>
     /// </summary>
     private static SyndicationItem? SelectLatestItem(
-        IReadOnlyList<SyndicationItem> items, int? childAge, NewsFeedLanguage language)
+        IReadOnlyList<SyndicationItem> items,
+        int? childAge,
+        NewsFeedLanguage language,
+        NewsFilterStrictness strictness)
     {
         return items
             .Select(item => new
             {
                 Item = item,
-                Verdict = NewsSuitability.Evaluate(item.Title?.Text, item.Summary?.Text, language, childAge)
+                Verdict = NewsSuitability.Evaluate(
+                    item.Title?.Text, item.Summary?.Text, language, strictness, childAge)
             })
             .Where(candidate => !candidate.Verdict.IsBlocked)
             .OrderBy(candidate => candidate.Verdict.SensitiveHits)

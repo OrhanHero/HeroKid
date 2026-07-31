@@ -453,7 +453,8 @@ public sealed partial class MainViewModel : ObservableObject
             targetCount: CurrentProfile?.NewsArticleCount ?? StudentProfile.DefaultNewsArticleCount,
             childAge: CurrentProfile?.Age,
             gradeLevel: gradeLevel,
-            disabledFeedNames: Settings.DisabledNewsFeeds);
+            disabledFeedNames: Settings.DisabledNewsFeeds,
+            filterStrictness: CurrentProfile?.NewsFilterStrictness ?? NewsFilterStrictness.Normal);
         var weatherTask = _weatherService.LoadBerlinWeatherAsync();
         var articles = await articlesTask;
         var weather = await weatherTask;

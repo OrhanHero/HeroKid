@@ -22,6 +22,10 @@ public sealed class StudentProfileEntity
 
     /// <summary>Anzahl der taeglichen Nachrichten (siehe StudentProfile.NewsArticleCount).</summary>
     public int NewsArticleCount { get; set; } = 12;
+
+    /// <summary>Filterschaerfe als STRING (nicht als int) - ein spaeteres Umsortieren des Enums
+    /// soll bestehende Zeilen nicht stillschweigend auf eine andere Stufe umdeuten.</summary>
+    public string NewsFilterStrictness { get; set; } = "Normal";
     public int ExerciseSecondsPerQuestion { get; set; } = 5;
     public int ExercisesPerSubject { get; set; } = 6;
     public int QuizQuestionCount { get; set; } = 20;
