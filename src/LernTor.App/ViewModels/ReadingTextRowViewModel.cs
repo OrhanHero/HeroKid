@@ -80,8 +80,12 @@ public sealed partial class ReadingTextRowViewModel : ObservableObject
     /// </summary>
     public void SetVisibleSilently(bool value)
     {
+        // Absichtlich das Backing-Field: die generierte Eigenschaft wuerde OnIsVisibleChanged und
+        // damit den Einzel-Callback ausloesen - "alle an/aus" wuerde je Zeile einmal speichern.
+#pragma warning disable MVVMTK0034
         if (isVisible == value) return;
         isVisible = value;
+#pragma warning restore MVVMTK0034
         OnPropertyChanged(nameof(IsVisible));
     }
 

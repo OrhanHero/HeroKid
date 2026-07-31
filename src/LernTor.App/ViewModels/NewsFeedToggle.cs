@@ -34,8 +34,13 @@ public sealed partial class NewsFeedToggle : ObservableObject
     /// </summary>
     public void SetEnabledSilently(bool value)
     {
+        // Das Backing-Field ist hier genau der Punkt: ueber die generierte Eigenschaft zu gehen
+        // wuerde OnIsEnabledChanged und damit den Einzel-Callback ausloesen - "alle an/aus" wuerde
+        // dann je Zeile einmal speichern. Deshalb MVVMTK0034 bewusst unterdrueckt.
+#pragma warning disable MVVMTK0034
         if (isEnabled == value) return;
         isEnabled = value;
+#pragma warning restore MVVMTK0034
         OnPropertyChanged(nameof(IsEnabled));
     }
 

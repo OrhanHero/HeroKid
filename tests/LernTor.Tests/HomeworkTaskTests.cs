@@ -70,8 +70,9 @@ public sealed class HomeworkTaskTests : IDisposable
     public void Frisch_Erledigtes_bleibt_kurz_sichtbar_dann_nicht_mehr()
     {
         // Sofortiges Verschwinden nimmt dem Abhaken das Erfolgserlebnis.
-        var geradeEben = Aufgabe(Heute, new DateTimeOffset(Heute.ToDateTime(TimeOnly.NoonUtc)));
-        var laengstErledigt = Aufgabe(Heute, new DateTimeOffset(Heute.AddDays(-10).ToDateTime(TimeOnly.NoonUtc)));
+        var mittags = new TimeOnly(12, 0);
+        var geradeEben = Aufgabe(Heute, new DateTimeOffset(Heute.ToDateTime(mittags)));
+        var laengstErledigt = Aufgabe(Heute, new DateTimeOffset(Heute.AddDays(-10).ToDateTime(mittags)));
 
         Assert.True(geradeEben.IsVisibleTo(Heute));
         Assert.False(laengstErledigt.IsVisibleTo(Heute));
