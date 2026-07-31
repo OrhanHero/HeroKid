@@ -178,19 +178,7 @@ public static class CuratedNewsFeeds
         "Nintendo", "Minecraft", "Pokémon", "Schule", "Bildung", "Wissenschaft"
     };
 
-    /// <summary>
-    /// Schlüsselwörter für Themen, die für die Zielgruppe (8-16 Jahre) eher ungeeignet/verstörend
-    /// sind (Krieg, Gewaltverbrechen, Suizid, ...) - "keine Angstmache". Solche Artikel werden
-    /// nicht hart ausgefiltert (an manchen Tagen gäbe es sonst zu wenige Artikel), aber in der
-    /// Rangliste deutlich nach unten gestuft, damit harmlosere Artikel bevorzugt ausgewählt werden.
-    /// </summary>
-    public static readonly IReadOnlyList<string> SensitiveKeywords = new[]
-    {
-        "Krieg", "Mord", "Amoklauf", "Terror", "Anschlag", "Attentat", "Vergewaltigung",
-        "Missbrauch", "Selbstmord", "Suizid", "Leiche", "getötet", "erschossen", "Gewaltverbrechen",
-        // Türkischsprachige Entsprechungen für die Türkei-Feeds:
-        "savaş", "cinayet", "terör", "saldırı", "tecavüz", "intihar", "öldürüldü",
-        // Englischsprachige Entsprechungen für die BBC-/Euronews-Feeds:
-        "war", "murder", "terror", "attack", "rape", "abuse", "suicide", "killed", "shot dead"
-    };
+    // Die Stichwortlisten für den Jugendschutz stehen in NewsSuitability - dort nach Sprache
+    // getrennt und auf ganze Wörter geprüft. Eine gemeinsame Liste mit Teilzeichenketten-Suche
+    // war nicht haltbar: das englische "war" hätte in jedem deutschen Satz mit "war" gegriffen.
 }

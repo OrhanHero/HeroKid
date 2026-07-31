@@ -84,7 +84,7 @@ public sealed class RssNewsService
             {
                 var items = await FetchFeedAsync(source, cancellationToken);
 
-                var latestItem = SelectLatestItem(items, childAge);
+                var latestItem = SelectLatestItem(items, childAge, source.Language);
                 if (latestItem is not null)
                 {
                     articles.Add(BuildArticle(latestItem, source, gradeLevel));
@@ -238,24 +238,33 @@ public sealed class RssNewsService
         return quotas;
     }
 
-    private static SyndicationItem? SelectLatestItem(IReadOnlyList<SyndicationItem> items, int? childAge)
+    /// <summary>
+    /// Wählt aus einer Quelle den Artikel des Tages - jugendschutzgeprüft.
+    ///
+    /// <para>Vorher stand hier schlicht "der neueste Artikel", und die Prüfung griff nur bei
+    /// Kindern bis neun Jahre. Für die eigentliche Zielgruppe (10-15) fand also gar keine
+    /// Prüfung statt, obwohl die Dokumentation eine Herabstufung heikler Themen versprach - die
+    /// gab es im Code nicht. Jetzt: hart Gesperrtes fliegt raus, und unter mehreren brauchbaren
+    /// Artikeln gewinnt der unbedenklichste; erst bei Gleichstand entscheidet die Aktualität.</para>
+    ///
+    /// <para>Liefert <c>null</c>, wenn eine Quelle an dem Tag nur Ungeeignetes hat - dann bringt
+    /// sie eben keine Nachricht. Ein Artikel weniger ist besser als ein Artikel, der die Eltern
+    /// den Rechner zuklappen lässt.</para>
+    /// </summary>
+    private static SyndicationItem? SelectLatestItem(
+        IReadOnlyList<SyndicationItem> items, int? childAge, NewsFeedLanguage language)
     {
-        var ordered = items.OrderByDescending(item => item.PublishDate).ToList();
-        if (childAge is <= 9)
-        {
-            ordered = ordered
-                .Where(item => CountSensitiveMatches(item.Title?.Text, item.Summary?.Text) == 0)
-                .ToList();
-        }
-
-        return ordered.FirstOrDefault();
-    }
-
-    private static int CountSensitiveMatches(string? title, string? summary)
-    {
-        var text = $"{title} {summary}";
-        return CuratedNewsFeeds.SensitiveKeywords.Count(keyword =>
-            text.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        return items
+            .Select(item => new
+            {
+                Item = item,
+                Verdict = NewsSuitability.Evaluate(item.Title?.Text, item.Summary?.Text, language, childAge)
+            })
+            .Where(candidate => !candidate.Verdict.IsBlocked)
+            .OrderBy(candidate => candidate.Verdict.SensitiveHits)
+            .ThenByDescending(candidate => candidate.Item.PublishDate)
+            .Select(candidate => candidate.Item)
+            .FirstOrDefault();
     }
 
     private async Task<IReadOnlyList<SyndicationItem>> FetchFeedAsync(NewsFeedSource source, CancellationToken cancellationToken)

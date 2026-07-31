@@ -86,6 +86,13 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
   Plätze über die Sprachen und wandert über die Tage durch den ganzen Katalog. Die Auswahl ist
   aus dem Datum abgeleitet und innerhalb eines Tages stabil - beim zweiten Öffnen stehen dieselben
   Artikel da. Aus jeder ausgewählten Quelle kommt genau der neueste Artikel.
+   **Jugendschutz** (`NewsSuitability`): zwei Stufen. Hart gesperrt und nie ausgewählt ist, was in
+  einer Kinder-App nichts zu suchen hat (sexualisierte Gewalt, Suizid, Folter, Missbrauch,
+  Massaker). Heikle Themen (Krieg, Kriminalität, Unfälle) sind erlaubt - sie gehören zum
+  Rahmenlehrplan - werden aber nachrangig behandelt: aus einer Quelle gewinnt der unbedenklichste
+  Artikel, erst bei Gleichstand entscheidet die Aktualität. Unter zehn Jahren sind auch heikle
+  Themen gesperrt. Die Stichwortlisten sind **nach Sprache getrennt** und prüfen **ganze Wörter** -
+  sonst hätte das englische "war" jeden deutschen Satz mit "war" getroffen.
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
    (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes
   `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und EINE Verständnisfrage, die
