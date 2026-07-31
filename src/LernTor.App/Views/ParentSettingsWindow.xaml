@@ -39,7 +39,16 @@
             </Grid>
         </DataTemplate>
     </Window.Resources>
+    <!-- Zwei Zeilen: Inhalt scrollt, die Knopfzeile bleibt unten stehen. Vorher lagen
+         "Speichern"/"Schliessen" MITTEN im Scrollbereich - seit dort Hausaufgaben, Klausuren,
+         Nachrichtenquellen und die Lesetext-Verwaltung dazugekommen sind, lagen sie irgendwo in
+         der Mitte einer sehr langen Seite. Wer unten etwas aendert, soll nicht erst wieder
+         hochscrollen muessen, um zu speichern. -->
     <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <!-- Login / Ersteinrichtung -->
         <StackPanel VerticalAlignment="Center" MaxWidth="420"
@@ -65,7 +74,7 @@
         </StackPanel>
 
         <!-- Eltern-Einstellungen -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
                       Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVis}}">
             <StackPanel>
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DisabledSubjects]}"
@@ -628,17 +637,6 @@
                                FontSize="14" Margin="0,4,0,0" TextWrapping="Wrap"
                                Foreground="{StaticResource ErrorBrush}"
                                Visibility="{Binding HasPaceWarning, Converter={StaticResource BoolToVis}}" />
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
-                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Save]}"
-                            Style="{StaticResource RoundedButton}" Margin="0,0,12,0" Command="{Binding SaveCommand}" />
-                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Close]}"
-                            Style="{StaticResource RoundedButton}" Background="{StaticResource TextSecondaryBrush}"
-                            Margin="0,0,12,0" Command="{Binding CloseCommand}" />
-                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_SkipUnlock]}"
-                            Style="{StaticResource RoundedButton}" Background="{StaticResource ErrorBrush}"
-                            Command="{Binding SkipUnlockCommand}" />
                 </StackPanel>
 
                 <!-- Eigene Aufgaben (z.B. aktuelle Hausaufgaben der Lehrkraft) -->
@@ -1461,5 +1459,20 @@
                         HorizontalAlignment="Left" Command="{Binding ResetAllDataCommand}" />
             </StackPanel>
         </ScrollViewer>
+
+        <!-- Fest verankerte Knopfzeile: immer sichtbar, egal wie weit der Inhalt gescrollt ist. -->
+        <Border Grid.Row="1" Background="{StaticResource BackgroundBrush}" Padding="0,12,0,0"
+                Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVis}}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Save]}"
+                        Style="{StaticResource RoundedButton}" Margin="0,0,12,0" Command="{Binding SaveCommand}" />
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Close]}"
+                        Style="{StaticResource RoundedButton}" Background="{StaticResource TextSecondaryBrush}"
+                        Margin="0,0,12,0" Command="{Binding CloseCommand}" />
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_SkipUnlock]}"
+                        Style="{StaticResource RoundedButton}" Background="{StaticResource ErrorBrush}"
+                        Command="{Binding SkipUnlockCommand}" />
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
