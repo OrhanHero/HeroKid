@@ -287,17 +287,10 @@ Rahmenlehrplan" weiter unten).
 
 ## News (`LernTor.News`)
 
-22 kuratierte, kostenlose RSS-Quellen (siehe `CuratedNewsFeeds.All` in `NewsFeedSource.cs`) -
-öffentlich-rechtlich, Nachrichtenagenturen, Bezirks-/Landesparlament, Hersteller-Feeds, bewusst
-keine Boulevardquellen:
-
-- **Deutschland/Berlin**: tagesschau.de, Deutsche Welle, rbb24 Berlin, Tagesspiegel Berlin,
-  Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg, Abgeordnetenhaus
-  Berlin, fluter.de, Bundesregierung kompakt/Pressemitteilungen, BMBFSFJ
-- **Türkei**: Anadolu Ajansı, TRT Haber, DW Türkçe (bewusst seriöse Agenturen/Sender statt
-  Boulevardquellen)
-- **KI/Technik**: heise online, IT Boltwise
-- **Spiele**: GameStar, Nintendo.de News, PlayStation Blog DE, Xbox News DE, Steam News
+44 kuratierte, kostenlose RSS-Quellen (siehe `CuratedNewsFeeds.All` in `NewsFeedSource.cs`) -
+öffentlich-rechtlich, Nachrichtenagenturen, Bezirks-/Landesparlament, Forschungs- und
+Hersteller-Feeds, bewusst keine Boulevardquellen. 27 deutsch, 9 türkisch, 8 englisch; die
+vollständige Aufstellung nach Rubriken steht weiter unten unter "📰 News / RSS-Feeds".
 
 `RssNewsService.LoadCuratedArticlesAsync` übernimmt aus **jedem Feed genau den neuesten Artikel** -
 keine Quoten-/Prioritäts-Rankings mehr, das Ergebnis bleibt dadurch bewusst klein und stabil
@@ -759,35 +752,44 @@ Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in
 der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
 abgeleitet, nicht aus dem Gedächtnis geschätzt.
 
-### 📰 News / RSS-Feeds (`LernTor.News/CuratedNewsFeeds.cs`)
+### 📰 News / RSS-Feeds (`LernTor.News/NewsFeedSource.cs`)
 
-**22 kuratierte RSS-Quellen** (keine Boulevard, ausschließlich öffentlich-rechtlich, Agenturen,
-etablierte Regionalzeitungen, Hersteller-Feeds), gruppiert nach `DefaultCategory` (nur ein
-Ausgangspunkt - `NewsCategoryClassifier` ordnet den tatsächlichen Artikeltext zusätzlich per
-Schlüsselwort um, z.B. landet eine Minecraft-Meldung von tagesschau.de trotzdem in 🎮 Spiele):
+**44 kuratierte RSS-Quellen** (kein Boulevard, ausschließlich öffentlich-rechtlich, Agenturen,
+etablierte Regionalzeitungen, Forschungs- und Hersteller-Feeds) - 27 deutsch, 9 türkisch, 8
+englisch. Pro Tag wird nur ein Teil davon abgefragt (`RssNewsService.SelectFeedsForDay`, siehe
+Tagesrotation weiter unten); gruppiert ist die Liste nach `DefaultCategory`, was nur der
+Ausgangspunkt ist - `NewsCategoryClassifier` ordnet den tatsächlichen Artikeltext zusätzlich per
+Schlüsselwort um, z.B. landet eine Minecraft-Meldung von tagesschau.de trotzdem in 🎮 Spiele:
 
 | Kategorie | Feeds (Anzahl) | Quellen |
 |-----------|----------------|---------|
-| **Berlin** | 5 | rbb24, Tagesspiegel, Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg |
-| **Türkei** | 3 | Anadolu Ajansı, TRT Haber, DW Türkçe |
+| **Deutschland** | 10 | tagesschau.de, Deutschlandfunk Nachrichten, ZDF logo! Kindernachrichten, Abgeordnetenhaus Berlin, fluter.de, Umweltbundesamt, heise online, Bundesregierung kompakt, Bundesregierung Pressemitteilungen, BMBFSFJ |
+| **Türkei** | 8 | Anadolu Ajansı, Anadolu Ajansı Bilim-Teknoloji, TRT Haber, TRT Haber Bilim ve Teknoloji, TRT Haber Eğitim, DW Türkçe, BBC News Türkçe, Euronews Türkçe |
+| **Wissen** | 7 | Spektrum.de, MDR Wissen, wissenschaft.de, BBC Science & Environment, NASA Breaking News, ESA Space News, ScienceDaily |
+| **Berlin** | 6 | rbb24 Berlin, Tagesspiegel Berlin, Berliner Morgenpost, Bezirksamt Neukölln, Bezirksamt Friedrichshain-Kreuzberg, Bezirksamt Mitte |
+| **Welt** | 5 | Deutsche Welle, BBC Newsround, BBC News World, DW English, Euronews English |
 | **Spiele** | 5 | GameStar, Nintendo.de News, PlayStation Blog DE, Xbox News DE, Steam News |
+| **Sport** | 2 | Sportschau, Anadolu Ajansı Spor |
 | **KI / Technik** | 1 | IT Boltwise (heise online läuft kategorisiert als Deutschland, deckt aber KI-Themen mit ab) |
-| **Deutschland / Allgemein** | 7 | tagesschau.de, Abgeordnetenhaus Berlin, fluter.de, heise online, Bundesregierung kompakt, Bundesregierung Pressemitteilungen, BMBFSFJ |
-| **Welt / International** | 1 | Deutsche Welle |
 | **Finanzen** (kein Feed) | 1 tägliches Erklärstück | rotierendes, kuratiertes Finanzwissen (`FinanceKnowledgeArticles`, Fix) |
+
+Diese Tabelle wurde aus `NewsFeedSource.All` erzeugt, nicht aus dem Gedächtnis geschätzt - die
+vorherige Fassung stand noch auf 22 Quellen und listete die Rubriken Wissen und Sport gar nicht.
+Ob die URLs auch leben, prüft `scripts/check-feeds.py` (wöchentlich per GitHub Action).
 
 **News-Auswahl-Logik** (in `RssNewsService.LoadCuratedArticlesAsync`) - bewusst einfach gehalten,
 keine Quoten/Prioritäts-Rankings mehr:
 
 ```csharp
-foreach (feed in CuratedNewsFeeds.All)   // 22 Feeds
+foreach (feed in SelectFeedsForDay(heute))   // Tagesausschnitt aus 44 Feeds
     → genau der neueste Artikel dieses Feeds
     → bei ≤9 Jahren: komplett übersprungen, falls SensitiveKeywords treffen
     → nicht erreichbare Feeds werden einzeln übersprungen (Fehlerprotokoll)
 
 + 1 FinanceKnowledgeArticles.GetForDate(heute)   // täglich fix, kein Feed nötig
 
-→ typischerweise ~22-23 Artikel/Tag (weniger, wenn Feeds ausfallen)
+→ so viele Artikel wie im Eltern-Bereich eingestellt (StudentProfile.NewsArticleCount,
+  Standard 12) + 1 Finanzstück; weniger, wenn Feeds ausfallen
 ```
 
 **Altersfilter** (Parameter `childAge`):
