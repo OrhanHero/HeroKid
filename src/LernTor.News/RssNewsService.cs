@@ -24,17 +24,20 @@ public sealed class RssNewsService
     private readonly ITextSimplifier _simplifier;
     private readonly IComprehensionQuestionGenerator _questionGenerator;
     private readonly FeedCache _feedCache;
+    private readonly FeedHealthLog _healthLog;
 
     public RssNewsService(
         HttpClient httpClient,
         ITextSimplifier simplifier,
         IComprehensionQuestionGenerator questionGenerator,
-        FeedCache? feedCache = null)
+        FeedCache? feedCache = null,
+        FeedHealthLog? healthLog = null)
     {
         _httpClient = httpClient;
         _simplifier = simplifier;
         _questionGenerator = questionGenerator;
         _feedCache = feedCache ?? new FeedCache();
+        _healthLog = healthLog ?? new FeedHealthLog();
     }
 
     /// <summary>
@@ -91,6 +94,15 @@ public sealed class RssNewsService
                 if (latestItem is not null)
                 {
                     articles.Add(BuildArticle(latestItem, source, gradeLevel));
+                    _healthLog.Record(source.Name, isHealthy: true);
+                }
+                else
+                {
+                    // Erreichbar, aber ohne brauchbaren Artikel - fuer die Eltern ein Unterschied,
+                    // den sie sehen sollten: hier hilft kein Ersetzen der URL, hier hat der
+                    // Jugendschutz-Filter zugeschlagen oder der Feed war leer.
+                    _healthLog.Record(source.Name, isHealthy: false,
+                        "Erreichbar, aber kein geeigneter Artikel (Jugendschutz-Filter oder leerer Feed).");
                 }
             }
             catch (Exception ex)
@@ -100,6 +112,7 @@ public sealed class RssNewsService
                 // Quelle tot ist (wichtig zum Pflegen der Feed-URLs).
                 LernTor.Core.Logging.AppLog.Warn(
                     "News", $"Feed übersprungen: {source.Name} ({source.RssUrl}) - {ex.Message}");
+                _healthLog.Record(source.Name, isHealthy: false, ex.Message);
             }
         }
 

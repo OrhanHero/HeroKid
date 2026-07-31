@@ -11,13 +11,29 @@ public sealed partial class NewsFeedToggle : ObservableObject
 {
     private readonly Action<NewsFeedToggle> _onChanged;
 
-    public NewsFeedToggle(string name, string description, bool isEnabled, Action<NewsFeedToggle> onChanged)
+    public NewsFeedToggle(
+        string name,
+        string description,
+        bool isEnabled,
+        Action<NewsFeedToggle> onChanged,
+        string healthLabel = "",
+        bool isUnhealthy = false)
     {
         Name = name;
         Description = description;
         this.isEnabled = isEnabled;
         _onChanged = onChanged;
+        HealthLabel = healthLabel;
+        IsUnhealthy = isUnhealthy;
     }
+
+    /// <summary>Zustand beim letzten tatsaechlichen Abruf, als Klartext (siehe FeedHealthLog).</summary>
+    public string HealthLabel { get; }
+
+    /// <summary>Ob der letzte Abruf fehlschlug - faerbt die Zeile im Eltern-Bereich.</summary>
+    public bool IsUnhealthy { get; }
+
+    public bool HasHealthLabel => HealthLabel.Length > 0;
 
     /// <summary>Name der Quelle - dient zugleich als Schlüssel in AppSettings.DisabledNewsFeeds.</summary>
     public string Name { get; }

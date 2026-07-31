@@ -779,6 +779,24 @@
                                 <StackPanel>
                                     <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" FontSize="13" />
                                     <TextBlock Text="{Binding Description, Mode=OneWay}" FontSize="11" Opacity="0.7" />
+                                    <!-- Zustand beim letzten Abruf. Bei 44 Quellen koennte die
+                                         Haelfte tot sein, ohne dass es jemandem auffaellt - die App
+                                         ueberspringt tote Feeds ja bewusst geraeuschlos. -->
+                                    <TextBlock Text="{Binding HealthLabel, Mode=OneWay}" FontSize="11"
+                                               TextWrapping="Wrap" MaxWidth="420"
+                                               Visibility="{Binding HasHealthLabel, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Opacity" Value="0.6" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsUnhealthy, Mode=OneWay}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </CheckBox>
                         </DataTemplate>

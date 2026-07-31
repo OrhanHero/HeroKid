@@ -267,6 +267,12 @@ deshalb bewusst nicht umgesetzt.
   ist Raten unsichtbar - bei drei Optionen liegt Raten in einem Drittel der Fälle richtig. Bewusst
   nur ein Hinweis für die Eltern, keine zusätzliche Sperre für das Kind: wer das Antworten selbst
   blockiert, bestraft auch das Kind, das die Antwort einfach sofort weiß.
+- **🩺 Feed-Gesundheit**: an jeder Quelle steht, wie der letzte tatsächliche Abruf ausging
+  (`FeedHealthLog`, gespeichert in `%LOCALAPPDATA%\LernTor\feedhealth.json`) - "✓ heute geladen"
+  oder "⚠ vor 3 Tagen fehlgeschlagen: …", fehlgeschlagene rot. Der Zeitpunkt steht bewusst dabei:
+  seit der Tagesrotation wird nicht mehr jede Quelle täglich abgerufen, ein Eintrag kann also Tage
+  alt sein. Nötig, weil die App tote Feeds geräuschlos überspringt - bei 44 Quellen könnte sonst
+  die Hälfte kaputt sein, ohne dass es auffällt.
 - **📰 Nachrichtenquellen wählbar**: alle 44 kuratierten Quellen einzeln an- und abschaltbar, nach
   Sprache gruppiert (Deutsch, Türkisch, Englisch) mit Region als Einordnung, dazu "alle an/aus".
   Wie viele Nachrichten daraus täglich werden, steuert **News: Nachrichten pro Tag** (pro Profil).

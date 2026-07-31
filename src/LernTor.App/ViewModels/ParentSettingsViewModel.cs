@@ -26,6 +26,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly CustomReadingTextRepository _customReadingRepo;
     private readonly HomeworkTaskRepository _homeworkRepo;
+    private readonly FeedHealthLog _feedHealthLog = new();
     private readonly VocabularyRepository _vocabularyRepo;
     private readonly KioskLockService _kioskLock;
     private readonly LocalLlmOptions _localLlmOptions;
@@ -1594,9 +1595,37 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _ => language.ToString()
     };
 
+    /// <summary>
+    /// Zustand einer Quelle als Klartext. Wichtig ist der ZEITPUNKT: seit der Tagesrotation wird
+    /// nicht mehr jede Quelle täglich abgerufen, ein Eintrag kann also Tage alt sein. Ihn ohne
+    /// Datum als aktuellen Stand auszugeben wäre irreführend.
+    /// </summary>
+    private static string HealthLabelFor(FeedHealthEntry? entry)
+    {
+        if (entry is null)
+        {
+            return "noch nicht abgerufen";
+        }
+
+        var days = (DateOnly.FromDateTime(DateTime.Today).DayNumber
+                    - DateOnly.FromDateTime(entry.CheckedAt.LocalDateTime).DayNumber);
+        var wann = days switch
+        {
+            <= 0 => "heute",
+            1 => "gestern",
+            _ => $"vor {days} Tagen"
+        };
+
+        return entry.IsHealthy
+            ? $"✓ {wann} geladen"
+            : $"⚠ {wann} fehlgeschlagen: {entry.Error}";
+    }
+
     private void BuildNewsFeedToggles()
     {
         NewsFeedToggles.Clear();
+
+        var health = _feedHealthLog.LoadAll();
 
         // Nach Sprache gruppiert statt nach Region: bei 44 Quellen ist "erst alle deutschen,
         // dann alle türkischen, dann alle englischen" die Reihenfolge, in der Eltern suchen.
@@ -1605,11 +1634,15 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
                      .ThenBy(f => f.RegionFocus)
                      .ThenBy(f => f.Name))
         {
+            health.TryGetValue(feed.Name, out var entry);
+
             NewsFeedToggles.Add(new NewsFeedToggle(
                 feed.Name,
                 $"{LanguageLabel(feed.Language)} · {feed.RegionFocus}",
                 !_settings.DisabledNewsFeeds.Contains(feed.Name),
-                OnNewsFeedToggled));
+                OnNewsFeedToggled,
+                HealthLabelFor(entry),
+                isUnhealthy: entry is { IsHealthy: false }));
         }
 
         UpdateNewsFeedStatus();
@@ -1664,13 +1697,19 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             return;
         }
 
+        // Kaputte Quellen zuerst nennen - das ist die Information, wegen der man hier nachschaut.
+        var kaputt = NewsFeedToggles.Count(t => t.IsUnhealthy);
+        var warnung = kaputt > 0
+            ? $"⚠ {kaputt} Quelle(n) beim letzten Abruf fehlgeschlagen (siehe Hinweis an der Zeile). "
+            : string.Empty;
+
         // Wichtig fuer die Erwartung der Eltern: seit dem grossen Katalog kommt NICHT mehr aus
         // jeder Quelle taeglich eine Nachricht - es wird taeglich eine andere Auswahl gezogen.
-        NewsFeedStatus = active <= NewsArticleCount
+        NewsFeedStatus = warnung + (active <= NewsArticleCount
             ? $"{active} von {NewsFeedToggles.Count} Quellen aktiv - bei {NewsArticleCount} Nachrichten am Tag kommt jede aktive Quelle täglich dran."
             : $"{active} von {NewsFeedToggles.Count} Quellen aktiv. Pro Tag werden daraus {NewsArticleCount} Nachrichten " +
               $"ausgewählt (Deutsch, Türkisch und Englisch gemischt) - über etwa {Math.Max(1, (int)Math.Ceiling(active / (double)NewsArticleCount))} Tage " +
-              "kommt jede Quelle einmal vorbei.";
+              "kommt jede Quelle einmal vorbei.");
     }
 
     // --- Lesetext-Verwaltung: EINE Liste aus eigenen und eingebauten Texten ---
