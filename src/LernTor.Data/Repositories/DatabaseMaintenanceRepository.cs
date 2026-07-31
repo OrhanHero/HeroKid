@@ -21,14 +21,35 @@ public sealed class DatabaseMaintenanceRepository
         _db = db;
     }
 
+    /// <summary>
+    /// Werkseinstellungen: leert ALLE Tabellen.
+    ///
+    /// <para>Hier standen lange nur sechs Tabellen, obwohl der Bestätigungsdialog "alle Profile,
+    /// Fortschritte, Aktivitätsprotokolle und Einstellungen" verspricht. Belohnungen, eingelöste
+    /// Belohnungen, Tipptrainer-Fortschritt, eigene Lesetexte, Vokabeln, Fehler-Kartei,
+    /// gemeisterte Aufgaben und das Nachrichten-Archiv blieben stehen - nach dem Zurücksetzen
+    /// tauchten also die Sterne und Fehler des gelöschten Kindes beim neuen wieder auf. Neue
+    /// Tabellen gehören ausnahmslos in diese Liste.</para>
+    /// </summary>
     public async Task ResetAllDataAsync(CancellationToken cancellationToken = default)
     {
         await _db.Progress.ExecuteDeleteAsync(cancellationToken);
         await _db.ActivityLog.ExecuteDeleteAsync(cancellationToken);
         await _db.QuizAttempts.ExecuteDeleteAsync(cancellationToken);
         await _db.Settings.ExecuteDeleteAsync(cancellationToken);
-        await _db.Profiles.ExecuteDeleteAsync(cancellationToken);
         await _db.CustomQuestions.ExecuteDeleteAsync(cancellationToken);
+        await _db.ReviewQuestions.ExecuteDeleteAsync(cancellationToken);
+        await _db.MasteredPrompts.ExecuteDeleteAsync(cancellationToken);
+        await _db.ArchivedArticles.ExecuteDeleteAsync(cancellationToken);
+        await _db.RewardRedemptions.ExecuteDeleteAsync(cancellationToken);
+        await _db.Rewards.ExecuteDeleteAsync(cancellationToken);
+        await _db.TypingLessonProgress.ExecuteDeleteAsync(cancellationToken);
+        await _db.CustomReadingTexts.ExecuteDeleteAsync(cancellationToken);
+        await _db.VocabularyEntries.ExecuteDeleteAsync(cancellationToken);
+        await _db.HomeworkTasks.ExecuteDeleteAsync(cancellationToken);
+
+        // Profile zuletzt: alles andere haengt per ProfileId daran.
+        await _db.Profiles.ExecuteDeleteAsync(cancellationToken);
     }
 
     /// <summary>

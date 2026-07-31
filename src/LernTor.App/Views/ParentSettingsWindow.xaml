@@ -652,6 +652,74 @@
                      Stuecke waren im Eltern-Bereich vorher gar nicht sichtbar, und ein frisch
                      eingetragener eigener Text liess sich nicht gezielt aufrufen - das Anheften
                      loest genau das. -->
+                <!-- Hausaufgaben mit Stichtag: gehoeren zum oben gewaehlten Profil. Anders als die
+                     eigenen Aufgaben weiter oben werden sie NICHT abgefragt - sie erinnern nur an
+                     etwas, das ausserhalb der App zu erledigen ist. -->
+                <TextBlock Text="📒 Hausaufgaben (für das oben gewählte Kind)"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
+                <TextBlock Text="Erscheinen beim Kind auf dem Startbildschirm und werden dort abgehakt. Überfällige stehen ganz oben und rot."
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <TextBlock Text="{Binding HomeworkStatus, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <ComboBox ItemsSource="{Binding HomeworkSubjects}" SelectedItem="{Binding NewHomeworkSubject}"
+                              Width="150" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <DatePicker SelectedDate="{Binding NewHomeworkDueDate}" Width="130"
+                                Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding NewHomeworkDescription, UpdateSourceTrigger=PropertyChanged}"
+                             Width="280" Margin="0,0,8,0" VerticalAlignment="Center"
+                             ToolTip="Was ist zu tun? z.B. &quot;Mathe Seite 42, Nr. 1-5&quot;" />
+                    <Button Content="Eintragen" Style="{StaticResource RoundedButton}"
+                            Command="{Binding AddHomeworkCommand}" />
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding Homework}" Margin="0,0,0,8">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="10,6" Margin="0,3">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding SubjectName, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                   FontSize="11" Opacity="0.7" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="{Binding DueLabel, Mode=OneWay}"
+                                               VerticalAlignment="Center" Margin="8,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                <Setter Property="FontSize" Value="12" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOverdue, Mode=OneWay}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                        <Setter Property="FontWeight" Value="Bold" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button Grid.Column="3" Content="🗑" Style="{StaticResource RoundedButton}"
+                                            Padding="8,2" VerticalAlignment="Center"
+                                            Command="{Binding DataContext.DeleteHomeworkCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="Erledigte älter als 7 Tage aufräumen" Style="{StaticResource RoundedButton}"
+                        HorizontalAlignment="Left" Margin="0,0,0,8"
+                        Command="{Binding ClearDoneHomeworkCommand}" />
+
                 <!-- Nachrichtenquellen: bisher nur im Code aenderbar - jetzt ohne neuen Build. -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_NewsFeeds_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.Core.Enums;
@@ -45,14 +46,41 @@ public sealed partial class WelcomeViewModel : ObservableObject
 
     public int WeeklyGoalTarget => WeeklyGoal.Goal;
 
+    /// <summary>
+    /// Von den Eltern eingetragene Hausaufgaben, dringendste zuerst. Bewusst hier auf dem
+    /// Willkommensbildschirm und nicht in einer eigenen Etappe: die Aufgabe wird ausserhalb der
+    /// App erledigt, die App erinnert nur daran. Leer = die Karte bleibt ganz weg.
+    /// </summary>
+    public ObservableCollection<HomeworkItemViewModel> Homework { get; } = new();
+
+    public bool ShowHomework => Homework.Count > 0;
+
+    /// <summary>Wie viele davon noch offen sind - fuer die Ueberschrift der Karte.</summary>
+    public int OpenHomeworkCount => Homework.Count(h => !h.IsCompleted);
+
+    public bool AllHomeworkDone => Homework.Count > 0 && OpenHomeworkCount == 0;
+
+    /// <summary>Nach dem Abhaken die abgeleiteten Anzeigen neu berechnen lassen.</summary>
+    public void RefreshHomeworkCount()
+    {
+        OnPropertyChanged(nameof(OpenHomeworkCount));
+        OnPropertyChanged(nameof(AllHomeworkDone));
+    }
+
     public WelcomeViewModel(
         string profileName,
         int currentStreak,
         Action onContinue,
         Action<AppLanguage> onSwitchLanguage,
         int dueReviewCount = 0,
-        WeeklyGoalCalculator.WeeklyGoalStatus weeklyGoal = default)
+        WeeklyGoalCalculator.WeeklyGoalStatus weeklyGoal = default,
+        IEnumerable<HomeworkItemViewModel>? homework = null)
     {
+        foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
+        {
+            Homework.Add(item);
+        }
+
         ProfileName = profileName;
         CurrentStreak = currentStreak;
         DueReviewCount = dueReviewCount;

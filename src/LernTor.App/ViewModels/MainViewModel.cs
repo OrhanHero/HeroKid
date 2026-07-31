@@ -36,6 +36,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
+    private readonly HomeworkTaskRepository _homeworkRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
@@ -81,6 +82,7 @@ public sealed partial class MainViewModel : ObservableObject
         ReviewQuestionRepository reviewRepo,
         MasteredPromptRepository masteredPromptRepo,
         ArchivedArticleRepository archiveRepo,
+        HomeworkTaskRepository homeworkRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
@@ -104,6 +106,7 @@ public sealed partial class MainViewModel : ObservableObject
         _reviewRepo = reviewRepo;
         _masteredPromptRepo = masteredPromptRepo;
         _archiveRepo = archiveRepo;
+        _homeworkRepo = homeworkRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
@@ -236,8 +239,29 @@ public sealed partial class MainViewModel : ObservableObject
             DateOnly.FromDateTime(DateTime.Today),
             CurrentProfile!.WeeklyGoalDays);
 
+        // Hausaufgaben der Eltern: nur die aktuell relevanten (offene bis zwei Wochen nach
+        // Stichtag, frisch abgehakte noch kurz) - siehe HomeworkTask.IsVisibleTo.
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var homework = (await _homeworkRepo.GetVisibleForProfileAsync(CurrentProfile!.Id, today))
+            .Select(task => new HomeworkItemViewModel(task, today, OnHomeworkCompletedChanged))
+            .ToList();
+
         return new WelcomeViewModel(
-            CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal);
+            CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal, homework);
+    }
+
+    /// <summary>
+    /// Abhaken wird sofort gespeichert. Eine Hausaufgabe, die man abhakt und die beim naechsten
+    /// Start wieder offen dasteht, waere schlimmer als gar keine Erinnerung.
+    /// </summary>
+    private async void OnHomeworkCompletedChanged(HomeworkItemViewModel item)
+    {
+        await _homeworkRepo.SetCompletedAsync(item.Id, item.IsCompleted);
+
+        if (CurrentViewModel is WelcomeViewModel welcome)
+        {
+            welcome.RefreshHomeworkCount();
+        }
     }
 
     /// <summary>Baut die fünf Makro-Etappen (Lesen/Tippen/News/Fächer/Quiz) für die Fortschrittsleiste neu auf.</summary>

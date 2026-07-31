@@ -25,6 +25,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly DatabaseMaintenanceRepository _maintenanceRepo;
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly CustomReadingTextRepository _customReadingRepo;
+    private readonly HomeworkTaskRepository _homeworkRepo;
     private readonly VocabularyRepository _vocabularyRepo;
     private readonly KioskLockService _kioskLock;
     private readonly LocalLlmOptions _localLlmOptions;
@@ -352,6 +353,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         DatabaseMaintenanceRepository maintenanceRepo,
         CustomQuestionRepository customQuestionRepo,
         CustomReadingTextRepository customReadingRepo,
+        HomeworkTaskRepository homeworkRepo,
         VocabularyRepository vocabularyRepo,
         KioskLockService kioskLock,
         LocalLlmOptions localLlmOptions,
@@ -366,6 +368,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _maintenanceRepo = maintenanceRepo;
         _customQuestionRepo = customQuestionRepo;
         _customReadingRepo = customReadingRepo;
+        _homeworkRepo = homeworkRepo;
         _vocabularyRepo = vocabularyRepo;
         _kioskLock = kioskLock;
         _localLlmOptions = localLlmOptions;
@@ -624,6 +627,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
         _ = ReloadCustomReadingTextsAsync();
         _ = ReloadVocabularyAsync();
+        _ = ReloadHomeworkAsync();
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -1991,4 +1995,119 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     private static IReadOnlyList<string> SplitCommaSeparated(string text) =>
         text.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    // --- Hausaufgaben mit Stichtag (pro Profil) ---
+
+    /// <summary>Alle Hausaufgaben des gewählten Profils, dringendste zuerst.</summary>
+    public ObservableCollection<HomeworkItemViewModel> Homework { get; } = new();
+
+    [ObservableProperty]
+    private string newHomeworkDescription = string.Empty;
+
+    [ObservableProperty]
+    private Subject newHomeworkSubject = Subject.Mathematik;
+
+    /// <summary>Stichtag als DateTime? für den DatePicker; Vorgabe ist morgen - der häufigste Fall.</summary>
+    [ObservableProperty]
+    private DateTime? newHomeworkDueDate = DateTime.Today.AddDays(1);
+
+    [ObservableProperty]
+    private string homeworkStatus = string.Empty;
+
+    public bool HasNoHomework => Homework.Count == 0;
+
+    /// <summary>Fächer für das Auswahlfeld - dieselbe Liste wie bei den eigenen Aufgaben.</summary>
+    public IReadOnlyList<Subject> HomeworkSubjects { get; } =
+        Enum.GetValues<Subject>().Where(s => s != Subject.News).ToList();
+
+    private async Task ReloadHomeworkAsync()
+    {
+        Homework.Clear();
+        if (SelectedProfile is null)
+        {
+            OnPropertyChanged(nameof(HasNoHomework));
+            return;
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        foreach (var task in await _homeworkRepo.GetForProfileAsync(SelectedProfile.Id))
+        {
+            Homework.Add(new HomeworkItemViewModel(task, today, OnHomeworkCompletedChanged));
+        }
+
+        OnPropertyChanged(nameof(HasNoHomework));
+        UpdateHomeworkStatus();
+    }
+
+    /// <summary>
+    /// Abhaken im Eltern-Bereich wird sofort gespeichert - wie in der Kind-Ansicht. Bewusst KEIN
+    /// MarkDirty: das ist keine Einstellung, die auf "Speichern" wartet.
+    /// </summary>
+    private async void OnHomeworkCompletedChanged(HomeworkItemViewModel item)
+    {
+        await _homeworkRepo.SetCompletedAsync(item.Id, item.IsCompleted);
+        UpdateHomeworkStatus();
+    }
+
+    [RelayCommand]
+    private async Task AddHomeworkAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            HomeworkStatus = "Erst ein Profil auswählen.";
+            return;
+        }
+
+        var description = NewHomeworkDescription.Trim();
+        if (description.Length == 0)
+        {
+            HomeworkStatus = "Bitte eintragen, was zu tun ist.";
+            return;
+        }
+
+        var dueDate = DateOnly.FromDateTime(NewHomeworkDueDate ?? DateTime.Today);
+
+        await _homeworkRepo.AddAsync(SelectedProfile.Id, NewHomeworkSubject, description, dueDate);
+
+        NewHomeworkDescription = string.Empty;
+        NewHomeworkDueDate = DateTime.Today.AddDays(1);
+        await ReloadHomeworkAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteHomeworkAsync(HomeworkItemViewModel item)
+    {
+        await _homeworkRepo.DeleteAsync(item.Id);
+        await ReloadHomeworkAsync();
+    }
+
+    /// <summary>Räumt erledigte Hausaufgaben ab, die länger als eine Woche abgehakt sind.</summary>
+    [RelayCommand]
+    private async Task ClearDoneHomeworkAsync()
+    {
+        var removed = await _homeworkRepo.DeleteCompletedOlderThanAsync(
+            DateOnly.FromDateTime(DateTime.Today).AddDays(-7));
+
+        await ReloadHomeworkAsync();
+        HomeworkStatus = removed == 0
+            ? "Nichts zum Aufräumen - alle erledigten Aufgaben sind noch frisch."
+            : $"{removed} erledigte Hausaufgabe(n) entfernt.";
+    }
+
+    private void UpdateHomeworkStatus()
+    {
+        if (Homework.Count == 0)
+        {
+            HomeworkStatus = "Noch keine Hausaufgaben eingetragen. Sie erscheinen beim Kind auf dem Startbildschirm.";
+            return;
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var offen = Homework.Count(h => !h.IsCompleted);
+        var ueberfaellig = Homework.Count(h => h.Task.IsOverdue(today));
+
+        HomeworkStatus = ueberfaellig > 0
+            ? $"{offen} offen, davon {ueberfaellig} überfällig."
+            : $"{offen} offen, nichts überfällig.";
+    }
 }

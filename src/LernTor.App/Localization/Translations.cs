@@ -33,6 +33,12 @@ public static class Translations
             ["Welcome_DueReviews"] = L(
                 "🔁 Von früher noch offen: {0} - beim zweiten Mal sitzt es meistens.",
                 "🔁 Önceden kalan: {0} - ikinci seferde genelde oturur."),
+            ["Welcome_Homework"] = L(
+                "📒 Hausaufgaben: {0} noch offen",
+                "📒 Ev ödevleri: {0} tane açık"),
+            ["Welcome_HomeworkAllDone"] = L(
+                "✅ Alles abgehakt - stark!",
+                "✅ Hepsi tamam - harika!"),
             ["Welcome_Title"] = L("Willkommen bei LernTor!", "LernTor'a Hoş Geldin!"),
             ["Welcome_Subtitle"] = L(
                 "Bevor du den PC benutzen kannst, lernen wir gemeinsam ein bisschen. Los geht's!",

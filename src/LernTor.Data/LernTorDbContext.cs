@@ -20,6 +20,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<TypingLessonProgressEntity> TypingLessonProgress => Set<TypingLessonProgressEntity>();
     public DbSet<CustomReadingTextEntity> CustomReadingTexts => Set<CustomReadingTextEntity>();
     public DbSet<VocabularyEntryEntity> VocabularyEntries => Set<VocabularyEntryEntity>();
+    public DbSet<HomeworkTaskEntity> HomeworkTasks => Set<HomeworkTaskEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -70,6 +71,14 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(v => v.Id);
             e.HasIndex(v => new { v.ProfileId, v.Subject });
+        });
+
+        modelBuilder.Entity<HomeworkTaskEntity>(e =>
+        {
+            e.HasKey(h => h.Id);
+            // Nach Profil UND Stichtag: die Kind-Ansicht fragt genau so ab ("was ist fuer mich
+            // offen, zeitlich sortiert"), und DueDate ist als "yyyy-MM-dd" sortierbar.
+            e.HasIndex(h => new { h.ProfileId, h.DueDate });
         });
 
         modelBuilder.Entity<ReviewQuestionEntity>(e =>
