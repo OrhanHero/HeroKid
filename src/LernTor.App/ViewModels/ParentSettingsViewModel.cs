@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
 using LernTor.App.Services;
+using LernTor.ContentGen;
 using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
@@ -36,6 +37,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly PiperTtsEngine _piperTts;
     private readonly RewardRepository _rewardRepo;
     private readonly AutoBackupService _autoBackup;
+    private readonly QuizComposer _quizComposer;
 
     private AppSettings _settings = new();
 
@@ -367,10 +369,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         TeacherDocumentImportService teacherImportService,
         PiperTtsEngine piperTts,
         RewardRepository rewardRepo,
-        AutoBackupService autoBackup)
+        AutoBackupService autoBackup,
+        QuizComposer quizComposer)
     {
         _rewardRepo = rewardRepo;
         _autoBackup = autoBackup;
+        _quizComposer = quizComposer;
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
@@ -1578,6 +1582,84 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         // Schließen sonst (Schutz gegen den Alt+Tab-"X"-Button, siehe MainWindow_Closing).
         _kioskLock.Unlock();
         System.Windows.Application.Current.Shutdown();
+    }
+
+    // --- Druckbares Übungsblatt (WorksheetExport) ---
+
+    /// <summary>Fächer für das Übungsblatt - dieselbe Liste wie die Ein/Aus-Schalter, ohne Tippen
+    /// (der Tipptrainer hat keine Aufgaben in diesem Sinn) und ohne abgeschaltete Fächer.</summary>
+    public IReadOnlyList<Subject> WorksheetSubjects { get; } = ToggleableSubjects
+        .Where(entry => entry.Subject != Subject.Tippen)
+        .Select(entry => entry.Subject)
+        .ToList();
+
+    [ObservableProperty]
+    private Subject worksheetSubject = Subject.Mathematik;
+
+    [ObservableProperty]
+    private int worksheetQuestionCount = 12;
+
+    [ObservableProperty]
+    private string worksheetStatus = string.Empty;
+
+    [RelayCommand]
+    private void SetWorksheetQuestionCount(string count) =>
+        WorksheetQuestionCount = int.TryParse(count, out var parsed) ? parsed : 12;
+
+    /// <summary>
+    /// Erzeugt ein Übungsblatt zum Ausdrucken - frische Aufgaben des gewählten Fachs in der
+    /// Klassenstufe des gewählten Kindes, Lösungen auf einem eigenen Blatt.
+    ///
+    /// <para>Die Aufgaben werden <b>neu gezogen</b> und nicht aus dem Bildschirm-Pensum kopiert:
+    /// ein Blatt mit genau den Aufgaben, die das Kind heute schon am PC hatte, wäre Abschreiben
+    /// statt Üben.</para>
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportWorksheetAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            WorksheetStatus = "Bitte oben ein Profil auswählen.";
+            return;
+        }
+
+        var loc = LocalizationService.Instance;
+        var subjectLabel = loc[$"Stage_{WorksheetSubject}"];
+
+        var questions = _quizComposer.GenerateExercises(
+            WorksheetSubject, SelectedProfile.GradeLevel, WorksheetQuestionCount, new Random());
+
+        if (questions.Count == 0)
+        {
+            WorksheetStatus = $"Für {subjectLabel} in dieser Klassenstufe gibt es keine Aufgaben.";
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Filter = "Übungsblatt (*.html)|*.html",
+            FileName = WorksheetExport.SuggestFileName(subjectLabel, DateOnly.FromDateTime(DateTime.Today)),
+            Title = "Übungsblatt speichern"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            await File.WriteAllTextAsync(dialog.FileName, WorksheetExport.ToHtml(
+                questions, subjectLabel, SelectedProfile.GradeLevel,
+                DateOnly.FromDateTime(DateTime.Today), new Random()));
+
+            WorksheetStatus = $"{questions.Count} Aufgaben gespeichert: {Path.GetFileName(dialog.FileName)} " +
+                              "(im Browser öffnen und drucken; die Lösungen stehen auf dem zweiten Blatt).";
+        }
+        catch (Exception ex)
+        {
+            WorksheetStatus = $"Speichern fehlgeschlagen: {ex.Message}";
+        }
     }
 
     // --- Automatische Sicherungen (AutoBackupService) ---

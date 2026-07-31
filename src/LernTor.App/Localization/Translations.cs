@@ -260,6 +260,11 @@ public static class Translations
             ["Parent_Backup_Intro"] = L(
                 "Alle Profile, Fortschritte, Sterne und Einstellungen als eine Datei sichern - z.B. auf einen USB-Stick. Beim Wiederherstellen wird der aktuelle Stand ersetzt.",
                 "Tüm profilleri, ilerlemeleri, yıldızları ve ayarları tek dosya olarak yedekle - örn. USB belleğe. Geri yüklerken mevcut durum değiştirilir."),
+            ["Parent_Worksheet_Title"] = L("Übungsblatt zum Ausdrucken", "Yazdırılabilir alıştırma sayfası"),
+            ["Parent_Worksheet_Intro"] = L(
+                "Frische Aufgaben des gewählten Fachs in der Klassenstufe des oben gewählten Kindes - nicht die vom Bildschirm, sonst wäre es Abschreiben. Die Lösungen stehen auf einem eigenen zweiten Blatt. Im Browser öffnen und über \"Drucken\" ausgeben.",
+                "Yukarıda seçilen çocuğun sınıf düzeyinde, seçilen dersten yeni sorular - ekrandakiler değil, yoksa kopyalamak olurdu. Cevaplar ayrı bir ikinci sayfada. Tarayıcıda açıp \"Yazdır\" ile çıktı alın."),
+            ["Parent_Worksheet_Create"] = L("🖨 Übungsblatt erstellen…", "🖨 Alıştırma sayfası oluştur…"),
             ["Parent_AutoBackup_Title"] = L("Automatische Sicherung", "Otomatik yedekleme"),
             ["Parent_AutoBackup_Intro"] = L(
                 "Beim Start legt die App selbst eine Kopie an: einmal täglich und - wichtiger - immer bevor sich am Aufbau der Datenbank etwas ändert. Es bleiben die letzten fünf liegen, die neueste vor einer Änderung dauerhaft. Das ersetzt Ihre eigene Sicherung nicht: diese Kopien liegen auf derselben Platte und überleben deren Defekt nicht.",

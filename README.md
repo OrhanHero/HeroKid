@@ -395,6 +395,17 @@ deshalb bewusst nicht umgesetzt.
   trifft aus einem Schulbuch-PDF auf Anhieb genau den gemeinten Abschnitt, also prüfen und speichern
   die Eltern. Bei eingescannten Seiten (Bild statt Text) sagt die App ehrlich, dass nichts zu holen
   ist, statt ein leeres Formular stehen zu lassen.
+- **🖨 Übungsblatt zum Ausdrucken** (`WorksheetExport`): erzeugt aus dem gewählten Fach und der
+  Klassenstufe des gewählten Kindes ein Blatt mit 8/12/20 Aufgaben als HTML-Datei - für
+  Klausurvorbereitung am Küchentisch, ohne PC. Wer eine Rechnung aufschreibt, statt eine von drei
+  Optionen anzuklicken, rechnet sie wirklich. Die Aufgaben werden **neu gezogen**, nicht aus dem
+  Bildschirm-Pensum kopiert (sonst wäre es Abschreiben). **Die Lösungen stehen auf einem eigenen
+  zweiten Blatt**, hinter einem harten Seitenumbruch - stünde die Antwort neben der Aufgabe, wäre
+  das Blatt wertlos. Antwortoptionen werden gemischt (ungemischt wäre fast immer "A" richtig, weil
+  die Generatoren die richtige Antwort meist zuerst anlegen) und der Lösungsbuchstabe passt zur
+  gedruckten Reihenfolge. Offene Aufgaben bekommen zwei Schreiblinien für den Rechenweg. **Diktate
+  erscheinen nicht auf dem Aufgabenblatt** - der Satz darf ja nicht dastehen -, dafür auf dem
+  Lösungsblatt unter "Zum Vorlesen", von wo ein Elternteil sie diktieren kann.
 - **📄 Bericht als Datei speichern**: schreibt genau den angezeigten Bericht (Fächer, Themen-Heatmap,
   Lernzeit je Fach, Lerntage, Quiz-Verlauf, Tempo und - falls eingeschaltet - die Vergleichstabelle)
   als eine eigenständige **HTML-Datei** zum Aufheben, Ausdrucken oder Mitnehmen zum Elterngespräch.
