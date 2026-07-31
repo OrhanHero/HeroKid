@@ -130,4 +130,32 @@ public sealed class SettingsRepositoryTests : IDisposable
         Assert.Empty(settings.HiddenReadingTextKeys);
         Assert.Empty(settings.DisabledNewsFeeds);
     }
+
+    [Fact]
+    public async Task Geschwister_Vergleich_ist_ohne_Zutun_aus()
+    {
+        // Der Standard ist hier die eigentliche Aussage: Kinder zu vergleichen soll eine bewusste
+        // Entscheidung der Eltern sein, keine Voreinstellung, die man erst entdecken muss.
+        using var db = CreateContext();
+
+        Assert.False(new AppSettings().ProfileComparisonEnabled);
+        Assert.False((await new SettingsRepository(db).LoadAsync()).ProfileComparisonEnabled);
+    }
+
+    [Fact]
+    public async Task Geschwister_Vergleich_ueberlebt_den_Neustart()
+    {
+        using (var db = CreateContext())
+        {
+            var repo = new SettingsRepository(db);
+            var settings = await repo.LoadAsync();
+            settings.ProfileComparisonEnabled = true;
+            await repo.SaveAsync(settings);
+        }
+
+        using (var db = CreateContext())
+        {
+            Assert.True((await new SettingsRepository(db).LoadAsync()).ProfileComparisonEnabled);
+        }
+    }
 }

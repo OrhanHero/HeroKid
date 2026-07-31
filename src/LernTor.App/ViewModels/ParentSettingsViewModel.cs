@@ -398,6 +398,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             LocalLlmModelPath = _settings.LocalLlmModelPath ?? string.Empty;
             SelectedLlmModel = LocalLlmModelCatalog.Resolve(_settings.LocalLlmModelKey);
             StreaksEnabled = _settings.StreaksEnabled;
+            ProfileComparisonEnabled = _settings.ProfileComparisonEnabled;
             PauseUntil = _settings.PauseUntilDate is { } pauseUntil
                 ? pauseUntil.ToDateTime(TimeOnly.MinValue)
                 : null;
@@ -528,6 +529,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         BuildNewsFeedToggles();
 
         await ReloadCustomQuestionsAsync();
+        await LoadProfileComparisonAsync();
     }
 
     private async Task ReloadCustomQuestionsAsync()
@@ -655,6 +657,21 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         _settings.StreaksEnabled = value;
         MarkDirty();
+    }
+
+    /// <summary>Kinder im Bericht nebeneinander stellen (global, Standard aus - siehe
+    /// ProfileComparison: ob ein Geschwister-Vergleich motiviert oder verletzt, können nur die
+    /// Eltern beurteilen).</summary>
+    [ObservableProperty]
+    private bool profileComparisonEnabled;
+
+    partial void OnProfileComparisonEnabledChanged(bool value)
+    {
+        _settings.ProfileComparisonEnabled = value;
+        MarkDirty();
+
+        // Erst beim Einschalten laden: ist der Vergleich aus, kostet er auch keine Abfragen.
+        _ = LoadProfileComparisonAsync();
     }
 
     /// <summary>Preset-Werte für die Tipptrainer-Mindestgenauigkeit (siehe TabPillButton-Gruppe im Eltern-Bereich).</summary>
@@ -899,6 +916,91 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         RebuildReport();
     }
 
+    // --- Geschwister-Vergleich (optional, Standard aus) ---
+
+    /// <summary>Aktivität ALLER Profile der letzten 30 Tage - der Vergleich ist profilübergreifend,
+    /// anders als der übrige Bericht. Wird nur geladen, wenn er eingeschaltet ist.</summary>
+    private Dictionary<string, IReadOnlyList<ActivityLogEntity>> _comparisonActivity = new();
+
+    private bool _comparisonLoaded;
+
+    public ObservableCollection<ProfileComparisonRowViewModel> ProfileComparisonRows { get; } = new();
+
+    [ObservableProperty]
+    private bool hasProfileComparisonData;
+
+    /// <summary>Erklärt, warum die Tabelle leer bleibt (nur ein Kind angelegt) - eine leere Fläche
+    /// ohne Begründung liest sich wie ein Fehler.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasProfileComparisonHint))]
+    private string profileComparisonHint = string.Empty;
+
+    public bool HasProfileComparisonHint => !string.IsNullOrEmpty(ProfileComparisonHint);
+
+    private async Task LoadProfileComparisonAsync()
+    {
+        if (!ProfileComparisonEnabled || Profiles.Count == 0)
+        {
+            RebuildProfileComparison();
+            return;
+        }
+
+        if (!_comparisonLoaded)
+        {
+            var loaded = new Dictionary<string, IReadOnlyList<ActivityLogEntity>>();
+            foreach (var profile in Profiles)
+            {
+                loaded[profile.Id] = await _activityLogRepo.GetActivitySinceAsync(profile.Id, TimeSpan.FromDays(30));
+            }
+
+            _comparisonActivity = loaded;
+            _comparisonLoaded = true;
+        }
+
+        RebuildProfileComparison();
+    }
+
+    private void RebuildProfileComparison()
+    {
+        ProfileComparisonRows.Clear();
+
+        if (!ProfileComparisonEnabled)
+        {
+            HasProfileComparisonData = false;
+            ProfileComparisonHint = string.Empty;
+            return;
+        }
+
+        if (Profiles.Count < ProfileComparison.MinProfiles)
+        {
+            HasProfileComparisonData = false;
+            ProfileComparisonHint = LocalizationService.Instance["Parent_Comparison_NeedsTwo"];
+            return;
+        }
+
+        var cutoff = DateTimeOffset.Now - TimeSpan.FromDays(ReportDays);
+
+        var rows = ProfileComparison.Build(Profiles.Select(profile => new ProfileComparison.Input(
+            profile.Id,
+            profile.Name,
+            profile.TotalStars,
+            (_comparisonActivity.TryGetValue(profile.Id, out var log) ? log : Array.Empty<ActivityLogEntity>())
+                .Where(entry => entry.Timestamp >= cutoff)
+                .Select(entry => new ProfileComparison.Answer(
+                    DateOnly.FromDateTime(entry.Timestamp.LocalDateTime),
+                    entry.WasCorrect,
+                    entry.AnswerDurationMs))
+                .ToList())));
+
+        foreach (var row in rows)
+        {
+            ProfileComparisonRows.Add(new ProfileComparisonRowViewModel(row));
+        }
+
+        HasProfileComparisonData = ProfileComparisonRows.Count > 0;
+        ProfileComparisonHint = string.Empty;
+    }
+
     // --- Wochen-/Monatsbericht (Stärken/Schwächen je Fach, Lerntage, Quiz-Verlauf) ---
 
     private IReadOnlyList<ActivityLogEntity> _reportActivity = Array.Empty<ActivityLogEntity>();
@@ -951,6 +1053,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     {
         ReportRows.Clear();
         TopicReportRows.Clear();
+
+        // Vor dem Datencheck: der Vergleich hängt nicht am gewählten Profil - hat DIESES Kind im
+        // Zeitraum nichts gemacht, ist genau das die Zeile, die Eltern sehen wollen.
+        RebuildProfileComparison();
 
         var loc = LocalizationService.Instance;
         var cutoff = DateTimeOffset.Now - TimeSpan.FromDays(ReportDays);
@@ -1342,6 +1448,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         await _profileRepo.DeleteAsync(toDelete.Id);
         Profiles.Remove(toDelete);
         SelectedProfile = Profiles.FirstOrDefault();
+
+        // Der zwischengespeicherte Vergleich enthielt noch das gelöschte Kind.
+        _comparisonLoaded = false;
+        _comparisonActivity = new();
+        await LoadProfileComparisonAsync();
     }
 
     /// <summary>

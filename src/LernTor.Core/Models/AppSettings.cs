@@ -33,6 +33,12 @@ public sealed class AppSettings
     /// Eltern schalten es explizit ein (siehe StreakCalculator).</summary>
     public bool StreaksEnabled { get; set; } = false;
 
+    /// <summary>Zeigt im Eltern-Bericht die Kinder nebeneinander (Lerntage, Trefferquote, Lernzeit,
+    /// Sterne). Standard AUS - Geschwister zu vergleichen kann motivieren oder verletzen, das können
+    /// nur Eltern beurteilen; deshalb bewusste Entscheidung statt Voreinstellung (siehe
+    /// ProfileComparison).</summary>
+    public bool ProfileComparisonEnabled { get; set; } = false;
+
     /// <summary>Ferien-/Pausenmodus: bis EINSCHLIESSLICH dieses Datums startet die App ohne
     /// Kiosk-Sperre (Lernen bleibt freiwillig möglich). Nach Ablauf reaktiviert sich die Sperre
     /// von selbst - Eltern müssen an nichts denken. Null = kein Pausenmodus.</summary>

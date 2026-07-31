@@ -11,6 +11,9 @@ public sealed class SettingsEntity
     public bool HardLockShellReplacementEnabled { get; set; }
     public bool StreaksEnabled { get; set; }
 
+    /// <summary>Geschwister-Vergleich im Eltern-Bericht (siehe AppSettings.ProfileComparisonEnabled).</summary>
+    public bool ProfileComparisonEnabled { get; set; }
+
     /// <summary>Ferienmodus-Enddatum als ISO-String (yyyy-MM-dd), null = kein Pausenmodus -
     /// bewusst kulturneutraler String statt DateOnly (additive Spalte, sortier-/lesbar in SQLite).</summary>
     public string? PauseUntilDate { get; set; }

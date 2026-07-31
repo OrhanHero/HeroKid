@@ -695,6 +695,92 @@
                                Visibility="{Binding HasPaceWarning, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
 
+                <!-- Geschwister-Vergleich: bewusst ABSCHALTBAR und standardmäßig aus. Ob es einer
+                     Familie hilft, die Kinder nebeneinander zu sehen, oder ob es das Kind
+                     entmutigt, das immer hinten liegt, können nur die Eltern beurteilen - also
+                     eine bewusste Entscheidung statt einer Voreinstellung. Die Tabelle steht
+                     bewusst AUSSERHALB des HasReportData-Blocks: sie hängt nicht am gewählten
+                     Kind, und wenn genau dieses Kind nichts gemacht hat, ist das die
+                     interessanteste Zeile. Sortiert nach Namen, nicht nach Leistung - kein
+                     Siegertreppchen (siehe ProfileComparison). -->
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Title]}"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,24,0,6" />
+                <CheckBox IsChecked="{Binding ProfileComparisonEnabled}" FontSize="14" Margin="0,0,0,4"
+                          Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Toggle]}" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Explainer]}"
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75"
+                           TextWrapping="Wrap" Margin="0,0,0,8" />
+
+                <TextBlock Text="{Binding ProfileComparisonHint, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="13" Opacity="0.7" TextWrapping="Wrap"
+                           Margin="0,0,0,8"
+                           Visibility="{Binding HasProfileComparisonHint, Converter={StaticResource BoolToVis}}" />
+
+                <StackPanel Visibility="{Binding HasProfileComparisonData, Converter={StaticResource BoolToVis}}">
+                    <Grid Margin="10,0,10,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="70" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Child]}" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Days]}" />
+                        <TextBlock Grid.Column="2" Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Accuracy]}" />
+                        <TextBlock Grid.Column="3" Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Time]}" />
+                        <TextBlock Grid.Column="4" Style="{StaticResource BodyText}" FontSize="12" Opacity="0.7"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Comparison_Stars]}" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding ProfileComparisonRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{StaticResource CardBrush}" CornerRadius="8"
+                                        Padding="10,7" Margin="0,3">
+                                    <StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="80" />
+                                                <ColumnDefinition Width="130" />
+                                                <ColumnDefinition Width="90" />
+                                                <ColumnDefinition Width="70" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneWay}"
+                                                       Style="{StaticResource BodyText}" FontWeight="SemiBold" />
+                                            <TextBlock Grid.Column="1" Text="{Binding LearnedDaysDisplay, Mode=OneWay}"
+                                                       Style="{StaticResource BodyText}" FontSize="13"
+                                                       HorizontalAlignment="Right" />
+                                            <TextBlock Grid.Column="2" Text="{Binding AccuracyDisplay, Mode=OneWay}"
+                                                       Style="{StaticResource BodyText}" FontSize="13"
+                                                       HorizontalAlignment="Right" />
+                                            <TextBlock Grid.Column="3" Text="{Binding LearningTimeDisplay, Mode=OneWay}"
+                                                       Style="{StaticResource BodyText}" FontSize="13"
+                                                       HorizontalAlignment="Right" />
+                                            <TextBlock Grid.Column="4" Text="{Binding StarsDisplay, Mode=OneWay}"
+                                                       Style="{StaticResource BodyText}" FontSize="13"
+                                                       HorizontalAlignment="Right" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding EmptyHint, Mode=OneWay}"
+                                                   Style="{StaticResource BodyText}" FontSize="11" Opacity="0.6"
+                                                   TextWrapping="Wrap" Margin="0,2,0,0"
+                                                   Visibility="{Binding HasData, Converter={StaticResource InverseBoolToVis}}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
                 <!-- Eigene Aufgaben (z.B. aktuelle Hausaufgaben der Lehrkraft) -->
                 <!-- Eigene Lesetexte: gehören zum oben gewählten Profil. Ein eigener Text belegt
                      einen der beiden Tagesplätze (siehe ReadingContentProvider.GetPairForDate) -

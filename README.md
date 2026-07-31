@@ -352,6 +352,17 @@ deshalb bewusst nicht umgesetzt.
   Antworten Datenbasis), damit sichtbar wird, dass z.B. genau „Brüche" hakt und nicht pauschal
   „Mathe"; außerdem Lerntage im Zeitraum und der Abschlussquiz-Verlauf. Rechnet komplett aus dem
   vorhandenen Aktivitätsprotokoll - keine neuen Tabellen.
+- **👨‍👩‍👧‍👦 Kinder nebeneinander (optional, Standard AUS)**: stellt alle angelegten Profile in
+  einer kompakten Tabelle nebeneinander - Lerntage, Trefferquote, Lernzeit und Sterne, im selben
+  7/30-Tage-Zeitraum wie der übrige Bericht. Das Abschalten ist hier keine Bequemlichkeit, sondern
+  der Kern der Sache: Geschwister zu vergleichen kann anspornen, kann aber genauso gut das Kind
+  entmutigen, das immer hinten liegt - ob das in einer Familie hilft oder schadet, können nur die
+  Eltern beurteilen, also ist es eine bewusste Entscheidung und keine Voreinstellung. Aus demselben
+  Grund sortiert die Tabelle **nach Namen, nicht nach Leistung**: eine nach Trefferquote sortierte
+  Liste wäre ein Siegertreppchen, auf dem ein Kind dauerhaft unten steht. Ein Kind, das im Zeitraum
+  gar nichts bearbeitet hat, bleibt mit dem Hinweis "in diesem Zeitraum keine Aufgaben bearbeitet"
+  stehen statt zu verschwinden - genau das ist ja die interessante Zeile. Bei nur einem Profil
+  bleibt die Tabelle mit entsprechendem Hinweis leer (`ProfileComparison`).
 - "Sofort freischalten": Notfall-Override, überspringt den restlichen Ablauf.
 - "Alle Daten zurücksetzen…" (Gefahrenzone): löscht alle Profile/Fortschritte/Einstellungen aus der
   App heraus, mit Ja/Nein-Bestätigung. Vorher ging das nur manuell über das Löschen von `lerntor.db`.

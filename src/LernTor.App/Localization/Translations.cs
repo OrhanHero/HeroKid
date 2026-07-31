@@ -491,6 +491,23 @@ public static class Translations
                 "⏱ Tempo: noch keine Messwerte im Zeitraum.",
                 "⏱ Hız: bu dönemde henüz ölçüm yok."),
 
+            // Geschwister-Vergleich: bewusst abschaltbar und standardmäßig aus (siehe ProfileComparison).
+            ["Parent_Comparison_Title"] = L("Kinder nebeneinander", "Çocuklar yan yana"),
+            ["Parent_Comparison_Toggle"] = L(
+                "👨‍👩‍👧‍👦 Kinder im Bericht nebeneinander zeigen",
+                "👨‍👩‍👧‍👦 Raporda çocukları yan yana göster"),
+            ["Parent_Comparison_Explainer"] = L(
+                "Standardmäßig aus. Ein Vergleich kann anspornen - er kann aber auch das Kind entmutigen, das immer hinten liegt. Das können nur Sie beurteilen. Die Tabelle sortiert nach Namen, nicht nach Leistung: es gibt hier kein Siegertreppchen.",
+                "Varsayılan olarak kapalı. Karşılaştırma teşvik edebilir - ama her zaman geride kalan çocuğun cesaretini de kırabilir. Bunu yalnızca siz değerlendirebilirsiniz. Tablo performansa göre değil, isme göre sıralanır: burada bir sıralama yoktur."),
+            ["Parent_Comparison_NeedsTwo"] = L(
+                "Für einen Vergleich braucht es mindestens zwei Profile.",
+                "Karşılaştırma için en az iki profil gerekir."),
+            ["Parent_Comparison_Child"] = L("Kind", "Çocuk"),
+            ["Parent_Comparison_Days"] = L("Lerntage", "Öğrenme günleri"),
+            ["Parent_Comparison_Accuracy"] = L("Trefferquote", "Doğruluk"),
+            ["Parent_Comparison_Time"] = L("Lernzeit", "Öğrenme süresi"),
+            ["Parent_Comparison_Stars"] = L("Sterne", "Yıldızlar"),
+
             ["Steps_Reading"] = L("Lesen", "Okuma"),
             ["Steps_Typing"] = L("Tippen", "Yazma"),
             ["Steps_Writing"] = L("Schreiben", "Yazma"),
