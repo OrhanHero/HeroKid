@@ -2,213 +2,278 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization">
+    <!--
+        Dreispaltiger Aufbau: Hausaufgaben links, Klausuren rechts, in der Mitte Begruessung und
+        der "Los geht's"-Knopf.
+
+        Vorher stand alles untereinander in einer einzigen mittigen Spalte. Bei neun Hausaufgaben
+        und acht Klausuren wuchs diese Spalte ueber die Bildschirmhoehe hinaus und schob den
+        Start-Knopf nach unten heraus - er war schlicht nicht mehr erreichbar, und damit kam das
+        Kind nicht weiter. Genau so gemeldet.
+
+        Die Spalten allein reichen dafuer aber nicht: zwanzig Hausaufgaben wuerden auch eine
+        schmale Spalte ueberlaufen lassen. Deshalb sitzt jede Spalte zusaetzlich in einem
+        ScrollViewer, der auf die Fensterhoehe begrenzt ist - lange Listen scrollen dann INNERHALB
+        ihrer Spalte, statt die Seite wachsen zu lassen. Der Start-Knopf in der Mitte kann so
+        unabhaengig von der Anzahl der Eintraege nie mehr verschwinden.
+    -->
     <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
-        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Language_Switch]}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0"
+                Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Language_Switch]}"
                 Style="{StaticResource RoundedButton}"
-                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="24"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="24,24,24,0"
                 Command="{Binding ToggleLanguageCommand}" />
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
-            <TextBlock Text="🎓" FontSize="90" HorizontalAlignment="Center" Margin="0,0,0,20" />
-            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,8">
-                <TextBlock.Text>
-                    <MultiBinding Converter="{StaticResource FormatWithArg}">
-                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Greeting]" />
-                        <Binding Path="ProfileName" Mode="OneWay" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Title]}"
-                       Style="{StaticResource HeadlineText}" FontSize="44" TextAlignment="Center" HorizontalAlignment="Center" />
-            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Subtitle]}"
-                       Style="{StaticResource SubtitleText}" TextAlignment="Center" Margin="0,20,0,16" HorizontalAlignment="Center" />
-            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center"
-                       Margin="0,0,0,24"
-                       Visibility="{Binding ShowStreak, Converter={StaticResource BoolToVis}}">
-                <TextBlock.Text>
-                    <MultiBinding Converter="{StaticResource FormatWithArg}">
-                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Streak]" />
-                        <Binding Path="CurrentStreak" Mode="OneWay" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-            <!-- Wochenziel: reine Anzeige ohne Druck (siehe WeeklyGoalCalculator). Zwei getrennte
-                 Zeilen statt einer, damit "geschafft" auch als Erfolg gelesen wird. -->
-            <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center"
-                       HorizontalAlignment="Center" Margin="0,0,0,12" TextWrapping="Wrap"
-                       Visibility="{Binding ShowWeeklyGoalReached, Converter={StaticResource BoolToVis}}">
-                <TextBlock.Text>
-                    <MultiBinding Converter="{StaticResource FormatWithArg}">
-                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_WeeklyGoalReached]" />
-                        <Binding Path="WeeklyGoalLearnedDays" Mode="OneWay" />
-                        <Binding Path="WeeklyGoalTarget" Mode="OneWay" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-            <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center"
-                       HorizontalAlignment="Center" Margin="0,0,0,12" TextWrapping="Wrap"
-                       Visibility="{Binding ShowWeeklyGoalOpen, Converter={StaticResource BoolToVis}}">
-                <TextBlock.Text>
-                    <MultiBinding Converter="{StaticResource FormatWithArg}">
-                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_WeeklyGoalOpen]" />
-                        <Binding Path="WeeklyGoalLearnedDays" Mode="OneWay" />
-                        <Binding Path="WeeklyGoalTarget" Mode="OneWay" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
+        <Grid Grid.Row="1" Margin="24,8,24,24">
+            <Grid.ColumnDefinitions>
+                <!-- Auto + MaxWidth: die Seitenspalten nehmen sich nur so viel Platz, wie ihre
+                     Karte braucht, hoechstens aber 360 - die Mitte behaelt immer den Rest. -->
+                <ColumnDefinition Width="Auto" MaxWidth="360" />
+                <ColumnDefinition Width="*" MinWidth="320" />
+                <ColumnDefinition Width="Auto" MaxWidth="360" />
+            </Grid.ColumnDefinitions>
 
-            <!-- Fehler-Kartei: die falsch beantworteten Fragen früherer Tage kommen wieder. Bisher
-                 passierte das unsichtbar - hier sehen die Kinder es, bevor sie in die Fächer gehen. -->
-            <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center" HorizontalAlignment="Center"
-                       Margin="0,0,0,24" TextWrapping="Wrap"
-                       Visibility="{Binding ShowDueReviews, Converter={StaticResource BoolToVis}}">
-                <TextBlock.Text>
-                    <MultiBinding Converter="{StaticResource FormatWithArg}">
-                        <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_DueReviews]" />
-                        <Binding Path="DueReviewCount" Mode="OneWay" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-            <!-- Hausaufgaben der Eltern. Bewusst hier und nicht als eigene Etappe: erledigt wird
-                 ausserhalb der App, die App erinnert nur. Ohne Eintraege bleibt die Karte weg. -->
-            <Border Background="{StaticResource CardBrush}" CornerRadius="14" Padding="20,16"
-                    Margin="0,0,0,24" MaxWidth="620" HorizontalAlignment="Center"
-                    Visibility="{Binding ShowHomework, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                    <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,10">
-                        <TextBlock.Text>
-                            <MultiBinding Converter="{StaticResource FormatWithArg}">
-                                <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Homework]" />
-                                <Binding Path="OpenHomeworkCount" Mode="OneWay" />
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+            <!-- ================= LINKS: Hausaufgaben =================
+                 Bewusst hier und nicht als eigene Etappe: erledigt wird ausserhalb der App, die
+                 App erinnert nur. Die Karte bleibt auch ohne Eintraege stehen, sonst faende das
+                 Kind den Knopf zum Selbsteintragen nie. -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,20,0"
+                          Visibility="{Binding ShowHomework, Converter={StaticResource BoolToVis}}">
+                <Border Background="{StaticResource CardBrush}" CornerRadius="14" Padding="18,16"
+                        VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold"
+                                   TextWrapping="Wrap" Margin="0,0,0,10">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                    <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Homework]" />
+                                    <Binding Path="OpenHomeworkCount" Mode="OneWay" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
-                    <ItemsControl ItemsSource="{Binding Homework}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsCompleted}" Margin="0,4" VerticalContentAlignment="Center">
-                                    <StackPanel Orientation="Horizontal">
-                                        <!-- Fach auch hier: dieselbe Luecke wie bei den Klausuren. -->
-                                        <TextBlock Text="{Binding Task.Subject, Converter={StaticResource SubjectToTitle}, Mode=OneWay}"
-                                                   Style="{StaticResource BodyText}" FontWeight="Bold"
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" />
-                                        <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}"
-                                                   TextWrapping="Wrap" MaxWidth="320" VerticalAlignment="Center" />
-                                        <!-- Style NUR als Element: zusaetzlich als Attribut waere MC3024
-                                             ("Style property has already been set"), siehe CLAUDE.md. -->
-                                        <TextBlock Text="{Binding DueLabel, Mode=OneWay}"
-                                                   Margin="12,0,0,0" VerticalAlignment="Center">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
-                                                    <Setter Property="FontSize" Value="13" />
-                                                    <Setter Property="Opacity" Value="0.75" />
-                                                    <Style.Triggers>
-                                                        <!-- Ueberfaellig muss auffallen, ohne zu schimpfen. -->
-                                                        <DataTrigger Binding="{Binding IsOverdue, Mode=OneWay}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
-                                                            <Setter Property="FontWeight" Value="Bold" />
-                                                            <Setter Property="Opacity" Value="1" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsDueToday, Mode=OneWay}" Value="True">
-                                                            <Setter Property="FontWeight" Value="Bold" />
-                                                            <Setter Property="Opacity" Value="1" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding Homework}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!-- In der schmalen Spalte stehen die Texte untereinander
+                                         statt nebeneinander; nebeneinander liefen Beschreibung und
+                                         Faelligkeit sonst ineinander (so auch gemeldet).
+                                         Der Loesch-Knopf sitzt jetzt AUSSERHALB der CheckBox -
+                                         darin haette ein Klick darauf zugleich das Haekchen
+                                         umgeschaltet. -->
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsCompleted}"
+                                                  VerticalAlignment="Top" Margin="0,3,8,0" />
+
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Task.Subject, Converter={StaticResource SubjectToTitle}, Mode=OneWay}"
+                                                       Style="{StaticResource BodyText}" FontWeight="Bold"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}"
+                                                       FontSize="13" TextWrapping="Wrap" />
+                                            <!-- Style NUR als Element: zusaetzlich als Attribut waere MC3024
+                                                 ("Style property has already been set"), siehe CLAUDE.md. -->
+                                            <TextBlock Text="{Binding DueLabel, Mode=OneWay}" TextWrapping="Wrap">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                        <Setter Property="FontSize" Value="12" />
+                                                        <Setter Property="Opacity" Value="0.75" />
+                                                        <Style.Triggers>
+                                                            <!-- Ueberfaellig muss auffallen, ohne zu schimpfen. -->
+                                                            <DataTrigger Binding="{Binding IsOverdue, Mode=OneWay}" Value="True">
+                                                                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Setter Property="Opacity" Value="1" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsDueToday, Mode=OneWay}" Value="True">
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                <Setter Property="Opacity" Value="1" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+
                                         <!-- Loeschen nur bei selbst eingetragenen Aufgaben; die
                                              Pruefung sitzt zusaetzlich im Repository. -->
-                                        <Button Content="🗑" Style="{StaticResource RoundedButton}"
-                                                Padding="6,0" Margin="10,0,0,0" VerticalAlignment="Center"
+                                        <Button Grid.Column="2" Content="🗑" Style="{StaticResource RoundedButton}"
+                                                Padding="8,2" VerticalAlignment="Top" Margin="8,0,0,0"
                                                 Visibility="{Binding CanChildEdit, Converter={StaticResource BoolToVis}}"
                                                 Command="{Binding DataContext.DeleteHomeworkCommand,
                                                           RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                 CommandParameter="{Binding}" />
-                                    </StackPanel>
-                                </CheckBox>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_HomeworkAllDone]}"
-                               Style="{StaticResource BodyText}" Margin="0,10,0,0"
-                               Visibility="{Binding AllHomeworkDone, Converter={StaticResource BoolToVis}}" />
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_HomeworkAllDone]}"
+                                   Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,10,0,0"
+                                   Visibility="{Binding AllHomeworkDone, Converter={StaticResource BoolToVis}}" />
 
-                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_AddHomework]}"
+                        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_AddHomework]}"
+                                Style="{StaticResource RoundedButton}" HorizontalAlignment="Left"
+                                Margin="0,12,0,0" Command="{Binding AddHomeworkCommand}" />
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+
+            <!-- ================= MITTE: Begruessung und Start ================= -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
+                    <TextBlock Text="🎓" FontSize="90" HorizontalAlignment="Center" Margin="0,0,0,20" />
+                    <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Greeting]" />
+                                <Binding Path="ProfileName" Mode="OneWay" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Title]}"
+                               Style="{StaticResource HeadlineText}" FontSize="44" TextAlignment="Center"
+                               TextWrapping="Wrap" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Subtitle]}"
+                               Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap"
+                               Margin="0,20,0,16" HorizontalAlignment="Center" />
+                    <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center" HorizontalAlignment="Center"
+                               Margin="0,0,0,24" TextWrapping="Wrap"
+                               Visibility="{Binding ShowStreak, Converter={StaticResource BoolToVis}}">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_Streak]" />
+                                <Binding Path="CurrentStreak" Mode="OneWay" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <!-- Wochenziel: reine Anzeige ohne Druck (siehe WeeklyGoalCalculator). Zwei getrennte
+                         Zeilen statt einer, damit "geschafft" auch als Erfolg gelesen wird. -->
+                    <TextBlock Style="{StaticResource SubtitleText}" FontWeight="Bold" TextAlignment="Center"
+                               HorizontalAlignment="Center" Margin="0,0,0,12" TextWrapping="Wrap"
+                               Visibility="{Binding ShowWeeklyGoalReached, Converter={StaticResource BoolToVis}}">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_WeeklyGoalReached]" />
+                                <Binding Path="WeeklyGoalLearnedDays" Mode="OneWay" />
+                                <Binding Path="WeeklyGoalTarget" Mode="OneWay" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center"
+                               HorizontalAlignment="Center" Margin="0,0,0,12" TextWrapping="Wrap"
+                               Visibility="{Binding ShowWeeklyGoalOpen, Converter={StaticResource BoolToVis}}">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_WeeklyGoalOpen]" />
+                                <Binding Path="WeeklyGoalLearnedDays" Mode="OneWay" />
+                                <Binding Path="WeeklyGoalTarget" Mode="OneWay" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <!-- Fehler-Kartei: die falsch beantworteten Fragen früherer Tage kommen wieder. Bisher
+                         passierte das unsichtbar - hier sehen die Kinder es, bevor sie in die Fächer gehen. -->
+                    <TextBlock Style="{StaticResource SubtitleText}" TextAlignment="Center" HorizontalAlignment="Center"
+                               Margin="0,0,0,24" TextWrapping="Wrap"
+                               Visibility="{Binding ShowDueReviews, Converter={StaticResource BoolToVis}}">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource FormatWithArg}">
+                                <Binding Source="{x:Static loc:LocalizationService.Instance}" Path="[Welcome_DueReviews]" />
+                                <Binding Path="DueReviewCount" Mode="OneWay" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
+                            Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
+                            HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Command="{Binding ContinueCommand}" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ================= RECHTS: Klausuren =================
+                 Die Kinder duerfen selbst eintragen; loeschen aber nur die eigenen Eintraege -
+                 sonst waere "Klausur weg, also nicht lernen" ein bequemer Ausweg. Die Pruefung
+                 sitzt zusaetzlich im Repository. Der Eintragen-Knopf steht ausserhalb der Karte,
+                 damit er auch dann da ist, wenn es noch gar keine Klausur gibt. -->
+            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" Margin="20,0,0,0">
+                <StackPanel VerticalAlignment="Center">
+                    <Border Background="{StaticResource CardBrush}" CornerRadius="14" Padding="18,16"
+                            Margin="0,0,0,12"
+                            Visibility="{Binding ShowExams, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Exams]}"
+                                       Style="{StaticResource SubtitleText}" FontWeight="Bold"
+                                       TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                            <ItemsControl ItemsSource="{Binding Exams}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <!-- Das FACH zuerst und fett: "in 7 Tagen" hilft nur, wenn
+                                                     man weiss, worin. Der selbst getippte Titel steht
+                                                     darunter - er ist die Ergaenzung, nicht die Hauptsache. -->
+                                                <TextBlock Text="{Binding Exam.Subject, Converter={StaticResource SubjectToTitle}, Mode=OneWay}"
+                                                           Style="{StaticResource BodyText}" FontWeight="Bold"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Title, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                           FontSize="13" TextWrapping="Wrap"
+                                                           Visibility="{Binding HasOwnTitle, Converter={StaticResource BoolToVis}}" />
+                                                <TextBlock Text="{Binding Topics, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                           FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                                                           Visibility="{Binding HasTopics, Converter={StaticResource BoolToVis}}" />
+                                                <!-- Der Countdown rutscht in der schmalen Spalte unter
+                                                     das Fach; nebeneinander bliebe fuer den Titel
+                                                     kaum noch Platz. -->
+                                                <TextBlock Text="{Binding Countdown, Mode=OneWay}" TextWrapping="Wrap">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsImminent, Mode=OneWay}" Value="True">
+                                                                    <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Content="🗑" Style="{StaticResource RoundedButton}"
+                                                    Padding="8,2" VerticalAlignment="Top" Margin="8,0,0,0"
+                                                    Visibility="{Binding CanChildEdit, Converter={StaticResource BoolToVis}}"
+                                                    Command="{Binding DataContext.DeleteExamCommand,
+                                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_AddExam]}"
                             Style="{StaticResource RoundedButton}" HorizontalAlignment="Left"
-                            Margin="0,12,0,0" Command="{Binding AddHomeworkCommand}" />
+                            Command="{Binding AddExamCommand}" />
                 </StackPanel>
-            </Border>
-
-            <!-- Klausuren mit Countdown. Die Kinder duerfen selbst eintragen; loeschen aber nur
-                 die eigenen Eintraege - sonst waere "Klausur weg, also nicht lernen" ein bequemer
-                 Ausweg. Die Pruefung sitzt zusaetzlich im Repository. -->
-            <Border Background="{StaticResource CardBrush}" CornerRadius="14" Padding="20,16"
-                    Margin="0,0,0,16" MaxWidth="620" HorizontalAlignment="Center"
-                    Visibility="{Binding ShowExams, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Exams]}"
-                               Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,10" />
-
-                    <ItemsControl ItemsSource="{Binding Exams}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <!-- Das FACH zuerst und fett: "in 7 Tagen" hilft nur, wenn
-                                             man weiss, worin. Der selbst getippte Titel steht
-                                             darunter - er ist die Ergaenzung, nicht die Hauptsache. -->
-                                        <TextBlock Text="{Binding Exam.Subject, Converter={StaticResource SubjectToTitle}, Mode=OneWay}"
-                                                   Style="{StaticResource BodyText}" FontWeight="Bold"
-                                                   TextWrapping="Wrap" />
-                                        <TextBlock Text="{Binding Title, Mode=OneWay}" Style="{StaticResource BodyText}"
-                                                   FontSize="13" TextWrapping="Wrap"
-                                                   Visibility="{Binding HasOwnTitle, Converter={StaticResource BoolToVis}}" />
-                                        <TextBlock Text="{Binding Topics, Mode=OneWay}" Style="{StaticResource BodyText}"
-                                                   FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                                                   Visibility="{Binding HasTopics, Converter={StaticResource BoolToVis}}" />
-                                    </StackPanel>
-                                    <TextBlock Grid.Column="1" Text="{Binding Countdown, Mode=OneWay}"
-                                               VerticalAlignment="Center" Margin="12,0">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
-                                                <Setter Property="FontWeight" Value="Bold" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsImminent, Mode=OneWay}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <Button Grid.Column="2" Content="🗑" Style="{StaticResource RoundedButton}"
-                                            Padding="8,2" VerticalAlignment="Center"
-                                            Visibility="{Binding CanChildEdit, Converter={StaticResource BoolToVis}}"
-                                            Command="{Binding DataContext.DeleteExamCommand,
-                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            CommandParameter="{Binding}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
-
-            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_AddExam]}"
-                    Style="{StaticResource RoundedButton}" HorizontalAlignment="Center"
-                    Margin="0,0,0,24" Command="{Binding AddExamCommand}" />
-
-            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
-                    Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
-                    HorizontalAlignment="Center"
-                    Command="{Binding ContinueCommand}" />
-        </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>

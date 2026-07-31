@@ -284,13 +284,21 @@ deshalb bewusst nicht umgesetzt.
   seit der Tagesrotation wird nicht mehr jede Quelle täglich abgerufen, ein Eintrag kann also Tage
   alt sein. Nötig, weil die App tote Feeds geräuschlos überspringt - bei 44 Quellen könnte sonst
   die Hälfte kaputt sein, ohne dass es auffällt.
+- **Aufteilung des Startbildschirms**: Hausaufgaben stehen **links**, Klausuren **rechts**, in der
+  Mitte Begrüßung und der "Los geht's"-Knopf. Vorher stand alles untereinander in einer mittigen
+  Spalte - bei neun Hausaufgaben und acht Klausuren wuchs sie über die Bildschirmhöhe hinaus und
+  schob den Start-Knopf hinaus, das Kind kam schlicht nicht weiter. Die Spalten allein reichen
+  dafür nicht (zwanzig Einträge würden auch eine schmale Spalte überlaufen lassen), deshalb sitzt
+  **jede Spalte in einem ScrollViewer**: lange Listen scrollen innerhalb ihrer Spalte, statt die
+  Seite wachsen zu lassen. Der Start-Knopf kann damit unabhängig von der Anzahl der Einträge nie
+  mehr verschwinden.
 - **📒 Hausaufgaben**: Fach, Stichtag und Text - **von Eltern UND Kindern eintragbar** (Knopf auf
-  dem Startbildschirm). Dieselbe Asymmetrie wie beim Klausurkalender: eigene Einträge darf das Kind
+  dem Startbildschirm, linke Spalte). Dieselbe Asymmetrie wie beim Klausurkalender: eigene Einträge darf das Kind
   löschen, Eltern-Einträge nur **abhaken** - das ist ja der Sinn der Sache; nur das Wegräumen
   einer Aufgabe, die es nicht erledigt hat, wäre ein Schlupfloch. Anders als bei Klausuren ist ein
   Stichtag in der Vergangenheit hier erlaubt: eine vergessene Hausaufgabe nachzutragen ist normal.
 - **📅 Klausurkalender**: Termine pro Kind mit Fach, Titel, Themen und Datum. **Die Kinder dürfen
-  selbst eintragen** (Button auf dem Startbildschirm) - mit einer Asymmetrie: eigene Einträge dürfen
+  selbst eintragen** (Button auf dem Startbildschirm, rechte Spalte) - mit einer Asymmetrie: eigene Einträge dürfen
   sie ändern und löschen, Eltern-Einträge nur ansehen, sonst wäre "Klausur weg, also nicht lernen"
   ein bequemer Ausweg. Die Prüfung sitzt im Repository (`DeleteAsChildAsync`), nicht nur an der
   Oberfläche. Die Herkunft steht an jedem Eintrag. **Ab sieben Tagen vor dem Termin** bekommt das
