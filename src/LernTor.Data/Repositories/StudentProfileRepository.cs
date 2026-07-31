@@ -128,6 +128,7 @@ public sealed class StudentProfileRepository
         string? customTypingFinalText = null,
         int weeklyGoalDays = 0,
         string? pinnedReadingTextKey = null,
+        int newsArticleCount = 0,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -147,6 +148,7 @@ public sealed class StudentProfileRepository
         entity.QuizRetryThreshold = quizRetryThreshold;
         entity.ReadingMinutes = readingMinutes;
         entity.NewsSecondsPerArticle = newsSecondsPerArticle;
+        entity.NewsArticleCount = newsArticleCount;
         entity.ExerciseSecondsPerQuestion = exerciseSecondsPerQuestion;
         entity.ExercisesPerSubject = exercisesPerSubject;
         entity.QuizQuestionCount = quizQuestionCount;
@@ -170,6 +172,7 @@ public sealed class StudentProfileRepository
         // entstanden sind, laufen mit den bisherigen fest verdrahteten Standardwerten weiter.
         ReadingMinutes = entity.ReadingMinutes > 0 ? entity.ReadingMinutes : StudentProfile.DefaultReadingMinutes,
         NewsSecondsPerArticle = entity.NewsSecondsPerArticle > 0 ? entity.NewsSecondsPerArticle : StudentProfile.DefaultNewsSecondsPerArticle,
+        NewsArticleCount = entity.NewsArticleCount > 0 ? entity.NewsArticleCount : StudentProfile.DefaultNewsArticleCount,
         ExerciseSecondsPerQuestion = entity.ExerciseSecondsPerQuestion > 0 ? entity.ExerciseSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion,
         ExercisesPerSubject = entity.ExercisesPerSubject > 0 ? entity.ExercisesPerSubject : StudentProfile.DefaultExercisesPerSubject,
         QuizQuestionCount = entity.QuizQuestionCount > 0 ? entity.QuizQuestionCount : StudentProfile.DefaultQuizQuestionCount,

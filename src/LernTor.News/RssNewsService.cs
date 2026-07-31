@@ -73,7 +73,12 @@ public sealed class RssNewsService
             activeFeeds = CuratedNewsFeeds.All;
         }
 
-        foreach (var source in activeFeeds)
+        // Nicht mehr ALLE aktiven Quellen abrufen: seit der Katalog 44 Quellen umfasst, waeren das
+        // 44 HTTP-Abrufe beim Start und 45 Pflichtartikel am Tag. Stattdessen die Tagesauswahl -
+        // targetCount war vorher ein toter Parameter.
+        var feedsForToday = SelectFeedsForDay(activeFeeds, targetCount, DateOnly.FromDateTime(DateTime.Today));
+
+        foreach (var source in feedsForToday)
         {
             try
             {
@@ -101,6 +106,136 @@ public sealed class RssNewsService
         articles.Add(FinanceKnowledgeArticles.GetForDate(DateOnly.FromDateTime(DateTime.Today), gradeLevel));
 
         return articles;
+    }
+
+    /// <summary>
+    /// Wählt die Quellen aus, die an einem bestimmten Tag abgerufen werden.
+    ///
+    /// <para>Deterministisch aus dem Datum abgeleitet: innerhalb eines Tages ist die Auswahl
+    /// stabil (die App darf beim zweiten Öffnen nicht plötzlich andere Nachrichten zeigen), über
+    /// mehrere Tage wandert sie durch den ganzen Katalog. Der Startpunkt springt je Sprachgruppe
+    /// um die Tagesmenge weiter, damit aufeinanderfolgende Tage möglichst wenig überlappen.</para>
+    ///
+    /// <para>Die Plätze werden über die Sprachen verteilt statt einfach der Reihe nach vergeben:
+    /// sonst bestünde ein Tag leicht nur aus deutschen Quellen (27 von 44), und Türkisch und
+    /// Englisch - der halbe Sinn der Sammlung - kämen kaum vor.</para>
+    /// </summary>
+    internal static IReadOnlyList<NewsFeedSource> SelectFeedsForDay(
+        IReadOnlyList<NewsFeedSource> activeFeeds,
+        int targetCount,
+        DateOnly day)
+    {
+        if (targetCount <= 0 || activeFeeds.Count <= targetCount)
+        {
+            return activeFeeds;
+        }
+
+        var groups = activeFeeds
+            .GroupBy(feed => feed.Language)
+            .OrderBy(group => group.Key)
+            .Select(group => group.OrderBy(feed => feed.Name, StringComparer.Ordinal).ToList())
+            .ToList();
+
+        var quotas = DistributeQuotas(groups.Select(group => group.Count).ToList(), targetCount);
+
+        var selected = new List<NewsFeedSource>(targetCount);
+        for (var i = 0; i < groups.Count; i++)
+        {
+            var group = groups[i];
+            var quota = quotas[i];
+            if (quota <= 0)
+            {
+                continue;
+            }
+
+            // Schrittweite = Tagesmenge: der Block wandert taeglich um genau seine eigene Laenge
+            // weiter, aufeinanderfolgende Tage zeigen also andere Quellen.
+            var offset = (int)(((long)day.DayNumber * quota) % group.Count);
+            for (var taken = 0; taken < quota; taken++)
+            {
+                selected.Add(group[(offset + taken) % group.Count]);
+            }
+        }
+
+        return selected;
+    }
+
+    /// <summary>
+    /// Verteilt <paramref name="targetCount"/> Plätze auf die Sprachgruppen: erst einer je
+    /// Sprache, der Rest proportional zur Gruppengröße (größter Rest zuerst), gedeckelt auf die
+    /// tatsächlich vorhandenen Quellen.
+    /// </summary>
+    private static int[] DistributeQuotas(IReadOnlyList<int> groupSizes, int targetCount)
+    {
+        var quotas = new int[groupSizes.Count];
+        var total = groupSizes.Sum();
+        if (total == 0)
+        {
+            return quotas;
+        }
+
+        // Jede Sprache bekommt zuerst genau einen Platz - ein Tag ganz ohne tuerkische oder
+        // englische Nachricht waere das Gegenteil dessen, wofuer die Quellen da sind.
+        var assigned = 0;
+        for (var i = 0; i < quotas.Length && assigned < targetCount; i++, assigned++)
+        {
+            quotas[i] = 1;
+        }
+
+        var rest = targetCount - assigned;
+        if (rest > 0)
+        {
+            var exact = groupSizes.Select(size => rest * (double)size / total).ToArray();
+            for (var i = 0; i < quotas.Length; i++)
+            {
+                quotas[i] += (int)Math.Floor(exact[i]);
+            }
+
+            var open = targetCount - quotas.Sum();
+            foreach (var index in Enumerable.Range(0, quotas.Length)
+                         .OrderByDescending(i => exact[i] - Math.Floor(exact[i]))
+                         .ThenBy(i => i))
+            {
+                if (open <= 0)
+                {
+                    break;
+                }
+
+                quotas[index]++;
+                open--;
+            }
+        }
+
+        // Keine Gruppe darf mehr Plaetze bekommen, als sie Quellen hat.
+        for (var i = 0; i < quotas.Length; i++)
+        {
+            quotas[i] = Math.Min(quotas[i], groupSizes[i]);
+        }
+
+        // Was durch die Deckelung frei wurde, geht an Gruppen, die noch Quellen uebrig haben.
+        var shortfall = targetCount - quotas.Sum();
+        while (shortfall > 0)
+        {
+            var progressed = false;
+            for (var i = 0; i < quotas.Length && shortfall > 0; i++)
+            {
+                if (quotas[i] >= groupSizes[i])
+                {
+                    continue;
+                }
+
+                quotas[i]++;
+                shortfall--;
+                progressed = true;
+            }
+
+            if (!progressed)
+            {
+                break;
+            }
+        }
+
+        return quotas;
     }
 
     private static SyndicationItem? SelectLatestItem(IReadOnlyList<SyndicationItem> items, int? childAge)

@@ -23,8 +23,6 @@ namespace LernTor.App.ViewModels;
 /// </summary>
 public sealed partial class MainViewModel : ObservableObject
 {
-    private const int NewsTargetCount = 31;
-
     private readonly ProgressGateService _gate;
     private readonly ScoringService _scoring;
     private readonly ProgressRepository _progressRepo;
@@ -426,7 +424,9 @@ public sealed partial class MainViewModel : ObservableObject
         // News-Start nicht verzögern; bei Fehlschlag liefert der Dienst null (Widget bleibt weg).
         var gradeLevel = CurrentProfile?.GradeLevel ?? GradeLevel.Klasse6;
         var articlesTask = _newsService.LoadCuratedArticlesAsync(
-            targetCount: NewsTargetCount,
+            // Wie viele Nachrichten der Tag bringt, entscheiden die Eltern pro Profil - vorher
+            // stand hier eine feste Konstante, die der Dienst ohnehin ignoriert hat.
+            targetCount: CurrentProfile?.NewsArticleCount ?? StudentProfile.DefaultNewsArticleCount,
             childAge: CurrentProfile?.Age,
             gradeLevel: gradeLevel,
             disabledFeedNames: Settings.DisabledNewsFeeds);

@@ -59,6 +59,18 @@ public sealed class StudentProfile
     public int NewsSecondsPerArticle { get; set; } = DefaultNewsSecondsPerArticle;
 
     /// <summary>
+    /// Wie viele Nachrichten der News-Abschnitt täglich bringt, von den Eltern als Preset
+    /// (6/10/15/20) einstellbar.
+    ///
+    /// <para>Früher gab es schlicht eine Nachricht pro aktiver Quelle. Das ging auf, solange der
+    /// Katalog klein war - seit er 44 Quellen umfasst, wären das 44 Abrufe beim Start und ein
+    /// News-Teil, der den ganzen Vormittag füllt. Stattdessen wählt
+    /// <c>RssNewsService.SelectFeedsForDay</c> täglich so viele Quellen aus, wie hier eingestellt
+    /// sind, und wandert über die Tage durch den Katalog.</para>
+    /// </summary>
+    public int NewsArticleCount { get; set; } = DefaultNewsArticleCount;
+
+    /// <summary>
     /// Mindestzeit pro Übungsaufgabe in den Fächern in Sekunden, von den Eltern als Preset
     /// (3/5/10/15 s) einstellbar - verhindert Durchklicken ohne Lesen (ExerciseViewModel).
     /// </summary>
@@ -114,6 +126,10 @@ public sealed class StudentProfile
 
     public const int DefaultReadingMinutes = 5;
     public const int DefaultNewsSecondsPerArticle = 10;
+
+    /// <summary>Zwölf Nachrichten am Tag - genug für eine echte Auswahl über drei Sprachen,
+    /// ohne dass der News-Teil länger dauert als alle Fächer zusammen.</summary>
+    public const int DefaultNewsArticleCount = 12;
     public const int DefaultExerciseSecondsPerQuestion = 5;
     public const int DefaultExercisesPerSubject = 6;
     public const int DefaultQuizQuestionCount = 20;

@@ -329,6 +329,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     partial void OnQuizRetryThresholdPercentChanged(int value) => MarkDirty();
     partial void OnReadingMinutesChanged(int value) => MarkDirty();
     partial void OnNewsSecondsPerArticleChanged(int value) => MarkDirty();
+    partial void OnNewsArticleCountChanged(int value)
+    {
+        MarkDirty();
+
+        // Der Hinweistext unter den Quellen nennt die Anzahl - sonst stuende dort eine veraltete
+        // Rechnung, sobald die Eltern die Anzahl umstellen.
+        UpdateNewsFeedStatus();
+    }
     partial void OnExerciseSecondsPerQuestionChanged(int value) => MarkDirty();
     partial void OnExercisesPerSubjectChanged(int value) => MarkDirty();
     partial void OnQuizQuestionCountChanged(int value) => MarkDirty();
@@ -594,7 +602,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             TypingTextOverrides.Sanitize(CustomTypingSentenceText),
             TypingTextOverrides.Sanitize(CustomTypingFinalText),
             WeeklyGoalDays,
-            profile.PinnedReadingTextKey);
+            profile.PinnedReadingTextKey,
+            NewsArticleCount);
 
     private void ApplyProfileToEditor(StudentProfile? value)
     {
@@ -605,6 +614,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         QuizRetryThresholdPercent = PercentFromFraction(value?.QuizRetryThreshold, 25);
         ReadingMinutes = value?.ReadingMinutes ?? StudentProfile.DefaultReadingMinutes;
         NewsSecondsPerArticle = value?.NewsSecondsPerArticle ?? StudentProfile.DefaultNewsSecondsPerArticle;
+        NewsArticleCount = value?.NewsArticleCount ?? StudentProfile.DefaultNewsArticleCount;
         ExerciseSecondsPerQuestion = value?.ExerciseSecondsPerQuestion ?? StudentProfile.DefaultExerciseSecondsPerQuestion;
         ExercisesPerSubject = value?.ExercisesPerSubject ?? StudentProfile.DefaultExercisesPerSubject;
         QuizQuestionCount = value?.QuizQuestionCount ?? StudentProfile.DefaultQuizQuestionCount;
@@ -734,10 +744,20 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private int exerciseSecondsPerQuestion = StudentProfile.DefaultExerciseSecondsPerQuestion;
 
+    /// <summary>Anzahl der täglichen Nachrichten (Presets 6/10/15/20).</summary>
+    [ObservableProperty]
+    private int newsArticleCount = StudentProfile.DefaultNewsArticleCount;
+
     [RelayCommand]
     private void SetReadingMinutes(string minutes)
     {
         ReadingMinutes = int.TryParse(minutes, out var parsed) ? parsed : StudentProfile.DefaultReadingMinutes;
+    }
+
+    [RelayCommand]
+    private void SetNewsArticleCount(string count)
+    {
+        NewsArticleCount = int.TryParse(count, out var parsed) ? parsed : StudentProfile.DefaultNewsArticleCount;
     }
 
     [RelayCommand]
@@ -1033,6 +1053,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             SelectedProfile.QuizRetryThreshold = quizRetryThreshold;
             SelectedProfile.ReadingMinutes = ReadingMinutes;
             SelectedProfile.NewsSecondsPerArticle = NewsSecondsPerArticle;
+            SelectedProfile.NewsArticleCount = NewsArticleCount;
             SelectedProfile.ExerciseSecondsPerQuestion = ExerciseSecondsPerQuestion;
             SelectedProfile.ExercisesPerSubject = ExercisesPerSubject;
             SelectedProfile.QuizQuestionCount = QuizQuestionCount;
@@ -1527,14 +1548,29 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string newsFeedStatus = string.Empty;
 
+    /// <summary>Sprache als Klartext - "Tuerkisch" als Enum-Name will im Eltern-Bereich niemand lesen.</summary>
+    private static string LanguageLabel(NewsFeedLanguage language) => language switch
+    {
+        NewsFeedLanguage.Deutsch => "Deutsch",
+        NewsFeedLanguage.Tuerkisch => "Türkisch",
+        NewsFeedLanguage.Englisch => "Englisch",
+        _ => language.ToString()
+    };
+
     private void BuildNewsFeedToggles()
     {
         NewsFeedToggles.Clear();
-        foreach (var feed in CuratedNewsFeeds.All.OrderBy(f => f.RegionFocus).ThenBy(f => f.Name))
+
+        // Nach Sprache gruppiert statt nach Region: bei 44 Quellen ist "erst alle deutschen,
+        // dann alle türkischen, dann alle englischen" die Reihenfolge, in der Eltern suchen.
+        foreach (var feed in CuratedNewsFeeds.All
+                     .OrderBy(f => f.Language)
+                     .ThenBy(f => f.RegionFocus)
+                     .ThenBy(f => f.Name))
         {
             NewsFeedToggles.Add(new NewsFeedToggle(
                 feed.Name,
-                $"{feed.RegionFocus} · {(feed.IsGerman ? "Deutsch" : "Türkisch")}",
+                $"{LanguageLabel(feed.Language)} · {feed.RegionFocus}",
                 !_settings.DisabledNewsFeeds.Contains(feed.Name),
                 OnNewsFeedToggled));
         }
@@ -1585,9 +1621,19 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private void UpdateNewsFeedStatus()
     {
         var active = NewsFeedToggles.Count(t => t.IsEnabled);
-        NewsFeedStatus = active == 0
-            ? "Alle Quellen abgeschaltet - dann greifen wieder alle, ein leerer News-Bereich wäre schlimmer."
-            : $"{active} von {NewsFeedToggles.Count} Quellen aktiv. Pro Quelle kommt eine Nachricht am Tag.";
+        if (active == 0)
+        {
+            NewsFeedStatus = "Alle Quellen abgeschaltet - dann greifen wieder alle, ein leerer News-Bereich wäre schlimmer.";
+            return;
+        }
+
+        // Wichtig fuer die Erwartung der Eltern: seit dem grossen Katalog kommt NICHT mehr aus
+        // jeder Quelle taeglich eine Nachricht - es wird taeglich eine andere Auswahl gezogen.
+        NewsFeedStatus = active <= NewsArticleCount
+            ? $"{active} von {NewsFeedToggles.Count} Quellen aktiv - bei {NewsArticleCount} Nachrichten am Tag kommt jede aktive Quelle täglich dran."
+            : $"{active} von {NewsFeedToggles.Count} Quellen aktiv. Pro Tag werden daraus {NewsArticleCount} Nachrichten " +
+              $"ausgewählt (Deutsch, Türkisch und Englisch gemischt) - über etwa {Math.Max(1, (int)Math.Ceiling(active / (double)NewsArticleCount))} Tage " +
+              "kommt jede Quelle einmal vorbei.";
     }
 
     // --- Lesetext-Verwaltung: EINE Liste aus eigenen und eingebauten Texten ---

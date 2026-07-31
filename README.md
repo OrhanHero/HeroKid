@@ -79,8 +79,13 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
   🤖 KI & Technik, 🎮 Spiele, ⛅ Wetter.
   Themen-Rubriken werden zusätzlich per Schlüsselwort-Klassifikation quer über alle Quellen erkannt
   (`NewsCategoryClassifier`) - eine Minecraft-Meldung von tagesschau.de landet trotzdem in 🎮 Spiele.
-  Im News-Teil wird von jedem Feed genau der neueste Artikel übernommen; dadurch bleibt der Block
-  bewusst klein und landet typischerweise bei etwa 22 Artikeln statt bei 71.
+  Der Katalog umfasst **44 Quellen in drei Sprachen** (Deutsch, Türkisch, Englisch - Englisch als
+  nebenbei-Lesetraining für die Fremdsprache ab Klasse 6). Abgerufen werden aber nicht alle:
+  `RssNewsService.SelectFeedsForDay` zieht täglich so viele Quellen, wie im Eltern-Bereich als
+  **Nachrichten pro Tag** eingestellt sind (Presets 6/10/12/15/20, Standard 12), verteilt die
+  Plätze über die Sprachen und wandert über die Tage durch den ganzen Katalog. Die Auswahl ist
+  aus dem Datum abgeleitet und innerhalb eines Tages stabil - beim zweiten Öffnen stehen dieselben
+  Artikel da. Aus jeder ausgewählten Quelle kommt genau der neueste Artikel.
    **Jeder Artikel erhält**: Rubrik-Chip mit Emoji, geschätzte Lesedauer, Schwierigkeitsgrad
    (🟢/🟡/🔴, Satz-/Wortlängen-Heuristik), sofort erklärte schwierige Wörter (kuratiertes
   `KidTermGlossary`, ~55 Begriffe von Inflation bis Deepfake) und EINE Verständnisfrage, die
@@ -252,9 +257,11 @@ deshalb bewusst nicht umgesetzt.
   ist Raten unsichtbar - bei drei Optionen liegt Raten in einem Drittel der Fälle richtig. Bewusst
   nur ein Hinweis für die Eltern, keine zusätzliche Sperre für das Kind: wer das Antworten selbst
   blockiert, bestraft auch das Kind, das die Antwort einfach sofort weiß.
-- **📰 Nachrichtenquellen wählbar**: alle 22 kuratierten Quellen einzeln an- und abschaltbar, mit
-  Region und Sprache als Einordnung. Aus jeder aktiven Quelle kommt eine Nachricht pro Tag - die
-  Zahl der aktiven Quellen steht direkt darüber, damit sichtbar ist, wie lang der News-Teil wird.
+- **📰 Nachrichtenquellen wählbar**: alle 44 kuratierten Quellen einzeln an- und abschaltbar, nach
+  Sprache gruppiert (Deutsch, Türkisch, Englisch) mit Region als Einordnung, dazu "alle an/aus".
+  Wie viele Nachrichten daraus täglich werden, steuert **News: Nachrichten pro Tag** (pro Profil).
+  Der Hinweis darunter rechnet mit: sind mehr Quellen aktiv als Nachrichten eingestellt, steht
+  dort, über wie viele Tage jede Quelle einmal vorbeikommt.
   Sind alle abgeschaltet, greifen bewusst wieder alle: ein leerer News-Bereich wäre schlimmer als
   eine ignorierte Einstellung.
 - **📚 Alle Lesetexte verwalten**: eine Liste über die eingebauten *und* die eigenen Texte, mit

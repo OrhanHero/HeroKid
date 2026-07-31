@@ -19,6 +19,9 @@ public sealed class StudentProfileEntity
     // Mapping im Repository als "nicht gesetzt -> Standardwert" interpretiert.
     public int ReadingMinutes { get; set; } = 5;
     public int NewsSecondsPerArticle { get; set; } = 10;
+
+    /// <summary>Anzahl der taeglichen Nachrichten (siehe StudentProfile.NewsArticleCount).</summary>
+    public int NewsArticleCount { get; set; } = 12;
     public int ExerciseSecondsPerQuestion { get; set; } = 5;
     public int ExercisesPerSubject { get; set; } = 6;
     public int QuizQuestionCount { get; set; } = 20;

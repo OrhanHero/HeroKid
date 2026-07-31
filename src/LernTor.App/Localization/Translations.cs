@@ -445,6 +445,7 @@ public static class Translations
             ["Parent_Timer_Title"] = L("Zeiten (pro Profil)", "Süreler (profile özel)"),
             ["Parent_Timer_Reading"] = L("Lesen: Pflicht-Lesezeit pro Tag", "Okuma: Günlük zorunlu okuma süresi"),
             ["Parent_Timer_News"] = L("News: Mindest-Lesezeit pro Artikel", "Haberler: Makale başına asgari okuma süresi"),
+            ["Parent_Timer_NewsCount"] = L("News: Nachrichten pro Tag", "Haberler: Günlük haber sayısı"),
             ["Parent_Timer_Exercise"] = L("Fächer: Mindestzeit pro Aufgabe", "Dersler: Soru başına asgari süre"),
             ["Parent_Scope_Title"] = L("Umfang (pro Profil)", "Kapsam (profile özel)"),
             ["Parent_Scope_Exercises"] = L("Übungen: Aufgaben pro Fach", "Alıştırmalar: Ders başına soru sayısı"),
