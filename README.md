@@ -345,6 +345,21 @@ deshalb bewusst nicht umgesetzt.
   die aktive Datenbank nach Bestätigung und beendet die App, beim nächsten Start ist der gesicherte
   Stand aktiv. Auch eine Sicherung aus einer älteren App-Version funktioniert (der automatische
   Schema-Abgleich ergänzt fehlende Tabellen/Spalten beim Start).
+- **Automatische Sicherung** (`AutoBackupPolicy` / `AutoBackupService`): die App legt beim Start
+  selbst Kopien der Datenbank unter `%LOCALAPPDATA%\LernTor\sicherungen\` an - einmal täglich
+  und, viel wichtiger, **immer bevor sich am Aufbau der Datenbank etwas ändert**. Hintergrund: der
+  Schema-Abgleich beim Start (siehe unten) kann nur *additive* Änderungen; bei einer umbenannten
+  Spalte oder umgedeuteten Werten bliebe sonst nur "lerntor.db löschen" - und damit wären Sterne,
+  Fortschritte und Fehler-Kartei beider Kinder weg. Erkannt wird das an einem Fingerabdruck des
+  EF-Modells (`SchemaFingerprint`, Datei neben der Datenbank), der vor dem Abgleich mit dem zuletzt
+  gespeicherten verglichen wird - **danach** gezogen wäre die Sicherung wertlos, weil sie schon den
+  neuen Stand enthielte. Es bleiben die fünf neuesten liegen, **plus dauerhaft die neueste
+  Sicherung vor einer Schemaänderung**: lernt ein Kind danach eine Woche weiter, hätten die
+  täglichen Kopien genau die eine verdrängt, die den Umbau rückgängig machen könnte. Fehler beim
+  Sichern (volle Platte, gesperrte Datei) werden protokolliert und geschluckt - ein Kind, das
+  wegen einer Sicherung nicht lernen kann, wäre der schlechtere Zustand. Das **ersetzt die
+  Sicherung von Hand nicht**: diese Kopien liegen auf derselben Platte und überleben deren Defekt
+  nicht. Der Eltern-Bereich zeigt Anzahl und Datum der neuesten und öffnet den Ordner per Knopf.
 - Aktivitätsprotokoll: alle beantworteten Aufgaben + Quiz-Ergebnisse einsehbar.
 - **Bericht "Stärken & Schwächen"** (pro Profil, umschaltbar 7/30 Tage): Richtig-Quote je Fach als
   Ampel-Balken (grün ≥75 %, gelb, rot <50 %), schwächste Fächer zuerst; dazu die

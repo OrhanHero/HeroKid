@@ -9,6 +9,7 @@ using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Core.Services;
+using LernTor.Data;
 using LernTor.Data.Entities;
 using LernTor.Data.Repositories;
 using LernTor.News;
@@ -34,6 +35,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly TeacherDocumentImportService _teacherImportService;
     private readonly PiperTtsEngine _piperTts;
     private readonly RewardRepository _rewardRepo;
+    private readonly AutoBackupService _autoBackup;
 
     private AppSettings _settings = new();
 
@@ -364,9 +366,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         LocalLlmOptions localLlmOptions,
         TeacherDocumentImportService teacherImportService,
         PiperTtsEngine piperTts,
-        RewardRepository rewardRepo)
+        RewardRepository rewardRepo,
+        AutoBackupService autoBackup)
     {
         _rewardRepo = rewardRepo;
+        _autoBackup = autoBackup;
         _settingsRepo = settingsRepo;
         _activityLogRepo = activityLogRepo;
         _profileRepo = profileRepo;
@@ -410,6 +414,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         ApplyLocalLlmOptions();
         RefreshErrorLog();
+        RefreshAutoBackupStatus();
         await ReloadRewardsAsync();
     }
 
@@ -1573,6 +1578,54 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         // Schließen sonst (Schutz gegen den Alt+Tab-"X"-Button, siehe MainWindow_Closing).
         _kioskLock.Unlock();
         System.Windows.Application.Current.Shutdown();
+    }
+
+    // --- Automatische Sicherungen (AutoBackupService) ---
+
+    /// <summary>
+    /// Einzeiler über die automatischen Sicherungen. Sie laufen still im Hintergrund, und genau
+    /// deshalb muss man sie irgendwo sehen können: ein Schutzmechanismus, von dem niemand weiß,
+    /// ob er greift, beruhigt zu Unrecht.
+    /// </summary>
+    [ObservableProperty]
+    private string autoBackupStatus = string.Empty;
+
+    private void RefreshAutoBackupStatus()
+    {
+        var backups = _autoBackup.List();
+
+        if (backups.Count == 0)
+        {
+            AutoBackupStatus = "Noch keine automatische Sicherung vorhanden - die erste entsteht beim nächsten Start.";
+            return;
+        }
+
+        var newest = backups[0];
+        var schema = backups.Count(backup => backup.IsSchemaBackup);
+
+        AutoBackupStatus =
+            $"{backups.Count} automatische Sicherung(en), neueste vom " +
+            $"{newest.CreatedAt.LocalDateTime:dd.MM.yyyy HH:mm}" +
+            (schema > 0 ? $", davon {schema} vor einer Schema-Änderung" : string.Empty) + ".";
+    }
+
+    /// <summary>Öffnet den Ordner mit den automatischen Sicherungen im Explorer.</summary>
+    [RelayCommand]
+    private void OpenAutoBackupFolder()
+    {
+        try
+        {
+            Directory.CreateDirectory(_autoBackup.BackupDirectory);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = _autoBackup.BackupDirectory,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            AutoBackupStatus = $"Ordner konnte nicht geöffnet werden: {ex.Message}";
+        }
     }
 
     /// <summary>

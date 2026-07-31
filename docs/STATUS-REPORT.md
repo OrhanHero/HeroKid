@@ -88,7 +88,7 @@ Deutsch- und Geschichte-Ergänzung). Verbleibende Einschränkungen sind bewusste
 
 | Priorität | Thema | Details |
 |-----------|-------|---------|
-| 🔴 **Hoch** | **EF Core Migrations fehlen** | Nutzt `EnsureCreated()` + `SqliteSchemaUpdater` (nur additive Änderungen). Bei Spalten-Umbennungen/Entfernung → manuelles DB-Löschen nötig. |
+| 🟡 **Mittel** | **EF Core Migrations fehlen** | Nutzt `EnsureCreated()` + `SqliteSchemaUpdater` (nur additive Änderungen). Bei Spalten-Umbenennung/-Entfernung ist weiterhin manuelles DB-Löschen nötig - **aber der Datenverlust ist entschärft**: `SchemaFingerprint` erkennt eine bevorstehende Schemaänderung vor dem Abgleich, `AutoBackupService` zieht davor automatisch eine Sicherung (`%LOCALAPPDATA%\LernTor\sicherungen\`), und die neueste Schema-Sicherung wird dauerhaft aufgehoben. Echte Migrationen bleiben unmöglich, solange ohne .NET SDK entwickelt wird (siehe CLAUDE.md) - das war nie das eigentliche Problem, der drohende Verlust von Sternen und Fortschritten war es. |
 | ⏸️ **Nicht relevant** | **Installer Signing (EV-Zertifikat)** | Die Familie installiert aus dem ZIP-Artefakt des CI-Laufs, nicht über den Inno-Setup-Installer (Nutzer-Entscheidung 2026-07-30). Ohne Weitergabe an Dritte gibt es keine SmartScreen-Hürde zu lösen. |
 | ✅ **Erledigt/gut genug** | **TTS Türkisch** | Aktuelle Piper-Stimme ist gut genug, bleibt vorerst unangetastet (Nutzer-Entscheidung). |
 | 🟡 **Mittel** | **Offline-Erst-Installation LLM** | Model-Download (~2-4 GB) passiert erst bei erstem Nutzen. Kein Pre-Bundle im Installer. |

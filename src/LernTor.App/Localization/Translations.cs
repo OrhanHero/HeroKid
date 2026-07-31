@@ -250,6 +250,11 @@ public static class Translations
             ["Parent_Backup_Intro"] = L(
                 "Alle Profile, Fortschritte, Sterne und Einstellungen als eine Datei sichern - z.B. auf einen USB-Stick. Beim Wiederherstellen wird der aktuelle Stand ersetzt.",
                 "Tüm profilleri, ilerlemeleri, yıldızları ve ayarları tek dosya olarak yedekle - örn. USB belleğe. Geri yüklerken mevcut durum değiştirilir."),
+            ["Parent_AutoBackup_Title"] = L("Automatische Sicherung", "Otomatik yedekleme"),
+            ["Parent_AutoBackup_Intro"] = L(
+                "Beim Start legt die App selbst eine Kopie an: einmal täglich und - wichtiger - immer bevor sich am Aufbau der Datenbank etwas ändert. Es bleiben die letzten fünf liegen, die neueste vor einer Änderung dauerhaft. Das ersetzt Ihre eigene Sicherung nicht: diese Kopien liegen auf derselben Platte und überleben deren Defekt nicht.",
+                "Uygulama açılışta kendisi bir kopya oluşturur: günde bir kez ve - daha önemlisi - veritabanının yapısı her değiştiğinde öncesinde. Son beş kopya saklanır, bir değişiklikten önceki en yeni kopya kalıcı olarak. Bu, kendi yedeğinizin yerini tutmaz: bu kopyalar aynı diskte durur ve disk arızasını atlatamaz."),
+            ["Parent_AutoBackup_OpenFolder"] = L("Ordner öffnen", "Klasörü aç"),
             ["Parent_Backup_Export"] = L("Sicherung erstellen…", "Yedek oluştur…"),
             ["Parent_Backup_Import"] = L("Sicherung wiederherstellen…", "Yedeği geri yükle…"),
             ["Parent_DangerZone"] = L("Gefahrenzone", "Tehlikeli bölge"),

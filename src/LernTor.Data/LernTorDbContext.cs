@@ -134,4 +134,15 @@ public sealed class LernTorDbContext : DbContext
         Directory.CreateDirectory(folder);
         return Path.Combine(folder, "lerntor.db");
     }
+
+    /// <summary>Ordner für die automatischen Sicherungen (siehe <c>AutoBackupService</c>) -
+    /// bewusst ein Unterordner, damit sie nicht neben der aktiven Datenbank liegen und beim
+    /// Aufräumen von Hand nicht mit ihr verwechselt werden.</summary>
+    public static string GetAutoBackupDirectory() =>
+        Path.Combine(Path.GetDirectoryName(GetDefaultDbPath())!, "sicherungen");
+
+    /// <summary>Datei mit dem zuletzt bekannten Schema-Fingerabdruck (siehe
+    /// <c>SchemaFingerprint</c>).</summary>
+    public static string GetSchemaFingerprintPath() =>
+        Path.Combine(Path.GetDirectoryName(GetDefaultDbPath())!, "schema.fingerprint");
 }

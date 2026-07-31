@@ -54,6 +54,44 @@ public sealed class DatabaseMaintenanceRepository
     }
 
     /// <summary>
+    /// Ob überhaupt schon ein Profil angelegt wurde - also ob in dieser Datenbank etwas steckt,
+    /// das eine Sicherung wert wäre.
+    ///
+    /// <para>Bewusst rohes SQL statt <c>_db.Profiles.AnyAsync()</c>: die Frage wird beim App-Start
+    /// gestellt, <b>bevor</b> der Schema-Abgleich gelaufen ist. Fehlt der Tabelle dann eine Spalte,
+    /// die das aktuelle Modell erwartet, kippt eine EF-Abfrage - ausgerechnet an der Stelle, die
+    /// den Datenverlust verhindern soll. Existiert die Tabelle noch gar nicht (frische
+    /// Installation), lautet die Antwort schlicht "nein".</para>
+    /// </summary>
+    public bool HasAnyProfile()
+    {
+        var connection = _db.Database.GetDbConnection();
+        var wasOpen = connection.State == System.Data.ConnectionState.Open;
+
+        if (!wasOpen)
+        {
+            connection.Open();
+        }
+
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText =
+                "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='Profiles') " +
+                "THEN (SELECT COUNT(*) FROM Profiles) ELSE 0 END";
+
+            return Convert.ToInt32(command.ExecuteScalar() ?? 0) > 0;
+        }
+        finally
+        {
+            if (!wasOpen)
+            {
+                connection.Close();
+            }
+        }
+    }
+
+    /// <summary>
     /// Exportiert die komplette Datenbank als eigenständige .db-Datei. SQLites
     /// <c>VACUUM INTO</c> erzeugt dabei einen KONSISTENTEN Snapshot, auch während die App die
     /// Datenbank offen hat - im Gegensatz zu einem naiven File.Copy, das mitten in einer

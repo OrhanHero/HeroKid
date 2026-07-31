@@ -169,6 +169,7 @@ public partial class App : Application
                 services.AddSingleton<SettingsRepository>();
                 services.AddSingleton<StudentProfileRepository>();
                 services.AddSingleton<DatabaseMaintenanceRepository>();
+                services.AddSingleton(_ => new AutoBackupService(LernTorDbContext.GetAutoBackupDirectory()));
                 services.AddSingleton<CustomQuestionRepository>();
                 services.AddSingleton<CustomReadingTextRepository>();
                 services.AddSingleton<VocabularyRepository>();
@@ -225,6 +226,14 @@ public partial class App : Application
             // EnsureCreated tut nichts - der SchemaUpdater ergänzt dann fehlende Tabellen/Spalten,
             // damit Profile & Fortschritte App-Updates überleben (kein DB-Löschen mehr nötig).
             await db.Database.EnsureCreatedAsync();
+
+            // Sicherung VOR dem Schema-Abgleich, wenn sich am Schema etwas geändert hat: der
+            // Abgleich kann nur additive Änderungen: eine umbenannte Spalte oder umgedeutete
+            // Werte bliebe sonst nur durch Löschen der Datenbank zu beheben - und damit wären
+            // Sterne, Fortschritte und Fehler-Kartei beider Kinder weg. Danach gezogen wäre die
+            // Sicherung wertlos, weil sie bereits den neuen Stand enthielte.
+            await BackUpBeforeSchemaChangeAsync(scope.ServiceProvider, db);
+
             SqliteSchemaUpdater.Update(db);
         }
 
@@ -257,6 +266,56 @@ public partial class App : Application
 
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
         await mainViewModel.InitializeAsync();
+    }
+
+    /// <summary>
+    /// Vergleicht den Fingerabdruck des aktuellen EF-Modells mit dem zuletzt gespeicherten und
+    /// sichert die Datenbank, wenn er abweicht. Danach wird der neue Fingerabdruck festgehalten
+    /// und eine tägliche Sicherung gezogen; alte werden weggeräumt.
+    ///
+    /// <para>Bei einer frischen Installation (noch kein Profil angelegt) passiert nichts - eine
+    /// Kopie einer leeren Datenbank hilft niemandem und würde nur den Ordner füllen.</para>
+    ///
+    /// <para>Der ganze Block ist in try/catch gefasst: eine misslungene Sicherung darf den
+    /// App-Start nie verhindern. Ein Kind, das wegen einer vollen Platte nicht lernen kann, wäre
+    /// schlimmer als eine fehlende Sicherungskopie.</para>
+    /// </summary>
+    private static async Task BackUpBeforeSchemaChangeAsync(IServiceProvider services, LernTorDbContext db)
+    {
+        try
+        {
+            var maintenance = services.GetRequiredService<DatabaseMaintenanceRepository>();
+            var autoBackup = services.GetRequiredService<AutoBackupService>();
+            var fingerprintPath = LernTorDbContext.GetSchemaFingerprintPath();
+
+            var current = SchemaFingerprint.Compute(db.Database.GenerateCreateScript());
+            var stored = SchemaFingerprint.Read(fingerprintPath);
+            var now = DateTimeOffset.Now;
+
+            if (!maintenance.HasAnyProfile())
+            {
+                SchemaFingerprint.Write(fingerprintPath, current);
+                return;
+            }
+
+            // stored == null heißt "diese Datenbank gab es schon, bevor mitgeschrieben wurde" -
+            // also gerade der Fall, in dem eine Änderung ansteht. Deshalb zählt er als Abweichung.
+            if (stored != current)
+            {
+                AppLog.Info("Datenbank",
+                    $"Schema-Fingerabdruck geändert ({stored ?? "unbekannt"} → {current}) - sichere vorher");
+                await autoBackup.BackupIfDueAsync(maintenance, AutoBackupReason.Schemaaenderung, now);
+            }
+
+            SchemaFingerprint.Write(fingerprintPath, current);
+
+            await autoBackup.BackupIfDueAsync(maintenance, AutoBackupReason.Taeglich, now);
+            autoBackup.Prune();
+        }
+        catch (Exception ex)
+        {
+            AppLog.Warn("Sicherung", $"Automatische Sicherung übersprungen: {ex.Message}");
+        }
     }
 
     protected override async void OnExit(ExitEventArgs e)
