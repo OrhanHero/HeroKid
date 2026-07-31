@@ -252,7 +252,8 @@ public sealed partial class MainViewModel : ObservableObject
         // Klausuren mit Countdown. Die Kinder duerfen selbst eintragen - wer den Termin selbst
         // eintraegt, nimmt ihn eher ernst als einen, der ihm hingestellt wird.
         var exams = (await _examRepo.GetVisibleForProfileAsync(CurrentProfile!.Id, today))
-            .Select(exam => new ExamItemViewModel(exam, today))
+            .Select(exam => new ExamItemViewModel(
+                exam, today, LocalizationService.Instance[$"Stage_{exam.Subject}"]))
             .ToList();
 
         return new WelcomeViewModel(

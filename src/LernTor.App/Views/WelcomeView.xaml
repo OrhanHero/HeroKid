@@ -255,6 +255,16 @@
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
+                                                <!-- Der Lernplan: was heute WEGEN dieser Klausur dran
+                                                     ist. Die Gewichtung erhoeht die Aufgabenzahl schon
+                                                     lange still - das Kind sah nur mehr Mathe, ohne den
+                                                     Zusammenhang. Ohne eingetragene Themen steht hier
+                                                     bewusst nur "mehr Aufgaben", nichts Erfundenes. -->
+                                                <TextBlock Text="{Binding TodayPlan, Mode=OneWay}"
+                                                           Style="{StaticResource BodyText}" FontSize="12"
+                                                           TextWrapping="Wrap" Margin="0,3,0,0"
+                                                           Foreground="{StaticResource PrimaryBrush}"
+                                                           Visibility="{Binding HasTodayPlan, Converter={StaticResource BoolToVis}}" />
                                             </StackPanel>
                                             <Button Grid.Column="1" Content="🗑" Style="{StaticResource RoundedButton}"
                                                     Padding="8,2" VerticalAlignment="Top" Margin="8,0,0,0"

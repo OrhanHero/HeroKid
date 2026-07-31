@@ -1,4 +1,5 @@
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 
 namespace LernTor.App.ViewModels;
 
@@ -10,10 +11,14 @@ public sealed class ExamItemViewModel
 {
     private readonly DateOnly _today;
 
-    public ExamItemViewModel(ExamEntry exam, DateOnly today)
+    /// <param name="subjectLabel">Uebersetzte Fachbezeichnung fuer den Lernplan-Satz. Ohne
+    /// Angabe der Enum-Name - lesbar genug, und ein leerer Standardwert haette im Satz eine
+    /// Luecke hinterlassen ("mehr -Aufgaben").</param>
+    public ExamItemViewModel(ExamEntry exam, DateOnly today, string? subjectLabel = null)
     {
         Exam = exam;
         _today = today;
+        SubjectLabel = string.IsNullOrWhiteSpace(subjectLabel) ? exam.Subject.ToString() : subjectLabel;
     }
 
     public ExamEntry Exam { get; }
@@ -51,4 +56,17 @@ public sealed class ExamItemViewModel
 
     /// <summary>Hinweis, dass in diesem Fach gerade mehr geübt wird.</summary>
     public bool IsBoostingLearning => Exam.LearningWeight(_today) > 1.0;
+
+    /// <summary>
+    /// Was heute wegen dieser Klausur dran ist - der Lernplan in einem Satz (siehe
+    /// <see cref="ExamStudyPlanner"/>). Bisher erhoehte die Gewichtung still die Aufgabenzahl;
+    /// das Kind sah nur mehr Mathe, ohne den Zusammenhang. Leer, solange die Klausur weiter weg
+    /// ist als der Vorlauf - dann gibt es auch nichts zu planen.
+    /// </summary>
+    public string TodayPlan => ExamStudyPlanner.TodayHint(Exam, _today, SubjectLabel);
+
+    public bool HasTodayPlan => TodayPlan.Length > 0;
+
+    /// <summary>Das Fach so, wie es im Lernplan-Satz steht (siehe Konstruktor).</summary>
+    public string SubjectLabel { get; }
 }

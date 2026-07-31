@@ -303,7 +303,16 @@ deshalb bewusst nicht umgesetzt.
   ein bequemer Ausweg. Die Prüfung sitzt im Repository (`DeleteAsChildAsync`), nicht nur an der
   Oberfläche. Die Herkunft steht an jedem Eintrag. **Ab sieben Tagen vor dem Termin** bekommt das
   betroffene Fach automatisch mehr Übungsaufgaben, steigend bis zum Doppelten am Vortag
-  (`ExamEntry.LearningWeight`, nach oben auf +8 Aufgaben gedeckelt). Bewusst **lokal statt Google
+  (`ExamEntry.LearningWeight`, nach oben auf +8 Aufgaben gedeckelt). **Der Lernplan macht das
+  sichtbar** (`ExamStudyPlanner`): an der Klausur steht, was heute deswegen dran ist - "Heute
+  dran: Bruchrechnen". Vorher erhöhte die Gewichtung die Aufgabenzahl still; das Kind merkte nur,
+  dass es plötzlich mehr Mathe gibt, ohne den Zusammenhang zu sehen. Die eingetragenen Themen
+  werden über die Vorlauftage verteilt und dabei **wiederholt durchlaufen** - bei zwei Themen und
+  sieben Tagen kommt jedes mehrfach dran, und genau das ist der Sinn des Vorlaufs. Höchstens zwei
+  Themen pro Tag (eine lange Liste ist kein Plan), der **Tag vor der Klausur ist Wiederholung**
+  über alles - am Vorabend ein neues Thema anzufangen hilft niemandem. **Ohne eingetragene Themen
+  wird nichts erfunden**: dann steht dort nur "Deshalb gibt es heute mehr Mathe-Aufgaben", denn
+  ein ausgedachter Plan wäre schlimmer als keiner - das Kind würde ihm glauben. Bewusst **lokal statt Google
   Calendar**: OAuth bräuchte einen echten Browser, und ein Browserfenster in einer Kiosk-App ist
   genau das Loch, das die Kiosk-Sperre verhindern soll. Die Lern-Gewichtung ginge zudem nur online.
   Als Brücke gibt es **ICS-Import und -Export** (`IcsCalendar`, RFC 5545): eine `.ics`-Datei ist
