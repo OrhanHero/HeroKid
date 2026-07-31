@@ -1,6 +1,7 @@
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.App.Services;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
@@ -30,6 +31,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
     private readonly Action<Subject, QuestionOutcome, QuizQuestion> _onQuestionAnswered;
     private readonly Action _onSubjectCompleted;
     private readonly IHomeworkHelpChatService _homeworkChat;
+    private readonly TextToSpeechService? _speech;
     private readonly DispatcherTimer _minTimeTimer;
 
     private bool _currentAnswered;
@@ -66,6 +68,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
         Action<Subject, QuestionOutcome, QuizQuestion> onQuestionAnswered,
         Action onSubjectCompleted,
         IHomeworkHelpChatService homeworkChat,
+        TextToSpeechService? speech = null,
         int minSecondsPerQuestion = StudentProfile.DefaultExerciseSecondsPerQuestion)
     {
         _minSecondsPerQuestion = minSecondsPerQuestion > 0 ? minSecondsPerQuestion : StudentProfile.DefaultExerciseSecondsPerQuestion;
@@ -74,6 +77,7 @@ public sealed partial class ExerciseViewModel : ObservableObject
         _onQuestionAnswered = onQuestionAnswered;
         _onSubjectCompleted = onSubjectCompleted;
         _homeworkChat = homeworkChat;
+        _speech = speech;
 
         _minTimeTimer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1) };
         _minTimeTimer.Tick += (_, _) => Tick();
@@ -114,7 +118,8 @@ public sealed partial class ExerciseViewModel : ObservableObject
             {
                 OnPropertyChanged(nameof(CanGoNext));
                 NextCommand.NotifyCanExecuteChanged();
-            });
+            },
+            speech: _speech);
         OnPropertyChanged(nameof(DisplayIndex));
         OnPropertyChanged(nameof(IsLastQuestion));
         OnPropertyChanged(nameof(CanGoNext));

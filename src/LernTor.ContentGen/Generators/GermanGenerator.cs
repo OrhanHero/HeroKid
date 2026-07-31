@@ -1,5 +1,6 @@
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 
 namespace LernTor.ContentGen.Generators;
 
@@ -28,7 +29,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
                 SachtexteAuswerten,
                 MedialeTexte,
                 Schreibformen,
-                Gespraechsformen
+                Gespraechsformen,
+                Diktat6
             },
             [GradeLevel.Klasse7] = new List<TopicFactory>
             {
@@ -55,9 +57,45 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
                 Satzbau,
                 Wortbedeutung9,
                 Novelle,
-                Parabel
+                Parabel,
+                Diktat9
             }
         };
+
+    /// <summary>
+    /// Diktat: der Satz wird vorgelesen, nicht angezeigt (siehe <see cref="QuestionType.Diktat"/>).
+    ///
+    /// <para>Rechtschreibung ist der eine Bereich des Deutschunterrichts, den Multiple Choice
+    /// strukturell nicht abdecken kann: sobald die richtige Schreibweise als Option dasteht, wird
+    /// wiedererkannt statt geschrieben. Erst das Hören-und-Schreiben prüft, ob ein Kind die Regel
+    /// wirklich anwenden kann.</para>
+    ///
+    /// <para>Der Satz steht bewusst im <c>Prompt</c> und nicht in einem eigenen Feld: so greifen
+    /// Doppelten-Erkennung, Fehler-Kartei und Spaced Repetition unverändert. Die Anzeige blendet
+    /// ihn für Diktate aus - hier liegt die einzige Stelle, an der die Oberfläche mitdenken muss.</para>
+    /// </summary>
+    private static QuizQuestion Diktat(Random r, GradeLevel grade)
+    {
+        var sentences = DictationContentProvider.ForGrade(grade);
+        var sentence = sentences[r.Next(sentences.Count)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Deutsch,
+            GradeLevel = grade,
+            Topic = "Diktat",
+            Type = QuestionType.Diktat,
+            Prompt = sentence.Sentence,
+            CorrectAnswers = new[] { sentence.Sentence },
+            Explanation = sentence.Rule,
+            HelpHint = sentence.Hint
+        };
+    }
+
+    private static QuizQuestion Diktat6(Random r) => Diktat(r, GradeLevel.Klasse6);
+
+    private static QuizQuestion Diktat9(Random r) => Diktat(r, GradeLevel.Klasse9);
 
     private static readonly (string Wort, string Wortart)[] WortartenBeispiele =
     {

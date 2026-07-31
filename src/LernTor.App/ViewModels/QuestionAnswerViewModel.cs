@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.App.Services;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 
 namespace LernTor.App.ViewModels;
 
@@ -17,6 +19,7 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
     private readonly Action<QuestionAnswerViewModel>? _onSubmitted;
     private readonly Action<QuestionAnswerViewModel>? _onExplanationAcknowledged;
     private readonly IHomeworkHelpChatService _homeworkChat;
+    private readonly TextToSpeechService? _speech;
     private readonly bool _requireExplanationAcknowledgment;
 
     /// <summary>
@@ -36,7 +39,17 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
     public QuizQuestion Question { get; }
 
     public bool IsOpenText => Question.Type == QuestionType.OpenText;
-    public bool IsChoice => !IsOpenText;
+
+    /// <summary>
+    /// Diktat: der Satz wird vorgelesen statt angezeigt. Die Anzeige muss den Prompt deshalb
+    /// verbergen - stünde er da, wäre es Abschreiben und kein Diktat.
+    /// </summary>
+    public bool IsDictation => Question.Type == QuestionType.Diktat;
+
+    /// <summary>Beide Freitext-Arten teilen sich das Eingabefeld und den Prüfen-Knopf.</summary>
+    public bool IsTypedAnswer => IsOpenText || IsDictation;
+
+    public bool IsChoice => !IsTypedAnswer;
 
     /// <summary>
     /// Antwortoptionen in zufälliger Reihenfolge fürs Anzeigen. Die Generatoren legen die richtige
@@ -132,10 +145,12 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
         IHomeworkHelpChatService homeworkChat,
         Action<QuestionAnswerViewModel>? onSubmitted = null,
         bool requireExplanationAcknowledgment = false,
-        Action<QuestionAnswerViewModel>? onExplanationAcknowledged = null)
+        Action<QuestionAnswerViewModel>? onExplanationAcknowledged = null,
+        TextToSpeechService? speech = null)
     {
         Question = question;
         _homeworkChat = homeworkChat;
+        _speech = speech;
         _onSubmitted = onSubmitted;
         _requireExplanationAcknowledgment = requireExplanationAcknowledgment;
         _onExplanationAcknowledged = onExplanationAcknowledged;
@@ -182,6 +197,33 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
 
     partial void OnIsChatLoadingChanged(bool value) => SendChatMessageCommand.NotifyCanExecuteChanged();
 
+    // --- Diktat ---
+
+    /// <summary>
+    /// Liest den Diktatsatz vor. Beliebig oft aufrufbar: eine Lehrkraft liest ein Diktat auch
+    /// zwei- bis dreimal, und ein Kind, das einen Satz nicht verstanden hat, soll ihn hören
+    /// dürfen - der Fehler soll aus der Rechtschreibung kommen, nicht aus dem Hören.
+    /// </summary>
+    [RelayCommand]
+    private void SpeakDictation()
+    {
+        if (!IsDictation || _speech is null)
+        {
+            return;
+        }
+
+        // Erst stoppen: sonst reihen sich bei mehrmaligem Klicken die Wiedergaben hintereinander.
+        _speech.Stop();
+        _speech.Speak(Question.Prompt, "de-DE");
+    }
+
+    /// <summary>Wort-für-Wort-Rückmeldung nach dem Absenden (leer, solange nicht abgesendet).</summary>
+    [ObservableProperty]
+    private string dictationFeedback = string.Empty;
+
+    /// <summary>Der richtige Satz - erst NACH dem Absenden sichtbar.</summary>
+    public string DictationSolution => IsSubmitted && IsDictation ? Question.Prompt : string.Empty;
+
     [RelayCommand]
     private void SelectOption(string option)
     {
@@ -212,6 +254,16 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
             System.Diagnostics.Stopwatch.GetElapsedTime(_shownAtTicks).TotalMilliseconds,
             1, int.MaxValue);
         IsSubmitted = true;
+
+        if (IsDictation)
+        {
+            // Nicht nur "falsch", sondern WELCHES Wort - sonst weiß das Kind nach einem
+            // 10-Wort-Satz nicht, woran es lag.
+            DictationFeedback = DictationEvaluator.Feedback(
+                DictationEvaluator.Evaluate(Question.Prompt, answer));
+            OnPropertyChanged(nameof(DictationSolution));
+        }
+
         OnPropertyChanged(nameof(NeedsExplanationAcknowledgment));
         _onSubmitted?.Invoke(this);
     }

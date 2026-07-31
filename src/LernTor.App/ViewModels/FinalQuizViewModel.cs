@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LernTor.App.Services;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Models;
 
@@ -10,6 +11,7 @@ public sealed partial class FinalQuizViewModel : ObservableObject
     private readonly IReadOnlyList<QuizQuestion> _questions;
     private readonly Action<IReadOnlyList<QuestionOutcome>> _onCompleted;
     private readonly Action<QuizQuestion, QuestionOutcome> _onQuestionAnswered;
+    private readonly TextToSpeechService? _speech;
     private readonly IHomeworkHelpChatService _homeworkChat;
     private readonly List<QuestionOutcome> _outcomes = new();
 
@@ -30,12 +32,14 @@ public sealed partial class FinalQuizViewModel : ObservableObject
         IReadOnlyList<QuizQuestion> questions,
         Action<IReadOnlyList<QuestionOutcome>> onCompleted,
         Action<QuizQuestion, QuestionOutcome> onQuestionAnswered,
-        IHomeworkHelpChatService homeworkChat)
+        IHomeworkHelpChatService homeworkChat,
+        TextToSpeechService? speech = null)
     {
         _questions = questions;
         _onCompleted = onCompleted;
         _onQuestionAnswered = onQuestionAnswered;
         _homeworkChat = homeworkChat;
+        _speech = speech;
     }
 
     [RelayCommand]
@@ -53,7 +57,7 @@ public sealed partial class FinalQuizViewModel : ObservableObject
             return;
         }
 
-        CurrentQuestion = new QuestionAnswerViewModel(_questions[CurrentIndex], _homeworkChat, OnAnswered);
+        CurrentQuestion = new QuestionAnswerViewModel(_questions[CurrentIndex], _homeworkChat, OnAnswered, speech: _speech);
         OnPropertyChanged(nameof(DisplayIndex));
         OnPropertyChanged(nameof(IsLastQuestion));
     }

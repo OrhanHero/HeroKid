@@ -744,8 +744,10 @@ public sealed partial class MainViewModel : ObservableObject
             .Concat(customForToday.Concat(generatedFill).OrderBy(_ => _random.Next()))
             .ToList();
 
+        // Sprachausgabe wird durchgereicht, weil Deutsch-Uebungen Diktate enthalten koennen -
+        // dort wird der Satz vorgelesen statt angezeigt (siehe QuestionType.Diktat).
         return new ExerciseViewModel(subject, questions, OnExerciseQuestionAnswered, () => OnExerciseSubjectCompleted(subject), _homeworkChat,
-            CurrentProfile!.ExerciseSecondsPerQuestion);
+            _tts, CurrentProfile!.ExerciseSecondsPerQuestion);
     }
 
     /// <summary>
@@ -838,7 +840,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         var finalQuestions = questions.Concat(customQuestions).OrderBy(_ => _random.Next()).ToList();
 
-        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted, OnFinalQuizQuestionAnswered, _homeworkChat);
+        return new FinalQuizViewModel(finalQuestions, OnFinalQuizCompleted, OnFinalQuizQuestionAnswered, _homeworkChat, _tts);
     }
 
     private async void OnFinalQuizQuestionAnswered(QuizQuestion question, QuestionOutcome outcome)

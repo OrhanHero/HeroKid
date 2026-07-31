@@ -1,5 +1,6 @@
 using System.Text;
 using LernTor.Core.Enums;
+using LernTor.Core.Services;
 
 namespace LernTor.Core.Models;
 
@@ -50,6 +51,11 @@ public sealed class QuizQuestion
 
         return Type switch
         {
+            // Diktat: Wort-für-Wort-Vergleich statt "enthält" - beim Rechtschreiben ist genau die
+            // Schreibweise die Aufgabe, und ein Satz, in dem der erwartete irgendwo vorkommt,
+            // wäre kein richtig geschriebenes Diktat.
+            QuestionType.Diktat => DictationEvaluator
+                .Evaluate(CorrectAnswers.FirstOrDefault(), trimmedGiven).IsPerfect,
             QuestionType.OpenText => CorrectAnswers.Any(correct =>
                 trimmedGiven.Contains(correct, StringComparison.OrdinalIgnoreCase) ||
                 normalizedGiven.Contains(ToLatinKeyboardForm(correct), StringComparison.Ordinal)),

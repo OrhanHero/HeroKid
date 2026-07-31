@@ -367,6 +367,21 @@ deshalb bewusst nicht umgesetzt.
   Antworten Datenbasis), damit sichtbar wird, dass z.B. genau „Brüche" hakt und nicht pauschal
   „Mathe"; außerdem Lerntage im Zeitraum und der Abschlussquiz-Verlauf. Rechnet komplett aus dem
   vorhandenen Aktivitätsprotokoll - keine neuen Tabellen.
+- **✏️ Diktat** (Deutsch, `DictationEvaluator` / `DictationContentProvider`): ein Satz wird
+  **vorgelesen statt angezeigt** (Piper bzw. Windows-Sprachausgabe, siehe Lesen), das Kind tippt
+  ihn, die App vergleicht **Wort für Wort**. Rechtschreibung ist der eine Bereich des
+  Deutschunterrichts, den Multiple Choice strukturell nicht abdecken kann: sobald die richtige
+  Schreibweise als Option dasteht, wird wiedererkannt statt geschrieben. Zwei bewusste
+  Entscheidungen bei der Bewertung: **Satzzeichen entscheiden nicht** über richtig/falsch - die
+  Sprachausgabe spricht kein Komma, und einem Kind vorzuwerfen, es habe etwas nicht geschrieben,
+  das es nicht hören konnte, wäre unfair; **Groß- und Kleinschreibung entscheidet dagegen sehr
+  wohl** - sie ist im Deutschen regelbasiert und damit genau das, worum es bei einem Diktat geht.
+  Vorlesen ist beliebig oft möglich (eine Lehrkraft liest ein Diktat auch mehrmals). Die
+  Rückmeldung nennt nicht nur "falsch", sondern **welches Wort** es war (`"belt" → "bellt"`); der
+  richtige Satz erscheint erst nach dem Absenden. 40 Sätze (20 je Stufe), jeder auf **eine**
+  Rechtschreibfalle gebaut - das/dass, ss/ß, Dehnungs-h, Groß-/Kleinschreibung,
+  Doppelkonsonanten -, 6 bis 10 Wörter lang. Läuft als normales Deutsch-Thema mit: Fehler-Kartei
+  und Spaced Repetition greifen unverändert.
 - **📄 Lesetext aus PDF/Word einlesen**: füllt das Formular für eigene Lesetexte aus einer Datei,
   statt sie abtippen zu lassen. Die Textextraktoren des Lehrer-Imports (PdfPig/OpenXml) waren dafür
   schon da - was fehlte, ist die Aufbereitung (`ReadingTextImport`): roher Extraktionstext hat harte

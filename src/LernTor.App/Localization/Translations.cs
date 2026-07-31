@@ -193,6 +193,16 @@ public static class Translations
             ["Exercise_Explanation"] = L("Erklärung:", "Açıklama:"),
             ["Exercise_AcknowledgeExplanation"] = L("✔ Erklärung gelesen", "✔ Açıklamayı okudum"),
             ["Exercise_ShowHint"] = L("💡 Tipp anzeigen", "💡 İpucu göster"),
+
+            // Diktat: der Satz wird vorgelesen, nicht angezeigt (siehe QuestionType.Diktat).
+            ["Exercise_Dictation_Prompt"] = L(
+                "✏️ Diktat: Hör zu und schreib den Satz auf.",
+                "✏️ Dikte: Dinle ve cümleyi yaz."),
+            ["Exercise_Dictation_Hint"] = L(
+                "Du darfst so oft vorlesen lassen, wie du möchtest. Auf Satzzeichen kommt es nicht an – auf die Schreibweise der Wörter schon.",
+                "İstediğin kadar tekrar dinletebilirsin. Noktalama işaretleri önemli değil – kelimelerin yazılışı önemli."),
+            ["Exercise_Dictation_Speak"] = L("🔊 Satz vorlesen", "🔊 Cümleyi oku"),
+            ["Exercise_Dictation_Solution"] = L("So war es richtig:", "Doğrusu şöyleydi:"),
             ["Exercise_AskAi"] = L("🤖 KI fragen", "🤖 Yapay zekaya sor"),
             ["Exercise_AiThinking"] = L(
                 "Die KI überlegt… (die allererste Frage dauert am längsten: das Modell wird einmalig " +

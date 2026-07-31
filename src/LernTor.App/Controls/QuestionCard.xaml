@@ -16,7 +16,22 @@
                    Stretch="Uniform"
                    Margin="0,0,0,16" />
 
-            <TextBlock Text="{Binding Question.Prompt}" Style="{StaticResource HeadlineText}" FontSize="24" Margin="0,0,0,20" />
+            <!-- Bei einem Diktat wird der Satz NICHT angezeigt - stuende er da, waere es
+                 Abschreiben statt Rechtschreiben. Stattdessen der Vorlesen-Knopf. -->
+            <TextBlock Text="{Binding Question.Prompt}" Style="{StaticResource HeadlineText}" FontSize="24" Margin="0,0,0,20"
+                       Visibility="{Binding IsDictation, Converter={StaticResource InverseBoolToVis}}" />
+
+            <StackPanel Visibility="{Binding IsDictation, Converter={StaticResource BoolToVis}}" Margin="0,0,0,20">
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Dictation_Prompt]}"
+                           Style="{StaticResource HeadlineText}" FontSize="24" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Dictation_Hint]}"
+                           Style="{StaticResource BodyText}" FontSize="13" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <!-- Beliebig oft: eine Lehrkraft liest ein Diktat auch mehrmals vor. Der Fehler
+                     soll aus der Rechtschreibung kommen, nicht aus dem Hoeren. -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Dictation_Speak]}"
+                        Style="{StaticResource RoundedButton}" HorizontalAlignment="Left" FontSize="16" Padding="18,10"
+                        Command="{Binding SpeakDictationCommand}" />
+            </StackPanel>
 
             <!-- Tipp/Hilfe: Formel- bzw. Vorgehens-Hinweis, verrät nicht die konkrete Lösung -->
             <StackPanel Visibility="{Binding HasHelpHint, Converter={StaticResource BoolToVis}}" Margin="0,0,0,16">
@@ -111,8 +126,8 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- Offene Frage: Textfeld + Prüfen-Button -->
-            <StackPanel Visibility="{Binding IsOpenText, Converter={StaticResource BoolToVis}}">
+            <!-- Offene Frage und Diktat: Textfeld + Prüfen-Button -->
+            <StackPanel Visibility="{Binding IsTypedAnswer, Converter={StaticResource BoolToVis}}">
                 <TextBox x:Name="AnswerTextBox"
                          Text="{Binding GivenAnswerText, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="20" Padding="14" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="2"
@@ -152,6 +167,20 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Incorrect]}"
                            Visibility="{Binding IsCorrect, Converter={StaticResource InverseBoolToVis}}"
                            Foreground="{StaticResource ErrorBrush}" FontWeight="Bold" FontSize="20" />
+
+                <!-- Diktat: den richtigen Satz und die falschen Woerter zeigen. "Leider falsch"
+                     allein hilft nach einem Zehn-Wort-Satz niemandem weiter - das Kind muss
+                     sehen, WELCHES Wort es war. Der Satz erscheint erst hier, nach dem Absenden. -->
+                <StackPanel Visibility="{Binding IsDictation, Converter={StaticResource BoolToVis}}" Margin="0,12,0,0">
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Dictation_Solution]}"
+                               Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding DictationSolution, Mode=OneWay}" Style="{StaticResource BodyText}"
+                               FontSize="17" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding DictationFeedback, Mode=OneWay}" Style="{StaticResource BodyText}"
+                               FontSize="14" TextWrapping="Wrap" Margin="0,8,0,0"
+                               Foreground="{StaticResource ErrorBrush}"
+                               Visibility="{Binding IsCorrect, Converter={StaticResource InverseBoolToVis}}" />
+                </StackPanel>
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Explanation]}"
                            Style="{StaticResource SubtitleText}" Margin="0,12,0,4" FontWeight="Bold" />
