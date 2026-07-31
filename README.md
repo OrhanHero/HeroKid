@@ -282,6 +282,11 @@ deshalb bewusst nicht umgesetzt.
   (`ExamEntry.LearningWeight`, nach oben auf +8 Aufgaben gedeckelt). Bewusst **lokal statt Google
   Calendar**: OAuth bräuchte einen echten Browser, und ein Browserfenster in einer Kiosk-App ist
   genau das Loch, das die Kiosk-Sperre verhindern soll. Die Lern-Gewichtung ginge zudem nur online.
+  Als Brücke gibt es **ICS-Import und -Export** (`IcsCalendar`, RFC 5545): eine `.ics`-Datei ist
+  reiner Text, den Schulportal, Outlook, Apple und Google alle lesen und schreiben - ohne Konto,
+  ohne Netz. Beim Import wird das Fach aus dem Titel erraten ("Mathearbeit" → Mathematik); passt
+  nichts, bleibt es offen, statt still ein falsches Fach zu setzen und damit die Übungsgewichtung
+  zu verstellen. Vergangene Termine werden gar nicht erst angeboten.
 - **📰 Nachrichtenquellen wählbar**: alle 44 kuratierten Quellen einzeln an- und abschaltbar, nach
   Sprache gruppiert (Deutsch, Türkisch, Englisch) mit Region als Einordnung, dazu "alle an/aus".
   Wie viele Nachrichten daraus täglich werden, steuert **News: Nachrichten pro Tag** (pro Profil).

@@ -668,6 +668,15 @@
                             Command="{Binding ClearPastExamsCommand}" />
                 </StackPanel>
 
+                <!-- ICS statt Cloud-Anbindung: offener Standard, den Schulportal, Outlook, Apple
+                     und Google alle koennen - ohne Konto, ohne Netz, ohne Browserfenster. -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="📥 Aus Kalenderdatei (.ics) einlesen" Style="{StaticResource RoundedButton}"
+                            Margin="0,0,8,0" Command="{Binding ImportExamsCommand}" />
+                    <Button Content="📤 Als .ics exportieren" Style="{StaticResource RoundedButton}"
+                            Command="{Binding ExportExamsCommand}" />
+                </StackPanel>
+
                 <ItemsControl ItemsSource="{Binding Exams}" Margin="0,0,0,8">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>

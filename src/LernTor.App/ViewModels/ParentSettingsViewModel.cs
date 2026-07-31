@@ -2252,6 +2252,130 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             : $"{removed} vergangene(r) Termin(e) entfernt.";
     }
 
+    /// <summary>
+    /// Exportiert die Termine des Kindes als .ics - damit die Klausur auch im Familienkalender
+    /// auftaucht. Offener Standard statt Cloud-Anbindung: keine Anmeldung, kein Netz.
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportExamsAsync()
+    {
+        if (SelectedProfile is null || Exams.Count == 0)
+        {
+            ExamStatus = "Keine Termine zum Exportieren.";
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Filter = "Kalenderdatei (*.ics)|*.ics",
+            FileName = $"klausuren-{SelectedProfile.Name.Split(' ')[0].ToLowerInvariant()}.ics",
+            Title = "Klausurtermine exportieren"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            var exams = await _examRepo.GetForProfileAsync(SelectedProfile.Id);
+            await File.WriteAllTextAsync(
+                dialog.FileName,
+                IcsCalendar.Export(exams, $"LernTor - {SelectedProfile.Name}"));
+
+            ExamStatus = $"{exams.Count} Termin(e) nach {Path.GetFileName(dialog.FileName)} exportiert.";
+        }
+        catch (Exception ex)
+        {
+            ExamStatus = $"Export fehlgeschlagen: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Liest Termine aus einer .ics-Datei (Schulportal, Outlook, Google-Export) und legt sie als
+    /// Eltern-Einträge an. Fremde Kalender enthalten meist mehr als nur Klausuren, deshalb wird
+    /// vor dem Übernehmen gezeigt, was gefunden wurde - und Termine in der Vergangenheit werden
+    /// gar nicht erst angeboten.
+    /// </summary>
+    [RelayCommand]
+    private async Task ImportExamsAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            ExamStatus = "Erst ein Profil auswählen.";
+            return;
+        }
+
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Kalenderdatei (*.ics)|*.ics|Alle Dateien (*.*)|*.*",
+            Title = "Klausurtermine aus Kalenderdatei einlesen"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            var content = await File.ReadAllTextAsync(dialog.FileName);
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            var found = IcsCalendar.Import(content)
+                .Where(e => e.Date >= today)
+                .ToList();
+
+            if (found.Count == 0)
+            {
+                ExamStatus = "In der Datei standen keine künftigen Termine.";
+                return;
+            }
+
+            var preview = string.Join("\n", found.Take(10).Select(e =>
+                $"• {e.Date:dd.MM.yyyy} - {e.Title}" +
+                (e.GuessedSubject is { } subject ? $" ({subject})" : " (Fach bitte nachtragen)")));
+
+            var confirmed = System.Windows.MessageBox.Show(
+                $"{found.Count} künftige(r) Termin(e) gefunden:\n\n{preview}" +
+                (found.Count > 10 ? $"\n… und {found.Count - 10} weitere" : string.Empty) +
+                $"\n\nAlle für {SelectedProfile.Name} übernehmen?",
+                "Termine übernehmen?",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question,
+                System.Windows.MessageBoxResult.Yes);
+
+            if (confirmed != System.Windows.MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            foreach (var entry in found)
+            {
+                await _examRepo.AddAsync(
+                    SelectedProfile.Id,
+                    // Nicht geraten heisst Mathematik als Platzhalter - die Eltern sehen den
+                    // Eintrag in der Liste und koennen das Fach korrigieren.
+                    entry.GuessedSubject ?? Subject.Mathematik,
+                    entry.Title,
+                    entry.Description,
+                    entry.Date,
+                    ExamAuthor.Eltern);
+            }
+
+            await ReloadExamsAsync();
+            var ohneFach = found.Count(e => e.GuessedSubject is null);
+            ExamStatus = ohneFach == 0
+                ? $"{found.Count} Termin(e) übernommen."
+                : $"{found.Count} Termin(e) übernommen - bei {ohneFach} konnte das Fach nicht erraten werden, bitte nachtragen.";
+        }
+        catch (Exception ex)
+        {
+            ExamStatus = $"Einlesen fehlgeschlagen: {ex.Message}";
+        }
+    }
+
     private void UpdateExamStatus()
     {
         if (Exams.Count == 0)
