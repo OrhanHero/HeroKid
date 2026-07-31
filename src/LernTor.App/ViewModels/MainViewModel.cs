@@ -530,16 +530,24 @@ public sealed partial class MainViewModel : ObservableObject
         var weather = await weatherTask;
 
         // Offline-Rückfall: sind alle Feeds tot, kommt nur das eingebaute Finanzwissen-Stück
-        // zurück (Count <= 1). Dann die Artikel des letzten erfolgreichen Tages aus dem Archiv
-        // laden - alte News sind besser als ein fast leerer Pflicht-News-Teil. Bei Erfolg wird
-        // der heutige Stand umgekehrt archiviert (idempotent, behält ~7 Tage).
+        // zurück (Count <= 1). Dann Artikel aus dem Archiv laden - alte News sind besser als ein
+        // fast leerer Pflicht-News-Teil. Bei Erfolg wird der heutige Stand umgekehrt archiviert
+        // (idempotent, behält 21 Tage).
+        //
+        // Welcher Archiv-Tag genommen wird, wandert mit der Dauer des Ausfalls: am ersten Tag
+        // der jüngste Stand, am zweiten der davor. Sonst bekäme das Kind bei einem längeren
+        // Ausfall - Urlaub, Router kaputt - jeden Morgen exakt dieselben Nachrichten inklusive
+        // derselben Verständnisfragen.
         if (articles.Count <= 1)
         {
-            var archived = await _archiveRepo.GetLatestArchiveAsync();
+            var (archived, archivedOn) = await _archiveRepo.GetOfflineFallbackAsync(
+                DateOnly.FromDateTime(DateTime.Today));
+
             if (archived.Count > 0)
             {
                 Core.Logging.AppLog.Warn("News",
-                    $"Keine Feeds erreichbar - Rückfall auf {archived.Count} archivierte Artikel des letzten Tages.");
+                    $"Keine Feeds erreichbar - Rückfall auf {archived.Count} archivierte Artikel " +
+                    $"vom {archivedOn:dd.MM.yyyy}.");
                 articles = archived;
             }
         }

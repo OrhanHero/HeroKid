@@ -133,7 +133,11 @@ damit jederzeit erkennbar ist, welches Kind gerade angemeldet ist.
    sein letzter Stand verwendet, sofern er jünger als 48h ist. Stufe 2 für den Totalausfall - die
    aufbereiteten Tagesartikel werden automatisch ~7 Tage archiviert (`ArchivedArticleRepository`,
    inkl. Verständnisfragen); sind morgens alle Feeds (auch per Cache) unerreichbar, liest das Kind
-   die Artikel des letzten erfolgreichen Tages statt vor einem fast leeren News-Teil zu stehen
+   Artikel aus dem Archiv statt vor einem fast leeren News-Teil zu stehen. Der Vorrat reicht
+   **21 Tage** (vorher 7 - das deckt einen Router-Ausfall ab, aber keinen Urlaub), und welcher
+   Archiv-Tag genommen wird, **wandert mit der Dauer des Ausfalls**: am ersten Tag der jüngste
+   Stand, am zweiten der davor. Vorher kam immer derselbe, das Kind sah also jeden Morgen
+   dieselben Nachrichten inklusive derselben Verständnisfragen
    (beides im Fehlerprotokoll vermerkt). (Eine frühere Lesezeichen-/Suchfunktion im News-Teil wurde auf
    Nutzerwunsch wieder entfernt - im geführten Pflicht-Ablauf brachte sie keinen Mehrwert und
    verschob das Layout.)

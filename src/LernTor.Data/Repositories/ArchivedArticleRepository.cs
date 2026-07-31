@@ -10,8 +10,15 @@ namespace LernTor.Data.Repositories;
 /// </summary>
 public sealed class ArchivedArticleRepository
 {
-    /// <summary>So viele Tage bleiben Archiv-Stände erhalten, ältere werden beim Archivieren entfernt.</summary>
-    private const int RetentionDays = 7;
+    /// <summary>
+    /// So viele Tage bleiben Archiv-Stände erhalten, ältere werden beim Archivieren entfernt.
+    ///
+    /// <para>Von 7 auf 21 erhöht: sieben Tage decken einen Internetausfall ab, aber keinen
+    /// Urlaub. Drei Wochen Vorrat kosten wenige hundert Kilobyte und sind der Unterschied
+    /// zwischen "der News-Teil funktioniert auch in der Türkei" und "ab Tag acht sieht das Kind
+    /// jeden Morgen dieselben Nachrichten".</para>
+    /// </summary>
+    private const int RetentionDays = 21;
 
     private readonly LernTorDbContext _db;
 
@@ -61,6 +68,62 @@ public sealed class ArchivedArticleRepository
         }
 
         await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>Alle Tage, für die ein Archiv-Stand vorliegt - jüngster zuerst.</summary>
+    public async Task<IReadOnlyList<DateOnly>> GetArchivedDatesAsync(CancellationToken cancellationToken = default)
+    {
+        var keys = await _db.ArchivedArticles
+            .Select(a => a.ArchivedDate)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return keys
+            .Select(key => DateOnly.TryParseExact(key, "yyyy-MM-dd", out var date) ? date : (DateOnly?)null)
+            .Where(date => date is not null)
+            .Select(date => date!.Value)
+            .OrderByDescending(date => date)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Der Offline-Rückfall: Artikel eines archivierten Tages, wenn heute kein Feed erreichbar ist.
+    ///
+    /// <para>Bisher kam hier immer der JÜNGSTE Stand zurück. Bei einem Ausfall über mehrere Tage
+    /// - Urlaub, Router kaputt - bekam das Kind damit jeden Morgen exakt dieselben Nachrichten
+    /// vorgesetzt, inklusive derselben Verständnisfragen. Stattdessen wandert die Auswahl mit
+    /// jedem Ausfalltag einen Archiv-Tag weiter zurück und beginnt danach wieder vorne.</para>
+    ///
+    /// <para>Am ersten Ausfalltag ist das der Stand von gestern (das Frischeste, was es gibt), am
+    /// zweiten der von vorgestern, und so fort. Deterministisch aus dem Datum abgeleitet, also
+    /// innerhalb eines Tages stabil - beim zweiten Öffnen dürfen nicht plötzlich andere Artikel
+    /// dastehen, der Fortschritt hängt an den Artikel-IDs.</para>
+    /// </summary>
+    /// <returns>Die Artikel und der Tag, von dem sie stammen; leere Liste, wenn nie archiviert wurde.</returns>
+    public async Task<(IReadOnlyList<NewsArticle> Articles, DateOnly? ArchivedOn)> GetOfflineFallbackAsync(
+        DateOnly today, CancellationToken cancellationToken = default)
+    {
+        var dates = await GetArchivedDatesAsync(cancellationToken);
+
+        // Der heutige Stand zaehlt nicht: wenn heute nichts geladen werden konnte, gibt es ihn
+        // entweder gar nicht, oder er stammt aus einem frueheren Rueckfall.
+        var usable = dates.Where(date => date < today).ToList();
+        if (usable.Count == 0)
+        {
+            return (Array.Empty<NewsArticle>(), null);
+        }
+
+        // Wie viele Tage der Ausfall schon dauert, gemessen am juengsten Archiv-Stand.
+        var daysOffline = today.DayNumber - usable[0].DayNumber - 1;
+        var index = ((daysOffline % usable.Count) + usable.Count) % usable.Count;
+        var chosen = usable[index];
+
+        var key = chosen.ToString("yyyy-MM-dd");
+        var entities = await _db.ArchivedArticles
+            .Where(a => a.ArchivedDate == key)
+            .ToListAsync(cancellationToken);
+
+        return (entities.Select(ToArticle).ToList(), chosen);
     }
 
     /// <summary>Liefert den jüngsten archivierten Tages-Stand (leer, wenn noch nie archiviert
