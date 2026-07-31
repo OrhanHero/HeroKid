@@ -47,6 +47,7 @@ public sealed class DatabaseMaintenanceRepository
         await _db.CustomReadingTexts.ExecuteDeleteAsync(cancellationToken);
         await _db.VocabularyEntries.ExecuteDeleteAsync(cancellationToken);
         await _db.HomeworkTasks.ExecuteDeleteAsync(cancellationToken);
+        await _db.Exams.ExecuteDeleteAsync(cancellationToken);
 
         // Profile zuletzt: alles andere haengt per ProfileId daran.
         await _db.Profiles.ExecuteDeleteAsync(cancellationToken);

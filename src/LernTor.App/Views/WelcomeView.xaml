@@ -126,6 +126,62 @@
                 </StackPanel>
             </Border>
 
+            <!-- Klausuren mit Countdown. Die Kinder duerfen selbst eintragen; loeschen aber nur
+                 die eigenen Eintraege - sonst waere "Klausur weg, also nicht lernen" ein bequemer
+                 Ausweg. Die Pruefung sitzt zusaetzlich im Repository. -->
+            <Border Background="{StaticResource CardBrush}" CornerRadius="14" Padding="20,16"
+                    Margin="0,0,0,16" MaxWidth="620" HorizontalAlignment="Center"
+                    Visibility="{Binding ShowExams, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_Exams]}"
+                               Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,10" />
+
+                    <ItemsControl ItemsSource="{Binding Exams}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Title, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                   FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Topics, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                   FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                                                   Visibility="{Binding HasTopics, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Countdown, Mode=OneWay}"
+                                               VerticalAlignment="Center" Margin="12,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsImminent, Mode=OneWay}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button Grid.Column="2" Content="🗑" Style="{StaticResource RoundedButton}"
+                                            Padding="8,2" VerticalAlignment="Center"
+                                            Visibility="{Binding CanChildEdit, Converter={StaticResource BoolToVis}}"
+                                            Command="{Binding DataContext.DeleteExamCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_AddExam]}"
+                    Style="{StaticResource RoundedButton}" HorizontalAlignment="Center"
+                    Margin="0,0,0,24" Command="{Binding AddExamCommand}" />
+
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
                     Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
                     HorizontalAlignment="Center"

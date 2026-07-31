@@ -26,6 +26,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly CustomQuestionRepository _customQuestionRepo;
     private readonly CustomReadingTextRepository _customReadingRepo;
     private readonly HomeworkTaskRepository _homeworkRepo;
+    private readonly ExamEntryRepository _examRepo;
     private readonly FeedHealthLog _feedHealthLog = new();
     private readonly VocabularyRepository _vocabularyRepo;
     private readonly KioskLockService _kioskLock;
@@ -357,6 +358,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CustomQuestionRepository customQuestionRepo,
         CustomReadingTextRepository customReadingRepo,
         HomeworkTaskRepository homeworkRepo,
+        ExamEntryRepository examRepo,
         VocabularyRepository vocabularyRepo,
         KioskLockService kioskLock,
         LocalLlmOptions localLlmOptions,
@@ -372,6 +374,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _customQuestionRepo = customQuestionRepo;
         _customReadingRepo = customReadingRepo;
         _homeworkRepo = homeworkRepo;
+        _examRepo = examRepo;
         _vocabularyRepo = vocabularyRepo;
         _kioskLock = kioskLock;
         _localLlmOptions = localLlmOptions;
@@ -634,6 +637,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _ = ReloadCustomReadingTextsAsync();
         _ = ReloadVocabularyAsync();
         _ = ReloadHomeworkAsync();
+        _ = ReloadExamsAsync();
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
@@ -2164,6 +2168,103 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         HomeworkStatus = removed == 0
             ? "Nichts zum Aufräumen - alle erledigten Aufgaben sind noch frisch."
             : $"{removed} erledigte Hausaufgabe(n) entfernt.";
+    }
+
+    // --- Klausurkalender (pro Profil) ---
+
+    /// <summary>Alle Klausurtermine des gewählten Profils, nächster zuerst.</summary>
+    public ObservableCollection<ExamItemViewModel> Exams { get; } = new();
+
+    [ObservableProperty]
+    private string examStatus = string.Empty;
+
+    public bool HasNoExams => Exams.Count == 0;
+
+    private async Task ReloadExamsAsync()
+    {
+        Exams.Clear();
+        if (SelectedProfile is null)
+        {
+            OnPropertyChanged(nameof(HasNoExams));
+            return;
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        foreach (var exam in await _examRepo.GetForProfileAsync(SelectedProfile.Id))
+        {
+            Exams.Add(new ExamItemViewModel(exam, today));
+        }
+
+        OnPropertyChanged(nameof(HasNoExams));
+        UpdateExamStatus();
+    }
+
+    [RelayCommand]
+    private async Task AddExamAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            ExamStatus = "Erst ein Profil auswählen.";
+            return;
+        }
+
+        var dialog = new Views.ExamEntryDialog
+        {
+            Owner = System.Windows.Application.Current.Windows
+                .OfType<Views.ParentSettingsWindow>()
+                .FirstOrDefault()
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        await _examRepo.AddAsync(
+            SelectedProfile.Id,
+            dialog.SelectedSubject,
+            dialog.EnteredTitle,
+            dialog.EnteredTopics,
+            dialog.SelectedDate,
+            ExamAuthor.Eltern);
+
+        await ReloadExamsAsync();
+    }
+
+    /// <summary>Aus dem Eltern-Bereich darf jeder Termin gelöscht werden, auch die des Kindes.</summary>
+    [RelayCommand]
+    private async Task DeleteExamAsync(ExamItemViewModel item)
+    {
+        await _examRepo.DeleteAsync(item.Id);
+        await ReloadExamsAsync();
+    }
+
+    /// <summary>Räumt Termine ab, die länger als 30 Tage vorbei sind.</summary>
+    [RelayCommand]
+    private async Task ClearPastExamsAsync()
+    {
+        var removed = await _examRepo.DeletePastOlderThanAsync(
+            DateOnly.FromDateTime(DateTime.Today).AddDays(-30));
+
+        await ReloadExamsAsync();
+        ExamStatus = removed == 0
+            ? "Nichts zum Aufräumen - keine Termine älter als 30 Tage."
+            : $"{removed} vergangene(r) Termin(e) entfernt.";
+    }
+
+    private void UpdateExamStatus()
+    {
+        if (Exams.Count == 0)
+        {
+            ExamStatus = "Noch keine Klausuren eingetragen. Die Kinder dürfen sie auch selbst eintragen - "
+                       + "solche Einträge stehen hier mit \"selbst eingetragen\" markiert.";
+            return;
+        }
+
+        var boosting = Exams.Count(e => e.IsBoostingLearning);
+        ExamStatus = boosting == 0
+            ? $"{Exams.Count} Termin(e) eingetragen. Ab einer Woche vor einer Klausur bekommt das Fach automatisch mehr Aufgaben."
+            : $"{Exams.Count} Termin(e) eingetragen - in {boosting} Fach/Fächern wird gerade verstärkt geübt.";
     }
 
     private void UpdateHomeworkStatus()

@@ -10,6 +10,18 @@ public sealed partial class WelcomeViewModel : ObservableObject
 {
     private readonly Action _onContinue;
     private readonly Action<AppLanguage> _onSwitchLanguage;
+    private readonly Action? _onAddExam;
+    private readonly Action<ExamItemViewModel>? _onDeleteExam;
+
+    /// <summary>Oeffnet die Klausur-Eingabe. Bewusst auch fuer Kinder erreichbar: wer den Termin
+    /// selbst eintraegt, nimmt ihn eher ernst als einen, der ihm hingestellt wird.</summary>
+    [RelayCommand]
+    private void AddExam() => _onAddExam?.Invoke();
+
+    /// <summary>Loescht einen selbst eingetragenen Termin. Eltern-Eintraege sind gesperrt -
+    /// die Pruefung sitzt zusaetzlich im Repository, nicht nur an der Oberflaeche.</summary>
+    [RelayCommand]
+    private void DeleteExam(ExamItemViewModel item) => _onDeleteExam?.Invoke(item);
 
     public string ProfileName { get; }
 
@@ -55,6 +67,14 @@ public sealed partial class WelcomeViewModel : ObservableObject
 
     public bool ShowHomework => Homework.Count > 0;
 
+    /// <summary>
+    /// Anstehende Klausuren mit Countdown. Die Kinder duerfen hier selbst eintragen - deshalb
+    /// bekommt der Willkommensbildschirm ein Eingabefeld statt nur einer Anzeige.
+    /// </summary>
+    public ObservableCollection<ExamItemViewModel> Exams { get; } = new();
+
+    public bool ShowExams => Exams.Count > 0;
+
     /// <summary>Wie viele davon noch offen sind - fuer die Ueberschrift der Karte.</summary>
     public int OpenHomeworkCount => Homework.Count(h => !h.IsCompleted);
 
@@ -74,12 +94,23 @@ public sealed partial class WelcomeViewModel : ObservableObject
         Action<AppLanguage> onSwitchLanguage,
         int dueReviewCount = 0,
         WeeklyGoalCalculator.WeeklyGoalStatus weeklyGoal = default,
-        IEnumerable<HomeworkItemViewModel>? homework = null)
+        IEnumerable<HomeworkItemViewModel>? homework = null,
+        IEnumerable<ExamItemViewModel>? exams = null,
+        Action? onAddExam = null,
+        Action<ExamItemViewModel>? onDeleteExam = null)
     {
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
         {
             Homework.Add(item);
         }
+
+        foreach (var exam in exams ?? Enumerable.Empty<ExamItemViewModel>())
+        {
+            Exams.Add(exam);
+        }
+
+        _onAddExam = onAddExam;
+        _onDeleteExam = onDeleteExam;
 
         ProfileName = profileName;
         CurrentStreak = currentStreak;

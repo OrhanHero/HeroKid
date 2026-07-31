@@ -652,6 +652,78 @@
                      Stuecke waren im Eltern-Bereich vorher gar nicht sichtbar, und ein frisch
                      eingetragener eigener Text liess sich nicht gezielt aufrufen - das Anheften
                      loest genau das. -->
+                <!-- Klausurkalender: gehoert zum oben gewaehlten Profil. Kinder duerfen selbst
+                     eintragen (Herkunft steht an jeder Zeile); hier duerfen die Eltern alles. -->
+                <TextBlock Text="📅 Klausuren (für das oben gewählte Kind)"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
+                <TextBlock Text="Ab einer Woche vor dem Termin bekommt das Fach automatisch mehr Übungsaufgaben, je näher desto mehr. Die Kinder sehen einen Countdown auf dem Startbildschirm."
+                           Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <TextBlock Text="{Binding ExamStatus, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="📅 Klausur eintragen" Style="{StaticResource RoundedButton}"
+                            Margin="0,0,8,0" Command="{Binding AddExamCommand}" />
+                    <Button Content="Vergangene älter als 30 Tage aufräumen" Style="{StaticResource RoundedButton}"
+                            Command="{Binding ClearPastExamsCommand}" />
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding Exams}" Margin="0,0,0,8">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="10,6" Margin="0,3">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Title, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                   FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Topics, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                   FontSize="11" Opacity="0.7" TextWrapping="Wrap"
+                                                   Visibility="{Binding HasTopics, Converter={StaticResource BoolToVis}}" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding SubjectName, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                       FontSize="11" Opacity="0.7" />
+                                            <TextBlock Text=" · " Style="{StaticResource BodyText}" FontSize="11" Opacity="0.7" />
+                                            <TextBlock Text="{Binding AuthorLabel, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                       FontSize="11" Opacity="0.7" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0">
+                                        <TextBlock Text="{Binding Countdown, Mode=OneWay}" HorizontalAlignment="Right">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                    <Setter Property="FontSize" Value="12" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsImminent, Mode=OneWay}" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsPast, Mode=OneWay}" Value="True">
+                                                            <Setter Property="Opacity" Value="0.5" />
+                                                            <Setter Property="FontWeight" Value="Normal" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding DateLabel, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                                   FontSize="11" Opacity="0.6" HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Content="🗑" Style="{StaticResource RoundedButton}"
+                                            Padding="8,2" VerticalAlignment="Center"
+                                            Command="{Binding DataContext.DeleteExamCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
                 <!-- Jugendschutz-Stufe: die harte Sperre gilt immer, einstellbar ist nur der
                      Umgang mit heiklen, aber lehrplanrelevanten Themen. -->
                 <TextBlock Text="🛡 News-Filter (für das oben gewählte Kind)"

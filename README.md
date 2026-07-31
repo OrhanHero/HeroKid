@@ -273,6 +273,15 @@ deshalb bewusst nicht umgesetzt.
   seit der Tagesrotation wird nicht mehr jede Quelle täglich abgerufen, ein Eintrag kann also Tage
   alt sein. Nötig, weil die App tote Feeds geräuschlos überspringt - bei 44 Quellen könnte sonst
   die Hälfte kaputt sein, ohne dass es auffällt.
+- **📅 Klausurkalender**: Termine pro Kind mit Fach, Titel, Themen und Datum. **Die Kinder dürfen
+  selbst eintragen** (Button auf dem Startbildschirm) - mit einer Asymmetrie: eigene Einträge dürfen
+  sie ändern und löschen, Eltern-Einträge nur ansehen, sonst wäre "Klausur weg, also nicht lernen"
+  ein bequemer Ausweg. Die Prüfung sitzt im Repository (`DeleteAsChildAsync`), nicht nur an der
+  Oberfläche. Die Herkunft steht an jedem Eintrag. **Ab sieben Tagen vor dem Termin** bekommt das
+  betroffene Fach automatisch mehr Übungsaufgaben, steigend bis zum Doppelten am Vortag
+  (`ExamEntry.LearningWeight`, nach oben auf +8 Aufgaben gedeckelt). Bewusst **lokal statt Google
+  Calendar**: OAuth bräuchte einen echten Browser, und ein Browserfenster in einer Kiosk-App ist
+  genau das Loch, das die Kiosk-Sperre verhindern soll. Die Lern-Gewichtung ginge zudem nur online.
 - **📰 Nachrichtenquellen wählbar**: alle 44 kuratierten Quellen einzeln an- und abschaltbar, nach
   Sprache gruppiert (Deutsch, Türkisch, Englisch) mit Region als Einordnung, dazu "alle an/aus".
   Wie viele Nachrichten daraus täglich werden, steuert **News: Nachrichten pro Tag** (pro Profil).

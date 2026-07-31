@@ -37,6 +37,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
     private readonly HomeworkTaskRepository _homeworkRepo;
+    private readonly ExamEntryRepository _examRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
@@ -83,6 +84,7 @@ public sealed partial class MainViewModel : ObservableObject
         MasteredPromptRepository masteredPromptRepo,
         ArchivedArticleRepository archiveRepo,
         HomeworkTaskRepository homeworkRepo,
+        ExamEntryRepository examRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
@@ -107,6 +109,7 @@ public sealed partial class MainViewModel : ObservableObject
         _masteredPromptRepo = masteredPromptRepo;
         _archiveRepo = archiveRepo;
         _homeworkRepo = homeworkRepo;
+        _examRepo = examRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
@@ -246,8 +249,75 @@ public sealed partial class MainViewModel : ObservableObject
             .Select(task => new HomeworkItemViewModel(task, today, OnHomeworkCompletedChanged))
             .ToList();
 
+        // Klausuren mit Countdown. Die Kinder duerfen selbst eintragen - wer den Termin selbst
+        // eintraegt, nimmt ihn eher ernst als einen, der ihm hingestellt wird.
+        var exams = (await _examRepo.GetVisibleForProfileAsync(CurrentProfile!.Id, today))
+            .Select(exam => new ExamItemViewModel(exam, today))
+            .ToList();
+
         return new WelcomeViewModel(
-            CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal, homework);
+            CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal,
+            homework, exams, OnAddExamRequested, OnDeleteExamRequested);
+    }
+
+    /// <summary>
+    /// Klausur-Eingabe aus der Kind-Ansicht. Der Eintrag wird als vom KIND angelegt vermerkt -
+    /// nur solche darf das Kind spaeter auch wieder loeschen.
+    /// </summary>
+    private async void OnAddExamRequested()
+    {
+        var dialog = new Views.ExamEntryDialog
+        {
+            Owner = System.Windows.Application.Current.MainWindow
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        await _examRepo.AddAsync(
+            CurrentProfile!.Id,
+            dialog.SelectedSubject,
+            dialog.EnteredTitle,
+            dialog.EnteredTopics,
+            dialog.SelectedDate,
+            ExamAuthor.Kind);
+
+        // Neu aufbauen, damit Countdown und Reihenfolge sofort stimmen.
+        CurrentViewModel = await BuildWelcomeViewModelAsync();
+    }
+
+    /// <summary>
+    /// Loeschen aus der Kind-Ansicht. Eltern-Eintraege bleiben unangetastet - die Pruefung sitzt
+    /// im Repository (DeleteAsChildAsync), nicht nur an der Oberflaeche, damit sie nicht an einem
+    /// vergessenen Sichtbarkeits-Flag haengt.
+    /// </summary>
+    private async void OnDeleteExamRequested(ExamItemViewModel item)
+    {
+        var confirmed = System.Windows.MessageBox.Show(
+            $"Termin \"{item.Title}\" wirklich löschen?",
+            "Klausur löschen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question,
+            System.Windows.MessageBoxResult.No);
+
+        if (confirmed != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        if (!await _examRepo.DeleteAsChildAsync(item.Id))
+        {
+            System.Windows.MessageBox.Show(
+                "Diesen Termin haben deine Eltern eingetragen - den kannst du nicht löschen.",
+                "Nicht möglich",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+            return;
+        }
+
+        CurrentViewModel = await BuildWelcomeViewModelAsync();
     }
 
     /// <summary>
@@ -554,12 +624,35 @@ public sealed partial class MainViewModel : ObservableObject
         return AdaptiveTopicWeighting.ComputeWeights(topicStats);
     }
 
+    /// <summary>
+    /// Wie viele Aufgaben dieses Fach heute bekommt. Steht eine Klausur an, sind es mehr - ab
+    /// einer Woche vorher sanft steigend bis zum Doppelten am Vortag (siehe
+    /// ExamEntry.LearningWeight). Genau dafür liegen die Termine lokal: mit einem Cloud-Kalender
+    /// müsste die App bei jedem Start online gehen, um zu wissen, was sie üben soll.
+    /// </summary>
+    private async Task<int> ExerciseCountForSubjectAsync(Subject subject)
+    {
+        var baseCount = CurrentProfile!.ExercisesPerSubject;
+
+        var weights = await _examRepo.GetLearningWeightsAsync(
+            CurrentProfile!.Id, DateOnly.FromDateTime(DateTime.Today));
+
+        if (!weights.TryGetValue(subject, out var weight) || weight <= 1.0)
+        {
+            return baseCount;
+        }
+
+        // Nach oben begrenzt: eine Klausurwoche soll den Tag straffen, nicht sprengen.
+        return Math.Min((int)Math.Round(baseCount * weight), baseCount + 8);
+    }
+
     private async Task<ExerciseViewModel> BuildExerciseViewModelAsync(Subject subject)
     {
         var grade = CurrentProfile!.GradeLevel;
         var excludedPrompts = await BuildExcludedPromptsAsync();
         var topicWeights = await BuildTopicWeightsAsync(subject);
-        var generated = _quizComposer.GenerateExercises(subject, grade, CurrentProfile!.ExercisesPerSubject, _random, excludedPrompts, topicWeights);
+        var exerciseCount = await ExerciseCountForSubjectAsync(subject);
+        var generated = _quizComposer.GenerateExercises(subject, grade, exerciseCount, _random, excludedPrompts, topicWeights);
         var custom = await _customQuestionRepo.GetBySubjectAndGradeAsync(subject, grade);
 
         // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST

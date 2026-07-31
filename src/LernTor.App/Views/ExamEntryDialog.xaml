@@ -1,0 +1,44 @@
+<Window x:Class="LernTor.App.Views.ExamEntryDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Klausur eintragen"
+        Height="440" Width="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource BackgroundBrush}">
+    <!-- Bewusst schlicht und gross geschrieben: dieses Fenster benutzen auch die Kinder, und es
+         oeffnet sich mitten im Kiosk-Betrieb. Kein Loeschen, kein Bearbeiten fremder Eintraege -
+         nur "neuen Termin anlegen". -->
+    <StackPanel Margin="24">
+        <TextBlock Text="📅 Klausur eintragen" Style="{StaticResource HeadlineText}"
+                   FontSize="26" Margin="0,0,0,4" />
+        <TextBlock Text="Trag den Termin ein, sobald du ihn kennst. Ab einer Woche vorher übst du in dem Fach automatisch mehr."
+                   Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,16" />
+
+        <TextBlock Text="Fach" Style="{StaticResource BodyText}" FontWeight="Bold" Margin="0,0,0,4" />
+        <ComboBox x:Name="SubjectBox" Margin="0,0,0,12" Padding="6" FontSize="14" />
+
+        <TextBlock Text="Wann?" Style="{StaticResource BodyText}" FontWeight="Bold" Margin="0,0,0,4" />
+        <DatePicker x:Name="DateBox" Margin="0,0,0,12" FontSize="14" />
+
+        <TextBlock Text="Titel (z.B. „Klassenarbeit Nr. 2“)" Style="{StaticResource BodyText}"
+                   FontWeight="Bold" Margin="0,0,0,4" />
+        <TextBox x:Name="TitleBox" Margin="0,0,0,12" Padding="6" FontSize="14" />
+
+        <TextBlock Text="Was kommt dran? (freiwillig)" Style="{StaticResource BodyText}"
+                   FontWeight="Bold" Margin="0,0,0,4" />
+        <TextBox x:Name="TopicsBox" Margin="0,0,0,8" Padding="6" FontSize="14"
+                 TextWrapping="Wrap" AcceptsReturn="True" Height="60" />
+
+        <TextBlock x:Name="ErrorText" Style="{StaticResource BodyText}" FontSize="12"
+                   Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap"
+                   Margin="0,0,0,8" Visibility="Collapsed" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Abbrechen" Style="{StaticResource RoundedButton}" Margin="0,0,8,0"
+                    Click="Cancel_Click" />
+            <Button Content="Eintragen" Style="{StaticResource RoundedButton}"
+                    Click="Save_Click" IsDefault="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

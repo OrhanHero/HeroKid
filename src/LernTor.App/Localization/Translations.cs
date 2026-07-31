@@ -39,6 +39,8 @@ public static class Translations
             ["Welcome_HomeworkAllDone"] = L(
                 "✅ Alles abgehakt - stark!",
                 "✅ Hepsi tamam - harika!"),
+            ["Welcome_Exams"] = L("📅 Deine nächsten Klausuren", "📅 Yaklaşan sınavların"),
+            ["Welcome_AddExam"] = L("📅 Klausur eintragen", "📅 Sınav ekle"),
             ["Welcome_Title"] = L("Willkommen bei LernTor!", "LernTor'a Hoş Geldin!"),
             ["Welcome_Subtitle"] = L(
                 "Bevor du den PC benutzen kannst, lernen wir gemeinsam ein bisschen. Los geht's!",
