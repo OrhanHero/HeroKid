@@ -97,7 +97,12 @@ public sealed class ArchivedArticleRepositoryTests : IDisposable
         await repo.ArchiveTodayAsync(new[] { Article("alt") });
         foreach (var entity in db.ArchivedArticles.ToList())
         {
-            entity.ArchivedDate = DateTime.Today.AddDays(-10).ToString("yyyy-MM-dd");
+            // Bewusst RELATIV zur Aufbewahrungsdauer statt einer festen Zahl: als sie von 7 auf
+            // 21 Tage stieg, prueften die hier eingetragenen "-10 Tage" ploetzlich einen Stand,
+            // der zu Recht erhalten bleibt.
+            entity.ArchivedDate = DateTime.Today
+                .AddDays(-ArchivedArticleRepository.RetentionDays - 1)
+                .ToString("yyyy-MM-dd");
         }
         db.SaveChanges();
 
@@ -105,6 +110,28 @@ public sealed class ArchivedArticleRepositoryTests : IDisposable
 
         Assert.All(db.ArchivedArticles.ToList(),
             e => Assert.Equal(DateTime.Today.ToString("yyyy-MM-dd"), e.ArchivedDate));
+    }
+
+    [Fact]
+    public async Task Staende_innerhalb_der_Aufbewahrungsdauer_bleiben_erhalten()
+    {
+        // Der eigentliche Zweck der Erhoehung auf 21 Tage: ein zehn Tage alter Stand ist im
+        // Urlaub noch wertvoller Vorrat, kein Muell.
+        using var db = CreateContext();
+        var repo = new ArchivedArticleRepository(db);
+
+        await repo.ArchiveTodayAsync(new[] { Article("vor_zehn_Tagen") });
+        foreach (var entity in db.ArchivedArticles.ToList())
+        {
+            entity.ArchivedDate = DateTime.Today.AddDays(-10).ToString("yyyy-MM-dd");
+        }
+        db.SaveChanges();
+
+        await repo.ArchiveTodayAsync(new[] { Article("heute") });
+
+        var dates = await repo.GetArchivedDatesAsync();
+        Assert.Equal(2, dates.Count);
+        Assert.Contains(DateOnly.FromDateTime(DateTime.Today.AddDays(-10)), dates);
     }
 
     [Fact]

@@ -18,7 +18,7 @@ public sealed class ArchivedArticleRepository
     /// zwischen "der News-Teil funktioniert auch in der Türkei" und "ab Tag acht sieht das Kind
     /// jeden Morgen dieselben Nachrichten".</para>
     /// </summary>
-    private const int RetentionDays = 21;
+    public const int RetentionDays = 21;
 
     private readonly LernTorDbContext _db;
 
