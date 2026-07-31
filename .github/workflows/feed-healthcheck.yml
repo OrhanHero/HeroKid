@@ -9,6 +9,14 @@ on:
     # Montags 06:00 UTC - vor dem ersten Lernen der Woche.
     - cron: "0 6 * * 1"
   workflow_dispatch:
+    inputs:
+      urls:
+        description: >-
+          Optional: einzelne Kandidaten-URLs (durch Leerzeichen getrennt) statt des Katalogs prüfen.
+          Gedacht zum Testen einer Ersatz-URL, bevor sie in NewsFeedSource.cs wandert - aus einer
+          Entwicklungsumgebung ohne Zugriff auf die Nachrichten-Domains geht das sonst gar nicht.
+        required: false
+        default: ""
 
 jobs:
   check-feeds:
@@ -18,5 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Feed-URLs aus NewsFeedSource.cs prüfen
-        run: python3 scripts/check-feeds.py
+      - name: Feed-URLs prüfen
+        # Ohne Eingabe der volle Katalog, mit Eingabe genau die genannten URLs. Die Eingabe geht
+        # bewusst über eine Umgebungsvariable statt direkt in die Kommandozeile interpoliert zu
+        # werden (sonst wäre der Eingabewert Shell-Code); $URLS bleibt unquotiert, damit mehrere
+        # durch Leerzeichen getrennte URLs zu mehreren Argumenten werden.
+        env:
+          URLS: ${{ github.event.inputs.urls }}
+        run: python3 scripts/check-feeds.py $URLS
