@@ -59,7 +59,7 @@ public static class CuratedNewsFeeds
             NewsRegionFocus.International, NewsFeedLanguage.Deutsch, NewsCategory.Welt),
 
         // Berlin - die wichtigste regionale Rubrik, deshalb gleich drei Quellen.
-        new NewsFeedSource("rbb24 Berlin", "https://www.rbb24.de/aktuell/index.xml",
+        new NewsFeedSource("rbb24 Berlin", "https://www.rbb24.de/aktuell/index.xml/feed=rss.xml",
             NewsRegionFocus.Berlin, NewsFeedLanguage.Deutsch, NewsCategory.Berlin),
         new NewsFeedSource("Tagesspiegel Berlin", "https://www.tagesspiegel.de/contentexport/feed/home",
             NewsRegionFocus.Berlin, NewsFeedLanguage.Deutsch, NewsCategory.Berlin),
@@ -84,11 +84,13 @@ public static class CuratedNewsFeeds
         // dankbares Material für Verständnisfragen.
         new NewsFeedSource("Spektrum.de", "https://www.spektrum.de/alias/rss/spektrum-de-rss-feed/996406",
             NewsRegionFocus.International, NewsFeedLanguage.Deutsch, NewsCategory.Wissen),
-        new NewsFeedSource("MDR Wissen", "https://www.mdr.de/wissen/rss-feed-wissen-100.xml",
+        new NewsFeedSource("MDR Wissen", "https://www.mdr.de/wissen/index-rss.xml",
             NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Wissen),
-        new NewsFeedSource("Max-Planck-Gesellschaft", "https://www.mpg.de/rss/pressReleases",
+        // Stand fuer die Max-Planck-Gesellschaft, deren Feed ersatzlos abgeschaltet wurde (8 geprueft,
+        // alle 404). wissenschaft.de schreibt ohnehin fuer Laien statt in Pressemitteilungs-Sprache.
+        new NewsFeedSource("wissenschaft.de", "https://www.wissenschaft.de/feed/",
             NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Wissen),
-        new NewsFeedSource("Umweltbundesamt", "https://www.umweltbundesamt.de/rss/pressemitteilungen",
+        new NewsFeedSource("Umweltbundesamt", "https://www.umweltbundesamt.de/rss/presse",
             NewsRegionFocus.Deutschland, NewsFeedLanguage.Deutsch, NewsCategory.Deutschland),
 
         // Sport: die einzige Rubrik, die vorher gar nicht vorkam, obwohl sie für die Altersgruppe
@@ -138,9 +140,9 @@ public static class CuratedNewsFeeds
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Sport),
         new NewsFeedSource("TRT Haber", "https://www.trthaber.com/sondakika.rss",
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
-        new NewsFeedSource("TRT Haber Bilim ve Teknoloji", "https://www.trthaber.com/bilim_teknoloji.rss",
+        new NewsFeedSource("TRT Haber Bilim ve Teknoloji", "https://www.trthaber.com/bilim_teknoloji_articles.rss",
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
-        new NewsFeedSource("TRT Haber Eğitim", "https://www.trthaber.com/egitim.rss",
+        new NewsFeedSource("TRT Haber Eğitim", "https://www.trthaber.com/egitim_articles.rss",
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
         new NewsFeedSource("DW Türkçe", "https://rss.dw.com/xml/rss-tur-all",
             NewsRegionFocus.Tuerkei, NewsFeedLanguage.Tuerkisch, NewsCategory.Tuerkei),
