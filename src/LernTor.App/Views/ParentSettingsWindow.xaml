@@ -1174,6 +1174,15 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_Intro]}"
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,10" />
 
+                <!-- Lesetext aus Datei: fuellt das Formular, speichert aber NICHT direkt. Kein
+                     Extraktor liefert aus einem Schulbuch-PDF auf Anhieb genau den gemeinten
+                     Abschnitt - die Eltern sehen das Ergebnis, kuerzen und korrigieren es und
+                     speichern dann mit dem normalen Knopf darunter. -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Content="📄 Text aus PDF/Word einlesen…" Style="{StaticResource OptionButton}"
+                            Command="{Binding ImportReadingTextFromDocumentCommand}" />
+                </StackPanel>
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_TitleField]}" FontSize="13" Margin="0,0,0,4" />
                 <TextBox Text="{Binding NewReadingTitle, UpdateSourceTrigger=PropertyChanged}" Padding="6" Margin="0,0,0,8" />
 

@@ -2089,6 +2089,77 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Liest einen Lesetext aus einer PDF- oder Word-Datei ein und füllt damit das Formular -
+    /// gespeichert wird erst mit dem normalen Knopf darunter.
+    ///
+    /// <para>Bewusst "ins Formular" statt "direkt in die Datenbank": kein Extraktor liefert aus
+    /// einem Schulbuch-PDF auf Anhieb genau den Abschnitt, den die Eltern meinen. Sie sehen das
+    /// Ergebnis, kürzen es, korrigieren Namen - und speichern dann. Der deutsche Text wird
+    /// befüllt; Türkisch/Englisch bleiben leer, wie bei jedem handgetippten Text auch.</para>
+    /// </summary>
+    [RelayCommand]
+    private async Task ImportReadingTextFromDocumentAsync()
+    {
+        CustomReadingErrorMessage = string.Empty;
+
+        if (SelectedProfile is null)
+        {
+            CustomReadingErrorMessage = "Bitte oben ein Profil auswählen.";
+            return;
+        }
+
+        var dialog = new OpenFileDialog
+        {
+            Filter = "PDF- und Word-Dateien (*.pdf;*.docx)|*.pdf;*.docx|Alle Dateien (*.*)|*.*",
+            Title = "Lesetext aus Datei einlesen"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            await using var stream = File.OpenRead(dialog.FileName);
+            var raw = await _teacherImportService.ExtractTextAsync(stream, dialog.FileName);
+            var imported = ReadingTextImport.FromRawText(raw, MaxReadingTextLength);
+
+            if (!imported.HasText)
+            {
+                // Häufigster Fall: ein eingescanntes PDF ist ein Bild, kein Text. Das ehrlich zu
+                // sagen ist besser, als ein leeres Formular unkommentiert stehen zu lassen.
+                CustomReadingErrorMessage =
+                    "In der Datei war kein Text zu finden. Bei eingescannten Seiten (Bild statt Text) " +
+                    "kann die App nichts auslesen - dann hilft nur Abtippen.";
+                return;
+            }
+
+            NewReadingTextDe = imported.Body;
+
+            if (string.IsNullOrWhiteSpace(NewReadingTitle))
+            {
+                NewReadingTitle = imported.Title.Length > 0
+                    ? imported.Title
+                    : Path.GetFileNameWithoutExtension(dialog.FileName);
+            }
+
+            CustomReadingErrorMessage = imported.WasTruncated
+                ? $"Eingelesen und auf {MaxReadingTextLength} Zeichen gekürzt " +
+                  $"(die Datei enthielt {imported.CleanedLength}). Bitte prüfen und dann speichern."
+                : "Eingelesen. Bitte prüfen und dann speichern.";
+        }
+        catch (NotSupportedException)
+        {
+            CustomReadingErrorMessage = "Dieses Dateiformat kann die App nicht lesen - bitte PDF oder Word (.docx).";
+        }
+        catch (Exception ex)
+        {
+            CustomReadingErrorMessage = $"Einlesen fehlgeschlagen: {ex.Message}";
+        }
+    }
+
+    /// <summary>
     /// Legt einen eigenen Lesetext für das gewählte Profil an. Mindestens eine Sprachfassung ist
     /// Pflicht - die übrigen bleiben leer und werden in der Leseansicht mit einem Hinweis gefüllt
     /// (siehe ReadingViewModel.FillMissingLanguages).

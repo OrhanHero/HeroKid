@@ -28,12 +28,26 @@ public sealed class TeacherDocumentImportService
         GradeLevel gradeLevel,
         CancellationToken cancellationToken = default)
     {
+        var text = await ExtractTextAsync(fileStream, fileName, cancellationToken);
+        return await _suggester.SuggestQuestionsAsync(text, subject, gradeLevel, cancellationToken);
+    }
+
+    /// <summary>
+    /// Nur die Textextraktion, ohne LLM. Der Lesetext-Import braucht genau diesen Zwischenschritt:
+    /// aus einem Dokument einen Lesetext zu machen ist Aufbereitung (siehe
+    /// <see cref="ReadingTextImport"/>), kein Fragen-Erfinden - ein mehrere Gigabyte großes Modell
+    /// dafür zu laden wäre die falsche Größenordnung.
+    /// </summary>
+    public async Task<string> ExtractTextAsync(
+        Stream fileStream,
+        string fileName,
+        CancellationToken cancellationToken = default)
+    {
         var extractor = _extractors.FirstOrDefault(e => e.CanHandle(fileName))
             ?? throw new NotSupportedException(
                 $"Kein Textextraktor für '{fileName}' registriert. Unterstützte Formate hängen davon " +
                 "ab, welche ITeacherDocumentTextExtractor-Implementierungen registriert wurden.");
 
-        var text = await extractor.ExtractTextAsync(fileStream, fileName, cancellationToken);
-        return await _suggester.SuggestQuestionsAsync(text, subject, gradeLevel, cancellationToken);
+        return await extractor.ExtractTextAsync(fileStream, fileName, cancellationToken);
     }
 }

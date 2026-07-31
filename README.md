@@ -352,6 +352,19 @@ deshalb bewusst nicht umgesetzt.
   Antworten Datenbasis), damit sichtbar wird, dass z.B. genau „Brüche" hakt und nicht pauschal
   „Mathe"; außerdem Lerntage im Zeitraum und der Abschlussquiz-Verlauf. Rechnet komplett aus dem
   vorhandenen Aktivitätsprotokoll - keine neuen Tabellen.
+- **📄 Lesetext aus PDF/Word einlesen**: füllt das Formular für eigene Lesetexte aus einer Datei,
+  statt sie abtippen zu lassen. Die Textextraktoren des Lehrer-Imports (PdfPig/OpenXml) waren dafür
+  schon da - was fehlte, ist die Aufbereitung (`ReadingTextImport`): roher Extraktionstext hat harte
+  Zeilenumbrüche mitten im Satz, am Zeilenende getrennte Wörter ("Wan-/derer"), Seitenzahlen und
+  unsichtbare Sonderzeichen zwischen den Absätzen - einem Kind so etwas vorzusetzen wäre schlimmer,
+  als es abzutippen. Absätze werden zusammengefasst, Trennungen aufgelöst, Seitenzahlen entfernt
+  (aber als Absatztrenner behandelt, damit nicht zwei Absätze verkleben), zu lange Texte an einer
+  Absatz- oder Satzgrenze gekürzt (nie mitten im Wort) und die Kürzung wird gemeldet. Bewusst
+  **regelbasiert ohne LLM** - für "Zeilenumbrüche zusammenfassen" ein Mehr-Gigabyte-Modell zu laden
+  wäre die falsche Größenordnung. Gefüllt wird das **Formular**, nicht die Datenbank: kein Extraktor
+  trifft aus einem Schulbuch-PDF auf Anhieb genau den gemeinten Abschnitt, also prüfen und speichern
+  die Eltern. Bei eingescannten Seiten (Bild statt Text) sagt die App ehrlich, dass nichts zu holen
+  ist, statt ein leeres Formular stehen zu lassen.
 - **📄 Bericht als Datei speichern**: schreibt genau den angezeigten Bericht (Fächer, Themen-Heatmap,
   Lernzeit je Fach, Lerntage, Quiz-Verlauf, Tempo und - falls eingeschaltet - die Vergleichstabelle)
   als eine eigenständige **HTML-Datei** zum Aufheben, Ausdrucken oder Mitnehmen zum Elterngespräch.
