@@ -894,6 +894,7 @@ public sealed partial class MainViewModel : ObservableObject
         var todayAnswered = 0;
         var todayCorrectPercent = 0;
         var streak = 0;
+        IReadOnlyList<SubjectProgress> subjectProgress = Array.Empty<SubjectProgress>();
 
         if (CurrentProfile is not null)
         {
@@ -910,13 +911,29 @@ public sealed partial class MainViewModel : ObservableObject
                 var learningDays = await _activityLogRepo.GetLearningDaysAsync(CurrentProfile.Id);
                 streak = StreakCalculator.CurrentStreak(learningDays, DateOnly.FromDateTime(DateTime.Today));
             }
+
+            // Eigene Entwicklung: die Kinder sehen sonst nur eine Sternezahl - die sagt nichts
+            // darueber, ob sie besser geworden sind. Zwei Vierzehn-Tage-Fenster aus dem
+            // vorhandenen Protokoll, kein Vergleich mit dem Geschwisterkind.
+            var progressWindow = TimeSpan.FromDays(LearningProgressTracker.WindowDays * 2);
+            var progressActivity = await _activityLogRepo.GetActivitySinceAsync(CurrentProfile.Id, progressWindow);
+
+            subjectProgress = LearningProgressTracker.Compare(
+                progressActivity
+                    .Where(entry => Enum.TryParse<Subject>(entry.Subject, out _))
+                    .Select(entry => new LearningProgressTracker.Answer(
+                        Enum.Parse<Subject>(entry.Subject),
+                        DateOnly.FromDateTime(entry.Timestamp.LocalDateTime),
+                        entry.WasCorrect)),
+                DateOnly.FromDateTime(DateTime.Today));
         }
 
         return new ResultViewModel(
             passed, result, Progress.EarnedStarsToday, CurrentProfile?.TotalStars ?? 0,
             todayAnswered, todayCorrectPercent, streak,
             OnRetryWeakSubjectsRequested, OnUnlockConfirmed,
-            _rewardRepo, CurrentProfile?.Id);
+            _rewardRepo, CurrentProfile?.Id,
+            subjectProgress);
     }
 
     private async void OnRetryWeakSubjectsRequested()

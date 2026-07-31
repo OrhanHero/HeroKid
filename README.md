@@ -243,6 +243,19 @@ deshalb bewusst nicht umgesetzt.
   📚 beantwortete Aufgaben, ✅ Trefferquote und (falls eingeschaltet) die 🔥-Lernserie. Der Moment
   der Freischaltung ist der emotionale Höhepunkt des Ablaufs; hier soll sichtbar werden, WAS
   erreicht wurde, nicht nur DASS der PC frei ist.
+- **📈 Eigene Entwicklung** (`LearningProgressTracker`): auf demselben Bildschirm steht Fach für
+  Fach, wie sich das Kind entwickelt hat - "Mathematik 20 % → 70 %, ↑ 50 Punkte besser". Verglichen
+  werden die letzten 14 Tage mit den 14 Tagen davor, aus dem vorhandenen Aktivitätsprotokoll.
+  Hintergrund: die Kinder tragen die ganze Arbeit, sahen davon aber als Einziges eine Sternezahl -
+  und die sagt nichts darüber, ob man besser geworden ist, und hängt daran, dass Eltern Belohnungen
+  eintragen. **Kein Vergleich mit dem Geschwisterkind**: der ist eine bewusste Eltern-Entscheidung
+  und steht abschaltbar im Eltern-Bericht; hier geht es ausschließlich um das Kind und sein früheres
+  Ich. Ein Fach erscheint nur, wenn es in **beiden** Zeiträumen mindestens 5 Aufgaben gab - eine
+  Aussage aus drei Aufgaben ist Zufall, kein Fortschritt; ein neu begonnenes Fach zeigt deshalb
+  nicht "0 % → 80 %". Veränderungen unter 5 Punkten gelten als "gleich geblieben". **Rückschritte
+  werden gezeigt, aber nicht angeprangert**: sie zu verschweigen wäre unehrlich, sie rot zu
+  markieren wäre eine Strafe für etwas, das jedem passiert - hervorgehoben werden nur
+  Verbesserungen, der Rest steht neutral da.
 - **🎁 Belohnungsliste**: Eltern legen im Eltern-Bereich Belohnungen mit Sterne-Kosten an
   (z.B. „30 Minuten extra Spielzeit" für 20 ⭐). Nach dem bestandenen Abschlussquiz sieht das Kind
   die Liste mit Fortschritt („12 / 20 ⭐") und kann erreichbare Belohnungen einlösen (mit

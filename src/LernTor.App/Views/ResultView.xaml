@@ -96,6 +96,62 @@
                 </StackPanel>
             </Border>
 
+            <!-- Eigene Entwicklung: die Kinder sehen sonst nur eine Sternezahl - die sagt nichts
+                 darueber, ob sie besser geworden sind, und haengt daran, dass Eltern etwas
+                 eintragen. Hier geht es ausschliesslich um das Kind und sein frueheres Ich; ein
+                 Vergleich mit dem Geschwisterkind steht bewusst nur (abschaltbar) im
+                 Eltern-Bericht. Rueckschritte werden gezeigt, aber nicht rot angeprangert. -->
+            <Border Style="{StaticResource CardBorder}" Padding="20,14" MaxWidth="560" Margin="0,4,0,12"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding HasSubjectProgress, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Progress_Title]}"
+                               FontWeight="Bold" FontSize="17" Margin="0,0,0,4" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Progress_Subtitle]}"
+                               Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75"
+                               TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                    <ItemsControl ItemsSource="{Binding SubjectProgressRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding SubjectLabel, Mode=OneWay}"
+                                               Style="{StaticResource BodyText}" FontWeight="SemiBold"
+                                               FontSize="15" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ChangeDisplay, Mode=OneWay}"
+                                               Style="{StaticResource BodyText}" FontSize="15"
+                                               Margin="12,0" VerticalAlignment="Center" />
+                                    <!-- Nur Verbesserungen werden hervorgehoben; alles andere
+                                         bleibt neutral stehen. Style NUR als Element - zusaetzlich
+                                         als Attribut waere MC3024 (siehe CLAUDE.md). -->
+                                    <TextBlock Grid.Column="2" Text="{Binding TrendDisplay, Mode=OneWay}"
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                <Setter Property="FontSize" Value="13" />
+                                                <Setter Property="Opacity" Value="0.75" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsImprovement, Mode=OneWay}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                        <Setter Property="FontWeight" Value="Bold" />
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
             <!-- Belohnungs-Sterne: heute verdient + Gesamtstand (Gamification) -->
             <Border Background="{StaticResource TileSandBrush}" CornerRadius="14" Padding="18,10"
                     HorizontalAlignment="Center" Margin="0,8,0,16"

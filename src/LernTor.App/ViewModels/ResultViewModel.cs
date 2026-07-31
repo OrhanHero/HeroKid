@@ -2,7 +2,9 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
+using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 using LernTor.Data.Repositories;
 
 namespace LernTor.App.ViewModels;
@@ -15,6 +17,39 @@ public sealed class RewardItemViewModel
     public required string CostDisplay { get; init; }
     public required int StarCost { get; init; }
     public required bool CanRedeem { get; init; }
+}
+
+/// <summary>
+/// Eine Fach-Zeile in der eigenen Fortschrittsansicht des Kindes.
+///
+/// <para>Bewusst ohne Ampelfarben und ohne trauriges Gesicht bei einem Rueckschritt: ihn zu
+/// verschweigen waere unehrlich, ihn rot zu markieren waere eine Strafe fuer etwas, das jedem
+/// passiert. Die Zahlen stehen da, gewertet wird nicht.</para>
+/// </summary>
+public sealed class SubjectProgressRowViewModel
+{
+    public SubjectProgressRowViewModel(SubjectProgress progress, string subjectLabel)
+    {
+        Progress = progress;
+        SubjectLabel = subjectLabel;
+    }
+
+    public SubjectProgress Progress { get; }
+
+    public string SubjectLabel { get; }
+
+    /// <summary>"vor zwei Wochen 40 % → jetzt 70 %" - der Kern der Sache in einer Zeile.</summary>
+    public string ChangeDisplay => $"{Progress.EarlierPercent} % → {Progress.RecentPercent} %";
+
+    public string TrendDisplay => Progress.Trend switch
+    {
+        ProgressTrend.Verbessert => $"↑ {Progress.Change} Punkte besser",
+        ProgressTrend.Schwaecher => $"↓ {Math.Abs(Progress.Change)} Punkte weniger",
+        _ => "gleich geblieben"
+    };
+
+    /// <summary>Nur Verbesserungen werden hervorgehoben - der Rest bleibt neutral stehen.</summary>
+    public bool IsImprovement => Progress.Trend == ProgressTrend.Verbessert;
 }
 
 public sealed partial class ResultViewModel : ObservableObject
@@ -67,6 +102,16 @@ public sealed partial class ResultViewModel : ObservableObject
 
     public bool HasRewards => Rewards.Count > 0;
 
+    // --- Eigene Entwicklung (siehe LearningProgressTracker) ---
+
+    /// <summary>Fach fuer Fach: frueher gegen jetzt. Leer, solange es zu wenig Daten gibt -
+    /// lieber nichts zeigen als eine Zahl, die nichts bedeutet.</summary>
+    public ObservableCollection<SubjectProgressRowViewModel> SubjectProgressRows { get; } = new();
+
+    /// <summary>Nur auf dem Freigeschaltet-Bildschirm - beim Nicht-Bestehen liegt der Fokus auf
+    /// dem erneuten Versuch.</summary>
+    public bool HasSubjectProgress => Passed && SubjectProgressRows.Count > 0;
+
     public ResultViewModel(
         bool passed,
         QuizResult? result,
@@ -78,7 +123,8 @@ public sealed partial class ResultViewModel : ObservableObject
         Action onRetryRequested,
         Action onUnlockConfirmed,
         RewardRepository? rewardRepo = null,
-        string? profileId = null)
+        string? profileId = null,
+        IReadOnlyList<SubjectProgress>? subjectProgress = null)
     {
         Passed = passed;
         Result = result;
@@ -91,6 +137,12 @@ public sealed partial class ResultViewModel : ObservableObject
         _onUnlockConfirmed = onUnlockConfirmed;
         _rewardRepo = rewardRepo;
         _profileId = profileId;
+
+        foreach (var progress in subjectProgress ?? Array.Empty<SubjectProgress>())
+        {
+            SubjectProgressRows.Add(new SubjectProgressRowViewModel(
+                progress, LocalizationService.Instance[$"Stage_{progress.Subject}"]));
+        }
 
         // Belohnungen nur auf dem Freigeschaltet-Bildschirm zeigen (nicht beim Nicht-Bestehen -
         // dort soll der Fokus auf dem erneuten Versuch liegen, nicht auf verpassten Belohnungen).

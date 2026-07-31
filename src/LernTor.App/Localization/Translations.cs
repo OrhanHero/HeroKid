@@ -549,6 +549,12 @@ public static class Translations
                 "⭐ Bugün kazanılan: +{0} yıldız · Toplam: {1}"),
 
             ["Result_Daily_Title"] = L("Dein Lerntag heute", "Bugünkü öğrenme günün"),
+
+            // Eigene Entwicklung: nur das Kind und sein frueheres Ich, kein Geschwister-Vergleich.
+            ["Result_Progress_Title"] = L("So hast du dich entwickelt", "Nasıl geliştin"),
+            ["Result_Progress_Subtitle"] = L(
+                "Die letzten zwei Wochen im Vergleich zu den zwei Wochen davor.",
+                "Son iki hafta, ondan önceki iki haftayla karşılaştırıldı."),
             ["Result_Daily_Answered"] = L("📚 {0} Aufgaben", "📚 {0} görev"),
             ["Result_Daily_Accuracy"] = L("✅ {0}% richtig", "✅ %{0} doğru"),
             ["Result_Daily_Streak"] = L("🔥 {0} Tage in Folge", "🔥 {0} gündür üst üste"),
