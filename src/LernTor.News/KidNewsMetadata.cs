@@ -109,6 +109,14 @@ public static class KidNewsMetadata
             "Wetter betrifft jeden Tag alle Menschen: Schulweg, Sport, Ausflüge. Und am Wetter " +
             "kann man beobachten, wie sich unser Klima langsam verändert.",
 
+        (NewsCategory.Wissen, GradeLevel.Klasse6) =>
+            "Forschung beantwortet Fragen, die vorher niemand beantworten konnte – über den " +
+            "Weltraum, über Tiere, über unseren eigenen Körper. Und jede Antwort bringt neue Fragen mit.",
+
+        (NewsCategory.Sport, GradeLevel.Klasse6) =>
+            "Beim Sport siehst du, was mit Übung möglich wird – und was Fairness und Teamgeist " +
+            "bedeuten. Darüber reden fast alle mit, in jeder Sprache.",
+
         // Klasse 9: anspruchsvoller, gesellschaftlicher Kontext, abstrakter
         (NewsCategory.Berlin, GradeLevel.Klasse9) =>
             "Berliner Landesentscheidungen prägen deinen Alltag direkt – von Schulbau über " +
@@ -149,6 +157,16 @@ public static class KidNewsMetadata
             "Meteorologische Modelle, Warnsysteme (Cell Broadcast, NINA) und Anpassungsstrategien " +
             "(Schwammstadt, Hitzeschutzpläne) sind Teil moderner Daseinsvorsorge.",
 
+        (NewsCategory.Wissen, GradeLevel.Klasse9) =>
+            "Wissenschaftliche Erkenntnis entsteht durch Methode, nicht durch Meinung: Hypothese, " +
+            "Experiment, Peer-Review, Reproduzierbarkeit. Wer diesen Prozess versteht, kann " +
+            "Studienergebnisse einordnen – und erkennt, wo Schlagzeilen mehr behaupten als die Daten hergeben.",
+
+        (NewsCategory.Sport, GradeLevel.Klasse9) =>
+            "Sport ist auch Wirtschaft und Politik: Sponsoring, Ablösesummen, Doping-Kontrollen, " +
+            "die Vergabe von Großereignissen an Staaten mit fragwürdiger Menschenrechtslage. " +
+            "Hinter dem Spiel stehen Interessen, die sich lohnen mitzudenken.",
+
         _ => string.Empty
     };
 
@@ -187,6 +205,14 @@ public static class KidNewsMetadata
         (NewsCategory.Wetter, GradeLevel.Klasse6) =>
             "Schau vor dem Rausgehen auf das Wetter: richtige Kleidung, Sonnenschutz bei Hitze, " +
             "und bei Unwetterwarnungen lieber drinnen bleiben.",
+
+        (NewsCategory.Wissen, GradeLevel.Klasse6) =>
+            "Vieles davon kommt später im Unterricht dran – wenn du es hier schon einmal gehört " +
+            "hast, ist es kein fremdes Wort mehr. Und Staunen darf man auch einfach so.",
+
+        (NewsCategory.Sport, GradeLevel.Klasse6) =>
+            "Vielleicht kennst du das Team oder die Sportart aus dem Verein oder aus dem " +
+            "Sportunterricht. Nachmachen ausdrücklich erlaubt – Bewegung tut jedem Tag gut.",
 
         // Klasse 9: abstrakter, handlungsorientiert, Kompetenz-Fokus
         (NewsCategory.Berlin, GradeLevel.Klasse9) =>
@@ -229,6 +255,16 @@ public static class KidNewsMetadata
             "Hitzeschutz: Trinken, Schatten, Mittagshitze meiden. Starkregen: Keller sichern, " +
             "Rückstausicherung prüfen. Klimafolgenanpassung ist kommunale Pflichtaufgabe – " +
             "fordere sie bei deiner Bezirksverordnetenversammlung ein.",
+
+        (NewsCategory.Wissen, GradeLevel.Klasse9) =>
+            "Lies bei einer Meldung nach, worauf sie beruht: Stichprobengröße, Kontrollgruppe, " +
+            "wer die Studie finanziert hat. „Forscher haben herausgefunden“ ist noch kein Beleg. " +
+            "Für Referate und die MSA-Präsentation ist genau das der Unterschied zwischen Quelle und Behauptung.",
+
+        (NewsCategory.Sport, GradeLevel.Klasse9) =>
+            "Wenn du selbst trainierst: Belastung und Erholung gehören zusammen, und Nahrungs" +
+            "ergänzung ist selten die Abkürzung, als die sie verkauft wird. Vereinsarbeit, " +
+            "Schiedsrichter-Lizenz oder Trainer-C-Schein sind früh möglich und zählen im Lebenslauf.",
 
         _ => string.Empty
     };

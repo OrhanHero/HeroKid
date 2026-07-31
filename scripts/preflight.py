@@ -18,6 +18,7 @@ Es ersetzt KEINEN Compiler - es prüft nur bekannte, statisch erkennbare Fallen:
   7. `OrderBy`/`OrderByDescending` auf DateTimeOffset-Spalten in Repositories (EF-Sqlite)
   8. JSON-/YAML-Gültigkeit der Konfigurations- und Zustandsdateien
   9. Zwei Typen gleichen Namens im selben Namensraum (CS0101)
+ 10. Vollstaendigkeit der Einordnungstexte bei neuen NewsCategory-Werten
 
 Nutzung:  python3 scripts/preflight.py            (alles prüfen)
           python3 scripts/preflight.py --quick    (ohne die langsameren Repo-weiten Scans)
@@ -436,6 +437,43 @@ def check_duplicate_type_names() -> None:
                 + ", ".join(sorted(paths)))
 
 
+def check_news_category_coverage() -> None:
+    """Jede NewsCategory braucht Einordnungstexte fuer beide Textvarianten (Klasse 6 / Klasse 9).
+
+    Beim Ergaenzen der Rubriken Wissen und Sport blieben KidNewsMetadata.WhyImportantFor und
+    MeaningForKidsFor unveraendert - der Fallback "_ => string.Empty" schluckt das lautlos, und
+    erst ein bestehender Test in der CI meldete es. Dieselbe Falle wie bei den Faechern (siehe
+    check_subject_wiring): ein neuer Enum-Wert ist nie nur ein Enum-Wert.
+    """
+    enum_file = SRC / "LernTor.Core" / "Models" / "NewsArticle.cs"
+    metadata_file = SRC / "LernTor.News" / "KidNewsMetadata.cs"
+    if not enum_file.exists() or not metadata_file.exists():
+        return
+
+    enum_body = enum_file.read_text(encoding="utf-8").split("enum NewsCategory")[1].split("}")[0]
+    categories = [
+        name for name in re.findall(r"^\s+(\w+),?\s*$", enum_body, re.MULTILINE)
+        if not name.startswith("//")
+    ]
+
+    metadata = metadata_file.read_text(encoding="utf-8")
+    for method in ("WhyImportantFor", "MeaningForKidsFor"):
+        parts = metadata.split(f"public static string {method}")
+        if len(parts) < 2:
+            findings.append(f"KidNewsMetadata.{method} nicht gefunden - Methode umbenannt?")
+            continue
+
+        block = parts[1].split("_ => string.Empty")[0]
+        pairs = set(re.findall(r"\(NewsCategory\.(\w+), GradeLevel\.(\w+)\)", block))
+
+        for category in categories:
+            for variant in ("Klasse6", "Klasse9"):
+                if (category, variant) not in pairs:
+                    findings.append(
+                        f"KidNewsMetadata.{method}: Rubrik '{category}' hat keinen Text "
+                        f"fuer {variant} - faellt still auf string.Empty zurueck.")
+
+
 def check_config_files() -> None:
     state = ROOT / "docs" / "CLAUDE_STATE.json"
     if state.exists():
@@ -470,6 +508,7 @@ def main() -> int:
         ("Shutdown/Unlock", check_shutdown_unlocks),
         ("Konfigurationsdateien", check_config_files),
         ("Doppelte Typnamen", check_duplicate_type_names),
+        ("News-Rubrik-Texte", check_news_category_coverage),
     ]
     if not args.quick:
         checks += [
