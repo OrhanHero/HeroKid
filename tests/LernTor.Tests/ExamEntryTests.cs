@@ -89,7 +89,7 @@ public sealed class ExamEntryTests : IDisposable
         {
             await new ExamEntryRepository(db).AddAsync(
                 "p1", Subject.Physik, " Test Nr. 2 ", " Optik, Linsen ",
-                new DateOnly(2026, 9, 14), ExamAuthor.Kind);
+                new DateOnly(2026, 9, 14), EntryAuthor.Kind);
         }
 
         using (var db = CreateContext())
@@ -100,7 +100,7 @@ public sealed class ExamEntryTests : IDisposable
             Assert.Equal("Test Nr. 2", reloaded.Title);
             Assert.Equal("Optik, Linsen", reloaded.Topics);
             Assert.Equal(new DateOnly(2026, 9, 14), reloaded.ExamDate);
-            Assert.Equal(ExamAuthor.Kind, reloaded.Author);
+            Assert.Equal(EntryAuthor.Kind, reloaded.Author);
         }
     }
 
@@ -109,7 +109,7 @@ public sealed class ExamEntryTests : IDisposable
     {
         using var db = CreateContext();
         var repo = new ExamEntryRepository(db);
-        var eigener = await repo.AddAsync("p1", Subject.Mathematik, "meiner", "", Heute.AddDays(3), ExamAuthor.Kind);
+        var eigener = await repo.AddAsync("p1", Subject.Mathematik, "meiner", "", Heute.AddDays(3), EntryAuthor.Kind);
 
         Assert.True(await repo.DeleteAsChildAsync(eigener.Id));
         Assert.Empty(await repo.GetForProfileAsync("p1"));
@@ -121,7 +121,7 @@ public sealed class ExamEntryTests : IDisposable
         // Sonst waere "Klausur weg, also nicht lernen" ein bequemer Ausweg.
         using var db = CreateContext();
         var repo = new ExamEntryRepository(db);
-        var elternTermin = await repo.AddAsync("p1", Subject.Mathematik, "von Mama", "", Heute.AddDays(3), ExamAuthor.Eltern);
+        var elternTermin = await repo.AddAsync("p1", Subject.Mathematik, "von Mama", "", Heute.AddDays(3), EntryAuthor.Eltern);
 
         Assert.False(await repo.DeleteAsChildAsync(elternTermin.Id));
         Assert.Single(await repo.GetForProfileAsync("p1"));
@@ -132,7 +132,7 @@ public sealed class ExamEntryTests : IDisposable
     {
         using var db = CreateContext();
         var repo = new ExamEntryRepository(db);
-        var elternTermin = await repo.AddAsync("p1", Subject.Mathematik, "von Mama", "", Heute.AddDays(3), ExamAuthor.Eltern);
+        var elternTermin = await repo.AddAsync("p1", Subject.Mathematik, "von Mama", "", Heute.AddDays(3), EntryAuthor.Eltern);
 
         var verschoben = await repo.UpdateAsChildAsync(
             elternTermin.Id, Subject.Mathematik, "von Mama", "", Heute.AddDays(300));
@@ -146,7 +146,7 @@ public sealed class ExamEntryTests : IDisposable
     {
         using var db = CreateContext();
         var repo = new ExamEntryRepository(db);
-        var kindTermin = await repo.AddAsync("p1", Subject.Mathematik, "meiner", "", Heute.AddDays(3), ExamAuthor.Kind);
+        var kindTermin = await repo.AddAsync("p1", Subject.Mathematik, "meiner", "", Heute.AddDays(3), EntryAuthor.Kind);
 
         await repo.UpdateAsync(kindTermin.Id, Subject.Chemie, "korrigiert", "Säuren", Heute.AddDays(5));
 
@@ -162,8 +162,8 @@ public sealed class ExamEntryTests : IDisposable
         var repo = new ExamEntryRepository(db);
         var heute = DateOnly.FromDateTime(DateTime.Today);
 
-        await repo.AddAsync("p1", Subject.Mathematik, "bald", "", heute.AddDays(2), ExamAuthor.Eltern);
-        await repo.AddAsync("p1", Subject.Chemie, "weit weg", "", heute.AddDays(60), ExamAuthor.Eltern);
+        await repo.AddAsync("p1", Subject.Mathematik, "bald", "", heute.AddDays(2), EntryAuthor.Eltern);
+        await repo.AddAsync("p1", Subject.Chemie, "weit weg", "", heute.AddDays(60), EntryAuthor.Eltern);
 
         var weights = await repo.GetLearningWeightsAsync("p1", heute);
 
@@ -178,8 +178,8 @@ public sealed class ExamEntryTests : IDisposable
         var repo = new ExamEntryRepository(db);
         var heute = DateOnly.FromDateTime(DateTime.Today);
 
-        await repo.AddAsync("p1", Subject.Mathematik, "naeher", "", heute.AddDays(1), ExamAuthor.Eltern);
-        await repo.AddAsync("p1", Subject.Mathematik, "spaeter", "", heute.AddDays(6), ExamAuthor.Eltern);
+        await repo.AddAsync("p1", Subject.Mathematik, "naeher", "", heute.AddDays(1), EntryAuthor.Eltern);
+        await repo.AddAsync("p1", Subject.Mathematik, "spaeter", "", heute.AddDays(6), EntryAuthor.Eltern);
 
         var weights = await repo.GetLearningWeightsAsync("p1", heute);
 
@@ -191,8 +191,8 @@ public sealed class ExamEntryTests : IDisposable
     {
         using var db = CreateContext();
         var repo = new ExamEntryRepository(db);
-        await repo.AddAsync("emirhan", Subject.Mathematik, "Emirhans", "", Heute.AddDays(3), ExamAuthor.Kind);
-        await repo.AddAsync("batuhan", Subject.Physik, "Batuhans", "", Heute.AddDays(3), ExamAuthor.Kind);
+        await repo.AddAsync("emirhan", Subject.Mathematik, "Emirhans", "", Heute.AddDays(3), EntryAuthor.Kind);
+        await repo.AddAsync("batuhan", Subject.Physik, "Batuhans", "", Heute.AddDays(3), EntryAuthor.Kind);
 
         Assert.Equal("Emirhans", (await repo.GetForProfileAsync("emirhan")).Single().Title);
         Assert.Equal("Batuhans", (await repo.GetForProfileAsync("batuhan")).Single().Title);
@@ -202,7 +202,7 @@ public sealed class ExamEntryTests : IDisposable
     public async Task Werkseinstellungen_loeschen_auch_die_Klausuren()
     {
         using var db = CreateContext();
-        await new ExamEntryRepository(db).AddAsync("p1", Subject.Mathematik, "x", "", Heute, ExamAuthor.Eltern);
+        await new ExamEntryRepository(db).AddAsync("p1", Subject.Mathematik, "x", "", Heute, EntryAuthor.Eltern);
 
         await new DatabaseMaintenanceRepository(db).ResetAllDataAsync();
 

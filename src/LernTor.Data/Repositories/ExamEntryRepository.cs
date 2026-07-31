@@ -69,7 +69,7 @@ public sealed class ExamEntryRepository
         string title,
         string topics,
         DateOnly examDate,
-        ExamAuthor author,
+        EntryAuthor author,
         CancellationToken cancellationToken = default)
     {
         var exam = new ExamEntry
@@ -134,7 +134,7 @@ public sealed class ExamEntryRepository
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Exams.FirstOrDefaultAsync(e => e.Id == examId, cancellationToken);
-        if (entity is null || entity.Author != ExamAuthor.Kind.ToString())
+        if (entity is null || entity.Author != EntryAuthor.Kind.ToString())
         {
             return false;
         }
@@ -160,7 +160,7 @@ public sealed class ExamEntryRepository
     public async Task<bool> DeleteAsChildAsync(string examId, CancellationToken cancellationToken = default)
     {
         var entity = await _db.Exams.FirstOrDefaultAsync(e => e.Id == examId, cancellationToken);
-        if (entity is null || entity.Author != ExamAuthor.Kind.ToString())
+        if (entity is null || entity.Author != EntryAuthor.Kind.ToString())
         {
             return false;
         }
@@ -203,7 +203,7 @@ public sealed class ExamEntryRepository
         ExamDate = DateOnly.TryParseExact(entity.ExamDate, DateFormat, out var date)
             ? date
             : DateOnly.FromDateTime(DateTime.Today),
-        Author = Enum.TryParse<ExamAuthor>(entity.Author, out var author) ? author : ExamAuthor.Eltern,
+        Author = Enum.TryParse<EntryAuthor>(entity.Author, out var author) ? author : EntryAuthor.Eltern,
         CreatedAt = entity.CreatedAt
     };
 }

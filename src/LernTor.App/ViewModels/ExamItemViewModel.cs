@@ -39,7 +39,7 @@ public sealed class ExamItemViewModel
     public string DateLabel => Exam.ExamDate.ToString("dd.MM.yyyy");
 
     /// <summary>Herkunft im Klartext - im Eltern-Bereich sichtbar, was das Kind selbst gemeldet hat.</summary>
-    public string AuthorLabel => Exam.Author == ExamAuthor.Kind ? "selbst eingetragen" : "von den Eltern";
+    public string AuthorLabel => Exam.Author == EntryAuthor.Kind ? "selbst eingetragen" : "von den Eltern";
 
     /// <summary>Steht unmittelbar bevor - Anlass, die Zeile hervorzuheben.</summary>
     public bool IsImminent => Exam.DaysUntil(_today) is >= 0 and <= 2;

@@ -2158,7 +2158,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         var dueDate = DateOnly.FromDateTime(NewHomeworkDueDate ?? DateTime.Today);
 
-        await _homeworkRepo.AddAsync(SelectedProfile.Id, NewHomeworkSubject, description, dueDate);
+        await _homeworkRepo.AddAsync(
+            SelectedProfile.Id, NewHomeworkSubject, description, dueDate, EntryAuthor.Eltern);
 
         NewHomeworkDescription = string.Empty;
         NewHomeworkDueDate = DateTime.Today.AddDays(1);
@@ -2241,7 +2242,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             dialog.EnteredTitle,
             dialog.EnteredTopics,
             dialog.SelectedDate,
-            ExamAuthor.Eltern);
+            EntryAuthor.Eltern);
 
         await ReloadExamsAsync();
     }
@@ -2376,7 +2377,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
                     entry.Title,
                     entry.Description,
                     entry.Date,
-                    ExamAuthor.Eltern);
+                    EntryAuthor.Eltern);
             }
 
             await ReloadExamsAsync();

@@ -284,6 +284,11 @@ deshalb bewusst nicht umgesetzt.
   seit der Tagesrotation wird nicht mehr jede Quelle täglich abgerufen, ein Eintrag kann also Tage
   alt sein. Nötig, weil die App tote Feeds geräuschlos überspringt - bei 44 Quellen könnte sonst
   die Hälfte kaputt sein, ohne dass es auffällt.
+- **📒 Hausaufgaben**: Fach, Stichtag und Text - **von Eltern UND Kindern eintragbar** (Knopf auf
+  dem Startbildschirm). Dieselbe Asymmetrie wie beim Klausurkalender: eigene Einträge darf das Kind
+  löschen, Eltern-Einträge nur **abhaken** - das ist ja der Sinn der Sache; nur das Wegräumen
+  einer Aufgabe, die es nicht erledigt hat, wäre ein Schlupfloch. Anders als bei Klausuren ist ein
+  Stichtag in der Vergangenheit hier erlaubt: eine vergessene Hausaufgabe nachzutragen ist normal.
 - **📅 Klausurkalender**: Termine pro Kind mit Fach, Titel, Themen und Datum. **Die Kinder dürfen
   selbst eintragen** (Button auf dem Startbildschirm) - mit einer Asymmetrie: eigene Einträge dürfen
   sie ändern und löschen, Eltern-Einträge nur ansehen, sonst wäre "Klausur weg, also nicht lernen"

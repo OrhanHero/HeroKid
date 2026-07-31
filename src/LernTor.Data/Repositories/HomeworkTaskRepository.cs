@@ -57,6 +57,7 @@ public sealed class HomeworkTaskRepository
         Subject subject,
         string description,
         DateOnly dueDate,
+        EntryAuthor author = EntryAuthor.Eltern,
         CancellationToken cancellationToken = default)
     {
         var task = new HomeworkTask
@@ -64,7 +65,8 @@ public sealed class HomeworkTaskRepository
             ProfileId = profileId,
             Subject = subject,
             Description = description.Trim(),
-            DueDate = dueDate
+            DueDate = dueDate,
+            Author = author
         };
 
         _db.HomeworkTasks.Add(new HomeworkTaskEntity
@@ -75,6 +77,7 @@ public sealed class HomeworkTaskRepository
             Description = task.Description,
             DueDate = task.DueDate.ToString(DateFormat),
             CompletedAt = null,
+            Author = task.Author.ToString(),
             CreatedAt = task.CreatedAt
         });
 
@@ -113,6 +116,23 @@ public sealed class HomeworkTaskRepository
         entity.Description = description.Trim();
         entity.DueDate = dueDate.ToString(DateFormat);
         await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Loeschen durch das Kind - nur eigene Eintraege, sonst <c>false</c>. Die Pruefung sitzt hier
+    /// und nicht nur an der Oberflaeche: ein ausgeblendeter Knopf ist keine Zugriffskontrolle.
+    /// </summary>
+    public async Task<bool> DeleteAsChildAsync(string taskId, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.HomeworkTasks.FirstOrDefaultAsync(h => h.Id == taskId, cancellationToken);
+        if (entity is null || entity.Author != EntryAuthor.Kind.ToString())
+        {
+            return false;
+        }
+
+        _db.HomeworkTasks.Remove(entity);
+        await _db.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
     public async Task DeleteAsync(string taskId, CancellationToken cancellationToken = default)
@@ -160,6 +180,8 @@ public sealed class HomeworkTaskRepository
             ? due
             : DateOnly.FromDateTime(DateTime.Today),
         CompletedAt = entity.CompletedAt,
+        // Alt-Zeilen ohne Wert gelten als von den Eltern eingetragen - das bisherige Verhalten.
+        Author = Enum.TryParse<EntryAuthor>(entity.Author, out var author) ? author : EntryAuthor.Eltern,
         CreatedAt = entity.CreatedAt
     };
 }

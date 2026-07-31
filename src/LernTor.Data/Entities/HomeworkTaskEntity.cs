@@ -22,5 +22,10 @@ public sealed class HomeworkTaskEntity
 
     public DateTimeOffset? CompletedAt { get; set; }
 
+    /// <summary>"Eltern" oder "Kind" - entscheidet, ob das Kind den Eintrag entfernen darf.
+    /// Alt-Zeilen bekommen beim additiven Schema-Abgleich einen leeren String und fallen damit
+    /// auf "Eltern" zurueck, also auf das bisherige Verhalten.</summary>
+    public string Author { get; set; } = "Eltern";
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 }

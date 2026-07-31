@@ -29,9 +29,20 @@ public sealed class HomeworkTask
     /// <summary>Wann das Kind sie abgehakt hat; <c>null</c> = noch offen.</summary>
     public DateTimeOffset? CompletedAt { get; set; }
 
+    /// <summary>
+    /// Wer sie eingetragen hat. Kinder duerfen selbst eintragen - eigene Eintraege auch wieder
+    /// aendern und loeschen, Eltern-Eintraege dagegen nur abhaken. Abhaken darf das Kind IMMER,
+    /// das ist ja der Sinn der Sache; nur das Wegraeumen einer Aufgabe, die es nicht erledigt
+    /// hat, waere ein Schlupfloch.
+    /// </summary>
+    public EntryAuthor Author { get; set; } = EntryAuthor.Eltern;
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
     public bool IsCompleted => CompletedAt is not null;
+
+    /// <summary>Ob das Kind diesen Eintrag aendern oder loeschen darf (Abhaken immer erlaubt).</summary>
+    public bool IsEditableByChild => Author == EntryAuthor.Kind;
 
     /// <summary>Überfällig = Stichtag liegt vor heute und die Aufgabe ist noch offen.</summary>
     public bool IsOverdue(DateOnly today) => !IsCompleted && DueDate < today;

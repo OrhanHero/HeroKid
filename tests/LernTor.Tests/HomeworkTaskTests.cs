@@ -185,6 +185,75 @@ public sealed class HomeworkTaskTests : IDisposable
     }
 
     [Fact]
+    public async Task Kind_darf_eigene_Hausaufgaben_loeschen()
+    {
+        using var db = CreateContext();
+        var repo = new HomeworkTaskRepository(db);
+        var eigene = await repo.AddAsync("p1", Subject.Mathematik, "meine", Heute, EntryAuthor.Kind);
+
+        Assert.True(await repo.DeleteAsChildAsync(eigene.Id));
+        Assert.Empty(await repo.GetForProfileAsync("p1"));
+    }
+
+    [Fact]
+    public async Task Kind_darf_Eltern_Hausaufgaben_nicht_loeschen()
+    {
+        // Wegraeumen, was man nicht erledigt hat, waere ein Schlupfloch.
+        using var db = CreateContext();
+        var repo = new HomeworkTaskRepository(db);
+        var vonEltern = await repo.AddAsync("p1", Subject.Mathematik, "Seite 42", Heute, EntryAuthor.Eltern);
+
+        Assert.False(await repo.DeleteAsChildAsync(vonEltern.Id));
+        Assert.Single(await repo.GetForProfileAsync("p1"));
+    }
+
+    [Fact]
+    public async Task Abhaken_darf_das_Kind_immer()
+    {
+        // Auch bei Eltern-Eintraegen - das ist ja der Sinn der Sache.
+        using var db = CreateContext();
+        var repo = new HomeworkTaskRepository(db);
+        var vonEltern = await repo.AddAsync("p1", Subject.Mathematik, "Seite 42", Heute, EntryAuthor.Eltern);
+
+        await repo.SetCompletedAsync(vonEltern.Id, completed: true);
+
+        Assert.True((await repo.GetForProfileAsync("p1")).Single().IsCompleted);
+    }
+
+    [Fact]
+    public async Task Herkunft_ueberlebt_den_Neustart()
+    {
+        using (var db = CreateContext())
+        {
+            await new HomeworkTaskRepository(db)
+                .AddAsync("p1", Subject.Deutsch, "Aufsatz", Heute, EntryAuthor.Kind);
+        }
+
+        using (var db = CreateContext())
+        {
+            var reloaded = (await new HomeworkTaskRepository(db).GetForProfileAsync("p1")).Single();
+            Assert.Equal(EntryAuthor.Kind, reloaded.Author);
+            Assert.True(reloaded.IsEditableByChild);
+        }
+    }
+
+    [Fact]
+    public async Task Alt_Zeilen_ohne_Herkunft_gelten_als_von_den_Eltern()
+    {
+        // Bestehende Datenbanken bekommen die Spalte per additivem Schema-Abgleich leer -
+        // sie duerfen dadurch nicht ploetzlich fuer das Kind loeschbar werden.
+        using var db = CreateContext();
+        var repo = new HomeworkTaskRepository(db);
+        var task = await repo.AddAsync("p1", Subject.Mathematik, "alt", Heute, EntryAuthor.Kind);
+
+        db.HomeworkTasks.Single(h => h.Id == task.Id).Author = string.Empty;
+        await db.SaveChangesAsync();
+
+        Assert.Equal(EntryAuthor.Eltern, (await repo.GetForProfileAsync("p1")).Single().Author);
+        Assert.False(await repo.DeleteAsChildAsync(task.Id));
+    }
+
+    [Fact]
     public async Task Werkseinstellungen_loeschen_auch_die_Hausaufgaben()
     {
         // ResetAllDataAsync liess lange acht Tabellen stehen - neue Tabellen muessen dort rein.

@@ -257,7 +257,55 @@ public sealed partial class MainViewModel : ObservableObject
 
         return new WelcomeViewModel(
             CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal,
-            homework, exams, OnAddExamRequested, OnDeleteExamRequested);
+            homework, exams, OnAddExamRequested, OnDeleteExamRequested,
+            OnAddHomeworkRequested, OnDeleteHomeworkRequested);
+    }
+
+    /// <summary>
+    /// Hausaufgaben-Eingabe aus der Kind-Ansicht. Der Eintrag wird als vom KIND angelegt vermerkt -
+    /// nur solche darf es spaeter auch wieder loeschen. Ein Stichtag in der Vergangenheit ist
+    /// hier ausdruecklich erlaubt: eine vergessene Hausaufgabe nachzutragen ist ein normaler Fall.
+    /// </summary>
+    private async void OnAddHomeworkRequested()
+    {
+        var dialog = new Views.HomeworkEntryDialog
+        {
+            Owner = System.Windows.Application.Current.MainWindow
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        await _homeworkRepo.AddAsync(
+            CurrentProfile!.Id,
+            dialog.SelectedSubject,
+            dialog.EnteredDescription,
+            dialog.SelectedDate,
+            EntryAuthor.Kind);
+
+        CurrentViewModel = await BuildWelcomeViewModelAsync();
+    }
+
+    /// <summary>
+    /// Loeschen aus der Kind-Ansicht. Eltern-Eintraege bleiben stehen - ABHAKEN darf das Kind sie
+    /// jederzeit, das ist ja der Sinn; nur wegraeumen, was es nicht erledigt hat, waere ein
+    /// Schlupfloch. Die Pruefung sitzt im Repository, nicht nur an der Oberflaeche.
+    /// </summary>
+    private async void OnDeleteHomeworkRequested(HomeworkItemViewModel item)
+    {
+        if (!await _homeworkRepo.DeleteAsChildAsync(item.Id))
+        {
+            System.Windows.MessageBox.Show(
+                "Diese Hausaufgabe haben deine Eltern eingetragen - die kannst du nur abhaken, nicht löschen.",
+                "Nicht möglich",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+            return;
+        }
+
+        CurrentViewModel = await BuildWelcomeViewModelAsync();
     }
 
     /// <summary>
@@ -282,7 +330,7 @@ public sealed partial class MainViewModel : ObservableObject
             dialog.EnteredTitle,
             dialog.EnteredTopics,
             dialog.SelectedDate,
-            ExamAuthor.Kind);
+            EntryAuthor.Kind);
 
         // Neu aufbauen, damit Countdown und Reihenfolge sofort stimmen.
         CurrentViewModel = await BuildWelcomeViewModelAsync();

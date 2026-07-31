@@ -2,16 +2,6 @@ using LernTor.Core.Enums;
 
 namespace LernTor.Core.Models;
 
-/// <summary>Wer einen Klausurtermin eingetragen hat.</summary>
-public enum ExamAuthor
-{
-    /// <summary>Von den Eltern im Eltern-Bereich eingetragen - für das Kind schreibgeschützt.</summary>
-    Eltern,
-
-    /// <summary>Vom Kind selbst eingetragen. Es darf den Eintrag auch wieder ändern und löschen.</summary>
-    Kind
-}
-
 /// <summary>
 /// Ein Klausur-/Klassenarbeitstermin.
 ///
@@ -42,7 +32,7 @@ public sealed class ExamEntry
 
     public DateOnly ExamDate { get; set; }
 
-    public ExamAuthor Author { get; set; } = ExamAuthor.Eltern;
+    public EntryAuthor Author { get; set; } = EntryAuthor.Eltern;
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
@@ -96,7 +86,7 @@ public sealed class ExamEntry
     };
 
     /// <summary>Ob das Kind diesen Eintrag ändern oder löschen darf.</summary>
-    public bool IsEditableByChild => Author == ExamAuthor.Kind;
+    public bool IsEditableByChild => Author == EntryAuthor.Kind;
 
     public static string NewId() => Guid.NewGuid().ToString("N");
 }

@@ -118,6 +118,14 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
+                                        <!-- Loeschen nur bei selbst eingetragenen Aufgaben; die
+                                             Pruefung sitzt zusaetzlich im Repository. -->
+                                        <Button Content="🗑" Style="{StaticResource RoundedButton}"
+                                                Padding="6,0" Margin="10,0,0,0" VerticalAlignment="Center"
+                                                Visibility="{Binding CanChildEdit, Converter={StaticResource BoolToVis}}"
+                                                Command="{Binding DataContext.DeleteHomeworkCommand,
+                                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}" />
                                     </StackPanel>
                                 </CheckBox>
                             </DataTemplate>
@@ -127,6 +135,10 @@
                     <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_HomeworkAllDone]}"
                                Style="{StaticResource BodyText}" Margin="0,10,0,0"
                                Visibility="{Binding AllHomeworkDone, Converter={StaticResource BoolToVis}}" />
+
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_AddHomework]}"
+                            Style="{StaticResource RoundedButton}" HorizontalAlignment="Left"
+                            Margin="0,12,0,0" Command="{Binding AddHomeworkCommand}" />
                 </StackPanel>
             </Border>
 

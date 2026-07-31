@@ -12,6 +12,18 @@ public sealed partial class WelcomeViewModel : ObservableObject
     private readonly Action<AppLanguage> _onSwitchLanguage;
     private readonly Action? _onAddExam;
     private readonly Action<ExamItemViewModel>? _onDeleteExam;
+    private readonly Action? _onAddHomework;
+    private readonly Action<HomeworkItemViewModel>? _onDeleteHomework;
+
+    /// <summary>Oeffnet die Hausaufgaben-Eingabe. Wie bei den Klausuren auch fuer Kinder:
+    /// wer selbst eintraegt, was zu tun ist, hat es schon einmal bewusst gelesen.</summary>
+    [RelayCommand]
+    private void AddHomework() => _onAddHomework?.Invoke();
+
+    /// <summary>Loescht eine selbst eingetragene Hausaufgabe. Eltern-Eintraege bleiben - abhaken
+    /// darf das Kind sie trotzdem jederzeit, nur wegraeumen nicht.</summary>
+    [RelayCommand]
+    private void DeleteHomework(HomeworkItemViewModel item) => _onDeleteHomework?.Invoke(item);
 
     /// <summary>Oeffnet die Klausur-Eingabe. Bewusst auch fuer Kinder erreichbar: wer den Termin
     /// selbst eintraegt, nimmt ihn eher ernst als einen, der ihm hingestellt wird.</summary>
@@ -65,7 +77,9 @@ public sealed partial class WelcomeViewModel : ObservableObject
     /// </summary>
     public ObservableCollection<HomeworkItemViewModel> Homework { get; } = new();
 
-    public bool ShowHomework => Homework.Count > 0;
+    /// <summary>Die Karte ist IMMER sichtbar, auch ohne Eintraege: sonst faende das Kind den
+    /// Knopf zum Selbsteintragen nie, weil er in der ausgeblendeten Karte steckt.</summary>
+    public bool ShowHomework => true;
 
     /// <summary>
     /// Anstehende Klausuren mit Countdown. Die Kinder duerfen hier selbst eintragen - deshalb
@@ -97,7 +111,9 @@ public sealed partial class WelcomeViewModel : ObservableObject
         IEnumerable<HomeworkItemViewModel>? homework = null,
         IEnumerable<ExamItemViewModel>? exams = null,
         Action? onAddExam = null,
-        Action<ExamItemViewModel>? onDeleteExam = null)
+        Action<ExamItemViewModel>? onDeleteExam = null,
+        Action? onAddHomework = null,
+        Action<HomeworkItemViewModel>? onDeleteHomework = null)
     {
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
         {
@@ -111,6 +127,8 @@ public sealed partial class WelcomeViewModel : ObservableObject
 
         _onAddExam = onAddExam;
         _onDeleteExam = onDeleteExam;
+        _onAddHomework = onAddHomework;
+        _onDeleteHomework = onDeleteHomework;
 
         ProfileName = profileName;
         CurrentStreak = currentStreak;

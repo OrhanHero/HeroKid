@@ -56,6 +56,14 @@ public sealed partial class HomeworkItemViewModel : ObservableObject
 
     public bool IsDueToday => Task.IsDueToday(_today);
 
+    /// <summary>Ob das Kind diese Zeile loeschen darf (nur selbst eingetragene).</summary>
+    public bool CanChildEdit => Task.IsEditableByChild;
+
+    /// <summary>Herkunft als Klartext - im Eltern-Bereich sichtbar, was das Kind selbst eingetragen hat.</summary>
+    public string AuthorLabel => Task.Author == LernTor.Core.Models.EntryAuthor.Kind
+        ? "selbst eingetragen"
+        : "von den Eltern";
+
     /// <summary>Abgehakt. Änderungen melden sich sofort an das Repository - eine Hausaufgabe,
     /// die man abhakt und die beim nächsten Start wieder offen ist, wäre schlimmer als keine.</summary>
     [ObservableProperty]

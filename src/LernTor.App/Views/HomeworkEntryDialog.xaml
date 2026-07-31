@@ -1,0 +1,53 @@
+<Window x:Class="LernTor.App.Views.HomeworkEntryDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hausaufgabe eintragen"
+        Width="520" MinWidth="420"
+        Height="560" MinHeight="380"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="{StaticResource BackgroundBrush}">
+    <!-- Gleicher Aufbau wie der Klausur-Dialog: Inhalt scrollt, Knopfzeile bleibt unten
+         verankert. Ein Fenster fester Hoehe hatte dort die Knoepfe abgeschnitten. -->
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
+            <StackPanel>
+                <TextBlock Text="📒 Hausaufgabe eintragen" Style="{StaticResource HeadlineText}"
+                           FontSize="26" Margin="0,0,0,4" TextWrapping="Wrap" />
+                <TextBlock Text="Schreib auf, was du bis wann machen musst. Du siehst es dann jeden Morgen hier und kannst es abhaken."
+                           Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,16" />
+
+                <TextBlock Text="Fach" Style="{StaticResource BodyText}" FontWeight="Bold" Margin="0,0,0,4" />
+                <ComboBox x:Name="SubjectBox" Margin="0,0,0,12" Padding="6" FontSize="14" />
+
+                <TextBlock Text="Bis wann?" Style="{StaticResource BodyText}" FontWeight="Bold" Margin="0,0,0,4" />
+                <DatePicker x:Name="DateBox" Margin="0,0,0,12" FontSize="14" />
+
+                <TextBlock Text="Was ist zu tun? (z.B. „Mathe Seite 42, Nr. 1-5“)"
+                           Style="{StaticResource BodyText}" FontWeight="Bold" Margin="0,0,0,4"
+                           TextWrapping="Wrap" />
+                <TextBox x:Name="DescriptionBox" Margin="0,0,0,8" Padding="6" FontSize="14"
+                         TextWrapping="Wrap" AcceptsReturn="True" MinHeight="70" MaxHeight="140"
+                         VerticalScrollBarVisibility="Auto" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Margin="0,12,0,0">
+            <TextBlock x:Name="ErrorText" Style="{StaticResource BodyText}" FontSize="12"
+                       Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap"
+                       Margin="0,0,0,8" Visibility="Collapsed" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Abbrechen" Style="{StaticResource RoundedButton}" Margin="0,0,8,0"
+                        MinWidth="120" Click="Cancel_Click" />
+                <Button Content="✓ Eintragen" Style="{StaticResource RoundedButton}"
+                        MinWidth="140" Click="Save_Click" IsDefault="True" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
