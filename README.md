@@ -352,6 +352,15 @@ deshalb bewusst nicht umgesetzt.
   Antworten Datenbasis), damit sichtbar wird, dass z.B. genau „Brüche" hakt und nicht pauschal
   „Mathe"; außerdem Lerntage im Zeitraum und der Abschlussquiz-Verlauf. Rechnet komplett aus dem
   vorhandenen Aktivitätsprotokoll - keine neuen Tabellen.
+- **📄 Bericht als Datei speichern**: schreibt genau den angezeigten Bericht (Fächer, Themen-Heatmap,
+  Lernzeit je Fach, Lerntage, Quiz-Verlauf, Tempo und - falls eingeschaltet - die Vergleichstabelle)
+  als eine eigenständige **HTML-Datei** zum Aufheben, Ausdrucken oder Mitnehmen zum Elterngespräch.
+  Bewusst HTML und keine PDF-Bibliothek: eine einzelne HTML-Datei öffnet jeder Rechner ohne
+  Zusatzsoftware, und über "Drucken → Als PDF speichern" entsteht das PDF genau dann, wenn es
+  gebraucht wird - eine PDF-Bibliothek wäre eine weitere Abhängigkeit im self-contained Build für
+  ein Ergebnis, das der Browser ohnehin liefert. Die Datei ist vollständig eigenständig (Stil
+  inline, keine Bilder, kein Nachladen aus dem Netz) und sieht auch auf einem Rechner ohne Internet
+  vollständig aus (`ReportExport`).
 - **👨‍👩‍👧‍👦 Kinder nebeneinander (optional, Standard AUS)**: stellt alle angelegten Profile in
   einer kompakten Tabelle nebeneinander - Lerntage, Trefferquote, Lernzeit und Sterne, im selben
   7/30-Tage-Zeitraum wie der übrige Bericht. Das Abschalten ist hier keine Bequemlichkeit, sondern

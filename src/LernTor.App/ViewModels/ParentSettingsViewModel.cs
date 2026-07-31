@@ -1170,6 +1170,91 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             : string.Format(loc["Parent_Report_QuizTrend"], string.Join("  →  ", quizScores));
     }
 
+    /// <summary>Rückmeldung zum Berichts-Export (Erfolg wie Fehler), direkt neben dem Knopf.</summary>
+    [ObservableProperty]
+    private string reportExportStatus = string.Empty;
+
+    /// <summary>
+    /// Schreibt den gerade angezeigten Bericht als eigenständige HTML-Datei - zum Aufheben, zum
+    /// Ausdrucken oder zum Mitnehmen zum Elterngespräch. Bewusst genau das, was auf dem Bildschirm
+    /// steht: ein Export, der andere Zahlen zeigt als die Ansicht, wäre schlimmer als keiner.
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportReportAsync()
+    {
+        if (SelectedProfile is null || !HasReportData)
+        {
+            ReportExportStatus = "Für den gewählten Zeitraum gibt es noch nichts zu exportieren.";
+            return;
+        }
+
+        var loc = LocalizationService.Instance;
+        var dialog = new SaveFileDialog
+        {
+            Filter = "Bericht (*.html)|*.html",
+            FileName = ReportExport.SuggestFileName(SelectedProfile.Name, DateOnly.FromDateTime(DateTime.Today)),
+            Title = "Bericht speichern"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var sections = new List<ReportExportSection>
+        {
+            new(loc["Parent_Report_Title"], ReportRows
+                .Select(row => new ReportExportRow(row.Label, row.RateDisplay, row.Rate))
+                .ToList()),
+            new(loc["Parent_Report_WeakTopics"], TopicReportRows
+                .Select(row => new ReportExportRow(row.Label, row.RateDisplay, row.Rate))
+                .ToList()),
+            new("⏱ Lernzeit je Fach", SubjectTimeRows
+                .Select(row => new ReportExportRow(
+                    row.SubjectLabel,
+                    row.TotalTimeDisplay,
+                    Note: $"{row.MedianDisplay} · {row.AccuracyDisplay} · {row.EffortDisplay}"))
+                .ToList())
+        };
+
+        // Der Vergleich landet nur in der Datei, wenn er auch auf dem Bildschirm steht - eine
+        // abgeschaltete Ansicht darf nicht durch die Hintertür im Export auftauchen.
+        if (ProfileComparisonEnabled && HasProfileComparisonData)
+        {
+            sections.Add(new ReportExportSection(loc["Parent_Comparison_Title"], ProfileComparisonRows
+                .Select(row => new ReportExportRow(
+                    row.Name,
+                    $"{row.LearnedDaysDisplay} Lerntage · {row.AccuracyDisplay} · {row.LearningTimeDisplay} · {row.StarsDisplay}",
+                    Note: row.HasData ? null : row.EmptyHint))
+                .ToList()));
+        }
+
+        var document = new ReportExportDocument(
+            SelectedProfile.Name,
+            ReportDays == 30 ? loc["Parent_Report_Days30"] : loc["Parent_Report_Days7"],
+            DateTimeOffset.Now,
+            new[]
+            {
+                ReportLearnedDaysDisplay,
+                ReportWeeklyGoalDisplay,
+                ReportQuizTrendDisplay,
+                ReportPaceDisplay,
+                ReportPaceWarningDisplay
+            },
+            sections);
+
+        try
+        {
+            await File.WriteAllTextAsync(dialog.FileName, ReportExport.ToHtml(document));
+            ReportExportStatus = $"Gespeichert: {Path.GetFileName(dialog.FileName)} " +
+                                 "(im Browser öffnen; über \"Drucken → Als PDF speichern\" wird ein PDF daraus).";
+        }
+        catch (Exception ex)
+        {
+            ReportExportStatus = $"Speichern fehlgeschlagen: {ex.Message}";
+        }
+    }
+
     [RelayCommand]
     private async Task SaveAsync()
     {
