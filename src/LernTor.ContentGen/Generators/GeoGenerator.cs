@@ -12,7 +12,7 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Kontinente, Klimazonen, Bundeslaender, RisikoraeumeNaturgefahren, MigrationUndBevoelkerung, TropischerRegenwald, ArmutUndReichtumKlasse6 },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { KlimazonenUndVegetation, StadtUndRaumentwicklung, WasserUndMeere },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { KlimazonenUndVegetation, StadtUndRaumentwicklung, WasserUndMeere, EuropaK7, LandwirtschaftUndErnaehrungK7, NaturgefahrenK7 },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Plattentektonik, Klimawandel, Verstaedterung, ArmutReichtum, RessourcenEnergie, LandwirtschaftUndBoden, KlimaschutzInternational, WirtschaftlicheVerflechtung, EuropaWirtschaftsraum }
         };
 
@@ -1056,6 +1056,174 @@ public sealed class GeoGenerator : ExerciseGeneratorBase
             Topic = "Wasser, Meere und Ressourcennutzung", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Nur 2,5% des Wassers sind Süßwasser, davon das meiste in Eis und Grundwasser. Virtuelles Wasser steckt in jedem Produkt. Bewässerung kann Böden versalzen (Aralsee). Versiegelung verschärft Hochwasser."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EuropaK7Liste =
+    {
+        ("Welches ist der längste Fluss Europas?", new[] { "Die Wolga", "Die Donau", "Der Rhein" }, "Die Wolga",
+            "Sie fließt rund 3530 km durch Russland zum Kaspischen Meer; die Donau ist der längste Fluss der EU."),
+        ("Durch wie viele Länder fließt die Donau?", new[] { "Durch zehn Länder", "Durch vier Länder", "Durch achtzehn Länder" }, "Durch zehn Länder",
+            "Kein anderer Fluss der Erde berührt so viele Staaten - von Deutschland bis zum Schwarzen Meer."),
+        ("Welches Gebirge trennt Europa von Asien?", new[] { "Der Ural", "Die Karpaten", "Der Kaukasus allein" }, "Der Ural",
+            "Zusammen mit dem Uralfluss und dem Kaukasus bildet er die übliche Grenze zwischen den Kontinenten."),
+        ("Welches ist der höchste Berg der Alpen?", new[] { "Der Mont Blanc mit 4808 m", "Das Matterhorn mit 4478 m", "Die Zugspitze mit 2962 m" }, "Der Mont Blanc mit 4808 m",
+            "Er liegt an der Grenze zwischen Frankreich und Italien; die Zugspitze ist nur Deutschlands höchster Berg."),
+        ("Warum ist Nordwesteuropa milder als Orte auf gleicher Breite in Kanada?", new[] { "Der Golfstrom bringt warmes Wasser aus dem Süden", "Europa liegt insgesamt deutlich näher am Äquator als Kanada", "In Europa gibt es weniger Gebirge" }, "Der Golfstrom bringt warmes Wasser aus dem Süden",
+            "Ohne ihn wäre es in Norwegen ähnlich kalt wie in Labrador auf derselben Breite."),
+        ("Welche Klimazone herrscht am Mittelmeer?", new[] { "Winterfeuchtes subtropisches Klima mit trockenen Sommern", "Gemäßigtes Klima mit Niederschlägen über das ganze Jahr verteilt", "Trockenklima mit Regen nur im Sommer" }, "Winterfeuchtes subtropisches Klima mit trockenen Sommern",
+            "Deshalb haben Olive und Korkeiche harte, kleine Blätter - Schutz gegen die Sommertrockenheit."),
+        ("Was ist die Europäische Union?", new[] { "Ein Zusammenschluss von Staaten mit gemeinsamem Binnenmarkt", "Ein militärisches Verteidigungsbündnis europäischer Staaten", "Ein Verein aller europäischen Länder" }, "Ein Zusammenschluss von Staaten mit gemeinsamem Binnenmarkt",
+            "Nicht alle europäischen Staaten sind Mitglied - Norwegen und die Schweiz zum Beispiel nicht."),
+        ("Was bedeutet der Schengen-Raum?", new[] { "Reisen zwischen den Mitgliedern ohne Grenzkontrollen", "Eine gemeinsame Währung für sämtliche beteiligten Mitgliedstaaten", "Ein Gebiet mit einheitlichen Steuersätzen" }, "Reisen zwischen den Mitgliedern ohne Grenzkontrollen",
+            "Schengen und Euro sind zwei verschiedene Dinge - die Schweiz ist im Schengen-Raum, aber nicht im Euro."),
+        ("Wie viele Länder nutzen den Euro als Währung?", new[] { "Zwanzig EU-Staaten", "Alle 27 EU-Staaten", "Zwölf EU-Staaten" }, "Zwanzig EU-Staaten",
+            "Länder wie Polen, Schweden und Dänemark haben ihre eigene Währung behalten."),
+        ("Was versteht man unter der Blauen Banane?", new[] { "Ein dicht besiedeltes Wirtschaftsband von England bis Norditalien", "Eine durchgehende Bahnstrecke quer durch ganz Europa", "Ein Meeresströmungssystem vor Europa" }, "Ein dicht besiedeltes Wirtschaftsband von England bis Norditalien",
+            "Entlang dieses Bandes liegen die wirtschaftsstärksten Regionen Europas."),
+        ("Warum ist die Bevölkerung in Europa ungleich verteilt?", new[] { "Gebirge, Kälte und Trockenheit machen große Gebiete unattraktiv", "Die Menschen ziehen bevorzugt nach Westen", "Historische Grenzverläufe bestimmen bis heute die Verteilung" }, "Gebirge, Kälte und Trockenheit machen große Gebiete unattraktiv",
+            "Deshalb leben in Nordskandinavien nur wenige Menschen pro Quadratkilometer, in den Niederlanden sehr viele."),
+        ("Was ist ein Ballungsraum?", new[] { "Eine Region mit sehr hoher Bevölkerungs- und Siedlungsdichte", "Eine Stadt mit mehr als einer Million Einwohnern", "Ein Gebiet mit besonders vielen Industriebetrieben" }, "Eine Region mit sehr hoher Bevölkerungs- und Siedlungsdichte",
+            "Das Ruhrgebiet ist der größte Ballungsraum Deutschlands - viele Städte, die zusammengewachsen sind."),
+        ("Welche Meere grenzen an Deutschland?", new[] { "Nordsee und Ostsee", "Nordsee und Atlantik", "Ostsee und Schwarzes Meer" }, "Nordsee und Ostsee",
+            "Die Nordsee hat starke Gezeiten und das Wattenmeer, die Ostsee ist deutlich salzärmer."),
+        ("Warum ist die Ostsee salzärmer als die Nordsee?", new[] { "Viele Flüsse münden hinein und der Austausch mit dem Ozean ist gering", "Sie liegt deutlich weiter nördlich und ist erheblich kälter", "Sie ist deutlich flacher als die Nordsee" }, "Viele Flüsse münden hinein und der Austausch mit dem Ozean ist gering",
+            "Nur über schmale dänische Meerengen kommt salziges Nordseewasser nach - das reicht kaum aus."),
+        ("Was ist das Wattenmeer?", new[] { "Ein bei Ebbe trockenfallender Küstenbereich der Nordsee", "Ein besonders tiefer Abschnitt der Nordsee", "Ein flaches Binnenmeer unmittelbar hinter den Deichen" }, "Ein bei Ebbe trockenfallender Küstenbereich der Nordsee",
+            "Es gehört zum UNESCO-Welterbe und ist Rastplatz für Millionen Zugvögel."),
+        ("Wodurch entstehen Ebbe und Flut?", new[] { "Durch die Anziehungskraft von Mond und Sonne", "Durch die vorherrschenden Westwinde", "Durch Temperaturunterschiede im Meerwasser" }, "Durch die Anziehungskraft von Mond und Sonne",
+            "Der Mond wirkt stärker, weil er viel näher an der Erde ist als die Sonne."),
+        ("Was kennzeichnet die Landschaft Norddeutschlands?", new[] { "Flaches Tiefland, von Eiszeiten geformt", "Mittelgebirge mit tief eingeschnittenen Tälern", "Hochgebirge mit Gletschern" }, "Flaches Tiefland, von Eiszeiten geformt",
+            "Gletscher schoben Moränen zusammen und hinterließen Seen wie die Mecklenburgische Seenplatte."),
+        ("Was ist ein Mittelgebirge?", new[] { "Ein Gebirge mittlerer Höhe, meist unter 1500 m", "Ein Gebirge, das in der Mitte eines Landes liegt", "Ein Gebirge ohne dauerhafte Schneedecke" }, "Ein Gebirge mittlerer Höhe, meist unter 1500 m",
+            "Harz, Schwarzwald und Erzgebirge gehören dazu - sie liegen zwischen Tiefland und Alpen."),
+        ("Warum liegt Berlin verkehrsgeografisch günstig?", new[] { "Es liegt an einer Talsandebene mit Wasserwegen zwischen Elbe und Oder", "Es liegt fast genau in der geografischen Mitte Europas", "Es liegt an der Küste mit Zugang zum Meer" }, "Es liegt an einer Talsandebene mit Wasserwegen zwischen Elbe und Oder",
+            "Spree und Havel verbanden die Stadt früh mit den großen Flüssen - Berlin hat mehr Brücken als Venedig."),
+        ("Was bedeutet Bevölkerungsdichte?", new[] { "Einwohner pro Quadratkilometer", "Die Gesamtzahl der Einwohner eines Landes", "Der Anteil der Stadtbewohner an der Bevölkerung" }, "Einwohner pro Quadratkilometer",
+            "Sie macht Länder vergleichbar: die Niederlande sind viel dichter besiedelt als Finnland.")
+    };
+
+    private static QuizQuestion EuropaK7(Random r)
+    {
+        var f = EuropaK7Liste[r.Next(EuropaK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Europa: Räume, Grenzen und Vielfalt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wolga längster Fluss Europas, Donau längster der EU (10 Länder). Ural trennt Europa/Asien. Golfstrom macht den Nordwesten mild. Schengen (Grenzen) und Euro (Währung) sind zwei verschiedene Dinge."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] LandwirtschaftUndErnaehrungK7Liste =
+    {
+        ("Was versteht man unter Subsistenzwirtschaft?", new[] { "Anbau vor allem für den eigenen Bedarf", "Anbau ausschließlich für den Export", "Anbau ohne den Einsatz von Maschinen" }, "Anbau vor allem für den eigenen Bedarf",
+            "Es bleibt kaum etwas zum Verkauf übrig - eine Missernte trifft die Familie deshalb sofort."),
+        ("Was ist eine Plantage?", new[] { "Ein Großbetrieb, der für den Export anbaut", "Ein Bauernhof mit gemischter Tierhaltung und Ackerbau", "Ein Feld, auf dem jedes Jahr die Frucht wechselt" }, "Ein Großbetrieb, der für den Export anbaut",
+            "Kaffee, Kakao und Bananen wachsen meist auf Plantagen - oft in ehemaligen Kolonien."),
+        ("Was ist eine Monokultur?", new[] { "Der Anbau nur einer Pflanzenart auf großer Fläche", "Der Anbau mehrerer Arten nebeneinander", "Der jährliche Wechsel der angebauten Frucht" }, "Der Anbau nur einer Pflanzenart auf großer Fläche",
+            "Sie ist wirtschaftlich effizient, aber anfällig: ein Schädling kann die ganze Ernte vernichten."),
+        ("Warum wechseln Bauern die Feldfrüchte (Fruchtfolge)?", new[] { "Damit der Boden nicht einseitig ausgelaugt wird", "Damit die Ernte gleichmäßiger über das Jahr verteilt ist", "Damit die Felder besser zu bewirtschaften sind" }, "Damit der Boden nicht einseitig ausgelaugt wird",
+            "Hülsenfrüchte reichern sogar Stickstoff im Boden an - das spart Dünger für die nächste Frucht."),
+        ("Was bedeutet Bewässerungslandwirtschaft?", new[] { "Anbau, der ohne Wasserzufuhr nicht ginge", "Anbau in besonders regenreichen Gebieten", "Anbau direkt an Flüssen und Seen" }, "Anbau, der ohne Wasserzufuhr nicht ginge",
+            "In Trockengebieten macht sie Ernten erst möglich - kostet aber enorme Mengen Wasser."),
+        ("Was ist Bodenversalzung?", new[] { "Salz bleibt zurück, wenn Wasser verdunstet", "Salzeintrag durch Meerwasser bei Sturmfluten", "Salzstreuung im Winter auf angrenzenden Straßen" }, "Salz bleibt zurück, wenn Wasser verdunstet",
+            "Das Wasser verdunstet, das Salz bleibt - irgendwann wächst auf der Fläche nichts mehr."),
+        ("Was war die Grüne Revolution?", new[] { "Hochertragssorten und Dünger für mehr Ertrag", "Eine Bewegung für ökologischen Landbau", "Die Umstellung auf umweltfreundliche Landmaschinen" }, "Hochertragssorten und Dünger für mehr Ertrag",
+            "Sie hat Hungersnöte verhindert - um den Preis von viel Dünger, Wasser und Pestiziden."),
+        ("Warum gibt es Hunger, obwohl weltweit genug Nahrung erzeugt wird?", new[] { "Verteilung, Armut und Konflikte verhindern den Zugang", "Die Ernten verderben zu schnell beim Transport", "Die Weltbevölkerung wächst schneller als die Erzeugung" }, "Verteilung, Armut und Konflikte verhindern den Zugang",
+            "Hunger ist meist kein Mengen-, sondern ein Verteilungs- und Armutsproblem."),
+        ("Was ist ökologische Landwirtschaft?", new[] { "Anbau ohne chemische Dünger und Pestizide", "Anbau ausschließlich für den regionalen Markt", "Anbau ohne den Einsatz großer Maschinen" }, "Anbau ohne chemische Dünger und Pestizide",
+            "Die Erträge sind geringer, Boden und Grundwasser werden dafür weniger belastet."),
+        ("Was bedeutet regionale Erzeugung für die Umwelt?", new[] { "Kurze Transportwege sparen Treibstoff", "Regionale Ware ist grundsätzlich unbehandelt", "Regionale Betriebe arbeiten immer ökologisch" }, "Kurze Transportwege sparen Treibstoff",
+            "Aber Vorsicht: Freilandtomaten aus Spanien können besser abschneiden als beheizte aus der Region."),
+        ("Was ist saisonaler Einkauf?", new[] { "Obst und Gemüse dann kaufen, wenn es hier reif ist", "Nur Lebensmittel aus dem eigenen Bundesland kaufen", "Vorräte für die ganze Saison auf einmal anlegen" }, "Obst und Gemüse dann kaufen, wenn es hier reif ist",
+            "Erdbeeren im Dezember kommen entweder aus dem Flugzeug oder aus dem beheizten Gewächshaus."),
+        ("Was verbirgt sich hinter virtuellem Wasser?", new[] { "Das Wasser, das zur Herstellung nötig war", "Wasser, das in einem Produkt tatsächlich enthalten ist", "Wasser, das bei der Herstellung wiederverwendet wird" }, "Das Wasser, das zur Herstellung nötig war",
+            "In einer Tasse Kaffee stecken rund 140 Liter - fast alles davon auf dem Feld."),
+        ("Warum braucht Fleisch mehr Fläche als pflanzliche Nahrung?", new[] { "Tiere müssen erst mit Pflanzen gefüttert werden", "Weideflächen liegen meist auf schlechten Böden", "Tierhaltung benötigt große Stallanlagen" }, "Tiere müssen erst mit Pflanzen gefüttert werden",
+            "Auf dem Umweg über das Tier geht ein Großteil der Energie verloren."),
+        ("Was ist Landgrabbing?", new[] { "Der Aufkauf von Ackerland in armen Ländern", "Die Umwandlung von Ackerland in Bauland", "Die Aufteilung großer Höfe unter Erben" }, "Der Aufkauf von Ackerland in armen Ländern",
+            "Die ansässige Bevölkerung verliert dabei oft Flächen, die sie seit Generationen nutzt."),
+        ("Welche Folgen hat das Abholzen von Regenwald für Ackerflächen?", new[] { "Die Böden sind nach wenigen Jahren ausgelaugt", "Die Flächen bleiben dauerhaft besonders fruchtbar", "Der Boden wird durch die Sonne verbessert" }, "Die Böden sind nach wenigen Jahren ausgelaugt",
+            "Die Nährstoffe stecken in den Pflanzen, nicht im Boden - ohne Wald ist er schnell erschöpft."),
+        ("Was ist Bodenerosion?", new[] { "Der Abtrag fruchtbaren Bodens durch Wind und Wasser", "Die Verdichtung des Bodens durch schwere Maschinen", "Die Versauerung des Bodens durch sauren Regen" }, "Der Abtrag fruchtbaren Bodens durch Wind und Wasser",
+            "Eine Schicht Humus wächst in Jahrhunderten und kann in einem Starkregen verschwinden."),
+        ("Wie kann man Bodenerosion verhindern?", new[] { "Hecken pflanzen und quer zum Hang pflügen", "Häufiger und tiefer pflügen", "Größere Felder ohne Trennstreifen anlegen" }, "Hecken pflanzen und quer zum Hang pflügen",
+            "Alles, was Wind bremst und Wasser hält, schützt den Oberboden."),
+        ("Was bedeutet Lebensmittelverschwendung in Deutschland?", new[] { "Rund elf Millionen Tonnen landen im Müll", "Nur Supermärkte werfen nennenswerte Mengen weg", "Vor allem unverkäufliche Ware wird entsorgt" }, "Rund elf Millionen Tonnen landen im Müll",
+            "Der größte Anteil entsteht in privaten Haushalten - also dort, wo man es selbst ändern kann."),
+        ("Was sagt das Mindesthaltbarkeitsdatum aus?", new[] { "Bis dahin garantiert der Hersteller die Güte", "Danach ist das Lebensmittel verdorben", "Es gibt an, wann die Ware verkauft werden muss" }, "Bis dahin garantiert der Hersteller die Güte",
+            "Vieles ist danach noch lange gut - schauen, riechen, probieren hilft mehr als das Datum."),
+        ("Warum ist der Zugang zu sauberem Wasser ein Entwicklungsthema?", new[] { "Ohne sauberes Wasser drohen Krankheiten", "Wasser ist in armen Ländern grundsätzlich knapp", "Der Wasserverbrauch steigt mit dem Wohlstand" }, "Ohne sauberes Wasser drohen Krankheiten",
+            "Wo Kinder stundenlang Wasser holen, bleibt keine Zeit für die Schule.")
+    };
+
+    private static QuizQuestion LandwirtschaftUndErnaehrungK7(Random r)
+    {
+        var f = LandwirtschaftUndErnaehrungK7Liste[r.Next(LandwirtschaftUndErnaehrungK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Landwirtschaft und Ernährung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Subsistenz = Eigenbedarf, Plantage = Export. Monokultur ist anfällig, Fruchtfolge schont den Boden. Bewässerung kann versalzen. Hunger ist meist ein Verteilungs-, kein Mengenproblem."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NaturgefahrenK7Liste =
+    {
+        ("Wodurch entstehen Erdbeben?", new[] { "Durch Spannungen zwischen Erdplatten", "Durch Hohlräume, die im Untergrund einstürzen", "Durch starke Temperaturschwankungen im Gestein" }, "Durch Spannungen zwischen Erdplatten",
+            "Verhaken sich zwei Platten, baut sich Spannung auf - der ruckartige Ausgleich ist das Beben."),
+        ("Was ist der Ring des Feuers?", new[] { "Ein Vulkangürtel rund um den Pazifik", "Eine Zone besonders heißer Wüsten am Äquator", "Ein Ring aus Vulkaninseln im Atlantik" }, "Ein Vulkangürtel rund um den Pazifik",
+            "Dort taucht die Pazifische Platte unter die Nachbarplatten ab - daher die vielen Vulkane."),
+        ("Womit misst man die Stärke eines Erdbebens?", new[] { "Mit der Magnitude", "Mit der Dauer der Erschütterung in Sekunden", "Mit der Anzahl der beschädigten Gebäude" }, "Mit der Magnitude",
+            "Eine Stufe mehr bedeutet etwa die 32-fache Energie - deshalb ist 7 sehr viel mehr als 6."),
+        ("Was ist ein Tsunami?", new[] { "Eine Flutwelle nach einem Seebeben", "Eine besonders hohe Welle bei schwerem Sturm", "Eine Springflut bei Vollmond" }, "Eine Flutwelle nach einem Seebeben",
+            "Auf offener See kaum zu bemerken, türmt sie sich erst in Küstennähe auf."),
+        ("Welches Warnzeichen kündigt einen Tsunami an?", new[] { "Das Meer zieht sich ungewöhnlich weit zurück", "Der Wind dreht plötzlich auf auflandig", "Der Himmel färbt sich auffällig dunkel" }, "Das Meer zieht sich ungewöhnlich weit zurück",
+            "Wer das sieht, hat nur Minuten - sofort weg von der Küste und auf höheres Gelände."),
+        ("Was ist ein Vulkanausbruch?", new[] { "Magma, Gas und Asche treten aus", "Der Einsturz eines Berges nach einem Erdbeben", "Ein Ausbruch heißer Quellen aus dem Untergrund" }, "Magma, Gas und Asche treten aus",
+            "An der Oberfläche heißt Magma Lava - der Name wechselt genau beim Austritt."),
+        ("Warum siedeln Menschen trotz der Gefahr an Vulkanen?", new[] { "Vulkanböden sind sehr fruchtbar", "Vulkangebiete sind besonders erdbebensicher", "Die Gebiete sind meist klimatisch begünstigt" }, "Vulkanböden sind sehr fruchtbar",
+            "Am Ätna und am Vesuv wächst deshalb seit Jahrtausenden Wein und Gemüse."),
+        ("Was ist ein Hurrikan?", new[] { "Ein tropischer Wirbelsturm über dem Atlantik", "Ein Wintersturm über Nordeuropa", "Ein starker Fallwind in Gebirgen" }, "Ein tropischer Wirbelsturm über dem Atlantik",
+            "Über dem Pazifik heißt derselbe Sturmtyp Taifun, im Indischen Ozean Zyklon."),
+        ("Was braucht ein tropischer Wirbelsturm zur Entstehung?", new[] { "Meerwasser von mindestens 26 Grad Celsius", "Kalte Luftmassen aus polaren Gebieten", "Eine hohe Gebirgskette in der Nähe" }, "Meerwasser von mindestens 26 Grad Celsius",
+            "Das warme Wasser liefert die Energie - deshalb schwächen sich Wirbelstürme über Land ab."),
+        ("Was ist das Auge eines Wirbelsturms?", new[] { "Das nahezu windstille Zentrum des Sturms", "Der Bereich mit den stärksten Winden", "Die Wolkenfront an der Vorderseite" }, "Das nahezu windstille Zentrum des Sturms",
+            "Die trügerische Ruhe täuscht - kurz danach kommt die andere Seite der Sturmwand."),
+        ("Wodurch entsteht ein Hochwasser?", new[] { "Durch Starkregen oder Schneeschmelze", "Ausschließlich durch Starkregen im Sommer", "Durch das Ansteigen des Meeresspiegels" }, "Durch Starkregen oder Schneeschmelze",
+            "Gefährlich wird es, wenn Schneeschmelze und Dauerregen zusammenkommen."),
+        ("Warum verschärft Flächenversiegelung Hochwasser?", new[] { "Auf Asphalt versickert nichts", "Versiegelte Flächen heizen sich stärker auf", "Beton nimmt Wasser auf und gibt es später ab" }, "Auf Asphalt versickert nichts",
+            "Der Regen erreicht den Fluss in Minuten statt in Stunden - der Scheitel wird höher."),
+        ("Was ist eine Renaturierung von Flüssen?", new[] { "Einem Fluss Kurven und Auen zurückgeben", "Die Uferbefestigung mit Steinen verstärken", "Ein Flussbett vertiefen, damit mehr Wasser passt" }, "Einem Fluss Kurven und Auen zurückgeben",
+            "Auen wirken wie ein Schwamm: sie nehmen Hochwasser auf, statt es weiterzuleiten."),
+        ("Was ist eine Dürre?", new[] { "Eine längere Zeit mit deutlich zu wenig Niederschlag", "Ein einzelner besonders heißer Sommertag", "Ein Gebiet, in dem grundsätzlich wenig Regen fällt" }, "Eine längere Zeit mit deutlich zu wenig Niederschlag",
+            "Sie ist eine Abweichung vom Normalzustand - eine Wüste ist trocken, aber nicht in Dürre."),
+        ("Was bedeutet Desertifikation?", new[] { "Wüstenbedingungen breiten sich aus", "Die natürliche Entstehung einer Wüste über Jahrmillionen", "Die Wanderung von Sanddünen innerhalb einer Wüste" }, "Wüstenbedingungen breiten sich aus",
+            "Überweidung und Abholzung in der Sahelzone beschleunigen sie erheblich."),
+        ("Was ist ein Frühwarnsystem?", new[] { "Technik, die rechtzeitig vor Gefahr warnt", "Ein Plan, wie nach einer Katastrophe geholfen wird", "Eine Versicherung gegen Naturkatastrophen" }, "Technik, die rechtzeitig vor Gefahr warnt",
+            "Nach dem Tsunami von 2004 wurde für den Indischen Ozean eines aufgebaut."),
+        ("Warum sind arme Länder von Naturkatastrophen härter betroffen?", new[] { "Es fehlt an stabilen Bauten und Warnsystemen", "Naturkatastrophen treten dort häufiger auf", "Die Bevölkerung ist dort dichter verteilt" }, "Es fehlt an stabilen Bauten und Warnsystemen",
+            "Dasselbe Beben fordert in Japan wenige und in Haiti zehntausende Opfer."),
+        ("Was ist der Unterschied zwischen Naturereignis und Naturkatastrophe?", new[] { "Erst betroffene Menschen machen es zur Katastrophe", "Eine Katastrophe ist ein besonders starkes Naturereignis", "Naturereignisse sind vorhersehbar, Katastrophen nicht" }, "Erst betroffene Menschen machen es zur Katastrophe",
+            "Ein Erdbeben im unbewohnten Gebirge ist ein Ereignis, kein Unglück."),
+        ("Wie kann man sich auf ein Erdbeben vorbereiten?", new[] { "Erdbebensicher bauen, Notvorrat anlegen, Verhalten üben", "Kellerräume als Schutzraum ausbauen", "Schwere Möbel in die Raummitte stellen" }, "Erdbebensicher bauen, Notvorrat anlegen, Verhalten üben",
+            "In Japan gehört die Erdbebenübung so selbstverständlich zum Schuljahr wie bei uns die Feueralarmprobe."),
+        ("Was hat der Klimawandel mit Naturgefahren zu tun?", new[] { "Er macht Extremereignisse häufiger und heftiger", "Er verursacht zusätzliche Erdbeben", "Er verlagert Naturgefahren in andere Erdteile" }, "Er macht Extremereignisse häufiger und heftiger",
+            "Wärmere Luft speichert mehr Wasser - daher stärkerer Starkregen und längere Hitzephasen.")
+    };
+
+    private static QuizQuestion NaturgefahrenK7(Random r)
+    {
+        var f = NaturgefahrenK7Liste[r.Next(NaturgefahrenK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geo, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Naturgefahren und Naturrisiken", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Erdbeben entstehen an Plattengrenzen (Ring des Feuers). Tsunami-Warnzeichen: das Meer zieht sich zurück. Wirbelstürme brauchen 26 Grad warmes Meerwasser. Zur Katastrophe wird ein Ereignis erst durch Betroffene."
         };
     }
 }

@@ -193,9 +193,9 @@ Rahmenlehrplan" weiter unten).
 | Kontinente und Ozeane | Klimazonen und Vegetationszonen | Plattentektonik |
 | Klimazonen | Stadt- und Raumentwicklung | Klimawandel |
 | Deutschland: Bundesländer | Wasser, Meere und Ressourcennutzung | Verstädterung |
-| Leben in Risikoräumen (Naturgefahren) |  | Armut und Reichtum weltweit |
-| Migration und Bevölkerung (Flucht, Landflucht) |  | Umgang mit Ressourcen: Energie und Rohstoffe |
-| Vielfalt der Erde (tropischer Regenwald) |  | Umgang mit Ressourcen: Landwirtschaft und Boden |
+| Leben in Risikoräumen (Naturgefahren) | Europa: Räume, Grenzen und Vielfalt | Armut und Reichtum weltweit |
+| Migration und Bevölkerung (Flucht, Landflucht) | Landwirtschaft und Ernährung | Umgang mit Ressourcen: Energie und Rohstoffe |
+| Vielfalt der Erde (tropischer Regenwald) | Naturgefahren und Naturrisiken | Umgang mit Ressourcen: Landwirtschaft und Boden |
 | Armut und Reichtum (Klasse-6-Niveau) |  | Klimaschutz: Internationale Konflikte und Lösungen |
 |  |  | Wirtschaftliche Verflechtungen und Globalisierung |
 |  |  | Europa in der Welt (naturräumliche und wirtschaftliche Vielfalt) |
@@ -207,9 +207,9 @@ Rahmenlehrplan" weiter unten).
 | Werte und Regeln | Freundschaft, Identität und Respekt | Verantwortung und Pflicht |
 | Freundschaft und Konflikte | Weltreligionen und Zusammenleben | Meinungsfreiheit und Grenzen |
 | Weltreligionen | Gerechtigkeit, Werte und Verantwortung | Digitale Ethik |
-| Wer bin ich? – Identität und Rolle |  | Recht und Gerechtigkeit |
-| Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau) |  | Wer bin ich? - Identität und Rolle |
-| Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau) |  | Wie frei bin ich? - Freiheit und Verantwortung |
+| Wer bin ich? – Identität und Rolle | Medien, Wahrheit und Verantwortung | Recht und Gerechtigkeit |
+| Wie frei bin ich? – Freiheit und Verantwortung (Klasse-6-Niveau) | Tier- und Umweltethik | Wer bin ich? - Identität und Rolle |
+| Was ist gerecht? – Recht und Gerechtigkeit (Klasse-6-Niveau) | Konflikt, Gewalt und Zivilcourage | Wie frei bin ich? - Freiheit und Verantwortung |
 |  |  | Was ist gerecht? - Gerechtigkeitstheorien vertieft |
 |  |  | Was ist der Mensch? - Mensch und Gemeinschaft |
 |  |  | Was soll ich tun? - Handeln und Moral |

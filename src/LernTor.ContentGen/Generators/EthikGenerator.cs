@@ -12,7 +12,7 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { WerteRegeln, Freundschaft, Weltreligionen, IdentitaetUndRolleKlasse6, FreiheitUndVerantwortungKlasse6, RechtUndGerechtigkeitKlasse6 },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { FreundschaftUndIdentitaet, WeltreligionenK7, GerechtigkeitUndWerte },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { FreundschaftUndIdentitaet, WeltreligionenK7, GerechtigkeitUndWerte, MedienUndWahrheitK7, TierUndUmweltethikK7, KonfliktUndGewaltK7 },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Verantwortung, Meinungsfreiheit, DigitaleEthik, RechtUndGerechtigkeit, IdentitaetUndRolle, FreiheitPhilosophisch, GerechtigkeitstheorienVertieft, MenschUndGemeinschaft, HandelnUndMoral, WissenUndGlauben }
         };
 
@@ -1082,6 +1082,174 @@ public sealed class EthikGenerator : ExerciseGeneratorBase
             Topic = "Gerechtigkeit, Werte und Verantwortung", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Leistungs-, Bedarfs- und Chancengerechtigkeit unterscheiden sich. Werte sind Ideale, Normen konkrete Regeln. Kategorischer Imperativ: Handle so, dass deine Regel für alle gelten könnte."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MedienUndWahrheitK7Liste =
+    {
+        ("Was ist eine Falschmeldung (\"Fake News\")?", new[] { "Eine Meldung, die jemand absichtlich verbreitet, um andere zu täuschen", "Eine Nachricht, die einem persönlich nicht in den Kram passt", "Eine Meldung, die nur von wenigen Menschen geteilt wurde" }, "Eine Meldung, die jemand absichtlich verbreitet, um andere zu täuschen",
+            "Entscheidend ist die Absicht: wer bewusst täuschen will, macht Desinformation daraus."),
+        ("Warum verbreiten sich Falschmeldungen oft schneller?", new[] { "Sie sind aufregender und werden aus Empörung geteilt", "Suchmaschinen behandeln sie bevorzugt und zeigen sie oben an", "Sie sind kürzer geschrieben und lassen sich schneller lesen" }, "Sie sind aufregender und werden aus Empörung geteilt",
+            "Wut bringt Menschen eher zum Weiterleiten als eine nüchterne Richtigstellung."),
+        ("Wie prüfst du am besten, ob eine Meldung stimmt?", new[] { "Bei zwei unabhängigen, bekannten Quellen nachsehen", "Nachsehen, wie oft der Beitrag schon geteilt wurde", "Darauf achten, ob der Text professionell gestaltet ist" }, "Bei zwei unabhängigen, bekannten Quellen nachsehen",
+            "Viele Klicks sagen nichts über den Wahrheitsgehalt - unabhängige Bestätigung schon."),
+        ("Was ist eine Filterblase?", new[] { "Man sieht fast nur noch Inhalte, die zur eigenen Meinung passen", "Ein Werkzeug, das anstößige Inhalte automatisch entfernt", "Eine Einstellung, mit der man Werbung abschalten kann" }, "Man sieht fast nur noch Inhalte, die zur eigenen Meinung passen",
+            "Algorithmen zeigen, was gefällt - dadurch wirkt die eigene Sicht verbreiteter, als sie ist."),
+        ("Warum ist es ein Problem, nur eine Sichtweise zu sehen?", new[] { "Man prüft die eigene Meinung irgendwann gar nicht mehr", "Man bekommt insgesamt deutlich weniger Beiträge angezeigt", "Man kann technisch keine anderen Seiten mehr aufrufen" }, "Man prüft die eigene Meinung irgendwann gar nicht mehr",
+            "Wer nie Gegenargumente hört, verlernt das Abwägen - dabei lebt eine Demokratie davon."),
+        ("Was ist ein Deepfake?", new[] { "Ein künstlich erzeugtes Video, das täuschend echt wirkt", "Ein Foto, das jemand absichtlich schlecht bearbeitet hat", "Ein Video, das nur ein paar Sekunden lang läuft" }, "Ein künstlich erzeugtes Video, das täuschend echt wirkt",
+            "Weil Bild und Ton echt wirken, hilft nur die Frage: wer hat es zuerst veröffentlicht?"),
+        ("Ein Video empört dich. Was tust du zuerst?", new[] { "Kurz innehalten und in Ruhe nachsehen, woher es eigentlich stammt", "Es sofort weiterleiten, damit andere gewarnt sind", "Es kommentieren, damit eine Diskussion entsteht" }, "Kurz innehalten und in Ruhe nachsehen, woher es eigentlich stammt",
+            "Der Moment zwischen Empörung und Weiterleiten stoppt eine Falschmeldung."),
+        ("Wo endet die Meinungsfreiheit?", new[] { "Bei Beleidigung, Verleumdung und Hetze", "Sie endet nirgends, man darf wirklich alles sagen", "Dort, wo die Mehrheit anderer Meinung ist" }, "Bei Beleidigung, Verleumdung und Hetze",
+            "Beleidigung und Volksverhetzung sind keine Meinungen, sondern strafbar."),
+        ("Was unterscheidet eine Meinung von einer Tatsache?", new[] { "Eine Tatsache lässt sich überprüfen", "Eine Meinung ist immer falsch, eine Tatsache immer wahr", "Eine Tatsache wird von mehr Menschen geteilt" }, "Eine Tatsache lässt sich überprüfen",
+            "\"Berlin hat 3,7 Millionen Einwohner\" ist prüfbar, \"Berlin ist am schönsten\" nicht."),
+        ("Was ist Cybermobbing?", new[] { "Jemanden im Netz über längere Zeit gezielt fertigmachen und ausgrenzen", "Eine einzelne unfreundliche Nachricht im Klassenchat", "Eine hitzige Diskussion unter einem Beitrag im Netz" }, "Jemanden im Netz über längere Zeit gezielt fertigmachen und ausgrenzen",
+            "Anders als auf dem Schulhof hört es abends nicht auf und erreicht sehr viele."),
+        ("Was tust du, wenn du Cybermobbing mitbekommst?", new[] { "Beweise sichern und Erwachsene einschalten", "Abwarten, ob sich die Sache von allein beruhigt", "Mit einer ebenso deutlichen Nachricht zurückschreiben" }, "Beweise sichern und Erwachsene einschalten",
+            "Screenshots helfen beim Nachweis; Zurückpöbeln macht dich selbst angreifbar."),
+        ("Warum ist Wegschauen bei Cybermobbing ein Problem?", new[] { "Schweigen wirkt auf Täter wie Zustimmung", "Wegschauen ist in Deutschland immer strafbar", "Die Beiträge verschwinden dadurch nur langsamer" }, "Schweigen wirkt auf Täter wie Zustimmung",
+            "Schon eine Person, die widerspricht, verändert die Stimmung in einer Gruppe."),
+        ("Darfst du ein Foto von einem Mitschüler posten?", new[] { "Nein, dafür braucht es immer seine ausdrückliche Erlaubnis", "Ja, wenn es auf dem Schulhof aufgenommen wurde", "Ja, solange niemand namentlich genannt wird" }, "Nein, dafür braucht es immer seine ausdrückliche Erlaubnis",
+            "Das nennt sich Recht am eigenen Bild und gilt auch unter Freunden."),
+        ("Was besagt das Recht am eigenen Bild?", new[] { "Abgebildete entscheiden über die Veröffentlichung", "Fotografen besitzen sämtliche Rechte an ihren Aufnahmen", "Bilder darf man nur mit Wasserzeichen weitergeben" }, "Abgebildete entscheiden über die Veröffentlichung",
+            "Wer abgebildet ist, muss zustimmen - egal, wer auf den Auslöser gedrückt hat."),
+        ("Warum mit persönlichen Daten sparsam umgehen?", new[] { "Veröffentlichtes bekommt man nie wieder zurück", "Große Datenmengen verlangsamen das eigene Gerät spürbar", "Anbieter verlangen sonst Gebühren für ihren Dienst" }, "Veröffentlichtes bekommt man nie wieder zurück",
+            "Kopien und Screenshots bleiben, auch wenn das Original gelöscht wird."),
+        ("Wie nennt man Werbung, die wie ein Beitrag aussieht?", new[] { "Schleichwerbung - sie muss deutlich als Werbung gekennzeichnet sein", "Eine besonders gelungene persönliche Empfehlung", "Ein Beitrag mit auffällig vielen Kommentaren" }, "Schleichwerbung - sie muss deutlich als Werbung gekennzeichnet sein",
+            "Deshalb steht bei bezahlten Beiträgen \"Werbung\" oder \"Anzeige\" dabei."),
+        ("Warum empfehlen Influencer Produkte, die sie nicht nutzen?", new[] { "Weil sie dafür bezahlt werden", "Weil sie die Produkte grundsätzlich für gut halten", "Weil die Plattform ihnen das so vorschreibt" }, "Weil sie dafür bezahlt werden",
+            "Eine bezahlte Empfehlung ist Werbung - das zu wissen verändert, wie man sie liest."),
+        ("Was hilft gegen zu viel Bildschirmzeit?", new[] { "Feste Zeiten vereinbaren und Pausen einplanen", "Das Gerät ganz abschaffen und wegschließen", "Warten, bis das Interesse von allein nachlässt" }, "Feste Zeiten vereinbaren und Pausen einplanen",
+            "Verbote allein wirken selten - eine gemeinsam vereinbarte Regel schon eher."),
+        ("Warum einen Chat-Streit nicht in die Klasse tragen?", new[] { "Betroffene können sich dann kaum noch wehren, alle haben schon geurteilt", "Weil Chatinhalte rechtlich grundsätzlich geheim sind", "Weil in der Klasse andere Regeln gelten als im Netz" }, "Betroffene können sich dann kaum noch wehren, alle haben schon geurteilt",
+            "Wer nur eine Seite hört und weitererzählt, entscheidet den Streit vorab."),
+        ("Was heißt Quellenkritik in einem Satz?", new[] { "Wer sagt es, warum, und woher weiß er es?", "Alles anzweifeln, was im Internet zu finden ist", "Nur Beiträge großer Sender für glaubwürdig halten" }, "Wer sagt es, warum, und woher weiß er es?",
+            "Weder alles glauben noch alles anzweifeln hilft - diese drei Fragen schon.")
+    };
+
+    private static QuizQuestion MedienUndWahrheitK7(Random r)
+    {
+        var f = MedienUndWahrheitK7Liste[r.Next(MedienUndWahrheitK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Medien, Wahrheit und Verantwortung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Quellenkritik: Wer sagt es, warum, woher weiß er es? Meinung ist Bewertung, Tatsache ist prüfbar. Meinungsfreiheit endet bei Beleidigung und Hetze. Recht am eigenen Bild gilt auch unter Freunden."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TierUndUmweltethikK7Liste =
+    {
+        ("Warum stellt sich die Frage nach dem Umgang mit Tieren?", new[] { "Weil Tiere Schmerz und Angst empfinden können", "Weil Tiere für den Menschen wirtschaftlich nützlich sind", "Weil Tiere ähnlich wie Menschen in Gruppen leben" }, "Weil Tiere Schmerz und Angst empfinden können",
+            "Leidensfähigkeit ist der Grund, warum Tierwohl überhaupt eine ethische Frage ist."),
+        ("Was schreibt das Tierschutzgesetz vor?", new[] { "Kein Tier darf ohne vernünftigen Grund leiden", "Tiere dürfen ausschließlich in Innenräumen gehalten werden", "Jedes Haustier muss amtlich registriert werden" }, "Kein Tier darf ohne vernünftigen Grund leiden",
+            "Der Streit dreht sich meist darum, was als vernünftiger Grund gelten darf."),
+        ("Was bedeutet Massentierhaltung?", new[] { "Sehr viele Tiere auf engem Raum, auf Ertrag ausgerichtet", "Die Haltung besonders großer Tierarten in eigenen Ställen", "Tierhaltung durch mehrere Familien gemeinsam" }, "Sehr viele Tiere auf engem Raum, auf Ertrag ausgerichtet",
+            "Sie macht Fleisch billig - die Kosten tragen Tiere, Böden und Grundwasser."),
+        ("Warum essen manche Menschen bewusst kein Fleisch?", new[] { "Wegen der Tiere, des Klimas oder der Gesundheit", "Weil Fleisch grundsätzlich als ungesund gilt", "Weil ihnen der Geschmack nicht zusagt" }, "Wegen der Tiere, des Klimas oder der Gesundheit",
+            "Die Gründe sind verschieden - niemand muss sich dafür rechtfertigen."),
+        ("Was hat Fleischessen mit dem Klima zu tun?", new[] { "Tierhaltung erzeugt viele Treibhausgase und braucht enorm viel Fläche", "Tiertransporte sind der einzige klimarelevante Anteil daran", "Fleisch muss stärker gekühlt werden als andere Waren" }, "Tierhaltung erzeugt viele Treibhausgase und braucht enorm viel Fläche",
+            "Für ein Kilo Rindfleisch braucht es ein Vielfaches an Futter, Wasser und Land."),
+        ("Was bedeutet Nachhaltigkeit?", new[] { "So leben, dass auch später noch genug da ist", "Möglichst wenig Geld für Dinge ausgeben", "Produkte so lange wie irgend möglich aufbewahren" }, "So leben, dass auch später noch genug da ist",
+            "Der Begriff stammt aus der Forstwirtschaft: nur so viel schlagen, wie nachwächst."),
+        ("Was ist der ökologische Fußabdruck?", new[] { "Ein Maß dafür, wie viel Natur der eigene Lebensstil verbraucht", "Die Fläche, die ein Mensch zum Wohnen benötigt", "Die Menge Müll, die jemand pro Tag erzeugt" }, "Ein Maß dafür, wie viel Natur der eigene Lebensstil verbraucht",
+            "Er macht vergleichbar, was Wohnen, Essen und Reisen zusammen ausmachen."),
+        ("Warum reicht umweltbewusstes Handeln Einzelner nicht?", new[] { "Große Wirkung entsteht erst durch gemeinsame Regeln", "Einzelne Entscheidungen haben überhaupt keine Wirkung", "Umweltschutz ist allein Sache der Wirtschaft" }, "Große Wirkung entsteht erst durch gemeinsame Regeln",
+            "Eigenes Handeln zählt - ohne politische Regeln bleibt es ein Tropfen auf den Stein."),
+        ("Was bedeutet Generationengerechtigkeit?", new[] { "Wir dürfen künftigen Generationen die Grundlagen nicht nehmen", "Alle Altersgruppen sollen gleich viel Geld erhalten", "Ältere sollen bei Entscheidungen den Vorrang haben" }, "Wir dürfen künftigen Generationen die Grundlagen nicht nehmen",
+            "Wer heute Rohstoffe verbraucht, entscheidet über Menschen mit, die noch nicht mitreden."),
+        ("Darf man Tiere für Medikamente einsetzen?", new[] { "Darüber wird gestritten - Nutzen steht gegen Leid", "Ja, weil Tiere genau dafür da sind", "Nein, unter allen Umständen und ganz ohne Ausnahme" }, "Darüber wird gestritten - Nutzen steht gegen Leid",
+            "Bei echten Dilemmata gibt es keine bequeme Antwort, nur ehrliches Abwägen."),
+        ("Was ist ein ethisches Dilemma?", new[] { "Eine Lage, in der jede Entscheidung einen Wert verletzt", "Eine Frage, auf die niemand die Antwort kennt", "Ein länger andauernder Streit zwischen zwei Personen über Werte" }, "Eine Lage, in der jede Entscheidung einen Wert verletzt",
+            "Man kann dann nur begründen, warum ein Wert im Einzelfall schwerer wiegt."),
+        ("Warum ist Artenschutz mehr als Tierliebe?", new[] { "Arten hängen voneinander ab, das Gefüge kippt sonst", "Seltene Tiere sind besonders wertvoll", "Geschützte Arten ziehen zahlende Touristen in die Region" }, "Arten hängen voneinander ab, das Gefüge kippt sonst",
+            "Ohne Insekten gäbe es kaum Bestäubung - und viel weniger Obst und Gemüse."),
+        ("Was bringt Mülltrennung?", new[] { "Getrennte Wertstoffe kann man wiederverwerten statt zu verbrennen", "Getrennter Müll nimmt insgesamt weniger Platz weg", "Sie senkt in erster Linie die Müllgebühren" }, "Getrennte Wertstoffe kann man wiederverwerten statt zu verbrennen",
+            "Aus sauberem Altpapier wird neues Papier - aus verschmutztem nur Asche."),
+        ("Was ist an Wegwerfprodukten problematisch?", new[] { "Viel Rohstoff und Energie für sehr kurze Nutzung", "Sie sind auf lange Sicht teurer als haltbare Produkte", "Sie lassen sich schlechter transportieren" }, "Viel Rohstoff und Energie für sehr kurze Nutzung",
+            "Ein Becher wird Minuten benutzt und bleibt Jahrhunderte in der Umwelt."),
+        ("Warum ist Wasser sparen auch in Deutschland sinnvoll?", new[] { "Aufbereiten und Erwärmen kosten sehr viel Energie", "Deutschland hat dauerhaft viel zu wenig Grundwasser", "Wasser wird sonst unbrauchbar" }, "Aufbereiten und Erwärmen kosten sehr viel Energie",
+            "Warmwasser ist im Haushalt einer der größten Energieposten überhaupt."),
+        ("Was ist Fair Trade?", new[] { "Handel, bei dem Erzeuger verlässliche Mindestpreise erhalten", "Handel ganz ohne beteiligte Zwischenhändler", "Handel mit besonders hochwertigen Waren" }, "Handel, bei dem Erzeuger verlässliche Mindestpreise erhalten",
+            "Der Mindestpreis schützt Bauern davor, bei fallenden Preisen alles zu verlieren."),
+        ("Warum ist sehr billige Kleidung ein Problem?", new[] { "Niedrige Preise gehen zu Lasten von Löhnen und Umwelt", "Billige Kleidung passt in der Regel deutlich schlechter", "Sie wird seltener in Europa verkauft" }, "Niedrige Preise gehen zu Lasten von Löhnen und Umwelt",
+            "Wer sehr wenig zahlt, sollte fragen, wer die Differenz trägt."),
+        ("Was kann eine Schulklasse konkret für die Umwelt tun?", new[] { "Müll trennen, Papier sparen, den Schulweg umweltfreundlich gestalten", "Geld für den Regenwald sammeln und spenden", "Ein Plakat über den Klimawandel gestalten" }, "Müll trennen, Papier sparen, den Schulweg umweltfreundlich gestalten",
+            "Kleine Änderungen im Alltag wirken verlässlicher als einmalige Aktionen."),
+        ("Warum darf man Tiere nicht aussetzen?", new[] { "Sie verhungern oft oder verdrängen heimische Arten", "Aussetzen ist nur weit außerhalb von Städten erlaubt", "Tiere finden allein nicht nach Hause zurück" }, "Sie verhungern oft oder verdrängen heimische Arten",
+            "Wer ein Tier aufnimmt, übernimmt Verantwortung für dessen ganzes Leben."),
+        ("Wie hängen Konsum und Verantwortung zusammen?", new[] { "Jeder Kauf unterstützt eine bestimmte Art zu produzieren", "Verantwortung tragen allein die Hersteller und die Politik", "Konsum ist eine reine Geschmacksfrage" }, "Jeder Kauf unterstützt eine bestimmte Art zu produzieren",
+            "Deshalb ist die Frage \"wo kommt das her?\" schon ein Teil der Antwort.")
+    };
+
+    private static QuizQuestion TierUndUmweltethikK7(Random r)
+    {
+        var f = TierUndUmweltethikK7Liste[r.Next(TierUndUmweltethikK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Tier- und Umweltethik", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Leidensfähigkeit begründet Tierschutz. Nachhaltigkeit: nur so viel nehmen, wie nachwächst. Ein Dilemma hat keine saubere Lösung, nur ein begründetes Abwägen. Konsum ist immer auch eine Entscheidung."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KonfliktUndGewaltK7Liste =
+    {
+        ("Was ist der erste Schritt, um einen Streit zu lösen?", new[] { "Zuhören und verstehen, worum es der anderen Seite wirklich geht", "Möglichst schnell einen tragfähigen Kompromiss aushandeln", "Klären, wer den Streit angefangen hat" }, "Zuhören und verstehen, worum es der anderen Seite wirklich geht",
+            "Hinter einer Forderung steckt fast immer ein Bedürfnis - erst das macht eine Lösung möglich."),
+        ("Was bedeutet eine Ich-Botschaft?", new[] { "Von den eigenen Gefühlen sprechen statt Vorwürfe zu machen", "In einem Streit möglichst als Erster das Wort ergreifen", "Die eigene Sicht besonders deutlich vertreten" }, "Von den eigenen Gefühlen sprechen statt Vorwürfe zu machen",
+            "\"Ich fühle mich übergangen\" führt weiter als \"Du hörst nie zu\"."),
+        ("Was ist ein Kompromiss?", new[] { "Eine Lösung, bei der beide Seiten etwas nachgeben", "Eine Lösung, mit der beide vollständig zufrieden sind", "Ein Abbruch des Gesprächs ohne Ergebnis" }, "Eine Lösung, bei der beide Seiten etwas nachgeben",
+            "Beim Konsens tragen alle die Lösung mit - der ist besser, aber seltener erreichbar."),
+        ("Was macht ein Streitschlichter (Mediator)?", new[] { "Er hilft beiden Seiten, selbst eine Lösung zu finden", "Er entscheidet, wer im Streit recht hat", "Er sorgt dafür, dass sich beide entschuldigen" }, "Er hilft beiden Seiten, selbst eine Lösung zu finden",
+            "Ein Urteil würde eine Seite zum Verlierer machen - eine selbst gefundene Lösung hält länger."),
+        ("Was ist der Unterschied zwischen Streit und Mobbing?", new[] { "Beim Mobbing ist eine Seite von vornherein deutlich überlegen", "Mobbing findet ausschließlich im Internet und in Chats statt", "Ein Streit dauert kürzer als Mobbing" }, "Beim Mobbing ist eine Seite von vornherein deutlich überlegen",
+            "Bei einem Streit sind beide etwa gleich stark - beim Mobbing ist genau das nicht so."),
+        ("Was gehört alles zu Gewalt?", new[] { "Auch Drohungen, Ausgrenzung und Beleidigungen zählen dazu", "Ausschließlich körperliche Angriffe auf andere Personen", "Jede Form von lautem Streit" }, "Auch Drohungen, Ausgrenzung und Beleidigungen zählen dazu",
+            "Psychische Gewalt hinterlässt keine sichtbaren Spuren und wirkt trotzdem lange nach."),
+        ("Warum ist Wegschauen bei Gewalt ein Problem?", new[] { "Betroffene bleiben allein und Täter fühlen sich bestätigt", "Zuschauer machen sich in solchen Fällen immer selbst strafbar", "Der Vorfall wird dadurch schneller vergessen" }, "Betroffene bleiben allein und Täter fühlen sich bestätigt",
+            "Schon eine Person, die widerspricht oder Hilfe holt, verändert die Lage."),
+        ("Was ist unterlassene Hilfeleistung?", new[] { "Nicht zu helfen, obwohl man es gefahrlos könnte", "Falsch zu helfen und dabei zusätzlichen Schaden anzurichten", "Zu helfen, ohne vorher zu fragen" }, "Nicht zu helfen, obwohl man es gefahrlos könnte",
+            "Hilfe holen zählt als Hilfe - niemand muss sich selbst in Gefahr bringen."),
+        ("Wie hilfst du sicher, wenn jemand angegriffen wird?", new[] { "Hilfe holen und andere Umstehende direkt ansprechen", "Selbst dazwischengehen und den Angreifer entschlossen wegdrängen", "Alles filmen, um Beweise zu haben" }, "Hilfe holen und andere Umstehende direkt ansprechen",
+            "\"Sie im blauen Mantel, rufen Sie die 110\" wirkt besser als ein Ruf in die Menge."),
+        ("Welche Nummer ist der Notruf in Deutschland?", new[] { "112 für Feuerwehr und Rettungsdienst, 110 für die Polizei", "Die 110 ist in Deutschland für sämtliche Notfälle zuständig", "116 111 für alle Notfälle" }, "112 für Feuerwehr und Rettungsdienst, 110 für die Polizei",
+            "Die 112 gilt in der ganzen EU und ist von jedem Handy aus kostenfrei."),
+        ("Wohin kann man sich bei Sorgen anonym wenden?", new[] { "An die Nummer gegen Kummer unter 116 111", "An die Polizei unter der bundesweiten Nummer 110", "An die Schulleitung" }, "An die Nummer gegen Kummer unter 116 111",
+            "Dort hören Menschen zu, ohne dass man seinen Namen nennen muss."),
+        ("Was bedeutet Deeskalation?", new[] { "Eine Lage bewusst beruhigen, statt sie zuzuspitzen", "Einem Streit vollständig aus dem Weg gehen", "Eine Auseinandersetzung schnell entscheiden" }, "Eine Lage bewusst beruhigen, statt sie zuzuspitzen",
+            "Ruhig sprechen, Abstand halten und Zuschauer ansprechen nimmt Tempo aus der Lage."),
+        ("Warum hilft es, in einem Streit eine Pause zu machen?", new[] { "Im Zorn sagt man Dinge, die man später bereut", "Der Streit erledigt sich in der Pause von selbst", "Wer zuerst geht, hat die stärkere Position" }, "Im Zorn sagt man Dinge, die man später bereut",
+            "Wut braucht Zeit zum Abklingen - danach ist ein Gespräch überhaupt erst möglich."),
+        ("Was ist Vorurteil?", new[] { "Ein Urteil über Menschen, bevor man sie kennt", "Eine Meinung, die sich später als falsch erweist", "Eine Einschätzung aufgrund schlechter Erfahrungen" }, "Ein Urteil über Menschen, bevor man sie kennt",
+            "Vorurteile sparen dem Kopf Arbeit - und werden genau dadurch so hartnäckig."),
+        ("Wie entstehen Vorurteile?", new[] { "Durch Verallgemeinerung einzelner eigener Erfahrungen", "Durch eine bewusste innere Entscheidung gegen eine ganze Gruppe", "Durch fehlende schulische Bildung" }, "Durch Verallgemeinerung einzelner eigener Erfahrungen",
+            "Aus einer Begegnung wird \"die sind alle so\" - und das stimmt fast nie."),
+        ("Was hilft am besten gegen Vorurteile?", new[] { "Menschen persönlich kennenlernen", "Sich Statistiken über die Gruppe ansehen", "Vorurteile bewusst nicht aussprechen" }, "Menschen persönlich kennenlernen",
+            "Eine echte Begegnung entkräftet mehr als jedes Argument."),
+        ("Was bedeutet Diskriminierung?", new[] { "Menschen wegen Herkunft oder Aussehen schlechter behandeln", "Zwischen zwei ähnlichen Dingen sehr genau unterscheiden zu können", "Jemanden im Streit ungerecht behandeln" }, "Menschen wegen Herkunft oder Aussehen schlechter behandeln",
+            "Das Grundgesetz verbietet Benachteiligung aus genau diesen Gründen."),
+        ("Was steht in Artikel 1 des Grundgesetzes?", new[] { "Die Würde des Menschen ist unantastbar", "Alle Menschen sind vor dem Gesetz gleich", "Jeder hat das Recht auf freie Meinungsäußerung" }, "Die Würde des Menschen ist unantastbar",
+            "Er steht bewusst an erster Stelle - alle weiteren Grundrechte bauen darauf auf."),
+        ("Warum ist Versöhnung nach einem Streit wichtig?", new[] { "Ohne Klärung bleibt der Ärger bestehen und wirkt weiter", "Ein Streit gilt sonst als ungelöst", "Versöhnung ist eine Frage der Höflichkeit" }, "Ohne Klärung bleibt der Ärger bestehen und wirkt weiter",
+            "Nicht ausgesprochener Ärger kommt beim nächsten Anlass doppelt zurück."),
+        ("Was macht eine Entschuldigung glaubwürdig?", new[] { "Man benennt konkret, was falsch war, ohne Ausreden", "Man entschuldigt sich möglichst schnell", "Man erklärt ausführlich, wie es überhaupt dazu gekommen ist" }, "Man benennt konkret, was falsch war, ohne Ausreden",
+            "\"Tut mir leid, wenn du dich angegriffen fühlst\" ist keine Entschuldigung, sondern eine Rückgabe.")
+    };
+
+    private static QuizQuestion KonfliktUndGewaltK7(Random r)
+    {
+        var f = KonfliktUndGewaltK7Liste[r.Next(KonfliktUndGewaltK7Liste.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Ethik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Konflikt, Gewalt und Zivilcourage", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ich-Botschaft statt Vorwurf. Mobbing ist ungleiche Macht über längere Zeit, Streit nicht. Hilfe holen zählt als Hilfe: 112 Rettung, 110 Polizei, 116 111 Nummer gegen Kummer. Artikel 1 GG: Würde des Menschen."
         };
     }
 }

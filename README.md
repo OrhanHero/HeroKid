@@ -8,9 +8,10 @@ sind (siehe "Bereiche deaktivieren").
 
 Zielgruppe: deutsch-türkische Kinder (ca. 10–15 Jahre) in Berlin, Lehrplan-Themen orientiert
 am Berliner Rahmenlehrplan, Klasse 6, 7 und 9 vollständig ausgebaut; Klasse 8 und 10 nutzen die
-Pools ihres Doppeljahrgangs (7/8 bzw. 9/10) - Mathematik hat
-bereits einen eigenen Klasse-7-Pool, alle übrigen Fächer wiederholen für Klasse-7-Profile
-übergangsweise ihren Klasse-6-Stoff (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
+Pools ihres Doppeljahrgangs (7/8 bzw. 9/10). **Alle 15 Fächer haben einen eigenen Klasse-7-Pool**
+mit eigenen Themen - kein Fach wiederholt für Klasse-7-Profile mehr den Klasse-6-Stoff. Einzige
+Ausnahme ist der KI-Bereich, der bewusst nur Klasse 6 und 9 hat und für Klasse 7 auf Klasse 6
+zurückfällt (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
 
 ## Profile
 
