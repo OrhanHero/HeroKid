@@ -250,9 +250,12 @@ public partial class App : Application
         if (!shouldSkipKioskLock)
         {
             // Ferien-/Pausenmodus (Eltern-Bereich): bis einschließlich des gesetzten Datums keine
-            // Kiosk-Sperre - danach reaktiviert sie sich beim nächsten Start von selbst.
+            // Kiosk-Sperre - danach reaktiviert sie sich beim nächsten Start von selbst. Dieselbe
+            // Regel entscheidet in MainViewModel über den Ferien-Startbildschirm; sie steht
+            // deshalb einmal in PauseMode statt zweimal ausgeschrieben (siehe PauseMode).
             var settings = await _host.Services.GetRequiredService<SettingsRepository>().LoadAsync();
-            if (settings.PauseUntilDate is { } pauseUntil && DateOnly.FromDateTime(DateTime.Today) <= pauseUntil)
+            if (settings.PauseUntilDate is { } pauseUntil
+                && PauseMode.IsActive(pauseUntil, DateOnly.FromDateTime(DateTime.Today)))
             {
                 shouldSkipKioskLock = true;
                 AppLog.Info("App", $"Ferienmodus aktiv bis {pauseUntil:yyyy-MM-dd} - Kiosk-Sperre übersprungen");

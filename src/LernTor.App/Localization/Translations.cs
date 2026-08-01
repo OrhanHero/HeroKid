@@ -483,11 +483,22 @@ public static class Translations
             ["Parent_Scope_QuizFirst"] = L("Abschlussquiz: Fragen im 1. Versuch", "Bitirme sınavı: 1. denemedeki soru sayısı"),
             ["Parent_Scope_QuizRetry"] = L("Abschlussquiz: Fragen in der Wiederholung", "Bitirme sınavı: Tekrardaki soru sayısı"),
             ["Parent_Pause_Title"] = L("Ferien- / Pausenmodus", "Tatil / Ara modu"),
-            ["Parent_Pause_Hint"] = L("Bis einschließlich dieses Datums startet LernTor ohne Sperre - danach schaltet sich die Sperre automatisch wieder ein.",
-                "Bu tarihe kadar (dahil) LernTor kilitsiz başlar - sonrasında kilit otomatik olarak tekrar devreye girer."),
-            ["Parent_Pause_Active"] = L("Pausenmodus ist aktiv - der PC wird beim Start nicht gesperrt.",
-                "Ara modu etkin - bilgisayar başlangıçta kilitlenmez."),
+            ["Parent_Pause_Hint"] = L("Bis einschließlich dieses Datums startet LernTor ohne Sperre und ohne Lernpflicht - danach schaltet sich beides automatisch wieder ein.",
+                "Bu tarihe kadar (dahil) LernTor kilitsiz ve öğrenme zorunluluğu olmadan başlar - sonrasında ikisi de otomatik olarak tekrar devreye girer."),
+            ["Parent_Pause_Active"] = L("Pausenmodus ist aktiv - der PC wird beim Start nicht gesperrt, und das Kind kann ihn direkt entsperren.",
+                "Ara modu etkin - bilgisayar başlangıçta kilitlenmez ve çocuk kilidi doğrudan açabilir."),
             ["Parent_Pause_Clear"] = L("Pause beenden", "Arayı bitir"),
+
+            // Ferien-Startbildschirm des Kindes (PauseModeViewModel). Existiert nur, solange die
+            // Pause laeuft - danach gibt es diesen Bildschirm und damit den Entsperren-Knopf nicht.
+            ["Pause_Title"] = L("Ferien! Heute musst du nichts lernen.", "Tatil! Bugün ders yapmak zorunda değilsin."),
+            ["Pause_Until"] = L("Pause bis einschließlich {0}", "{0} tarihine kadar (dahil) ara"),
+            ["Pause_LastDay"] = L("Heute ist der letzte Ferientag.", "Bugün tatilin son günü."),
+            ["Pause_RemainingDays"] = L("Noch {0} Tage Pause.", "{0} gün ara kaldı."),
+            ["Pause_UnlockPc"] = L("🔓 PC entsperren", "🔓 Bilgisayarın kilidini aç"),
+            ["Pause_PracticeAnyway"] = L("Trotzdem üben", "Yine de alıştırma yap"),
+            ["Pause_ParentHint"] = L("Eltern können die Pause über ⚙ jederzeit beenden.",
+                "Ebeveynler arayı ⚙ üzerinden istedikleri zaman bitirebilir."),
 
             ["Parent_Report_Title"] = L("Bericht: Stärken & Schwächen", "Rapor: Güçlü ve zayıf yönler"),
             ["Parent_Report_WeakTopics"] = L("Schwächste Themen (Brennpunkte):", "En zayıf konular (odak noktaları):"),

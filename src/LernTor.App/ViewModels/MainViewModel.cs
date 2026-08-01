@@ -139,9 +139,51 @@ public sealed partial class MainViewModel : ObservableObject
         Settings = await _settingsRepo.LoadAsync();
         LocalizationService.Instance.CurrentLanguage = Settings.DefaultLanguage;
 
+        // Ferien-/Pausenmodus vor allem anderen: sonst landet das Kind trotz laufender Pause in
+        // der gewohnten Lernstrecke und muss bis zum Abschlussquiz durch, um den PC zu bekommen -
+        // genau der Fehler, den dieser Zweig behebt. Die Kiosk-Sperre wurde in diesem Fall schon
+        // beim Start uebersprungen (siehe App.xaml.cs), nur die Oberfläche wusste nichts davon.
+        if (PauseMode.IsActive(Settings.PauseUntilDate, DateOnly.FromDateTime(DateTime.Today)))
+        {
+            ShowPauseScreen();
+            return;
+        }
+
+        await ShowProfileSelectionAsync();
+    }
+
+    private void ShowPauseScreen()
+    {
+        // ActiveProfileName leeren: die Etappen-Anzeige oben ("Lesen → Tippen → …") wuerde sonst
+        // nach einem "Trotzdem ueben" und einem spaeteren Zurueck weiter mitlaufen, obwohl gerade
+        // gar keine Lernstrecke aktiv ist.
+        ActiveProfileName = string.Empty;
+        SessionSteps.Clear();
+
+        CurrentViewModel = new PauseModeViewModel(
+            Settings.PauseUntilDate!.Value,
+            DateOnly.FromDateTime(DateTime.Today),
+            OnPauseUnlockRequested,
+            () => _ = ShowProfileSelectionAsync());
+    }
+
+    private async Task ShowProfileSelectionAsync()
+    {
         var profileSelection = new ProfileSelectionViewModel(_profileRepo, _progressRepo, OnProfileSelected);
         CurrentViewModel = profileSelection;
         await profileSelection.InitializeAsync();
+    }
+
+    /// <summary>
+    /// "PC entsperren" auf dem Ferien-Bildschirm: LernTor beendet sich, der Rechner gehoert dem
+    /// Kind. <see cref="KioskLockService.Unlock"/> laeuft vorher, obwohl im Pausenmodus gar nicht
+    /// gesperrt wurde - <c>MainWindow.Closing</c> bricht jedes Schliessen ab, solange
+    /// <c>IsLocked</c> wahr ist, und diese Reihenfolge ist die Regel fuer JEDEN Beendigungsweg.
+    /// </summary>
+    private void OnPauseUnlockRequested()
+    {
+        _kioskLock.Unlock();
+        System.Windows.Application.Current.Shutdown();
     }
 
     private async void OnProfileSelected(StudentProfile profile)
@@ -169,6 +211,25 @@ public sealed partial class MainViewModel : ObservableObject
     public async Task ReloadSettingsAndProfileAsync()
     {
         Settings = await _settingsRepo.LoadAsync();
+
+        // Eltern haben die Pause im Eltern-Bereich gerade beendet: der Ferien-Bildschirm samt
+        // Entsperren-Knopf muss sofort weg, sonst koennte das Kind den PC weiterhin freigeben.
+        if (CurrentViewModel is PauseModeViewModel
+            && !PauseMode.IsActive(Settings.PauseUntilDate, DateOnly.FromDateTime(DateTime.Today)))
+        {
+            await ShowProfileSelectionAsync();
+            return;
+        }
+
+        // Umgekehrt: Pause gerade eingetragen, aber noch kein Kind am Lernen - dann direkt auf den
+        // Ferien-Bildschirm. Eine bereits laufende Lernstrecke wird bewusst NICHT unterbrochen;
+        // die Pause greift dort ab dem naechsten Start.
+        if (CurrentViewModel is ProfileSelectionViewModel
+            && PauseMode.IsActive(Settings.PauseUntilDate, DateOnly.FromDateTime(DateTime.Today)))
+        {
+            ShowPauseScreen();
+            return;
+        }
 
         if (CurrentProfile is null)
         {

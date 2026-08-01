@@ -271,6 +271,20 @@ deshalb bewusst nicht umgesetzt.
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
 - Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
 - Fachbereiche einzeln deaktivieren, Klassenstufe (6/7/8/9/10) einstellen.
+- **🏖️ Ferien-/Pausenmodus** (global, ein Datum): bis **einschließlich** dieses Tages startet
+  LernTor ohne Kiosk-Sperre **und ohne Lernpflicht**. Das Kind sieht statt der Lernstrecke einen
+  Ferien-Bildschirm mit dem Enddatum, den verbleibenden Tagen und einem großen **"PC entsperren"**-
+  Knopf, der LernTor beendet; darunter, bewusst kleiner, "Trotzdem üben" für den freiwilligen Weg
+  in die normale Profilauswahl. Nach dem Enddatum kommen Sperre und Lernstrecke von selbst zurück -
+  Eltern müssen an nichts denken. **Realer Fehler, den das behebt:** der Modus übersprang anfangs
+  nur die *technische* Sperre. Die Oberfläche wusste nichts davon, das Kind landete im Vollbild auf
+  dem Begrüßungsbildschirm und musste bis zum Abschlussquiz durch, um an den PC zu kommen - von
+  außen war der grün leuchtende Ferienmodus damit schlicht wirkungslos. Die Regel steht deshalb
+  jetzt einmal als `PauseMode` in Core (mit Tests) statt zweimal ausgeschrieben. Der Entsperren-
+  Knopf hängt an genau derselben Bedingung wie der Bildschirm: läuft keine Pause, existiert weder
+  das eine noch das andere - es gibt keine Abkürzung um die tägliche Lernstrecke herum. Beendet ein
+  Elternteil die Pause im Eltern-Bereich, verschwindet der Bildschirm samt Knopf sofort, nicht erst
+  beim nächsten Start.
 - **Schwierigkeitsstufen pro Profil** (Presets statt Freitext, kein neuer Build nötig): Tipptrainer-
   Mindestgenauigkeit (25/50/75/85%, Standard 25%), Abschlussquiz-Bestehensschwelle für den 1. Versuch
   (50/75/85%, Standard 50%) und für den 2. Versuch/die Wiederholung (25/50%, Standard 25%).
