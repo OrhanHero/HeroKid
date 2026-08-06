@@ -30,6 +30,7 @@ public static class LearningStageSubjects
         [LearningStage.Itg] = Subject.Itg,
         [LearningStage.KiWissen] = Subject.KiWissen,
         [LearningStage.Tippen] = Subject.Tippen,
+        [LearningStage.Fuehrerschein] = Subject.Fuehrerschein,
     };
 
     public static bool TryGetSubject(LearningStage stage, out Subject subject) => Map.TryGetValue(stage, out subject);

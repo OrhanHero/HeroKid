@@ -11,7 +11,8 @@ parent settings). Only then is the PC unlocked. Target
 audience: German-Turkish kids (~10-15) in Berlin; content follows the Berlin Rahmenlehrplan for
 Klasse 6 and 9. Full behavioral spec lives in `README.md`; curriculum topic mapping in
 `docs/CURRICULUM.md`; build/install steps in `docs/BUILD.md`; stage/subject wiring in
-`docs/FAECHER-SYSTEM.md`; typing trainer details in `docs/TIPPTRAINER.md`.
+`docs/FAECHER-SYSTEM.md`; typing trainer details in `docs/TIPPTRAINER.md`; the driving-licence area
+(traffic signs, own vector rendering, licensing constraints) in `docs/FUEHRERSCHEIN.md`.
 
 **Environment constraint**: this repo is often developed from a Linux sandbox with no .NET SDK
 and no Windows, so nothing here can actually be compiled or run locally in that environment.

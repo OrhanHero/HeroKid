@@ -131,7 +131,34 @@ public sealed class StudentProfile
     public TypingTextOverrides TypingTextOverrides =>
         TypingTextOverrides.From(CustomTypingSentenceText, CustomTypingFinalText);
 
+    // --- Führerschein-Bereich (pro Profil, siehe TrafficSignCatalog) ---
+
+    /// <summary>
+    /// Ob der Führerschein-Bereich für dieses Kind überhaupt auftaucht. Pro Profil, weil ein
+    /// Elfjähriger und ein Fünfzehnjähriger hier unterschiedlich weit sind - der globale
+    /// Fächer-Schalter (<c>AppSettings.DisabledSubjects</c>) gilt dagegen für beide Kinder
+    /// zugleich. Aus heißt aus, egal welcher der beiden Schalter es sagt.
+    /// </summary>
+    public bool DrivingAreaEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Zeichen in der täglichen Challenge, von den Eltern als Preset (3/5/8/10) einstellbar.
+    /// Wer gar keine Challenge will, schaltet den Bereich über <see cref="DrivingAreaEnabled"/>
+    /// ab - eine Challenge mit null Zeichen wäre nur ein leerer Bildschirm.
+    /// </summary>
+    public int DrivingChallengeSignCount { get; set; } = DailySignChallengeDefaultCount;
+
+    /// <summary>
+    /// Zeichengruppen, die für dieses Kind ausgeblendet sind. Leer = alle fünf Gruppen. Als
+    /// String persistiert (<c>JsonOptions.Default</c>), damit ein späteres Umsortieren des Enums
+    /// keine gespeicherte Auswahl umdeutet.
+    /// </summary>
+    public HashSet<TrafficSignCategory> DisabledSignCategories { get; set; } = new();
+
     public const int DefaultReadingMinutes = 5;
+
+    /// <summary>Fünf Zeichen am Tag - eine Minute, die auch an einem vollen Schultag drin ist.</summary>
+    public const int DailySignChallengeDefaultCount = 5;
     public const int DefaultNewsSecondsPerArticle = 10;
 
     /// <summary>Zwölf Nachrichten am Tag - genug für eine echte Auswahl über drei Sprachen,

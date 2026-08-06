@@ -38,6 +38,23 @@ public sealed class StudentProfileEntity
     // Angehefteter Lesetext (ReadingPiece.Key); NULL = kein Text angeheftet.
     public string? PinnedReadingTextKey { get; set; }
 
+    // --- Fuehrerschein-Bereich (siehe StudentProfile) ---
+
+    /// <summary>
+    /// Bewusst INVERTIERT gespeichert ("disabled" statt "enabled"): der additive Schema-Abgleich
+    /// gibt neuen Spalten in bestehenden Zeilen DEFAULT 0. Bei einem Feld "DrivingAreaEnabled"
+    /// waere der Bereich damit fuer alle vorhandenen Profile stillschweigend AUS gewesen -
+    /// so ist 0 = "nicht abgeschaltet" = an, also der gewuenschte Standard.
+    /// </summary>
+    public bool DrivingAreaDisabled { get; set; }
+
+    /// <summary>Zeichen in der taeglichen Challenge; 0 = Alt-Zeile ohne Wert -> Standard.</summary>
+    public int DrivingChallengeSignCount { get; set; }
+
+    /// <summary>Ausgeblendete Zeichengruppen als JSON-Array von Namen (nicht Zahlen), damit ein
+    /// spaeteres Umsortieren des Enums keine gespeicherte Auswahl umdeutet.</summary>
+    public string DisabledSignCategoriesJson { get; set; } = "[]";
+
     // Eigene Tipptrainer-Texte der Eltern (optional, NULL = eingebauter Text).
     public string? CustomTypingSentenceText { get; set; }
     public string? CustomTypingFinalText { get; set; }

@@ -22,6 +22,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<VocabularyEntryEntity> VocabularyEntries => Set<VocabularyEntryEntity>();
     public DbSet<HomeworkTaskEntity> HomeworkTasks => Set<HomeworkTaskEntity>();
     public DbSet<ExamEntryEntity> Exams => Set<ExamEntryEntity>();
+    public DbSet<TrafficSignProgressEntity> TrafficSignProgress => Set<TrafficSignProgressEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -121,6 +122,13 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(t => t.Id);
             e.HasIndex(t => new { t.ProfileId, t.LessonId }).IsUnique();
+            e.HasIndex(t => t.ProfileId);
+        });
+
+        modelBuilder.Entity<TrafficSignProgressEntity>(e =>
+        {
+            e.HasKey(t => t.Id);
+            e.HasIndex(t => new { t.ProfileId, t.SignNumber }).IsUnique();
             e.HasIndex(t => t.ProfileId);
         });
     }

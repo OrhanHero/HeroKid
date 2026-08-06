@@ -1,3 +1,4 @@
+using System.Text.Json;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Data.Entities;
@@ -130,6 +131,9 @@ public sealed class StudentProfileRepository
         string? pinnedReadingTextKey = null,
         int newsArticleCount = 0,
         NewsFilterStrictness newsFilterStrictness = NewsFilterStrictness.Normal,
+        bool drivingAreaEnabled = true,
+        int drivingChallengeSignCount = 0,
+        IReadOnlySet<TrafficSignCategory>? disabledSignCategories = null,
         CancellationToken cancellationToken = default)
     {
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
@@ -155,6 +159,11 @@ public sealed class StudentProfileRepository
         entity.ExercisesPerSubject = exercisesPerSubject;
         entity.QuizQuestionCount = quizQuestionCount;
         entity.QuizRetryQuestionCount = quizRetryQuestionCount;
+        // Invertiert - siehe StudentProfileEntity.DrivingAreaDisabled.
+        entity.DrivingAreaDisabled = !drivingAreaEnabled;
+        entity.DrivingChallengeSignCount = drivingChallengeSignCount;
+        entity.DisabledSignCategoriesJson = JsonSerializer.Serialize(
+            disabledSignCategories ?? new HashSet<TrafficSignCategory>(), JsonOptions.Default);
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -187,6 +196,31 @@ public sealed class StudentProfileRepository
         WeeklyGoalDays = entity.WeeklyGoalDays,
         PinnedReadingTextKey = entity.PinnedReadingTextKey,
         CustomTypingSentenceText = entity.CustomTypingSentenceText,
-        CustomTypingFinalText = entity.CustomTypingFinalText
+        CustomTypingFinalText = entity.CustomTypingFinalText,
+        DrivingAreaEnabled = !entity.DrivingAreaDisabled,
+        DrivingChallengeSignCount = entity.DrivingChallengeSignCount > 0
+            ? entity.DrivingChallengeSignCount
+            : StudentProfile.DailySignChallengeDefaultCount,
+        DisabledSignCategories = DeserializeCategories(entity.DisabledSignCategoriesJson)
     };
+
+    /// <summary>Alt-Zeilen haben hier den leeren String (additives Schema-Update) - dann ist
+    /// nichts ausgeblendet, also alle fuenf Gruppen aktiv.</summary>
+    private static HashSet<TrafficSignCategory> DeserializeCategories(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new HashSet<TrafficSignCategory>();
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<HashSet<TrafficSignCategory>>(json, JsonOptions.Default)
+                   ?? new HashSet<TrafficSignCategory>();
+        }
+        catch (JsonException)
+        {
+            return new HashSet<TrafficSignCategory>();
+        }
+    }
 }

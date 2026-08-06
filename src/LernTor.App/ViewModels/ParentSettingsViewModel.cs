@@ -36,6 +36,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly TeacherDocumentImportService _teacherImportService;
     private readonly PiperTtsEngine _piperTts;
     private readonly RewardRepository _rewardRepo;
+    private readonly TrafficSignProgressRepository _signProgressRepo;
     private readonly AutoBackupService _autoBackup;
     private readonly QuizComposer _quizComposer;
 
@@ -60,6 +61,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         (Subject.Musik, "Stage_Musik"),
         (Subject.Itg, "Stage_Itg"),
         (Subject.KiWissen, "Stage_KiWissen"),
+        (Subject.Fuehrerschein, "Stage_Fuehrerschein"),
         (Subject.Tippen, "Stage_Tippen"),
     };
 
@@ -369,10 +371,12 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         TeacherDocumentImportService teacherImportService,
         PiperTtsEngine piperTts,
         RewardRepository rewardRepo,
+        TrafficSignProgressRepository signProgressRepo,
         AutoBackupService autoBackup,
         QuizComposer quizComposer)
     {
         _rewardRepo = rewardRepo;
+        _signProgressRepo = signProgressRepo;
         _autoBackup = autoBackup;
         _quizComposer = quizComposer;
         _settingsRepo = settingsRepo;
@@ -624,7 +628,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             WeeklyGoalDays,
             profile.PinnedReadingTextKey,
             NewsArticleCount,
-            NewsFilterStrictness);
+            NewsFilterStrictness,
+            DrivingAreaEnabled,
+            DrivingChallengeSignCount,
+            CollectDisabledSignCategories());
 
     private void ApplyProfileToEditor(StudentProfile? value)
     {
@@ -643,6 +650,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         QuizQuestionCount = value?.QuizQuestionCount ?? StudentProfile.DefaultQuizQuestionCount;
         QuizRetryQuestionCount = value?.QuizRetryQuestionCount ?? StudentProfile.DefaultQuizRetryQuestionCount;
         WeeklyGoalDays = value?.WeeklyGoalDays ?? 0;
+        DrivingAreaEnabled = value?.DrivingAreaEnabled ?? true;
+        DrivingChallengeSignCount = value?.DrivingChallengeSignCount ?? StudentProfile.DailySignChallengeDefaultCount;
+        ApplySignCategoriesToEditor(value?.DisabledSignCategories);
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
         CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
         _ = ReloadCustomReadingTextsAsync();
@@ -805,6 +815,100 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
       + (SelectedProfile?.Age is { } age && age < NewsSuitability.AlwaysStrictBelowAge
             ? $" Hinweis: {SelectedProfile.Name} ist {age} - unter {NewsSuitability.AlwaysStrictBelowAge} gilt immer \"Streng\", unabhängig von dieser Einstellung."
             : string.Empty);
+
+    // ================= Führerschein-Bereich (pro Profil) =================
+
+    /// <summary>Eine abwählbare Zeichengruppe im Eltern-Bereich.</summary>
+    public sealed partial class SignCategoryToggle : ObservableObject
+    {
+        public required TrafficSignCategory Category { get; init; }
+
+        public required string Label { get; init; }
+
+        public required string Description { get; init; }
+
+        public required int SignCount { get; init; }
+
+        [ObservableProperty]
+        private bool isEnabled = true;
+    }
+
+    /// <summary>Ob der Bereich für dieses Kind überhaupt auftaucht.</summary>
+    [ObservableProperty]
+    private bool drivingAreaEnabled = true;
+
+    /// <summary>Zeichen in der täglichen Challenge (Presets 3/5/8/10).</summary>
+    [ObservableProperty]
+    private int drivingChallengeSignCount = StudentProfile.DailySignChallengeDefaultCount;
+
+    /// <summary>Die fünf Zeichengruppen zum Ein-/Ausschalten, in Lernreihenfolge.</summary>
+    public System.Collections.ObjectModel.ObservableCollection<SignCategoryToggle> SignCategories { get; } = new();
+
+    partial void OnDrivingAreaEnabledChanged(bool value) => MarkDirty();
+
+    partial void OnDrivingChallengeSignCountChanged(int value) => MarkDirty();
+
+    [RelayCommand]
+    private void SetDrivingChallengeSignCount(string count)
+    {
+        DrivingChallengeSignCount = int.TryParse(count, out var parsed) && parsed > 0
+            ? parsed
+            : StudentProfile.DailySignChallengeDefaultCount;
+    }
+
+    /// <summary>
+    /// Setzt den Verkehrszeichen-Lernstand des gewählten Kindes zurück. Betrifft ausschließlich
+    /// die Verkehrszeichen - Sterne, Fächer-Fortschritt und Fehler-Kartei bleiben unangetastet.
+    /// </summary>
+    [RelayCommand]
+    private async Task ResetDrivingProgressAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        var antwort = System.Windows.MessageBox.Show(
+            $"Verkehrszeichen-Lernstand von {SelectedProfile.Name} wirklich zurücksetzen? "
+            + "Alle Zeichen gelten danach wieder als ungelernt. Sterne und der übrige Fortschritt bleiben erhalten.",
+            "Lernstand zurücksetzen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question);
+
+        if (antwort != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        await _signProgressRepo.ResetAsync(SelectedProfile.Id);
+    }
+
+    /// <summary>
+    /// Baut die Gruppenliste auf und setzt die Haken. Wird bei jedem Profilwechsel neu
+    /// aufgerufen - die Auswahl gehört zum Kind, nicht zum Fenster.
+    /// </summary>
+    private void ApplySignCategoriesToEditor(IReadOnlySet<TrafficSignCategory>? disabled)
+    {
+        SignCategories.Clear();
+
+        foreach (var category in TrafficSignCatalog.LearningOrder)
+        {
+            var toggle = new SignCategoryToggle
+            {
+                Category = category,
+                Label = TrafficSignCatalog.CategoryLabel(category),
+                Description = TrafficSignCatalog.CategoryDescription(category),
+                SignCount = TrafficSignCatalog.ByCategory(category).Count,
+                IsEnabled = disabled?.Contains(category) != true
+            };
+
+            toggle.PropertyChanged += (_, _) => MarkDirty();
+            SignCategories.Add(toggle);
+        }
+    }
+
+    private HashSet<TrafficSignCategory> CollectDisabledSignCategories() =>
+        SignCategories.Where(toggle => !toggle.IsEnabled).Select(toggle => toggle.Category).ToHashSet();
 
     [RelayCommand]
     private void SetNewsFilterStrictness(string strictness)

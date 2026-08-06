@@ -550,6 +550,88 @@
                     </Button>
                 </StackPanel>
 
+                <!-- ===== Führerschein Klasse B (pro Profil) =====
+                     Getrennt vom globalen Fächer-Schalter, weil ein Elfjähriger und ein
+                     Fünfzehnjähriger hier unterschiedlich weit sind. Beide Schalter zählen:
+                     aus ist aus, egal welcher es sagt. -->
+                <TextBlock Text="🚗 Führerschein Klasse B (für dieses Kind)"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
+                <TextBlock Style="{StaticResource BodyText}" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,8"
+                           Text="Verkehrszeichen mit Karteikarten und Quiz, dazu jeden Tag eine kurze Challenge. Theoriefragen und Theorie-Kurs folgen. Nur die Challenge ist Pflicht - alles andere ist freiwillig." />
+
+                <CheckBox IsChecked="{Binding DrivingAreaEnabled}" Margin="0,0,0,10" FontSize="14"
+                          Content="Führerschein-Bereich für dieses Kind anzeigen" />
+
+                <TextBlock Text="Zeichen in der täglichen Challenge"
+                           Style="{StaticResource BodyText}" FontWeight="SemiBold" FontSize="13" Margin="0,4,0,4" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10"
+                            IsEnabled="{Binding DrivingAreaEnabled}">
+                    <Button Content="3" Style="{StaticResource TabPillButton}" Margin="0,0,6,0"
+                            Command="{Binding SetDrivingChallengeSignCountCommand}" CommandParameter="3">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Path="DrivingChallengeSignCount" />
+                                <Binding Source="3" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="5" Style="{StaticResource TabPillButton}" Margin="0,0,6,0"
+                            Command="{Binding SetDrivingChallengeSignCountCommand}" CommandParameter="5">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Path="DrivingChallengeSignCount" />
+                                <Binding Source="5" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="8" Style="{StaticResource TabPillButton}" Margin="0,0,6,0"
+                            Command="{Binding SetDrivingChallengeSignCountCommand}" CommandParameter="8">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Path="DrivingChallengeSignCount" />
+                                <Binding Source="8" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                    <Button Content="10" Style="{StaticResource TabPillButton}"
+                            Command="{Binding SetDrivingChallengeSignCountCommand}" CommandParameter="10">
+                        <Button.Tag>
+                            <MultiBinding Converter="{StaticResource EqualsToSelectedTag}">
+                                <Binding Path="DrivingChallengeSignCount" />
+                                <Binding Source="10" />
+                            </MultiBinding>
+                        </Button.Tag>
+                    </Button>
+                </StackPanel>
+
+                <TextBlock Text="Welche Zeichengruppen sollen vorkommen?"
+                           Style="{StaticResource BodyText}" FontWeight="SemiBold" FontSize="13" Margin="0,4,0,4" />
+                <ItemsControl ItemsSource="{Binding SignCategories}" Margin="0,0,0,10"
+                              IsEnabled="{Binding DrivingAreaEnabled}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsEnabled}" Margin="0,0,0,6" FontSize="13">
+                                <StackPanel>
+                                    <TextBlock FontWeight="SemiBold">
+                                        <Run Text="{Binding Label, Mode=OneWay}" />
+                                        <Run Text=" (" /><Run Text="{Binding SignCount, Mode=OneWay}" /><Run Text=" Zeichen)" />
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}"
+                                               FontSize="12" TextWrapping="Wrap" MaxWidth="520" Opacity="0.8" />
+                                </StackPanel>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="Verkehrszeichen-Lernstand zurücksetzen"
+                        Style="{StaticResource RoundedButton}" Background="{StaticResource ErrorBrush}"
+                        FontSize="13" Padding="12,6" HorizontalAlignment="Left" Margin="0,0,0,4"
+                        Command="{Binding ResetDrivingProgressCommand}" />
+                <TextBlock Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap"
+                           Margin="0,0,0,12" Opacity="0.8"
+                           Text="Betrifft ausschließlich die Verkehrszeichen. Sterne, Fächer-Fortschritt und Fehler-Kartei bleiben erhalten." />
+
                 <!-- Ferien-/Pausenmodus (global, nicht pro Profil): bis einschließlich des Datums
                      startet die App ohne Kiosk-Sperre; danach reaktiviert sie sich von selbst. -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Pause_Title]}"

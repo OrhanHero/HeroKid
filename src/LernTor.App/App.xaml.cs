@@ -175,6 +175,7 @@ public partial class App : Application
                 services.AddSingleton<VocabularyRepository>();
                 services.AddSingleton<HomeworkTaskRepository>();
                 services.AddSingleton<ExamEntryRepository>();
+                services.AddSingleton<TrafficSignProgressRepository>();
                 services.AddSingleton<ReviewQuestionRepository>();
                 services.AddSingleton<MasteredPromptRepository>();
                 services.AddSingleton<ArchivedArticleRepository>();

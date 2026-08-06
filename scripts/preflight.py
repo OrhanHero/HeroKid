@@ -242,7 +242,7 @@ def check_subject_wiring() -> None:
     ]
 
     # Fächer ohne eigenen Generator/Stage - bewusste Ausnahmen.
-    no_generator = {"News", "Tippen"}
+    no_generator = {"News", "Tippen", "Fuehrerschein"}
     no_stage = {"News"}
 
     wiring = {

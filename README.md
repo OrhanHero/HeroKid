@@ -266,6 +266,32 @@ deshalb bewusst nicht umgesetzt.
 - Bewusst KEINE Tages-Streaks: ein verpasster Tag soll kein schlechtes Gewissen erzeugen - Sterne
   können nur wachsen, nie verfallen (einlösen ja, verfallen nein).
 
+## 🚗 Führerschein Klasse B
+
+Eigener Lernbereich mit drei Unterbereichen (Verkehrszeichen, Theoriefragen, Theorie-Kurs),
+angelehnt an den Aufbau von fahrschule24.de. Details in [`docs/FUEHRERSCHEIN.md`](docs/FUEHRERSCHEIN.md).
+
+- **77 Verkehrszeichen** in den fünf Gruppen der StVO (Gefahr-, Vorschrift-, Richtzeichen,
+  Verkehrseinrichtungen, Zusatzzeichen), mit Karteikarten und Quiz. Jedes Zeichen hat eine
+  Bedeutung und einen Merksatz, der erst NACH der Antwort erscheint.
+- **Tägliche Challenge**: fünf Zeichen, etwa eine Minute - der einzige Pflichtteil des Bereichs.
+  Die Auswahl wird aus Profil-Kennung und Datum abgeleitet, nicht gewürfelt: nach einem Neustart
+  sind es dieselben Zeichen (sonst startet ein Kind so lange neu, bis leichte kommen), und beide
+  Kinder bekommen am selben Tag verschiedene (Abschreiben bringt nichts).
+- **Selbst gezeichnet, nicht heruntergeladen**: die Zeichen sind als Geometriepfade beschrieben
+  (`SignPictograms`, 58 Piktogramme in einem 0..100-Feld) und werden von `TrafficSignVisual` per
+  `OnRender` gezeichnet. Die App ist vollständig offline und kann nichts nachladen; ein Ordner mit
+  77 PNGs wäre außerdem bei jeder Änderung ein Binär-Diff.
+- **Rechtlich sauber**: Verkehrszeichen stehen in StVO Anlage 1-3 und sind als amtliches Werk
+  gemeinfrei (§ 5 UrhG). Der amtliche *Fragenkatalog* dagegen ist es nicht - er gehört der
+  TÜV|DEKRA arge tp 21. Stufe 2 bringt deshalb **eigene** Fragen zu denselben 14 amtlichen
+  Sachgebieten, nicht die Originalfragen.
+- **Gekonnt = zweimal hintereinander richtig**, ein Fehler setzt auf null zurück. Dieselbe Regel
+  wie in der Fehler-Kartei. Die Karteikarten zählen bewusst NICHT mit: "wusste ich" drückt sich
+  jeder gern, und beim Blick auf die Rückseite meint man ohnehin, es gewusst zu haben.
+- **🚲 Gilt schon fürs Fahrrad**: Zeichen, die für die Kinder heute relevant sind, sind
+  gekennzeichnet - der Bereich ist nicht nur Vorbereitung auf übermorgen.
+
 ## Eltern-Features
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.

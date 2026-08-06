@@ -28,6 +28,7 @@ public enum LearningStage
     Musik,
     Itg,
     KiWissen,
+    Fuehrerschein,
     Abschlussquiz,
     Freigeschaltet
 }

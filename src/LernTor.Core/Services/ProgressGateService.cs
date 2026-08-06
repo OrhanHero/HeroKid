@@ -31,6 +31,7 @@ public sealed class ProgressGateService
         LearningStage.Musik,
         LearningStage.Itg,
         LearningStage.KiWissen,
+        LearningStage.Fuehrerschein,
         LearningStage.Abschlussquiz,
         LearningStage.Freigeschaltet
     };

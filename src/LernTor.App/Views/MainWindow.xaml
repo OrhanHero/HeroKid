@@ -52,6 +52,15 @@
         <DataTemplate DataType="{x:Type vm:TypingLessonCompleteViewModel}">
             <views:TypingLessonCompleteView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DrivingDashboardViewModel}">
+            <views:DrivingDashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SignQuizViewModel}">
+            <views:SignQuizView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SignFlashcardViewModel}">
+            <views:SignFlashcardView />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>

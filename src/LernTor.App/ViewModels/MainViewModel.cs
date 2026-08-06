@@ -38,6 +38,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ArchivedArticleRepository _archiveRepo;
     private readonly HomeworkTaskRepository _homeworkRepo;
     private readonly ExamEntryRepository _examRepo;
+    private readonly TrafficSignProgressRepository _signProgressRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
@@ -85,6 +86,7 @@ public sealed partial class MainViewModel : ObservableObject
         ArchivedArticleRepository archiveRepo,
         HomeworkTaskRepository homeworkRepo,
         ExamEntryRepository examRepo,
+        TrafficSignProgressRepository signProgressRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
@@ -110,6 +112,7 @@ public sealed partial class MainViewModel : ObservableObject
         _archiveRepo = archiveRepo;
         _homeworkRepo = homeworkRepo;
         _examRepo = examRepo;
+        _signProgressRepo = signProgressRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
@@ -252,7 +255,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async Task NavigateToStageAsync(LearningStage stage)
     {
         // Automatisch deaktivierte Fachbereiche überspringen.
-        while (TryGetSubjectForStage(stage, out var disabledSubject) && Settings.DisabledSubjects.Contains(disabledSubject))
+        while (TryGetSubjectForStage(stage, out var disabledSubject) && IsSubjectDisabled(disabledSubject))
         {
             Progress.CompletedExerciseSubjects.Add(disabledSubject);
             stage = _gate.GetNextStage(stage);
@@ -267,6 +270,7 @@ public sealed partial class MainViewModel : ObservableObject
             LearningStage.Vorlesen => await BuildReadingViewModelAsync(),
             LearningStage.Tippen => await BuildTypingDashboardViewModelAsync(),
             LearningStage.News => await BuildNewsViewModelAsync(),
+            LearningStage.Fuehrerschein => await BuildDrivingDashboardViewModelAsync(),
             LearningStage.Abschlussquiz => await BuildFinalQuizViewModelAsync(),
             LearningStage.Freigeschaltet => await BuildResultViewModelAsync(passed: true, result: null),
             // KI-Bereich: Lernmodule + Checkliste in eigener View; die Fragen laufen darin als
@@ -487,6 +491,22 @@ public sealed partial class MainViewModel : ObservableObject
         });
     }
 
+    /// <summary>
+    /// Ob ein Fach für die heutige Sitzung ausfällt. Zwei Schalter, beide zählen:
+    /// der globale Fächer-Schalter im Eltern-Bereich (gilt für alle Kinder) und - nur beim
+    /// Führerschein-Bereich - der Schalter am einzelnen Profil. Ein Elfjähriger und ein
+    /// Fünfzehnjähriger sind hier unterschiedlich weit, das lässt sich global nicht abbilden.
+    /// </summary>
+    private bool IsSubjectDisabled(Subject subject)
+    {
+        if (Settings.DisabledSubjects.Contains(subject))
+        {
+            return true;
+        }
+
+        return subject == Subject.Fuehrerschein && CurrentProfile is { DrivingAreaEnabled: false };
+    }
+
     private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
         LearningStageSubjects.TryGetSubject(stage, out subject);
 
@@ -500,6 +520,150 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnWelcomeContinue()
     {
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Willkommen));
+    }
+
+    // ================= Führerschein Klasse B (siehe TrafficSignCatalog) =================
+
+    /// <summary>Wie viele Zeichen der heutigen Challenge richtig waren - nur für die Anzeige
+    /// direkt danach. Nach einem Neustart unbekannt; dann steht statt der Zahl nur, dass die
+    /// Challenge erledigt ist (eine gespeicherte "0 von 5" wäre schlicht falsch).</summary>
+    private int? _drivingChallengeCorrectToday;
+
+    /// <summary>
+    /// Die für dieses Kind freigegebenen Zeichen: der Katalog ohne die Gruppen, die im
+    /// Eltern-Bereich für dieses Profil ausgeblendet sind.
+    /// </summary>
+    private IReadOnlyList<TrafficSign> DrivingSignPool()
+    {
+        var ausgeblendet = CurrentProfile?.DisabledSignCategories ?? new HashSet<TrafficSignCategory>();
+
+        var pool = TrafficSignCatalog.All.Where(sign => !ausgeblendet.Contains(sign.Category)).ToList();
+
+        // Alle Gruppen abgewählt wäre ein leerer Bereich, aus dem man nicht mehr herauskommt -
+        // dann lieber den vollen Katalog als gar nichts.
+        return pool.Count > 0 ? pool : TrafficSignCatalog.All;
+    }
+
+    private async Task<DrivingDashboardViewModel> BuildDrivingDashboardViewModelAsync()
+    {
+        var gekonnt = await _signProgressRepo.GetMasteredNumbersAsync(CurrentProfile!.Id);
+
+        return new DrivingDashboardViewModel(
+            DrivingSignPool(),
+            gekonnt,
+            CurrentProfile!.DrivingChallengeSignCount,
+            Progress.CompletedExerciseSubjects.Contains(Subject.Fuehrerschein),
+            _drivingChallengeCorrectToday,
+            () => _ = StartDrivingChallengeAsync(),
+            category => _ = StartSignFlashcardsAsync(category),
+            category => _ = StartSignQuizAsync(category),
+            OnDrivingCompleted);
+    }
+
+    /// <summary>
+    /// Die tägliche Challenge: feste Zeichen des Tages (siehe <see cref="DailySignChallenge"/>),
+    /// als Quiz. Nach dem Durchlauf gilt der Bereich für heute als erledigt - unabhängig davon,
+    /// wie viele richtig waren. Der Pflichtteil ist das Üben, nicht das Können.
+    /// </summary>
+    private async Task StartDrivingChallengeAsync()
+    {
+        var pool = DrivingSignPool();
+        var gekonnt = await _signProgressRepo.GetMasteredNumbersAsync(CurrentProfile!.Id);
+
+        var zeichen = DailySignChallenge.ForDay(
+            pool, CurrentProfile!.Id, DateOnly.FromDateTime(DateTime.Today), gekonnt);
+
+        zeichen = zeichen.Take(Math.Max(1, CurrentProfile!.DrivingChallengeSignCount)).ToList();
+
+        var fragen = SignQuizBuilder.BuildMany(zeichen, pool, _random);
+
+        CurrentViewModel = new SignQuizViewModel(
+            fragen,
+            LocalizationService.Instance["Fs_Challenge"],
+            OnSignAnsweredAsync,
+            (richtig, _) => _ = OnDrivingChallengeFinishedAsync(richtig),
+            () => _ = ShowDrivingDashboardAsync());
+    }
+
+    private async Task OnDrivingChallengeFinishedAsync(int correctCount)
+    {
+        _drivingChallengeCorrectToday = correctCount;
+        Progress.CompletedExerciseSubjects.Add(Subject.Fuehrerschein);
+
+        // Ein Stern je richtig erkanntem Zeichen - dieselbe Währung wie überall sonst.
+        if (correctCount > 0)
+        {
+            await AwardStarsAsync(correctCount);
+        }
+
+        await PersistProgressAsync();
+    }
+
+    private async Task StartSignQuizAsync(TrafficSignCategory category)
+    {
+        var pool = DrivingSignPool();
+        var zeichen = pool.Where(sign => sign.Category == category).ToList();
+
+        var fragen = SignQuizBuilder.BuildMany(Shuffle(zeichen), pool, _random);
+
+        CurrentViewModel = new SignQuizViewModel(
+            fragen,
+            TrafficSignCatalog.CategoryLabel(category),
+            OnSignAnsweredAsync,
+            (_, _) => { },
+            () => _ = ShowDrivingDashboardAsync());
+
+        await Task.CompletedTask;
+    }
+
+    private async Task StartSignFlashcardsAsync(TrafficSignCategory category)
+    {
+        var zeichen = DrivingSignPool().Where(sign => sign.Category == category).ToList();
+
+        CurrentViewModel = new SignFlashcardViewModel(
+            Shuffle(zeichen),
+            TrafficSignCatalog.CategoryLabel(category),
+            () => _ = ShowDrivingDashboardAsync());
+
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Jede Quiz-Antwort schreibt den Lernstand fort. Ein neu gekonntes Zeichen ist einen Stern
+    /// wert - aber nur beim ersten Mal, sonst könnte man dasselbe Zeichen endlos für Sterne
+    /// wiederholen.
+    /// </summary>
+    private async Task OnSignAnsweredAsync(TrafficSign sign, bool wasCorrect)
+    {
+        var neuGekonnt = await _signProgressRepo.RecordAnswerAsync(CurrentProfile!.Id, sign.Number, wasCorrect);
+
+        if (neuGekonnt)
+        {
+            await AwardStarsAsync(1);
+        }
+    }
+
+    private async Task ShowDrivingDashboardAsync()
+    {
+        CurrentViewModel = await BuildDrivingDashboardViewModelAsync();
+    }
+
+    private async void OnDrivingCompleted()
+    {
+        Progress.CompletedExerciseSubjects.Add(Subject.Fuehrerschein);
+        await PersistProgressAsync();
+        await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Fuehrerschein));
+    }
+
+    private List<TrafficSign> Shuffle(List<TrafficSign> signs)
+    {
+        for (var i = signs.Count - 1; i > 0; i--)
+        {
+            var j = _random.Next(i + 1);
+            (signs[i], signs[j]) = (signs[j], signs[i]);
+        }
+
+        return signs;
     }
 
     private async Task<ReadingViewModel> BuildReadingViewModelAsync()
