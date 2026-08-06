@@ -20,6 +20,7 @@ Es ersetzt KEINEN Compiler - es prüft nur bekannte, statisch erkennbare Fallen:
   9. Zwei Typen gleichen Namens im selben Namensraum (CS0101)
  10. Vollstaendigkeit der Einordnungstexte bei neuen NewsCategory-Werten
  11. Uebersetzungsschluessel, die benutzt, aber nirgends definiert sind -> "[Stage_News]" auf dem Schirm
+ 12. Lambda in einem struct-Member, die auf ein eigenes Feld/Property zugreift (CS1673)
 
 Nutzung:  python3 scripts/preflight.py            (alles prüfen)
           python3 scripts/preflight.py --quick    (ohne die langsameren Repo-weiten Scans)
@@ -500,6 +501,91 @@ def check_news_category_coverage() -> None:
                         f"fuer {variant} - faellt still auf string.Empty zurueck.")
 
 
+STRUCT_DECL = re.compile(
+    r"^\s*(?:public|internal|private|protected)?[\w\s]*?\b(?:readonly\s+)?(?:record\s+)?struct\s+"
+    r"(\w+)\s*(?:\(([^)]*)\))?", re.M)
+
+
+def _struct_bodies(text: str):
+    """(Name, Positionsparameter, Rumpftext) je struct-Deklaration mit Rumpf."""
+    for match in STRUCT_DECL.finditer(text):
+        start = text.find("{", match.end())
+        if start == -1:
+            continue
+
+        # Positionsbasierte structs ohne Rumpf enden mit ';'. Ohne diese Pruefung wuerde der
+        # naechste Block der Datei - meist eine ganz andere Klasse - als Rumpf gelesen, und
+        # die Pruefung meldete reihenweise Unsinn.
+        if ";" in text[match.end():start]:
+            continue
+
+        depth = 0
+        for i in range(start, len(text)):
+            if text[i] == "{":
+                depth += 1
+            elif text[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    yield match.group(1), match.group(2) or "", text[start:i]
+                    break
+
+
+def check_struct_lambda_capture() -> None:
+    """Lambdas in struct-Membern duerfen nicht auf eigene Felder/Properties zugreifen.
+
+    CS1673: "Anonymous methods, lambda expressions ... inside structs cannot access instance
+    members of 'this'." Ein Compilerfehler, also nur in der CI sichtbar - und genau daran ist
+    der Build einmal gescheitert (PresentedQuestion.CorrectAnswers in TheoryQuestionPresenter).
+    Die Loesung ist immer dieselbe: das Member vorher in eine lokale Variable kopieren.
+    """
+    for path in sorted(SRC.rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+
+        for name, positional, body in _struct_bodies(text):
+            members = set(re.findall(r"\b(\w+)\s*(?:,|$)", positional))
+            members |= set(re.findall(
+                r"^\s*public\s+(?!static\b)[\w<>?\[\],\s]+?\b(\w+)\s*(?:=>|\{\s*get)", body, re.M))
+            members = {m for m in members if m and m[0].isupper()}
+
+            if not members:
+                continue
+
+            # Jedes "=>" einzeln ansehen. Nicht mit einem Regex ueber die ganze Zeile: bei
+            # "public X Y => Liste.Select(i => Member[i]);" verschluckt der aeussere Pfeil
+            # sonst den inneren, und genau der innere ist der Fehler.
+            for pfeil in re.finditer(r"=>", body):
+                davor = body[:pfeil.start()].rstrip()
+
+                # Parameterliste der Lambda ueberspringen: "x" oder "(x, y)".
+                if davor.endswith(")"):
+                    tiefe, i = 0, len(davor) - 1
+                    while i >= 0:
+                        if davor[i] == ")":
+                            tiefe += 1
+                        elif davor[i] == "(":
+                            tiefe -= 1
+                            if tiefe == 0:
+                                break
+                        i -= 1
+                    davor = davor[:i].rstrip()
+                else:
+                    davor = re.sub(r"\w+$", "", davor).rstrip()
+
+                # Eine Lambda steht als Argument da, also hinter "(" oder ",". Ein
+                # ausdrucksbasiertes Member (public string X => ...) tut das nicht.
+                if not davor.endswith(("(", ",")):
+                    continue
+
+                rumpf = body[pfeil.end():].split("\n", 1)[0]
+
+                for member in sorted(members):
+                    if re.search(rf"\b{re.escape(member)}\b", rumpf):
+                        report("struct-lambda", path,
+                               f"struct {name}: Lambda greift auf '{member}' zu -> CS1673. "
+                               "Member vorher in eine lokale Variable kopieren.")
+                        break
+
+
 def check_translation_keys() -> None:
     """Benutzte, aber nicht definierte Uebersetzungsschluessel.
 
@@ -570,6 +656,7 @@ def main() -> int:
         ("Doppelte Typnamen", check_duplicate_type_names),
         ("News-Rubrik-Texte", check_news_category_coverage),
         ("Uebersetzungsschluessel", check_translation_keys),
+        ("struct-Lambda (CS1673)", check_struct_lambda_capture),
     ]
     if not args.quick:
         checks += [

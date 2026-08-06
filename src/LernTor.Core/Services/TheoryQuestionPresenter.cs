@@ -20,7 +20,24 @@ public readonly record struct PresentedQuestion(
         return gewaehlt.Count == CorrectIndices.Count && CorrectIndices.All(gewaehlt.Contains);
     }
 
-    public IEnumerable<string> CorrectAnswers => CorrectIndices.Select(i => Options[i]);
+    /// <summary>
+    /// Die richtigen Antworten als Text - für die Auflösung nach der Frage.
+    ///
+    /// <para>Die beiden Listen werden bewusst erst in lokale Variablen kopiert. In einem
+    /// <c>struct</c> darf eine Lambda nicht auf <c>this</c> zugreifen (<c>CS1673</c>), und
+    /// <c>CorrectIndices.Select(i =&gt; Options[i])</c> täte genau das - der Build ist daran
+    /// schon einmal gescheitert.</para>
+    /// </summary>
+    public IEnumerable<string> CorrectAnswers
+    {
+        get
+        {
+            var positionen = CorrectIndices;
+            var antworten = Options;
+
+            return positionen.Select(index => antworten[index]);
+        }
+    }
 }
 
 /// <summary>

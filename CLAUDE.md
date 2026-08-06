@@ -244,6 +244,13 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   the parameter* — `error CS0029: Cannot implicitly convert type 'Task' to 'int'`. Only surfaces in
   CI. Give the unused parameter a real name instead; `scripts/preflight.py` now checks for it
   (`lambda-verwerfen`).
+- **A lambda inside a `struct` member cannot touch the struct's own fields/properties**
+  (`CS1673`). `public IEnumerable<string> CorrectAnswers => CorrectIndices.Select(i => Options[i]);`
+  reads perfectly and compiles fine in a `record` (class) — in a `readonly record struct` it is a
+  compile error, because the lambda would have to capture `this`. Only surfaces in CI from this
+  SDK-less environment; it cost a full round on `TheoryQuestionPresenter.PresentedQuestion`. The
+  fix is always the same: copy the members into locals *before* the lambda. `scripts/preflight.py`
+  now checks for it (`struct-lambda`).
 - **Static field initializers across `partial` class files have no defined order.** Building an
   aggregate field from arrays declared in sibling partial files (`TrafficSignCatalog`) can read
   them before they are populated — the compiler flags it as `CS8604`, a *warning*, so the build
