@@ -155,6 +155,16 @@ public static class Translations
             ["Stage_Fuehrerschein"] = L("Führerschein", "Ehliyet"),
             ["Stage_ErsteHilfe"] = L("Erste Hilfe", "İlk Yardım"),
             ["Planner_Open"] = L("Hausaufgaben & Klausuren", "Ödevler ve sınavlar"),
+
+            // --- Schulkalender Berlin ---
+            ["Cal_Title"] = L("Ferien & Feiertage", "Tatiller ve resmi tatiller"),
+            ["Cal_VacationNow"] = L("{0} - jetzt!", "{0} - şimdi!"),
+            ["Cal_DaysLeft"] = L("Noch {0} Tage, bis {1}", "{1} tarihine kadar {0} gün kaldı"),
+            ["Cal_LastDay"] = L("Heute ist der letzte Tag", "Bugün son gün"),
+            ["Cal_HolidayToday"] = L("Heute ist frei", "Bugün tatil"),
+            ["Cal_InDays"] = L("In {0} Tagen, am {1}", "{0} gün sonra, {1} tarihinde"),
+            ["Cal_Tomorrow"] = L("Schon morgen!", "Yarın başlıyor!"),
+            ["Cal_OnWeekend"] = L("(fällt aufs Wochenende)", "(hafta sonuna denk geliyor)"),
             ["Welcome_BackToLearning"] = L("Zurück zum Lernen", "Öğrenmeye geri dön"),
 
             // --- Führerschein Klasse B (bewusst nur deutsch: die Theorieprüfung ist auf Deutsch,

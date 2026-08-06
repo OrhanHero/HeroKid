@@ -862,6 +862,27 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     partial void OnErsteHilfeEnabledChanged(bool value) => MarkDirty();
 
+    // ---------------- Schulkalender Berlin (nur Anzeige) ----------------
+
+    /// <summary>
+    /// Ferien und Feiertage, kommende zuerst. Reine Anzeige - die Termine stehen fest
+    /// einkompiliert in <see cref="SchoolCalendar"/> und werden im Code gepflegt.
+    /// </summary>
+    public IReadOnlyList<CalendarRowViewModel> CalendarRows { get; } =
+        SchoolCalendar.Upcoming(DateOnly.FromDateTime(DateTime.Today), 100)
+            .Select(eintrag => new CalendarRowViewModel(eintrag, DateOnly.FromDateTime(DateTime.Today)))
+            .ToList();
+
+    /// <summary>
+    /// Bis wann der Kalender reicht. Steht ausdruecklich da, damit rechtzeitig nachgetragen wird -
+    /// ein leerer Kalender, der wie ein voller aussieht, waere die schlechtere Antwort.
+    /// </summary>
+    public string CalendarCoverage => string.Format(
+        "Eingetragen: Ferien bis {0}, Feiertage bis {1}. Danach zeigt die Startseite nichts mehr an - "
+        + "neue Termine gehoeren in SchoolCalendar.cs.",
+        SchoolCalendar.LastVacationDay.ToString("dd.MM.yyyy"),
+        SchoolCalendar.LastHolidayDay.ToString("dd.MM.yyyy"));
+
     partial void OnDrivingChallengeSignCountChanged(int value) => MarkDirty();
 
     [RelayCommand]

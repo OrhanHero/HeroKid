@@ -114,9 +114,11 @@ public sealed partial class WelcomeViewModel : ObservableObject
         Action<ExamItemViewModel>? onDeleteExam = null,
         Action? onAddHomework = null,
         Action<HomeworkItemViewModel>? onDeleteHomework = null,
-        bool isPlannerPeek = false)
+        bool isPlannerPeek = false,
+        DateOnly? today = null)
     {
         IsPlannerPeek = isPlannerPeek;
+        Calendar = SchoolCalendar.Today(today ?? DateOnly.FromDateTime(DateTime.Today));
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
         {
             Homework.Add(item);
@@ -146,6 +148,83 @@ public sealed partial class WelcomeViewModel : ObservableObject
     /// Knopfes: er führt dann zurück in die Etappe, statt den Tag zu beginnen.
     /// </summary>
     public bool IsPlannerPeek { get; }
+
+    // ---------------- Schulkalender (Berlin) ----------------
+
+    /// <summary>Ferien- und Feiertagsstand des heutigen Tages - die Entscheidung, was gezeigt
+    /// wird, trifft <see cref="SchoolCalendar"/> in Core, hier wird nur formuliert.</summary>
+    public CalendarToday Calendar { get; }
+
+    /// <summary>
+    /// Nichts anzuzeigen, sobald der Tag hinter allen eingetragenen Terminen liegt. Dem Kind
+    /// eine leere Kachel hinzustellen wäre sinnlos - der Hinweis zum Nachtragen gehört in den
+    /// Eltern-Bereich, nicht hierher.
+    /// </summary>
+    public bool ShowCalendar => !Calendar.BeyondCoverage && Calendar.Headline is not null;
+
+    public string CalendarIcon => Calendar switch
+    {
+        { Vacation: not null } => "🏖️",
+        { Holiday: not null } => "🎉",
+        _ => "📅"
+    };
+
+    public string CalendarHeadline
+    {
+        get
+        {
+            var l = Localization.LocalizationService.Instance;
+
+            if (Calendar.Vacation is { } laufend)
+            {
+                return string.Format(l["Cal_VacationNow"], laufend.Name);
+            }
+
+            if (Calendar.Holiday is { } heute)
+            {
+                return heute.Name;
+            }
+
+            return Calendar.Headline is { } naechster ? naechster.Name : string.Empty;
+        }
+    }
+
+    /// <summary>Die Zeile darunter: wie lange noch, bzw. wie lange bis dahin.</summary>
+    public string CalendarDetail
+    {
+        get
+        {
+            var l = Localization.LocalizationService.Instance;
+            var heute = DateOnly.FromDateTime(DateTime.Today);
+
+            if (Calendar.Vacation is { } laufend)
+            {
+                var uebrig = laufend.RemainingDays(heute);
+                return uebrig == 1
+                    ? l["Cal_LastDay"]
+                    : string.Format(l["Cal_DaysLeft"], uebrig, laufend.End.ToString("dd.MM.yyyy"));
+            }
+
+            if (Calendar.Holiday is not null)
+            {
+                return l["Cal_HolidayToday"];
+            }
+
+            if (Calendar.Headline is not { } naechster)
+            {
+                return string.Empty;
+            }
+
+            var tage = naechster.DaysUntilStart(heute);
+            var text = tage == 1
+                ? l["Cal_Tomorrow"]
+                : string.Format(l["Cal_InDays"], tage, naechster.Start.ToString("dd.MM.yyyy"));
+
+            // Ein Feiertag am Wochenende bringt keinen freien Tag - das gehört dazugesagt,
+            // statt einen Tag anzukuendigen, an dem ohnehin niemand Schule hat.
+            return naechster.FallsOnWeekend ? $"{text} {l["Cal_OnWeekend"]}" : text;
+        }
+    }
 
     [RelayCommand]
     private void Continue() => _onContinue();

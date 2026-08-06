@@ -333,6 +333,25 @@ Eigener Bereich zwischen KI-Bereich und Führerschein, pro Kind im Eltern-Bereic
   anfühlt. Ebenso: nichts zu tun ist der einzige echte Fehler, und ein Notruf allein ist schon
   Erste Hilfe.
 
+## 🗓️ Ferien und Feiertage (Berlin)
+
+Auf der Startseite eine Kachel, im Eltern-Bereich die vollständige Liste.
+
+- **Fest einkompiliert, nicht aus dem Netz geholt** (`SchoolCalendar`). Die App ist ein Kiosk ohne
+  verlässliche Netzverbindung; ein Kalender, der beim Start hängt oder leer bleibt, wäre schlimmer
+  als gar keiner. Termine ändern sich einmal im Jahr - das Nachtragen ist ein normaler Code-Review.
+- **Für das Kind eine Zahl**: läuft gerade etwas, steht da "Sommerferien - noch 17 Tage"; sonst
+  der Termin, der als **Nächstes** eintritt. Bewusst nicht "die nächsten Ferien": wenn vorher ein
+  Feiertag liegt, ist der die Antwort auf die Frage, die ein Kind hat.
+- **Ferien schlagen den Feiertag darin.** Am 25.12. ist "Weihnachtsferien" die nützlichere
+  Auskunft als "1. Weihnachtsfeiertag" - der steht ohnehin mittendrin.
+- **Feiertage am Wochenende stehen als solche dran.** Der 03.10.2026 ist ein Samstag und bringt
+  keinen freien Tag; das gehört dazugesagt, statt einen Tag anzukündigen, an dem ohnehin niemand
+  Schule hat.
+- **Der Kalender sagt, wie weit er reicht.** Der Eltern-Bereich zeigt das Enddatum von Ferien und
+  Feiertagen an, und hinter dem letzten Termin verschwindet die Kind-Kachel, statt leer
+  dazustehen. Ein leerer Kalender, der wie ein voller aussieht, wäre die schlechtere Antwort.
+
 ## 📋 Planer aus jedem Bereich erreichbar
 
 Unten links führt ein Knopf aus **jeder** Etappe zurück zu Hausaufgaben und Klausurplan - und von

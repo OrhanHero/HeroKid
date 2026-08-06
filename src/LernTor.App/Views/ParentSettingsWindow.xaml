@@ -660,6 +660,45 @@
                            Margin="0,0,0,12" Opacity="0.8"
                            Text="Setzt die 14 Kurslektionen auf ungelesen zurück. Die Theoriefragen bleiben, denn die Lernstandskontrollen zählen in denselben Fragen-Lernstand." />
 
+                <!-- ===== Ferien und Feiertage Berlin (reine Anzeige) =====
+                     Die Termine stehen fest einkompiliert in SchoolCalendar.cs - die App ist ein
+                     Kiosk ohne verlaessliche Netzverbindung, und ein Kalender, der beim Start
+                     haengt oder leer bleibt, waere schlimmer als gar keiner. Wie weit die Daten
+                     reichen, steht ausdruecklich darunter. -->
+                <TextBlock Text="🗓️ Ferien und Feiertage (Berlin)"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
+
+                <Border Background="{StaticResource CardBrush}" CornerRadius="12" Padding="14,10"
+                        Margin="0,0,0,6">
+                    <ItemsControl ItemsSource="{Binding CalendarRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" MinWidth="170" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding DateDisplay}"
+                                               Style="{StaticResource BodyText}" FontSize="13"
+                                               FontFamily="Consolas" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                               Style="{StaticResource BodyText}" FontSize="13"
+                                               Margin="12,0,12,0" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Note}"
+                                               Style="{StaticResource BodyText}" FontSize="12"
+                                               Opacity="0.75" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <TextBlock Text="{Binding CalendarCoverage, Mode=OneWay}"
+                           Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap"
+                           Opacity="0.8" Margin="0,0,0,12" />
+
                 <!-- Ferien-/Pausenmodus (global, nicht pro Profil): bis einschließlich des Datums
                      startet die App ohne Kiosk-Sperre; danach reaktiviert sie sich von selbst. -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Pause_Title]}"
