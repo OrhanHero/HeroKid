@@ -21,6 +21,8 @@ Es ersetzt KEINEN Compiler - es prüft nur bekannte, statisch erkennbare Fallen:
  10. Vollstaendigkeit der Einordnungstexte bei neuen NewsCategory-Werten
  11. Uebersetzungsschluessel, die benutzt, aber nirgends definiert sind -> "[Stage_News]" auf dem Schirm
  12. Lambda in einem struct-Member, die auf ein eigenes Feld/Property zugreift (CS1673)
+ 13. Zugesagte Schnittstelle ohne Umsetzung im selben Klassenrumpf (CS0535)
+ 14. [RelayCommand]/[ObservableProperty] ohne den passenden CommunityToolkit-using (CS0246)
 
 Nutzung:  python3 scripts/preflight.py            (alles prüfen)
           python3 scripts/preflight.py --quick    (ohne die langsameren Repo-weiten Scans)
@@ -605,6 +607,80 @@ def check_struct_lambda_capture() -> None:
                         break
 
 
+CLASS_DECL = re.compile(
+    r"^(?:public|internal|sealed|abstract|partial|static|\s)*class\s+(\w+)\s*:\s*([^\n{]+)", re.M)
+
+
+def _class_bodies(text: str):
+    """(Name, Basisliste, Rumpftext) je Klassendeklaration mit Rumpf."""
+    for match in CLASS_DECL.finditer(text):
+        start = text.find("{", match.end())
+        if start == -1:
+            continue
+        depth = 0
+        for i in range(start, len(text)):
+            if text[i] == "{":
+                depth += 1
+            elif text[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    yield match.group(1), match.group(2), text[start:i]
+                    break
+
+
+# Schnittstellen, deren Umsetzung geprueft wird: Name -> geforderte Member.
+CHECKED_INTERFACES = {
+    "IPausableStage": ("PauseStage", "ResumeStage"),
+}
+
+
+def check_interface_implementation() -> None:
+    """Klasse sagt eine Schnittstelle zu, setzt sie aber nicht im eigenen Rumpf um (CS0535).
+
+    Entstanden ist das hier so: Methoden wurden per Skript "ans Ende der Datei" angehaengt und
+    landeten dadurch in der LETZTEN Klasse der Datei statt in der, die die Schnittstelle
+    zusagt. Die Klammerbalance stimmt dabei, der Code sieht beim Ueberfliegen richtig aus, und
+    erst der Compiler merkt es - also erst nach acht Minuten CI.
+    """
+    for path in sorted((SRC / "LernTor.App").rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+
+        for name, bases, body in _class_bodies(text):
+            for interface, member in CHECKED_INTERFACES.items():
+                if not re.search(rf"\b{interface}\b", bases):
+                    continue
+                for methode in member:
+                    if not re.search(rf"\b{methode}\s*\(", body):
+                        report("schnittstelle-fehlt", path,
+                               f"Klasse {name} sagt {interface} zu, aber '{methode}' steht nicht "
+                               f"in ihrem Rumpf (steht es weiter unten, gehoert es zur falschen Klasse)")
+
+
+# Attribut -> Namensraum, den der CommunityToolkit-Generator dafuer braucht.
+TOOLKIT_ATTRIBUTES = {
+    "RelayCommand": "CommunityToolkit.Mvvm.Input",
+    "ObservableProperty": "CommunityToolkit.Mvvm.ComponentModel",
+    "NotifyPropertyChangedFor": "CommunityToolkit.Mvvm.ComponentModel",
+}
+
+
+def check_toolkit_usings() -> None:
+    """[RelayCommand] ohne 'using CommunityToolkit.Mvvm.Input;' -> CS0246.
+
+    Faellt beim Lesen nicht auf, weil die Datei meist schon [ObservableProperty] benutzt und
+    damit den ComponentModel-using hat - der Input-Namensraum ist aber ein anderer.
+    """
+    for path in sorted((SRC / "LernTor.App").rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+
+        for attribut, namensraum in TOOLKIT_ATTRIBUTES.items():
+            if not re.search(rf"^\s*\[{attribut}[\]\(]", text, re.M):
+                continue
+            if f"using {namensraum};" not in text:
+                report("toolkit-using", path,
+                       f"[{attribut}] benutzt, aber 'using {namensraum};' fehlt -> CS0246")
+
+
 def check_translation_keys() -> None:
     """Benutzte, aber nicht definierte Uebersetzungsschluessel.
 
@@ -676,6 +752,8 @@ def main() -> int:
         ("News-Rubrik-Texte", check_news_category_coverage),
         ("Uebersetzungsschluessel", check_translation_keys),
         ("struct-Lambda (CS1673)", check_struct_lambda_capture),
+        ("Schnittstellen (CS0535)", check_interface_implementation),
+        ("Toolkit-usings (CS0246)", check_toolkit_usings),
     ]
     if not args.quick:
         checks += [

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
 using LernTor.App.Services;
 using LernTor.ContentGen;

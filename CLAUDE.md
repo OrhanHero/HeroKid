@@ -254,6 +254,24 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   the parameter* — `error CS0029: Cannot implicitly convert type 'Task' to 'int'`. Only surfaces in
   CI. Give the unused parameter a real name instead; `scripts/preflight.py` now checks for it
   (`lambda-verwerfen`).
+- **Appending a method "to the end of the file" puts it in the LAST class of that file, not
+  the one you meant.** `TypingExerciseViewModel.cs` holds three classes; a scripted edit that
+  inserted `PauseStage`/`ResumeStage` before the final `}` landed them in `KeyboardKeyViewModel`,
+  so the class that *declared* `IPausableStage` never implemented it (`CS0535`). Brace balance
+  stays correct, the diff reads fine, and only the compiler notices — eight minutes of CI.
+  `scripts/preflight.py` now checks that a class declaring a known interface implements its
+  members inside its own brace range (`schnittstelle-fehlt`).
+- **`[RelayCommand]` needs `using CommunityToolkit.Mvvm.Input;`, which is a DIFFERENT namespace
+  from `[ObservableProperty]`'s `CommunityToolkit.Mvvm.ComponentModel`.** A file that already
+  uses `[ObservableProperty]` looks like it has the toolkit imported, so adding the first
+  `[RelayCommand]` to it fails with `CS0246` on `RelayCommandAttribute` — which reads like a
+  missing package reference rather than a missing using. `scripts/preflight.py` checks it
+  (`toolkit-using`).
+- **A green CI badge on the last run does not mean YOUR commit was built.** A push to `master`
+  once produced no workflow run at all — the workflow stayed `active`, the trigger matched
+  (`branches: ["**"]`), and Actions was not out of quota; GitHub simply swallowed the push event.
+  Always compare `head_sha` against the commit you pushed, not just the newest run's colour. A
+  missing run can be started by hand with `actions_run_trigger`/`run_workflow` on `master`.
 - **A lambda inside a `struct` member cannot touch the struct's own fields/properties**
   (`CS1673`). `public IEnumerable<string> CorrectAnswers => CorrectIndices.Select(i => Options[i]);`
   reads perfectly and compiles fine in a `record` (class) — in a `readonly record struct` it is a
