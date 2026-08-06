@@ -47,8 +47,10 @@ bebilderte Erklärseiten mit denselben Zeichenbildern.
 
 ## Original-Bilddateien
 
-**Alle 77 Zeichen liegen als echte Bilddatei vor** (PNG, aus Wikimedia Commons, siehe
-`src/LernTor.App/Assets/Verkehrszeichen/QUELLEN.md` für Quelle und Lizenz je Nummer). Vorherige
+**Alle 77 Zeichen liegen als echte Bilddatei vor** (PNG, aus Wikimedia Commons oder dem VzKat
+(vzkat.de, der offizielle Katalog zur VwV-StVO - selbst ein amtliches Werk nach § 5 UrhG, genau
+wie die Zeichen selbst), siehe `src/LernTor.App/Assets/Verkehrszeichen/QUELLEN.md` für Quelle und
+Lizenz je Nummer. Vorherige
 Fassungen dieser App zeichneten die Zeichen selbst nach (handgezogene Geometriepfade) oder
 gewannen sie maschinell aus einer ADAC-PDF (`scripts/extract-signs-from-pdf.py`, damals mit
 Fehlzuordnungen bei VZ 272/276 — die Skripte bleiben im Repo als Dokumentation des Wegs, sind
@@ -74,12 +76,25 @@ Normalbetrieb nie zum Zug: `TrafficSignVisual` prüft zuerst auf eine Bilddatei
 (`TrafficSignImages`), und `TrafficSignCatalogTests`/`TrafficSignRenderTests` halten fest, dass für
 jede der 77 Katalognummern tatsächlich eine da ist.
 
-**Aufschrift nicht doppelt:** 16 Zeichen zeigen eine Zahl oder einen Ort schon in der Bilddatei
-selbst (z.B. VZ 274-50 die "50", VZ 108-10/110-10 "10 %", VZ 314 das "P", VZ 310/311 einen
-Beispielort). `TrafficSignImages.ZeichnetAufschriftSelbst` listet sie, damit
+**Aufschrift nicht doppelt:** 17 Zeichen zeigen eine Zahl, ein Wort oder einen Ort schon in der
+Bilddatei selbst (z.B. VZ 206 das "STOP", VZ 274-50 die "50", VZ 108-10/110-10 "10 %", VZ 314 das
+"P", VZ 310/311 einen Beispielort). `TrafficSignImages.ZeichnetAufschriftSelbst` listet sie, damit
 `TrafficSignVisual` `TrafficSign.Text` für genau diese NICHT zusätzlich übers Bild zeichnet -
-sonst stünde die Zahl doppelt. Der Text bleibt trotzdem in den Katalogdaten stehen, er ist die
-fachlich richtige Aufschrift für den Rückfallpfad.
+sonst stünde die Aufschrift doppelt. Der Text bleibt trotzdem in den Katalogdaten stehen, er ist
+die fachlich richtige Aufschrift für den Rückfallpfad.
+
+**Hard-won: nicht jede PD-Datei ist stilistisch genau, und ein doppelt gezeichneter Text fällt
+beim bloßen Ansehen der Bilddatei nicht auf.** Nutzer-Feedback zeigte, dass VZ 206 (STOP) mit der
+ursprünglich von Wikimedia Commons geladenen Datei einen zu dünnen weißen Rand und eine
+abweichende Schriftform gegenüber der amtlichen Vorlage hatte - Commons-Dateien sind zwar
+gemeinfrei, aber Community-nachgezeichnet und schwanken in der Genauigkeit. Ersetzt durch einen
+Ausschnitt aus dem VzKat. Dabei fiel zusätzlich auf: VZ 206 fehlte in
+`TrafficSignImages.BildEnthaeltAufschrift`, weil die ursprüngliche Bildrecherche gezielt nach
+Zahlen/Ortsnamen als Aufschrift gesucht hatte, nicht nach einem fest eingebrannten Wort wie
+"STOP" - das Schild zeigte "STOP" zweimal übereinander. Sichtbar wurde das erst, als das Bild
+über den echten `TrafficSignVisual`-Code gerendert wurde, nicht beim Betrachten der Bilddatei
+allein. Deshalb: jede neue oder ersetzte Bilddatei probeweise rendern (siehe
+`TrafficSignRenderTests`), nicht nur ansehen.
 
 ## Wie der Rückfallpfad entsteht
 
@@ -295,11 +310,12 @@ gewesen.
 
 ## Erweitern
 
-Ein Zeichen mehr: Bilddatei (PNG, gemeinfrei, z.B. von Wikimedia Commons) unter
-`src/LernTor.App/Assets/Verkehrszeichen/<nummer>.png` ablegen, Quelle und Lizenz in `QUELLEN.md`
-im selben Ordner eintragen, dazu ein Eintrag in der passenden `TrafficSignCatalog.*`-Datei -
-fertig, `TrafficSignImages` findet die Datei automatisch über die Nummer. Zeigt die Bilddatei
-schon eine Aufschrift (Zahl, Ort), zusätzlich die Nummer in
+Ein Zeichen mehr: Bilddatei (PNG, gemeinfrei, von Wikimedia Commons oder vom VzKat - beim VzKat
+den Zeichenausschnitt aus der Katalogseite freistellen, die Dateien zeigen oft eine
+Maß-/Höhenangabe mit) unter `src/LernTor.App/Assets/Verkehrszeichen/<nummer>.png` ablegen, Quelle
+und Lizenz in `QUELLEN.md` im selben Ordner eintragen, dazu ein Eintrag in der passenden
+`TrafficSignCatalog.*`-Datei - fertig, `TrafficSignImages` findet die Datei automatisch über die
+Nummer. Zeigt die Bilddatei schon eine Aufschrift (Zahl, Ort, Wort), zusätzlich die Nummer in
 `TrafficSignImages.BildEnthaeltAufschrift` eintragen, sonst steht der Text doppelt.
 
 `TrafficSignRenderTests` (UiTests) lässt **WPF selbst** jeden Pfad des Rückfallpfads parsen und

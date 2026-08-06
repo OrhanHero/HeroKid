@@ -1,13 +1,15 @@
 # Quellen der Verkehrszeichen-Bilddateien
 
-Jede Datei stammt von Wikimedia Commons und ist dort als amtliches Werk (§ 5 UrhG) gemeinfrei
-gekennzeichnet (`{{PD-GermanGov}}` o.ä.) - einzeln je Datei geprüft, nicht pauschal angenommen.
-Nummer = Dateiname unter `Assets/Verkehrszeichen/<Nummer>.png`. Nicht aus der ADAC-Broschüre -
-deren Layout ist geschützt, siehe `docs/FUEHRERSCHEIN.md`.
+Jede Datei stammt entweder von Wikimedia Commons (dort als amtliches Werk gemeinfrei
+gekennzeichnet, `{{PD-GermanGov}}` o.ä., einzeln je Datei geprüft) oder aus dem VzKat
+(offizieller Katalog der Verkehrszeichen zur VwV-StVO, vzkat.de - selbst ein amtliches
+Werk nach § 5 UrhG, siehe `docs/FUEHRERSCHEIN.md`). Nummer = Dateiname unter
+`Assets/Verkehrszeichen/<Nummer>.png`. Nicht aus der ADAC-Broschüre - deren Layout ist
+geschützt.
 
 ## Gefahrzeichen
 
-| Nummer | Bezeichnung | Commons-Quelle | Lizenz |
+| Nummer | Bezeichnung | Quelle | Lizenz |
 |---|---|---|---|
 | 101 | Gefahrstelle | [Zeichen 101 - Gefahrstelle, StVO 1970.svg](https://commons.wikimedia.org/wiki/File:Zeichen_101_-_Gefahrstelle,_StVO_1970.svg) | Public domain |
 | 102 | Kreuzung oder Einmündung mit Vorfahrt von rechts | [Zeichen 102 - Kreuzung oder Einmündung mit Vorfahrt von rechts, StVO 1970.svg](https://commons.wikimedia.org/wiki/File:Zeichen_102_-_Kreuzung_oder_Einm%C3%BCndung_mit_Vorfahrt_von_rechts,_StVO_1970.svg) | Public domain |
@@ -33,11 +35,11 @@ deren Layout ist geschützt, siehe `docs/FUEHRERSCHEIN.md`.
 
 ## Vorschriftzeichen
 
-| Nummer | Bezeichnung | Commons-Quelle | Lizenz |
+| Nummer | Bezeichnung | Quelle | Lizenz |
 |---|---|---|---|
 | 201-50 | Andreaskreuz | [Andreaskreuz (ohne Maße) 1970.svg](https://commons.wikimedia.org/wiki/File:Andreaskreuz_(ohne_Ma%C3%9Fe)_1970.svg) | Public domain |
 | 205 | Vorfahrt gewähren | [Zeichen 205.svg](https://commons.wikimedia.org/wiki/File:Zeichen_205_-_Vorfahrt_gew%C3%A4hren!_StVO_1970.svg) | Public domain |
-| 206 | Halt. Vorfahrt gewähren | [Zeichen 206 - Halt! Vorfahrt gewähren! StVO 2017.svg](https://commons.wikimedia.org/wiki/File:Zeichen_206_-_Halt!_Vorfahrt_gew%C3%A4hren!_StVO_2017.svg) | Public domain |
+| 206 | Halt. Vorfahrt gewähren | [VzKat](https://www.vzkat.de/2017/Teil03/206.gif) | Amtliches Werk (Anlage zur VwV-StVO, SS 5 UrhG) |
 | 208 | Vorrang des Gegenverkehrs | [Zeichen 208.svg](https://commons.wikimedia.org/wiki/File:Zeichen_208_-_Dem_Gegenverkehr_Vorrang_gew%C3%A4hren!_600x600,_StVO_1992.svg) | Public domain |
 | 209-20 | Vorgeschriebene Fahrtrichtung rechts | [Zeichen 209 - Vorgeschriebene Fahrtrichtung, rechts, StVO 2017.svg](https://commons.wikimedia.org/wiki/File:Zeichen_209_-_Vorgeschriebene_Fahrtrichtung,_rechts,_StVO_2017.svg) | Public domain |
 | 209-30 | Vorgeschriebene Fahrtrichtung geradeaus | [Zeichen 209-30 - Vorgeschriebene Fahrtrichtung, Geradeaus, StVO 2017.svg](https://commons.wikimedia.org/wiki/File:Zeichen_209-30_-_Vorgeschriebene_Fahrtrichtung,_Geradeaus,_StVO_2017.svg) | Public domain |
@@ -70,7 +72,7 @@ deren Layout ist geschützt, siehe `docs/FUEHRERSCHEIN.md`.
 
 ## Richtzeichen
 
-| Nummer | Bezeichnung | Commons-Quelle | Lizenz |
+| Nummer | Bezeichnung | Quelle | Lizenz |
 |---|---|---|---|
 | 301 | Vorfahrt | [Zeichen 301 - Vorfahrt, StVO 1970.svg](https://commons.wikimedia.org/wiki/File:Zeichen_301_-_Vorfahrt,_StVO_1970.svg) | Public domain |
 | 306 | Vorfahrtstraße | [Zeichen 306 - Vorfahrtstraße, StVO 1970.svg](https://commons.wikimedia.org/wiki/File:Zeichen_306_-_Vorfahrtstra%C3%9Fe,_StVO_1970.svg) | Public domain |
@@ -88,7 +90,7 @@ deren Layout ist geschützt, siehe `docs/FUEHRERSCHEIN.md`.
 
 ## Verkehrseinrichtungen
 
-| Nummer | Bezeichnung | Commons-Quelle | Lizenz |
+| Nummer | Bezeichnung | Quelle | Lizenz |
 |---|---|---|---|
 | 600 | Absperrschranke | [Zeichen 600-30 - Absperrschranke (100x800); StVO 1992.svg](https://commons.wikimedia.org/wiki/File:Zeichen_600-30_-_Absperrschranke_(100x800);_StVO_1992.svg) | Public domain |
 | 605 | Schraffenbake | [Zeichen 605-10 - Leitbake (Aufstellung rechts), 1000x250; StVO 1992.svg](https://commons.wikimedia.org/wiki/File:Zeichen_605-10_-_Leitbake_(Aufstellung_rechts),_1000x250;_StVO_1992.svg) | Public domain |
@@ -97,7 +99,7 @@ deren Layout ist geschützt, siehe `docs/FUEHRERSCHEIN.md`.
 
 ## Zusatzzeichen
 
-| Nummer | Bezeichnung | Commons-Quelle | Lizenz |
+| Nummer | Bezeichnung | Quelle | Lizenz |
 |---|---|---|---|
 | 1000-20 | Richtung rechtsweisend | [Zusatzzeichen 1000-20 - Richtungsangaben durch Pfeile, rechtsweisend, StVO 1992.svg](https://commons.wikimedia.org/wiki/File:Zusatzzeichen_1000-20_-_Richtungsangaben_durch_Pfeile,_rechtsweisend,_StVO_1992.svg) | Public domain |
 | 1000-10 | Richtung linksweisend | [Zusatzzeichen 1000-10 - Richtungsangaben durch Pfeile, linksweisend, StVO 1992.svg](https://commons.wikimedia.org/wiki/File:Zusatzzeichen_1000-10_-_Richtungsangaben_durch_Pfeile,_linksweisend,_StVO_1992.svg) | Public domain |

@@ -28,12 +28,19 @@ internal static class TrafficSignImages
     /// </summary>
     private static readonly HashSet<string> BildEnthaeltAufschrift = new()
     {
-        // Zahl/Ort ist Teil der amtlichen Vorlage (siehe scratchpad-Manifest der Bildrecherche,
-        // je Nummer per Commons-Beschreibung gegengeprüft): "108-10"/"110-10" "10 %", "262" "5,5 t",
-        // "264" "2 m", "265" "3,8 m", "274-50" "50", "274.1"/"274.2" "30"/"ZONE", "278-50" "50"
-        // (grau, durchgestrichen), "310"/"311" Beispielort, "314" "P", "1001-30" Streckenlänge,
-        // "1004-30" Entfernung, "1020-30" "Anlieger frei", "1053-35" "bei Nässe".
-        "108-10", "110-10", "262", "264", "265", "274-50", "274.1", "274.2", "278-50",
+        // Zahl/Ort/Wort ist Teil der amtlichen Vorlage (siehe scratchpad-Manifest der
+        // Bildrecherche, je Nummer per Commons-Beschreibung gegengeprüft): "206" "STOP",
+        // "108-10"/"110-10" "10 %", "262" "5,5 t", "264" "2 m", "265" "3,8 m", "274-50" "50",
+        // "274.1"/"274.2" "30"/"ZONE", "278-50" "50" (grau, durchgestrichen), "310"/"311"
+        // Beispielort, "314" "P", "1001-30" Streckenlänge, "1004-30" Entfernung, "1020-30"
+        // "Anlieger frei", "1053-35" "bei Nässe".
+        //
+        // "206" fehlte hier zunächst - der ersten Bildrecherche fiel nur auf, was als Zahl oder
+        // Ort auffällt, nicht das fest eingebrannte Wort "STOP". Sichtbar wurde der Fehler erst
+        // beim Rendern über den echten TrafficSignVisual-Code (doppeltes "STOP"), nicht beim
+        // Betrachten der Bilddatei allein - ein Grund mehr, jede neue Bilddatei probeweise mit
+        // TrafficSignVisual zu rendern statt nur die Datei selbst anzusehen.
+        "206", "108-10", "110-10", "262", "264", "265", "274-50", "274.1", "274.2", "278-50",
         "310", "311", "314", "1001-30", "1004-30", "1020-30", "1053-35"
     };
 
