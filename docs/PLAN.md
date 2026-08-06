@@ -206,10 +206,103 @@ Schnitt: README als Überblick, Details in `docs/` je Bereich — das Muster gib
 
 Nichts hiervon ist nötig. Wenn Phase 0–4 stehen, ist die App fertig genug.
 
+### 5.1 Modul „Gaming & Creator-Insider" (`MedienGaming`)
+
+**Die Idee:** Ein Fach über die Welt, in der die Kinder ohnehin sind — Minecraft, Roblox,
+Fortnite, EA FC, YouTube und Twitch —, das dabei Verbraucherschutz und Medienkompetenz vermittelt.
+Der Reiz liegt darin, dass ein Kind sich beim Lesen wie ein **Entlarver** fühlt, nicht wie ein
+Schüler.
+
+**Warum es einen eigenen Eintrag verdient:** Es ist der erste Vorschlag, der ein
+*Motivations*problem angeht statt einer Wissenslücke. Alle anderen Bereiche muss man wollen; diesen
+klickt ein Zwölfjähriger von selbst an.
+
+#### Was neu wäre und was nicht
+
+Gegen den Bestand geprüft:
+
+| Themenblock | Befund |
+|---|---|
+| **Geld-Fallen** (Lootbox, In-Game-Währung, FOMO, Pay-to-Win) | **Neu.** `Gewi.KonsumUndVerantwortung` hat Impulskauf, Werbung, Influencer-Marketing, Schuldenfalle — benachbart, nicht dasselbe. Der stärkste Teil. |
+| **Creator-Handwerk** (Hook, Thumbnail, Schnitt, Musikrechte) | **Überwiegend neu.** Musikrechte deckt `Itg.Urheberrecht` bereits ab (20 Fragen inkl. CC-Lizenzen, Plagiat) — darauf verweisen statt wiederholen. |
+| **Wie Spiele denken** (Zufall, Spawn-Regeln, Ping vs. Skill, prozedurale Generierung) | **Halb neu.** `Itg.Algorithmen`, `Itg.AlgorithmenUndDigitaleWerkzeuge`, `Itg.HardwareUndNetzwerke` decken die Grundlagen ab; Ping und Pay-to-Win nicht. |
+| **Account & Umgangston** (2FA, Skin-Phishing, Voice-Chat-Toxizität) | **Kaum neu.** `Itg.Cybermobbing` (20 Fragen, inkl. Anonymitätseffekt), Phishing in `Itg.Datenschutz`, Passwörter in `Itg.SicherePasswoerter`. Nur 2FA und Account-Diebstahl wegen Skins fehlen. |
+
+#### Zuschnitt
+
+Ein Fach mit Profil-Schalter (Muster Erste Hilfe), **~80 Fragen in vier Themen**:
+
+1. Geld-Fallen (~25) — der Kern
+2. Creator-Handwerk (~20)
+3. Wie Spiele denken (~20)
+4. Account und Umgangston (~15, bewusst klein)
+
+Dazu **zehn gaming-bezogene Fragen zusätzlich** in `Itg.SicherePasswoerter` und `Itg.Cybermobbing`
+statt eines fünften Blocks — dort sucht man sie später auch.
+
+#### Drei Regeln, ohne die das Modul verrottet
+
+**1. Mechanismen lehren, Spiele nur als Beispiel.** V-Bucks-Preise, Fortnite-Shop-Mechaniken und
+Pack-Wahrscheinlichkeiten stimmen in achtzehn Monaten zur Hälfte nicht mehr — und **kein Test kann
+das merken**. „Was ist eine Lootbox und warum wirkt sie?" hält. „Wie viel kostet Skin X" hält nicht.
+
+**2. Keine Namen von Creatorn in Fragetexten.** Kanäle hören auf zu posten, ändern ihr Format oder
+geraten in Ungnade. Eine Frage über eine benannte Person altert schlechter als jede Preisangabe.
+Formate ja („Minecraft-Let's-Play", „Comic-Dub", „Shorts"), Personen nein.
+
+**3. Kein moralischer Ton.** Ein Modul, das nach „Spiele sind böse" klingt, verliert einen
+Fünfzehnjährigen bei Frage zwei. Die Haltung ist: *So funktioniert die Masche — jetzt kennst du sie.*
+
+#### Was zuerst geklärt werden muss
+
+Die Familie schaut regelmäßig vier Kanäle:
+`@tinymacdude`, `@KoreanComic`, `@al1craft`, `@justmehabibi`.
+
+Die sind wertvoller Rohstoff, aber **hier nicht auswertbar** — diese Entwicklungsumgebung hat kein
+Netz, und aus Kanalnamen auf Inhalte zu schließen wäre geraten. Gebraucht wird je Kanal, von der
+Familie oder einem Agenten mit Netzzugang:
+
+- Welches **Spiel/Format** (Minecraft-Bau, Roblox-Obby, Comic-Vertonung, Fußball-Packs …)?
+- Welche **Monetarisierung** ist im Kanal sichtbar (Sponsoring, Affiliate-Links, eigener Shop,
+  Glücksspiel-nahe Formate wie Pack-Openings)?
+- Welche **Redaktionstricks** sind auffällig (Hook-Länge, Thumbnail-Stil, Cliffhanger, Titel)?
+
+Daraus werden Fragen über *Muster*, nicht über *Kanäle*. Der Sinn: Die Kinder erkennen im
+Lieblingsvideo wieder, was sie in der Frage gelesen haben — ohne dass der Kanalname im Text steht.
+
+#### Nebenwirkung
+
+Ein 18. Fach macht das Abschlussquiz zu 20 ÷ 18 Fragen. **Phase 2.2 wird damit Voraussetzung,
+nicht Option.**
+
+#### Was NICHT gebaut wird
+
+**Keine „Wahl-" oder „Belohnungs-Etappe".** Die App kennt nur verpflichtend-in-Reihenfolge oder
+pro Profil abgeschaltet. Eine dritte Art zu bauen hieße `ProgressGateService`, `SequentialOrder`,
+`SessionSteps` und die Gate-Logik anzufassen — das wäre der teure Teil, nicht die Fragen. Und als
+Belohnung fürs Durchhalten würde das Modul die Kinder dazu bringen, den Rest zu hetzen: genau das
+Verhalten, gegen das die Anti-Durchklick-Regeln gebaut sind. Die Freiwilligkeit entsteht über den
+Inhalt, nicht über die Mechanik.
+
+### 5.2 Kleinere Ideen
+
 - **Fehler-Kartei sichtbar machen**: Die Kinder sehen nicht, wie viele Fragen wiederkommen.
 - **Elternbericht per PDF** statt nur am Bildschirm.
 - **Zweiter Rechner**: Sicherung auf USB, damit ein Kind auch am Zweitgerät weiterlernen kann.
 - **Lesetexte aus eigenen Büchern** einscannen (der Teacher-Import kann PDF schon).
+
+### 5.3 Sammelstelle für weitere Ideen
+
+Neue Vorschläge kommen hierher, bevor sie bewertet sind. Für jeden gilt dieselbe Prüfung, die
+sich bisher jedes Mal gelohnt hat:
+
+1. **Gibt es das schon?** Themenlisten der 17 Generatoren gegenlesen — bei vier von fünf bisherigen
+   Vorschlägen war der größere Teil bereits vorhanden.
+2. **Verlängert es den Lerntag?** Ein neues Fach heißt eine neue Etappe für zwei Kinder, die schon
+   zur Schule gehen.
+3. **Altert der Inhalt?** Verkehrszeichen halten Jahrzehnte, Spielpreise achtzehn Monate.
+4. **Braucht es neue Mechanik oder nur neue Fragen?** Nur Fragen ist ein Tag Arbeit, neue Mechanik
+   eine Woche.
 
 ---
 
