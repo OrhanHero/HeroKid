@@ -306,6 +306,12 @@ angelehnt an den Aufbau von fahrschule24.de. Details in [`docs/FUEHRERSCHEIN.md`
 - **Die richtige Antwort steht im Katalog immer vorn** (so ist eine Frage beim Nachlesen sofort
   zu erfassen) und wird vor der Anzeige an genau einer Stelle gemischt. Ohne das hätte "immer die
   erste ankreuzen" volle Punktzahl gegeben.
+- **Theorie-Kurs mit 14 Lektionen**, eine je Sachgebiet, mit Erklärtexten, den passenden
+  Zeichen daneben und drei Merksätzen am Ende. Der Kurs bringt **keine eigenen Fragen** mit: die
+  Lernstandskontrolle nimmt Fragen aus demselben Katalog wie die Prüfungssimulation, und ihre
+  Antworten zählen auch in den Theorie-Lernstand - sonst gälte eine im Kurs gemeisterte Frage im
+  Schwachstellen-Trainer weiter als ungekonnt. Gelesen und geschafft werden getrennt gezählt, die
+  Kontrolle ist freiwillig, und die Reihenfolge ist eine Empfehlung statt einer Sperre.
 - **🚲 Gilt schon fürs Fahrrad**: Zeichen, die für die Kinder heute relevant sind, sind
   gekennzeichnet - der Bereich ist nicht nur Vorbereitung auf übermorgen.
 

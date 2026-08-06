@@ -640,6 +640,14 @@
                            Margin="0,0,0,12" Opacity="0.8"
                            Text="Löscht gelernte Theoriefragen und die Prüfungshistorie. Die Verkehrszeichen bleiben unangetastet." />
 
+                <Button Content="Kurs-Lernstand zurücksetzen"
+                        Style="{StaticResource RoundedButton}" Background="{StaticResource ErrorBrush}"
+                        FontSize="13" Padding="12,6" HorizontalAlignment="Left" Margin="0,0,0,4"
+                        Command="{Binding ResetCourseProgressCommand}" />
+                <TextBlock Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap"
+                           Margin="0,0,0,12" Opacity="0.8"
+                           Text="Setzt die 14 Kurslektionen auf ungelesen zurück. Die Theoriefragen bleiben, denn die Lernstandskontrollen zählen in denselben Fragen-Lernstand." />
+
                 <!-- Ferien-/Pausenmodus (global, nicht pro Profil): bis einschließlich des Datums
                      startet die App ohne Kiosk-Sperre; danach reaktiviert sie sich von selbst. -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Pause_Title]}"

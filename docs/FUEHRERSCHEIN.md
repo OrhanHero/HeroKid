@@ -8,7 +8,7 @@ Abschlussquiz.
 |---|---|---|
 | **Verkehrszeichen** | ✅ fertig | 77 Zeichen in fünf Gruppen, alle als echte Bilddatei (Wikimedia Commons, gemeinfrei), Karteikarten und Quiz, tägliche Challenge |
 | **Theoriefragen** | ✅ fertig | 65 eigene Fragen zu den 14 amtlichen Sachgebieten, Prüfungssimulation nach Fehlerpunkten, Schwachstellen-Trainer |
-| **Theorie-Kurs** | 🔜 Stufe 3 | Erklärseiten mit Zeichnungen, Quiz, Lernstandskontrolle |
+| **Theorie-Kurs** | ✅ fertig | 14 bebilderte Lektionen (eine je Sachgebiet) mit Merksätzen und Lernstandskontrolle |
 
 ## Was Pflicht ist und was nicht
 
@@ -208,6 +208,49 @@ richtig, wenn sie gerade sitzt (zweimal hintereinander richtig, `TheoryProgress.
 noch monatelang als Schwachstelle führen, nachdem das Kind es längst kann, und der Trainer würde
 weiter Fragen daraus schicken statt zum nächsten Problem zu gehen.
 
+## Theorie-Kurs
+
+Vierzehn Lektionen, eine je Sachgebiet, in der Reihenfolge des Enums `DrivingTheoryTopic` - die
+Enum-Reihenfolge **ist** die Kursreihenfolge. Jede Lektion hat eine Einleitung, vier Abschnitte
+und drei Merksätze; Abschnitte mit einem passenden Verkehrszeichen zeigen es daneben.
+
+### Der Kurs bringt keine eigenen Fragen mit
+
+Die Lernstandskontrolle am Ende einer Lektion zieht bis zu fünf Fragen aus
+`DrivingTheoryCatalog` zum selben Sachgebiet. Ein zweiter Fragensatz wäre doppelte Pflege und
+würde bei jeder Änderung auseinanderlaufen - und die Kinder würden im Kurs etwas anderes üben als
+in der Prüfungssimulation.
+
+Aus demselben Grund **zählen die Antworten der Kontrolle in den Theorie-Lernstand**: es sind
+dieselben Fragen. Sie hier nicht mitzuzählen hieße, dass eine im Kurs gemeisterte Frage im
+Schwachstellen-Trainer weiter als ungekonnt geführt wird.
+
+### Gelesen und geschafft sind zwei Dinge
+
+| Stand | Bedeutung |
+|---|---|
+| offen | noch nie geöffnet |
+| gelesen | "Fertig gelesen" gedrückt oder eine Kontrolle versucht |
+| geschafft | Kontrolle mit mindestens 70 % bestanden |
+
+Nur "geschafft" zu speichern hieße, dass eine gelesene Lektion nach einer verpatzten Kontrolle
+wieder aussieht wie nie geöffnet - und das Kind fängt entnervt von vorn an. Gespeichert wird
+außerdem der **beste** Versuch, nicht der letzte: ein aus Neugier gestarteter und abgebrochener
+zweiter Anlauf soll das erste Ergebnis nicht verderben.
+
+Die Kontrolle ist **freiwillig**. Wer nur lesen will, drückt "Fertig gelesen". Eine erzwungene
+Prüfung nach jedem Text macht aus einem Nachschlagewerk eine Schulstunde, und dann wird nichts
+mehr nachgeschlagen. Aus demselben Grund ist die Kursreihenfolge eine Empfehlung und keine
+Sperre: wer in der Fahrschule gerade Vorfahrt hat, soll Vorfahrt lesen können, ohne sich vorher
+durch dreizehn andere zu klicken.
+
+### Rechtliches gilt hier genauso
+
+Alle Kurstexte sind selbst geschrieben und geben StVO und StVZO in eigenen Worten wieder. Für
+Erklärseiten gilt dasselbe wie für die Fragen: der amtliche Fragenkatalog gehört der TÜV|DEKRA
+arge tp 21 und kommt nicht in die App. Videos gibt es keine - LernTor ist vollständig offline,
+und die Zeichenbilder liegen ohnehin schon im Programm.
+
 ## Eltern-Einstellungen (pro Profil)
 
 | Einstellung | Standard | Wirkung |
@@ -217,6 +260,7 @@ weiter Fragen daraus schicken statt zum nächsten Problem zu gehen.
 | Zeichengruppen | alle fünf | Einzeln abwählbar; abgewählte kommen weder im Quiz noch in der Challenge vor |
 | Verkehrszeichen-Lernstand zurücksetzen | — | Nur die Verkehrszeichen; Sterne und übriger Fortschritt bleiben |
 | Theorie-Lernstand zurücksetzen | — | Gelernte Fragen und Prüfungshistorie; die Zeichen bleiben unangetastet |
+| Kurs-Lernstand zurücksetzen | — | Lektionen wieder auf ungelesen; die Fragen bleiben, weil die Kontrollen in denselben Fragen-Lernstand zählen |
 
 Zusätzlich gibt es den globalen Fächer-Schalter (`AppSettings.DisabledSubjects`), der wie bei
 allen Fächern für beide Kinder zugleich gilt. **Beide Schalter zählen: aus ist aus.**
@@ -240,6 +284,9 @@ Zwei Dinge stehen dort bewusst **nicht** drin:
   Fragen, die es im Katalog nicht mehr gibt, fallen dadurch von selbst aus der Auswertung.
 - **Bestanden/durchgefallen.** Wird aus den gespeicherten Zahlen neu berechnet. Ein gespeichertes
   Häkchen würde alte Läufe nach einer Regeländerung anders bewerten als die Zahlen daneben.
+
+`CourseLessonProgressEntity` (Tabelle `CourseLessonProgress`), Schlüssel `ProfileId|LessonId`,
+mit getrenntem `ReadAt` und `PassedAt` (siehe oben) und dem besten Versuch in `BestPercent`.
 
 Am Profil kamen drei Spalten dazu. `DrivingAreaDisabled` ist bewusst **invertiert** benannt: der
 additive Schema-Abgleich gibt neuen Spalten in bestehenden Zeilen `DEFAULT 0`. Bei einem Feld

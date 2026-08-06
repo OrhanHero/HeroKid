@@ -40,6 +40,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly ExamEntryRepository _examRepo;
     private readonly TrafficSignProgressRepository _signProgressRepo;
     private readonly TheoryProgressRepository _theoryRepo;
+    private readonly CourseProgressRepository _courseRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
@@ -89,6 +90,7 @@ public sealed partial class MainViewModel : ObservableObject
         ExamEntryRepository examRepo,
         TrafficSignProgressRepository signProgressRepo,
         TheoryProgressRepository theoryRepo,
+        CourseProgressRepository courseRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
@@ -116,6 +118,7 @@ public sealed partial class MainViewModel : ObservableObject
         _examRepo = examRepo;
         _signProgressRepo = signProgressRepo;
         _theoryRepo = theoryRepo;
+        _courseRepo = courseRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
@@ -551,6 +554,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         var gekonnt = await _signProgressRepo.GetMasteredNumbersAsync(CurrentProfile!.Id);
         var theorieGekonnt = await _theoryRepo.GetMasteredQuestionIdsAsync(CurrentProfile!.Id);
+        var kursStand = await _courseRepo.GetAllAsync(CurrentProfile!.Id);
 
         return new DrivingDashboardViewModel(
             DrivingSignPool(),
@@ -564,6 +568,9 @@ public sealed partial class MainViewModel : ObservableObject
             DrivingTheoryCatalog.All.Count(frage => theorieGekonnt.Contains(frage.Id)),
             DrivingTheoryCatalog.All.Count,
             () => _ = ShowTheoryHubAsync(),
+            kursStand.Values.Count(eintrag => eintrag.PassedAt is not null),
+            DrivingCourseCatalog.All.Count,
+            () => _ = ShowCourseOverviewAsync(),
             OnDrivingCompleted);
     }
 
@@ -831,6 +838,85 @@ public sealed partial class MainViewModel : ObservableObject
             records,
             () => _ = StartTheoryExamAsync(),
             () => _ = ShowTheoryHubAsync());
+    }
+
+    // ----------------- Unterbereich Theorie-Kurs (siehe DrivingCourseCatalog) -----------------
+
+    private async Task ShowCourseOverviewAsync()
+    {
+        var stand = await _courseRepo.GetAllAsync(CurrentProfile!.Id);
+
+        CurrentViewModel = new CourseOverviewViewModel(
+            DrivingCourseCatalog.All,
+            stand,
+            lesson => _ = ShowCourseLessonAsync(lesson),
+            () => _ = ShowDrivingDashboardAsync());
+    }
+
+    private async Task ShowCourseLessonAsync(DrivingCourseLesson lesson)
+    {
+        var stand = await _courseRepo.GetAllAsync(CurrentProfile!.Id);
+        stand.TryGetValue(lesson.Id, out var eintrag);
+
+        CurrentViewModel = new CourseLessonViewModel(
+            lesson,
+            eintrag,
+            DrivingTheoryCatalog.ByTopic(lesson.Topic).Count > 0,
+            gelesen => _ = StartLessonCheckAsync(gelesen),
+            gelesen => _ = OnLessonReadAsync(gelesen),
+            () => _ = ShowCourseOverviewAsync());
+    }
+
+    private async Task OnLessonReadAsync(DrivingCourseLesson lesson)
+    {
+        await _courseRepo.MarkReadAsync(CurrentProfile!.Id, lesson.Id);
+        await ShowCourseOverviewAsync();
+    }
+
+    /// <summary>
+    /// Die Lernstandskontrolle am Ende einer Lektion. Sie läuft im Übungs-Modus, also mit
+    /// sofortiger Auflösung - sie soll zeigen, was hängengeblieben ist, und nicht wie eine
+    /// zweite Prüfung wirken.
+    ///
+    /// <para>Die Antworten zählen zugleich in den Theorie-Lernstand: es sind dieselben Fragen aus
+    /// demselben Katalog. Sie hier nicht mitzuzählen hieße, dass eine im Kurs gemeisterte Frage
+    /// im Schwachstellen-Trainer weiter als ungekonnt gilt.</para>
+    /// </summary>
+    private async Task StartLessonCheckAsync(DrivingCourseLesson lesson)
+    {
+        var fragen = DrivingCourseCatalog.CheckQuestions(lesson, _random);
+
+        if (fragen.Count == 0)
+        {
+            await ShowCourseLessonAsync(lesson);
+            return;
+        }
+
+        var gestellt = TheoryQuestionPresenter.PresentAll(fragen, _random);
+
+        CurrentViewModel = new TheoryQuestionViewModel(
+            gestellt,
+            string.Format(LocalizationService.Instance["Fs_CheckTitle"], lesson.Title),
+            TheoryRunMode.Uebung,
+            OnTheoryAnsweredAsync,
+            records => _ = OnLessonCheckFinishedAsync(lesson, records),
+            () => _ = ShowCourseLessonAsync(lesson));
+    }
+
+    private async Task OnLessonCheckFinishedAsync(
+        DrivingCourseLesson lesson, IReadOnlyList<TheoryAnswerRecord> records)
+    {
+        var richtig = records.Count(antwort => antwort.WasCorrect);
+
+        var neuGeschafft = await _courseRepo.RecordCheckAsync(
+            CurrentProfile!.Id, lesson.Id, richtig, records.Count);
+
+        if (neuGeschafft)
+        {
+            await AwardStarsAsync(3);
+        }
+
+        await ShowCourseOverviewAsync();
     }
 
     private List<TheoryQuestion> ShuffleQuestions(List<TheoryQuestion> questions)

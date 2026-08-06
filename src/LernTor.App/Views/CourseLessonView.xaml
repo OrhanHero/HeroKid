@@ -1,0 +1,103 @@
+<UserControl x:Class="LernTor.App.Views.CourseLessonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="820" Margin="24,48,24,32">
+
+                <TextBlock Text="{Binding TopicLabel, Mode=OneWay}" Style="{StaticResource BodyText}"
+                           FontSize="13" TextAlignment="Center" Opacity="0.8" />
+                <TextBlock Text="{Binding Title, Mode=OneWay}" Style="{StaticResource HeadlineText}"
+                           FontSize="30" TextAlignment="Center" TextWrapping="Wrap" Margin="0,2,0,0" />
+                <TextBlock Text="{Binding StatusDisplay, Mode=OneWay}" Style="{StaticResource SubtitleText}"
+                           FontSize="14" TextAlignment="Center" Margin="0,6,0,0"
+                           Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}" />
+
+                <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,16,0,18"
+                        Background="{StaticResource TileLavenderBrush}">
+                    <TextBlock Text="{Binding Intro, Mode=OneWay}" Style="{StaticResource BodyText}"
+                               FontSize="15" TextWrapping="Wrap" />
+                </Border>
+
+                <!-- Die Abschnitte. Zeichen stehen neben dem Text, nicht darüber - so bleibt der
+                     Zusammenhang sichtbar, ohne dass der Text zerrissen wird. -->
+                <ItemsControl ItemsSource="{Binding Sections}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Heading}" FontSize="17" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   TextWrapping="Wrap" Margin="0,0,0,6" />
+                                        <TextBlock Text="{Binding Body}" Style="{StaticResource BodyText}"
+                                                   FontSize="14" TextWrapping="Wrap" LineHeight="22" />
+                                    </StackPanel>
+
+                                    <controls:TrafficSignVisual Grid.Column="1" Width="96" Height="96"
+                                                                Margin="18,0,0,0" VerticalAlignment="Top"
+                                                                Sign="{Binding Sign}"
+                                                                Visibility="{Binding Sign, Converter={StaticResource NullToVis}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Merksätze: das, was hängenbleiben soll, wenn sonst nichts bleibt. -->
+                <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,10,0,0"
+                        Background="{StaticResource TileMintBrush}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_LessonKeyPoints]}"
+                                   FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"
+                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                        <ItemsControl ItemsSource="{Binding KeyPoints}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <TextBlock Text="✔" FontSize="15" Margin="0,0,8,0"
+                                                   Foreground="{StaticResource SuccessBrush}" />
+                                        <TextBlock Text="{Binding}" Style="{StaticResource BodyText}"
+                                                   FontSize="14" TextWrapping="Wrap" MaxWidth="700" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Die Kontrolle ist freiwillig: wer nur lesen will, drückt "Fertig gelesen". -->
+                <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,16,0,0"
+                        Visibility="{Binding CheckPossible, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_LessonCheckHint]}"
+                                   Style="{StaticResource BodyText}" FontSize="14" TextWrapping="Wrap"
+                                   TextAlignment="Center" Margin="0,0,0,12" />
+                        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_LessonCheck]}"
+                                Style="{StaticResource RoundedButton}" HorizontalAlignment="Center"
+                                Command="{Binding StartCheckCommand}" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_LessonFinishReading]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="18,8"
+                            Margin="0,0,10,0"
+                            Background="{StaticResource TextSecondaryBrush}"
+                            Command="{Binding FinishReadingCommand}" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Back]}"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="18,8"
+                            Background="{StaticResource TextSecondaryBrush}"
+                            Command="{Binding BackCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

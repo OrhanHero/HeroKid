@@ -48,10 +48,9 @@ public sealed class SignCategoryRowViewModel
 /// freiwillig und jederzeit erreichbar. Ein Bereich, der wie eine zweite Schule wirkt, wird
 /// nicht benutzt; einer, der jeden Tag eine Minute kostet, schon.</para>
 ///
-/// <para>Die Theoriefragen sind der zweite Unterbereich und von hier aus erreichbar. Der
-/// Theorie-Kurs ist sichtbar, aber noch nicht befüllt - bewusst sichtbar statt versteckt, damit
-/// die Kinder sehen, wohin der Bereich geht. Der Zustand steht dran, damit niemand vergeblich
-/// klickt.</para>
+/// <para>Alle drei Unterbereiche sind von hier aus erreichbar: Verkehrszeichen nach Gruppen,
+/// die Theoriefragen und der Theorie-Kurs. Jeder zeigt seinen eigenen Stand, damit sichtbar ist,
+/// wo etwas liegengeblieben ist.</para>
 /// </summary>
 public sealed partial class DrivingDashboardViewModel : ObservableObject
 {
@@ -59,6 +58,7 @@ public sealed partial class DrivingDashboardViewModel : ObservableObject
     private readonly Action<TrafficSignCategory> _onStartFlashcards;
     private readonly Action<TrafficSignCategory> _onStartQuiz;
     private readonly Action _onOpenTheory;
+    private readonly Action _onOpenCourse;
     private readonly Action _onContinue;
 
     public DrivingDashboardViewModel(
@@ -73,12 +73,16 @@ public sealed partial class DrivingDashboardViewModel : ObservableObject
         int theoryMastered,
         int theoryTotal,
         Action onOpenTheory,
+        int courseDone,
+        int courseTotal,
+        Action onOpenCourse,
         Action onContinue)
     {
         _onStartChallenge = onStartChallenge;
         _onStartFlashcards = onStartFlashcards;
         _onStartQuiz = onStartQuiz;
         _onOpenTheory = onOpenTheory;
+        _onOpenCourse = onOpenCourse;
         _onContinue = onContinue;
 
         ChallengeSignCount = challengeSignCount;
@@ -86,6 +90,8 @@ public sealed partial class DrivingDashboardViewModel : ObservableObject
         ChallengeCorrectToday = challengeCorrectToday;
         TheoryMastered = theoryMastered;
         TheoryTotal = theoryTotal;
+        CourseDone = courseDone;
+        CourseTotal = courseTotal;
 
         var fortschritt = TrafficSignProgress.ByCategory(pool, masteredNumbers);
         var empfohlen = TrafficSignProgress.NextRecommended(fortschritt);
@@ -122,6 +128,14 @@ public sealed partial class DrivingDashboardViewModel : ObservableObject
 
     public string TheoryProgressDisplay => string.Format(
         LocalizationService.Instance["Fs_TheoryOverall"], TheoryMastered, TheoryTotal);
+
+    /// <summary>Kurslektionen, deren Lernstandskontrolle bestanden ist.</summary>
+    public int CourseDone { get; }
+
+    public int CourseTotal { get; }
+
+    public string CourseProgressDisplay => string.Format(
+        LocalizationService.Instance["Fs_CourseOverall"], CourseDone, CourseTotal);
 
     public string OverallDisplay =>
         string.Format(LocalizationService.Instance["Fs_Progress"], MasteredTotal, SignTotal);
@@ -164,6 +178,9 @@ public sealed partial class DrivingDashboardViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenTheory() => _onOpenTheory();
+
+    [RelayCommand]
+    private void OpenCourse() => _onOpenCourse();
 
     [RelayCommand]
     private void Continue() => _onContinue();

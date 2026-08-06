@@ -38,6 +38,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly RewardRepository _rewardRepo;
     private readonly TrafficSignProgressRepository _signProgressRepo;
     private readonly TheoryProgressRepository _theoryRepo;
+    private readonly CourseProgressRepository _courseRepo;
     private readonly AutoBackupService _autoBackup;
     private readonly QuizComposer _quizComposer;
 
@@ -374,12 +375,14 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         RewardRepository rewardRepo,
         TrafficSignProgressRepository signProgressRepo,
         TheoryProgressRepository theoryRepo,
+        CourseProgressRepository courseRepo,
         AutoBackupService autoBackup,
         QuizComposer quizComposer)
     {
         _rewardRepo = rewardRepo;
         _signProgressRepo = signProgressRepo;
         _theoryRepo = theoryRepo;
+        _courseRepo = courseRepo;
         _autoBackup = autoBackup;
         _quizComposer = quizComposer;
         _settingsRepo = settingsRepo;
@@ -913,6 +916,36 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         await _theoryRepo.ResetAsync(SelectedProfile.Id);
+    }
+
+    /// <summary>
+    /// Setzt den Kurs-Lernstand des gewählten Kindes zurück: gelesene Lektionen und bestandene
+    /// Lernstandskontrollen. Die Theoriefragen selbst bleiben, denn die Kontrollen zählen in
+    /// denselben Fragen-Lernstand - wer den Kurs neu lesen will, muss nicht auch die Fragen
+    /// vergessen.
+    /// </summary>
+    [RelayCommand]
+    private async Task ResetCourseProgressAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        var antwort = System.Windows.MessageBox.Show(
+            $"Kurs-Lernstand von {SelectedProfile.Name} wirklich zurücksetzen? "
+            + "Alle Lektionen gelten danach wieder als ungelesen. Die Theoriefragen, Sterne und "
+            + "der übrige Fortschritt bleiben erhalten.",
+            "Lernstand zurücksetzen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question);
+
+        if (antwort != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        await _courseRepo.ResetAsync(SelectedProfile.Id);
     }
 
     /// <summary>
