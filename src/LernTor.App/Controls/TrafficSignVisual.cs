@@ -68,15 +68,72 @@ public sealed class TrafficSignVisual : FrameworkElement
 
         try
         {
-            DrawShape(dc, sign);
-            DrawPath(dc, sign.PathData, sign.PathColor, sign.PathStrokeThickness);
-            DrawPath(dc, sign.OverlayPathData, sign.OverlayColor, sign.OverlayStrokeThickness);
-            DrawText(dc, sign);
+            if (sign.Artwork is { Count: > 0 } werk)
+            {
+                // Die Original-Zeichnung bringt Rand, Fläche und Sinnbild schon mit - Grundform
+                // und Piktogramm würden hier nur darüberliegen.
+                DrawArtwork(dc, werk);
+
+                // Die AUFSCHRIFT dagegen muss bleiben: sie steht in der Vorlage als Schrift, und
+                // ausgelesen wurden nur Zeichenpfade. Ohne diese Zeile wäre VZ 274-50 ein leerer
+                // roter Kreis und VZ 108-10 ein leeres Dreieck - beide ohne ihre Zahl also ohne
+                // ihre Aussage.
+                DrawText(dc, sign);
+            }
+            else
+            {
+                DrawShape(dc, sign);
+                DrawPath(dc, sign.PathData, sign.PathColor, sign.PathStrokeThickness);
+                DrawPath(dc, sign.OverlayPathData, sign.OverlayColor, sign.OverlayStrokeThickness);
+                DrawText(dc, sign);
+            }
         }
         finally
         {
             dc.Pop();
             dc.Pop();
+        }
+    }
+
+    /// <summary>
+    /// Die Original-Zeichnung: Ebene für Ebene in der Reihenfolge der Vorlage. Die unterste
+    /// Ebene ist der Schildrand, darüber liegen Fläche und Sinnbild - deshalb darf hier nichts
+    /// umsortiert werden.
+    ///
+    /// <para>Nicht gefüllte Ebenen sind Konturlinien der Vorlage und werden bewusst dünn
+    /// gezeichnet: sie sitzen auf den Kanten der gefüllten Flächen und sollen sie schärfen,
+    /// nicht überdecken.</para>
+    /// </summary>
+    private static void DrawArtwork(DrawingContext dc, IReadOnlyList<SignArtworkLayer> layers)
+    {
+        foreach (var layer in layers)
+        {
+            if (string.IsNullOrWhiteSpace(layer.Path) || IstTransparent(layer.Color))
+            {
+                continue;
+            }
+
+            Geometry geometry;
+            try
+            {
+                geometry = Geometry.Parse(layer.Path);
+            }
+            catch (FormatException)
+            {
+                continue;
+            }
+
+            geometry.Freeze();
+
+            if (layer.Filled)
+            {
+                dc.DrawGeometry(BrushFor(layer.Color), null, geometry);
+                continue;
+            }
+
+            var pen = new Pen(BrushFor(layer.Color), 0.8);
+            pen.Freeze();
+            dc.DrawGeometry(null, pen, geometry);
         }
     }
 

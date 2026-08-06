@@ -278,10 +278,16 @@ angelehnt an den Aufbau von fahrschule24.de. Details in [`docs/FUEHRERSCHEIN.md`
   Die Auswahl wird aus Profil-Kennung und Datum abgeleitet, nicht gewürfelt: nach einem Neustart
   sind es dieselben Zeichen (sonst startet ein Kind so lange neu, bis leichte kommen), und beide
   Kinder bekommen am selben Tag verschiedene (Abschreiben bringt nichts).
-- **Selbst gezeichnet, nicht heruntergeladen**: die Zeichen sind als Geometriepfade beschrieben
-  (`SignPictograms`, 58 Piktogramme in einem 0..100-Feld) und werden von `TrafficSignVisual` per
-  `OnRender` gezeichnet. Die App ist vollständig offline und kann nichts nachladen; ein Ordner mit
-  77 PNGs wäre außerdem bei jeder Änderung ein Binär-Diff.
+- **42 Zeichen im Original**, aus der amtlichen Übersicht als Vektoren gewonnen
+  (`scripts/extract-signs-from-pdf.py`), mit den echten RAL-Verkehrsfarben. Die übrigen 35 sind
+  nachgezeichnet (`SignPictograms`). Beides als Geometriepfade in einem 0..100-Feld, von
+  `TrafficSignVisual` per `OnRender` gezeichnet - die App ist vollständig offline und kann nichts
+  nachladen; ein Ordner mit 77 PNGs wäre außerdem bei jeder Änderung ein Binär-Diff.
+- **Aufgenommen wird nur, was maschinell bestätigt ist**: äußere Kontur passend zur erwarteten
+  Grundform, erwartete Randfarbe vorhanden. Die Zuordnung Bild→Name läuft über die
+  Lesereihenfolge der Vorlage und verrutscht stellenweise - beim Wendeverbot kam ein *blaues*
+  Schild heraus, wo ein roter Kreis stehen muss. Solche Fälle behalten ihre gezeichnete Fassung:
+  lieber ein vereinfachtes richtiges Schild als ein originalgetreues falsches.
 - **Rechtlich sauber**: Verkehrszeichen stehen in StVO Anlage 1-3 und sind als amtliches Werk
   gemeinfrei (§ 5 UrhG). Der amtliche *Fragenkatalog* dagegen ist es nicht - er gehört der
   TÜV|DEKRA arge tp 21. Stufe 2 bringt deshalb **eigene** Fragen zu denselben 14 amtlichen

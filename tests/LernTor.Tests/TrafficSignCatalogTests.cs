@@ -61,7 +61,7 @@ public sealed class TrafficSignCatalogTests
     }
 
     /// <summary>
-    /// Die drei Zeichen, bei denen die FORM allein die Botschaft ist - sie brauchen weder
+    /// Die drei nachgezeichneten Zeichen, bei denen die FORM allein die Botschaft ist - sie brauchen weder
     /// Piktogramm noch Aufschrift, und das ist kein Versehen, sondern der Sinn der Sache:
     /// die StVO hat ihnen gerade deshalb unverwechselbare Umrisse gegeben, damit sie auch
     /// verschneit, von hinten oder aus dem Augenwinkel erkennbar bleiben.
@@ -76,10 +76,13 @@ public sealed class TrafficSignCatalogTests
     [Fact]
     public void Jedes_Zeichen_ist_erkennbar()
     {
-        // Entweder Piktogramm oder Aufschrift - sonst waere es eine leere Flaeche. Ausgenommen
-        // sind genau die drei Zeichen, deren Form selbst die Aussage traegt.
+        // Entweder Piktogramm oder Aufschrift - sonst waere es eine leere Flaeche. Zeichen mit
+        // Originalzeichnung sind aussen vor, die bringen ihre Darstellung selbst mit. Bleiben
+        // genau die drei, deren FORM die Aussage traegt.
         var leer = TrafficSignCatalog.All
-            .Where(sign => string.IsNullOrWhiteSpace(sign.PathData) && string.IsNullOrWhiteSpace(sign.Text))
+            .Where(sign => !sign.HasOriginalArtwork
+                           && string.IsNullOrWhiteSpace(sign.PathData)
+                           && string.IsNullOrWhiteSpace(sign.Text))
             .Select(sign => sign.Number)
             .OrderBy(number => number, StringComparer.Ordinal)
             .ToList();

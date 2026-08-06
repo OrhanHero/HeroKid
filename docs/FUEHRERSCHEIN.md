@@ -6,7 +6,7 @@ Abschlussquiz.
 
 | Unterbereich | Stand | Inhalt |
 |---|---|---|
-| **Verkehrszeichen** | ✅ fertig | 77 Zeichen in fünf Gruppen, Karteikarten und Quiz, tägliche Challenge |
+| **Verkehrszeichen** | ✅ fertig | 77 Zeichen in fünf Gruppen (42 im Original, 35 nachgezeichnet), Karteikarten und Quiz, tägliche Challenge |
 | **Theoriefragen** | 🔜 Stufe 2 | Eigene Fragen zu den 14 amtlichen Sachgebieten, Prüfungssimulation, Schwachstellen-Trainer |
 | **Theorie-Kurs** | 🔜 Stufe 3 | Erklärseiten mit Zeichnungen, Quiz, Lernstandskontrolle |
 
@@ -26,10 +26,15 @@ der jeden Tag eine Minute kostet, schon. Die Anzahl ist im Eltern-Bereich pro Ki
 Verordnung, und sind damit amtliches Werk (§ 5 UrhG). Form, Farbe und Bedeutung darf jeder
 nachbauen.
 
-**Übernommen ist trotzdem nichts.** Jedes Zeichen ist aus der Verordnungsbeschreibung als
-Geometrie neu beschrieben (`SignPictograms`), die Erklär- und Merktexte sind selbst geschrieben.
-Layout und Grafiken fremder Broschüren (etwa der ADAC-Übersicht, die als Referenz für die
-Auswahl diente) sind ausdrücklich **nicht** verwendet — deren Copyright-Vermerk untersagt das.
+**Was übernommen ist und was nicht.** Aus der ADAC-Übersicht ist die **Zeichengeometrie der
+Schilder selbst** entnommen — also genau das, was als amtliches Werk gemeinfrei ist. Nicht
+entnommen sind Layout, Satz, Erklärtexte und die Zusammenstellung der Broschüre; das ist die
+Leistung des Herausgebers und durch dessen Copyright-Vermerk geschützt. Der Extraktor liest
+ausschließlich Pfad- und Farboperatoren, keine Schrift und keine Seitengestaltung.
+
+Die Erklär- und Merktexte in diesem Bereich sind selbst geschrieben. Die 35 noch nicht
+bestätigten Zeichen sind weiterhin aus der Verordnungsbeschreibung nachgezeichnet
+(`SignPictograms`).
 
 **Der amtliche Fragenkatalog ist NICHT frei.** Die offiziellen Theorie-Prüfungsfragen gehören der
 TÜV|DEKRA arge tp 21; kommerzielle Lern-Apps lizenzieren sie. Sie dürfen hier nicht hinein.
@@ -40,7 +45,37 @@ will, muss sie über den vorhandenen Eltern-Import selbst eintragen.
 **Keine Videos.** LernTor ist vollständig offline. Der Theorie-Kurs bekommt stattdessen
 bebilderte Erklärseiten mit denselben gezeichneten Zeichen.
 
-## Wie die Zeichen gezeichnet werden
+## Original oder nachgezeichnet
+
+**42 der 77 Zeichen liegen im Original vor**, aus der amtlichen Übersicht gewonnen
+(`scripts/extract-signs-from-pdf.py`, Ergebnis in `TrafficSignArtwork.cs`). Sie tragen die
+echten RAL-Verkehrsfarben aus der Vorlage: `#E3000F` Verkehrsrot, `#005DAA` Verkehrsblau,
+`#FFED00` Verkehrsgelb. Die übrigen 35 behalten ihre nachgezeichnete Fassung.
+
+**Warum nicht alle?** Die Zuordnung Bild→Name läuft über die Lesereihenfolge der Vorlage
+(Bildraster links, Namensliste rechts) — und die verrutscht stellenweise. Aufgenommen wird
+deshalb nur, was zwei maschinelle Prüfungen besteht:
+
+1. Die äußere Kontur passt zur erwarteten Grundform (Flächeninhalt im Verhältnis zum
+   umschließenden Rechteck: Dreieck ≈ 0,5, Kreis ≈ 0,79, Rechteck ≈ 1,0).
+2. Die erwartete Randfarbe kommt im Zeichen vor.
+
+Das ist keine Förmlichkeit. Beim **Wendeverbot (VZ 272)** kam ein *blaues* Schild heraus, wo ein
+roter Kreis stehen muss; beim **Überholverbot (VZ 276)** fehlte jedes Rot. Diese Fälle sind
+aussortiert und behalten ihre gezeichnete Fassung — lieber ein vereinfachtes richtiges Schild
+als ein originalgetreues falsches. `TrafficSignArtworkTests` hält fest, dass sie nicht
+stillschweigend zurückkehren.
+
+**Eine Falle beim Extrahieren:** der Extraktor liest nur Zeichenpfade, **keine Schrift**. Bei
+VZ 108-10 („Gefälle 10 %") und VZ 274-50 („50") steht die Aussage aber in der Zahl — als
+Original allein wären das ein leeres Dreieck und ein leerer roter Kreis. `TrafficSignVisual`
+legt die Aufschrift deshalb über die Originalzeichnung.
+
+**Wie mehr Zeichen dazukommen:** Prüfregeln in der Auswertung nachschärfen oder die
+Fehlzuordnungen von Hand richtigstellen, dann das Skript erneut laufen lassen. Die Architektur
+steht; es ist nur noch Datenpflege.
+
+## Wie die nachgezeichneten Zeichen entstehen
 
 Keine Bilddateien — die App kann nichts nachladen, und ein Ordner mit 77 PNGs wäre bei jeder
 Änderung ein Binär-Diff.

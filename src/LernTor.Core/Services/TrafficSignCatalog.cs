@@ -27,7 +27,17 @@ public static partial class TrafficSignCatalog
     /// statische Konstruktor durch und alle Teile stehen.
     /// </summary>
     private static readonly Lazy<TrafficSign[]> AllSigns = new(() =>
-        Gefahr.Concat(Vorschrift).Concat(Richt).Concat(Einrichtungen).Concat(Zusatz).ToArray());
+        Gefahr.Concat(Vorschrift).Concat(Richt).Concat(Einrichtungen).Concat(Zusatz)
+            .Select(WithArtwork)
+            .ToArray());
+
+    /// <summary>
+    /// Hängt die Original-Zeichnung an, wenn es für dieses Zeichen eine bestätigte gibt.
+    /// Getrennt gehalten, damit der handgepflegte Teil (Bedeutung, Merksatz, Klassenstufe) und
+    /// der maschinell erzeugte Teil (Geometrie) sich nicht ins Gehege kommen.
+    /// </summary>
+    private static TrafficSign WithArtwork(TrafficSign sign) =>
+        TrafficSignArtwork.For(sign.Number) is { } werk ? sign with { Artwork = werk } : sign;
 
     /// <summary>Alle Zeichen in Lernreihenfolge (Gefahr → Vorschrift → Richt → Einrichtungen → Zusatz).</summary>
     public static IReadOnlyList<TrafficSign> All => AllSigns.Value;
