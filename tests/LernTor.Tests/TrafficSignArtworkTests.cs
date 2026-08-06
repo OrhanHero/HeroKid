@@ -125,7 +125,11 @@ public sealed class TrafficSignArtworkTests
 
     private static IEnumerable<double> Koordinaten(string path)
     {
-        foreach (var stueck in path.Split(' ', 'M', 'L', 'Z', StringSplitOptions.RemoveEmptyEntries))
+        // Trennzeichen als Array: string.Split kennt keine Ueberladung mit vier
+        // Einzelzeichen UND Optionen - der letzte Parameter wuerde als char gelesen.
+        var trenner = new[] { ' ', 'M', 'L', 'Z' };
+
+        foreach (var stueck in path.Split(trenner, StringSplitOptions.RemoveEmptyEntries))
         {
             foreach (var teil in stueck.Split(','))
             {

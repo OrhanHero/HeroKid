@@ -27,7 +27,11 @@ public static partial class TrafficSignCatalog
     /// statische Konstruktor durch und alle Teile stehen.
     /// </summary>
     private static readonly Lazy<TrafficSign[]> AllSigns = new(() =>
-        Gefahr.Concat(Vorschrift).Concat(Richt).Concat(Einrichtungen).Concat(Zusatz)
+        // Das "!" ist hier belegt, nicht geraten: die Lambda laeuft erst beim ersten Zugriff
+        // auf .Value, also nach dem statischen Konstruktor - da stehen alle Teil-Arrays.
+        // Ohne die Freizeichnung meldet der Compiler fuenf CS8604-Warnungen, weil er die
+        // Verzoegerung nicht sieht; die wuerden echte Funde im Rauschen untergehen lassen.
+        Gefahr!.Concat(Vorschrift!).Concat(Richt!).Concat(Einrichtungen!).Concat(Zusatz!)
             .Select(WithArtwork)
             .ToArray());
 
