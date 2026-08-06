@@ -32,16 +32,7 @@ public static partial class TrafficSignCatalog
         // Ohne die Freizeichnung meldet der Compiler fuenf CS8604-Warnungen, weil er die
         // Verzoegerung nicht sieht; die wuerden echte Funde im Rauschen untergehen lassen.
         Gefahr!.Concat(Vorschrift!).Concat(Richt!).Concat(Einrichtungen!).Concat(Zusatz!)
-            .Select(WithArtwork)
             .ToArray());
-
-    /// <summary>
-    /// Hängt die Original-Zeichnung an, wenn es für dieses Zeichen eine bestätigte gibt.
-    /// Getrennt gehalten, damit der handgepflegte Teil (Bedeutung, Merksatz, Klassenstufe) und
-    /// der maschinell erzeugte Teil (Geometrie) sich nicht ins Gehege kommen.
-    /// </summary>
-    private static TrafficSign WithArtwork(TrafficSign sign) =>
-        TrafficSignArtwork.For(sign.Number) is { } werk ? sign with { Artwork = werk } : sign;
 
     /// <summary>Alle Zeichen in Lernreihenfolge (Gefahr → Vorschrift → Richt → Einrichtungen → Zusatz).</summary>
     public static IReadOnlyList<TrafficSign> All => AllSigns.Value;

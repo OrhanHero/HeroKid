@@ -165,6 +165,16 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   `net8.0`.** Plain SDK projects (Core/ContentGen/News/Data) get `System.Net.Http` for free; the
   WPF project does not — add `using System.Net.Http;` explicitly wherever `HttpClient` is used in
   `LernTor.App`. This only surfaced as a CI compile error, not locally.
+- **`pack://application:,,,/Path` only resolves an embedded `Resource` when the EXECUTING
+  assembly (the process's entry assembly) is also the assembly the resource is compiled into.**
+  That's true for `LernTor.exe` itself, but not for `LernTor.UiTests`: there the test host is the
+  entry assembly and `LernTor.dll` (with the traffic-sign PNGs under
+  `Assets/Verkehrszeichen/`, see `TrafficSignImages`) is only referenced. The short form silently
+  finds nothing (throws `IOException`, easy to swallow in a catch block) instead of erroring
+  loudly — symptom was every sign quietly falling back to its old hand-drawn pictogram, with all
+  tests still green, only caught by actually reading the rendered pixels. Fix: always use the
+  explicit assembly form, `pack://application:,,,/LernTor;component/Path`, which resolves
+  correctly regardless of which assembly is the entry point.
 - **`StaticResource` cannot resolve across sibling `ResourceDictionary` files merged at a common
   parent.** `Styles.xaml` referencing brushes from `Colors.xaml` only works if `Styles.xaml` merges
   `Colors.xaml` itself (`ResourceDictionary.MergedDictionaries` inside `Styles.xaml`) — being merged

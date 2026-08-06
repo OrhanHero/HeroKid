@@ -76,16 +76,13 @@ public sealed class TrafficSignCatalogTests
     [Fact]
     public void Jedes_Zeichen_ist_erkennbar()
     {
-        // Entweder Piktogramm oder Aufschrift - sonst waere es eine leere Flaeche. Zeichen mit
-        // Originalzeichnung sind aussen vor, die bringen ihre Darstellung selbst mit.
-        //
-        // Geprueft wird auf TEILMENGE, nicht auf Gleichheit: sobald fuer eines der drei eine
-        // bestaetigte Originalzeichnung dazukommt, verschwindet es aus dieser Liste. Genau das
-        // ist bei VZ 250 passiert - eine Gleichheitspruefung waere daran zerbrochen, obwohl
-        // nichts kaputt war, sondern etwas besser wurde.
+        // Entweder Piktogramm oder Aufschrift - sonst waere die nachgezeichnete Ruecklaufebene
+        // (PathData/Text) eine leere Flaeche. Jedes Zeichen hat inzwischen zusaetzlich eine
+        // echte Bilddatei (siehe TrafficSignImages in LernTor.App), die im Betrieb ohnehin
+        // Vorrang hat - dieser Test haelt trotzdem den Rueckfallpfad vollstaendig, falls fuer
+        // eine Nummer je keine Bilddatei mitgeliefert wuerde.
         var leer = TrafficSignCatalog.All
-            .Where(sign => !sign.HasOriginalArtwork
-                           && string.IsNullOrWhiteSpace(sign.PathData)
+            .Where(sign => string.IsNullOrWhiteSpace(sign.PathData)
                            && string.IsNullOrWhiteSpace(sign.Text))
             .Select(sign => sign.Number)
             .ToList();

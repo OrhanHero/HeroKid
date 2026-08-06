@@ -6,7 +6,7 @@ Abschlussquiz.
 
 | Unterbereich | Stand | Inhalt |
 |---|---|---|
-| **Verkehrszeichen** | ✅ fertig | 77 Zeichen in fünf Gruppen (42 im Original, 35 nachgezeichnet), Karteikarten und Quiz, tägliche Challenge |
+| **Verkehrszeichen** | ✅ fertig | 77 Zeichen in fünf Gruppen, alle als echte Bilddatei (Wikimedia Commons, gemeinfrei), Karteikarten und Quiz, tägliche Challenge |
 | **Theoriefragen** | ✅ fertig | 65 eigene Fragen zu den 14 amtlichen Sachgebieten, Prüfungssimulation nach Fehlerpunkten, Schwachstellen-Trainer |
 | **Theorie-Kurs** | 🔜 Stufe 3 | Erklärseiten mit Zeichnungen, Quiz, Lernstandskontrolle |
 
@@ -26,15 +26,14 @@ der jeden Tag eine Minute kostet, schon. Die Anzahl ist im Eltern-Bereich pro Ki
 Verordnung, und sind damit amtliches Werk (§ 5 UrhG). Form, Farbe und Bedeutung darf jeder
 nachbauen.
 
-**Was übernommen ist und was nicht.** Aus der ADAC-Übersicht ist die **Zeichengeometrie der
-Schilder selbst** entnommen — also genau das, was als amtliches Werk gemeinfrei ist. Nicht
-entnommen sind Layout, Satz, Erklärtexte und die Zusammenstellung der Broschüre; das ist die
-Leistung des Herausgebers und durch dessen Copyright-Vermerk geschützt. Der Extraktor liest
-ausschließlich Pfad- und Farboperatoren, keine Schrift und keine Seitengestaltung.
+**Was übernommen ist und was nicht.** Die Bilddateien selbst kommen von Wikimedia Commons, dort
+unter `{{PD-GermanGov}}` (amtliches Werk, § 5 UrhG) freigegeben — je Zeichen einzeln geprüft, nicht
+pauschal angenommen. Herkunft und Lizenzvermerk je Nummer stehen in
+`src/LernTor.App/Assets/Verkehrszeichen/QUELLEN.md`. Nicht übernommen ist die Zusammenstellung
+einer fremden Broschüre wie der ADAC-Übersicht (deren Layout und Auswahl ist geschützt) — diese
+App bezieht die Zeichen direkt von der Quelle, nicht über eine Broschüre.
 
-Die Erklär- und Merktexte in diesem Bereich sind selbst geschrieben. Die 35 noch nicht
-bestätigten Zeichen sind weiterhin aus der Verordnungsbeschreibung nachgezeichnet
-(`SignPictograms`).
+Die Erklär- und Merktexte in diesem Bereich sind selbst geschrieben.
 
 **Der amtliche Fragenkatalog ist NICHT frei.** Die offiziellen Theorie-Prüfungsfragen gehören der
 TÜV|DEKRA arge tp 21; kommerzielle Lern-Apps lizenzieren sie. Sie dürfen hier nicht hinein.
@@ -44,42 +43,48 @@ mit der Prüfung. Wer wortgleiche Fragen will, muss sie über den vorhandenen El
 eintragen.
 
 **Keine Videos.** LernTor ist vollständig offline. Der Theorie-Kurs bekommt stattdessen
-bebilderte Erklärseiten mit denselben gezeichneten Zeichen.
+bebilderte Erklärseiten mit denselben Zeichenbildern.
 
-## Original oder nachgezeichnet
+## Original-Bilddateien
 
-**42 der 77 Zeichen liegen im Original vor**, aus der amtlichen Übersicht gewonnen
-(`scripts/extract-signs-from-pdf.py`, Ergebnis in `TrafficSignArtwork.cs`). Sie tragen die
-echten RAL-Verkehrsfarben aus der Vorlage: `#E3000F` Verkehrsrot, `#005DAA` Verkehrsblau,
-`#FFED00` Verkehrsgelb. Die übrigen 35 behalten ihre nachgezeichnete Fassung.
+**Alle 77 Zeichen liegen als echte Bilddatei vor** (PNG, aus Wikimedia Commons, siehe
+`src/LernTor.App/Assets/Verkehrszeichen/QUELLEN.md` für Quelle und Lizenz je Nummer). Vorherige
+Fassungen dieser App zeichneten die Zeichen selbst nach (handgezogene Geometriepfade) oder
+gewannen sie maschinell aus einer ADAC-PDF (`scripts/extract-signs-from-pdf.py`, damals mit
+Fehlzuordnungen bei VZ 272/276 — die Skripte bleiben im Repo als Dokumentation des Wegs, sind
+aber nicht mehr der Weg, wie die App an ihre Zeichen kommt). Echte Zeichen sehen schlicht besser
+aus als beides.
 
-**Warum nicht alle?** Die Zuordnung Bild→Name läuft über die Lesereihenfolge der Vorlage
-(Bildraster links, Namensliste rechts) — und die verrutscht stellenweise. Aufgenommen wird
-deshalb nur, was zwei maschinelle Prüfungen besteht:
+**Warum als eingebettete Ressource statt loser PNG-Dateien:** die App ist vollständig offline und
+darf zur Laufzeit nichts nachladen. `LernTor.App.csproj` bindet die Bilder als `Resource` ein -
+das kompiliert sie in die Assembly selbst statt sie lose neben die EXE zu legen, sie überstehen
+also den Single-File-Publish unverändert (siehe `IncludeNativeLibrariesForSelfExtract` in
+CLAUDE.md für eine verwandte, aber andere Falle - die betrifft native DLLs, nicht verwaltete
+Ressourcen wie diese hier).
 
-1. Die äußere Kontur passt zur erwarteten Grundform (Flächeninhalt im Verhältnis zum
-   umschließenden Rechteck: Dreieck ≈ 0,5, Kreis ≈ 0,79, Rechteck ≈ 1,0).
-2. Die erwartete Randfarbe kommt im Zeichen vor.
+**Warum PNG statt SVG-in-WPF:** WPF zeichnet SVG nicht selbst. Ein Zusatzpaket (SharpVectors) oder
+ein SVG→XAML-Build-Schritt hätte dieselbe Fehlerklasse riskiert, die dieses Projekt laut CLAUDE.md
+schon zweimal getroffen hat - XAML/Ressourcen, die sauber kompilieren und erst beim Anzeigen
+werfen. Ein fertiges Rasterbild bei 960 px Breite hat genug Reserve für die größte Darstellung
+(200 px im Quiz) und ist trivial zu laden.
 
-Das ist keine Förmlichkeit. Beim **Wendeverbot (VZ 272)** kam ein *blaues* Schild heraus, wo ein
-roter Kreis stehen muss; beim **Überholverbot (VZ 276)** fehlte jedes Rot. Diese Fälle sind
-aussortiert und behalten ihre gezeichnete Fassung — lieber ein vereinfachtes richtiges Schild
-als ein originalgetreues falsches. `TrafficSignArtworkTests` hält fest, dass sie nicht
-stillschweigend zurückkehren.
+**Der nachgezeichnete Pfad bleibt als Rückfallebene stehen** (`SignPictograms`, `TrafficSign.PathData`/
+`Text`) - für den Fall, dass für eine Nummer je keine Bilddatei mitgeliefert würde. Er kommt im
+Normalbetrieb nie zum Zug: `TrafficSignVisual` prüft zuerst auf eine Bilddatei
+(`TrafficSignImages`), und `TrafficSignCatalogTests`/`TrafficSignRenderTests` halten fest, dass für
+jede der 77 Katalognummern tatsächlich eine da ist.
 
-**Eine Falle beim Extrahieren:** der Extraktor liest nur Zeichenpfade, **keine Schrift**. Bei
-VZ 108-10 („Gefälle 10 %") und VZ 274-50 („50") steht die Aussage aber in der Zahl — als
-Original allein wären das ein leeres Dreieck und ein leerer roter Kreis. `TrafficSignVisual`
-legt die Aufschrift deshalb über die Originalzeichnung.
+**Aufschrift nicht doppelt:** 16 Zeichen zeigen eine Zahl oder einen Ort schon in der Bilddatei
+selbst (z.B. VZ 274-50 die "50", VZ 108-10/110-10 "10 %", VZ 314 das "P", VZ 310/311 einen
+Beispielort). `TrafficSignImages.ZeichnetAufschriftSelbst` listet sie, damit
+`TrafficSignVisual` `TrafficSign.Text` für genau diese NICHT zusätzlich übers Bild zeichnet -
+sonst stünde die Zahl doppelt. Der Text bleibt trotzdem in den Katalogdaten stehen, er ist die
+fachlich richtige Aufschrift für den Rückfallpfad.
 
-**Wie mehr Zeichen dazukommen:** Prüfregeln in der Auswertung nachschärfen oder die
-Fehlzuordnungen von Hand richtigstellen, dann das Skript erneut laufen lassen. Die Architektur
-steht; es ist nur noch Datenpflege.
+## Wie der Rückfallpfad entsteht
 
-## Wie die nachgezeichneten Zeichen entstehen
-
-Keine Bilddateien — die App kann nichts nachladen, und ein Ordner mit 77 PNGs wäre bei jeder
-Änderung ein Binär-Diff.
+Nur relevant, falls für eine Nummer je keine Bilddatei mitgeliefert würde - im Normalbetrieb
+zeichnet `TrafficSignVisual` immer die echte Bilddatei (siehe oben).
 
 - `SignPictograms` (Core): 58 Geometriepfade in einem gedachten Feld von **0..100** in beiden
   Richtungen. Benannte Konstanten, weil dieselbe Figur auf mehreren Zeichen sitzt — das Fahrrad
@@ -243,9 +248,15 @@ gewesen.
 
 ## Erweitern
 
-Ein Zeichen mehr: Eintrag in der passenden `TrafficSignCatalog.*`-Datei, fertig. Braucht es ein
-neues Piktogramm, kommt eine Konstante in `SignPictograms` dazu.
+Ein Zeichen mehr: Bilddatei (PNG, gemeinfrei, z.B. von Wikimedia Commons) unter
+`src/LernTor.App/Assets/Verkehrszeichen/<nummer>.png` ablegen, Quelle und Lizenz in `QUELLEN.md`
+im selben Ordner eintragen, dazu ein Eintrag in der passenden `TrafficSignCatalog.*`-Datei -
+fertig, `TrafficSignImages` findet die Datei automatisch über die Nummer. Zeigt die Bilddatei
+schon eine Aufschrift (Zahl, Ort), zusätzlich die Nummer in
+`TrafficSignImages.BildEnthaeltAufschrift` eintragen, sonst steht der Text doppelt.
 
-`TrafficSignRenderTests` (UiTests) lässt **WPF selbst** jeden Pfad parsen und zeichnet den ganzen
-Katalog einmal durch. Das ist der eigentliche Schutz: in Core ist ein Pfad nur ein String, ein
-Tippfehler darin fällt dort nicht auf.
+`TrafficSignRenderTests` (UiTests) lässt **WPF selbst** jeden Pfad des Rückfallpfads parsen und
+zeichnet den ganzen Katalog einmal durch - das ist der eigentliche Schutz für den Rückfallpfad:
+in Core ist ein Pfad nur ein String, ein Tippfehler darin fällt dort nicht auf. Ein zweiter Test
+im selben Projekt hält fest, dass jede Katalognummer eine Bilddatei hat und keine Bilddatei ohne
+Katalogeintrag herumliegt.

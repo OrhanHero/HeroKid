@@ -1,24 +1,25 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 
 namespace LernTor.App.Controls;
 
 /// <summary>
-/// Zeichnet ein Verkehrszeichen.
+/// Zeichnet ein Verkehrszeichen: die echte Bilddatei (siehe <see cref="TrafficSignImages"/>),
+/// falls für die Nummer eine mitgeliefert wird, sonst den nachgezeichneten Rückfallpfad.
 ///
-/// <para><b>Warum direkt in <see cref="OnRender"/> statt als XAML-Template:</b> ein Zeichen ist
-/// eine Handvoll Geometrien, deren Farben und Formen von den Daten abhängen. Als XAML bräuchte
-/// das ein Dutzend Trigger und Converter je Grundform - und würde damit genau in die
-/// Fehlerklasse laufen, die dieses Projekt schon zweimal getroffen hat: XAML, das sauber
-/// kompiliert und erst beim Anzeigen wirft. Hier ist alles gewöhnlicher C#-Code, den der
-/// Compiler prüft.</para>
+/// <para><b>Warum direkt in <see cref="OnRender"/> statt als XAML-Template:</b> Bild oder
+/// Geometrien, Farben und Formen hängen von den Daten ab. Als XAML bräuchte das ein Dutzend
+/// Trigger und Converter je Fall - und würde damit genau in die Fehlerklasse laufen, die dieses
+/// Projekt schon zweimal getroffen hat: XAML, das sauber kompiliert und erst beim Anzeigen wirft.
+/// Hier ist alles gewöhnlicher C#-Code, den der Compiler prüft.</para>
 ///
-/// <para>Alle Geometrien rechnen in einem Feld von 0..100 und werden auf das kleinere Maß des
-/// verfügbaren Platzes skaliert - dasselbe Zeichen funktioniert damit als 60-Pixel-Kachel in der
-/// Übersicht und als 300-Pixel-Bild im Quiz.</para>
+/// <para>Bild und Rückfall-Geometrien rechnen beide in einem Feld von 0..100 und werden auf das
+/// kleinere Maß des verfügbaren Platzes skaliert - dasselbe Zeichen funktioniert damit als
+/// 60-Pixel-Kachel in der Übersicht und als 300-Pixel-Bild im Quiz.</para>
 /// </summary>
 public sealed class TrafficSignVisual : FrameworkElement
 {
@@ -68,20 +69,22 @@ public sealed class TrafficSignVisual : FrameworkElement
 
         try
         {
-            if (sign.Artwork is { Count: > 0 } werk)
+            if (TrafficSignImages.For(sign.Number) is { } bild)
             {
-                // Die Original-Zeichnung bringt Rand, Fläche und Sinnbild schon mit - Grundform
-                // und Piktogramm würden hier nur darüberliegen.
-                DrawArtwork(dc, werk);
+                // Die echte Bilddatei bringt Rand, Fläche und Sinnbild schon mit - Grundform und
+                // Piktogramm würden hier nur darüberliegen.
+                DrawImage(dc, bild);
 
-                // Die AUFSCHRIFT dagegen muss bleiben: sie steht in der Vorlage als Schrift, und
-                // ausgelesen wurden nur Zeichenpfade. Ohne diese Zeile wäre VZ 274-50 ein leerer
-                // roter Kreis und VZ 108-10 ein leeres Dreieck - beide ohne ihre Zahl also ohne
-                // ihre Aussage.
-                DrawText(dc, sign);
+                // Nur nachlegen, wenn die Datei die Aufschrift NICHT schon selbst zeigt - sonst
+                // stünde z.B. bei VZ 274-50 die "50" doppelt.
+                if (!TrafficSignImages.ZeichnetAufschriftSelbst(sign.Number))
+                {
+                    DrawText(dc, sign);
+                }
             }
             else
             {
+                // Rückfallpfad, falls für eine Nummer je keine Bilddatei mitgeliefert würde.
                 DrawShape(dc, sign);
                 DrawPath(dc, sign.PathData, sign.PathColor, sign.PathStrokeThickness);
                 DrawPath(dc, sign.OverlayPathData, sign.OverlayColor, sign.OverlayStrokeThickness);
@@ -96,45 +99,21 @@ public sealed class TrafficSignVisual : FrameworkElement
     }
 
     /// <summary>
-    /// Die Original-Zeichnung: Ebene für Ebene in der Reihenfolge der Vorlage. Die unterste
-    /// Ebene ist der Schildrand, darüber liegen Fläche und Sinnbild - deshalb darf hier nichts
-    /// umsortiert werden.
-    ///
-    /// <para>Nicht gefüllte Ebenen sind Konturlinien der Vorlage und werden bewusst dünn
-    /// gezeichnet: sie sitzen auf den Kanten der gefüllten Flächen und sollen sie schärfen,
-    /// nicht überdecken.</para>
+    /// Die Bilddatei, seitenverhältnistreu in das 0..100-Feld eingepasst und zentriert. Nicht
+    /// jedes Zeichen ist quadratisch - die breiten Zusatzzeichen-Rechtecke (z.B. "1000-10") sind
+    /// gut doppelt so breit wie hoch. Ein einfaches Strecken auf 100x100 wie beim alten
+    /// Geometrie-Rückfallpfad (der quadratische Feld, in dem Formen wie <see cref="SignShape.Rechteck"/>
+    /// selbst ihr Seitenverhältnis mitbringen) würde solche Zeichen sichtbar verzerren.
     /// </summary>
-    private static void DrawArtwork(DrawingContext dc, IReadOnlyList<SignArtworkLayer> layers)
+    private static void DrawImage(DrawingContext dc, BitmapImage bild)
     {
-        foreach (var layer in layers)
-        {
-            if (string.IsNullOrWhiteSpace(layer.Path) || IstTransparent(layer.Color))
-            {
-                continue;
-            }
+        const double Rand = 2.0;
+        var verfuegbar = Feld - (2 * Rand);
+        var skalierung = Math.Min(verfuegbar / bild.PixelWidth, verfuegbar / bild.PixelHeight);
+        var breite = bild.PixelWidth * skalierung;
+        var hoehe = bild.PixelHeight * skalierung;
 
-            Geometry geometry;
-            try
-            {
-                geometry = Geometry.Parse(layer.Path);
-            }
-            catch (FormatException)
-            {
-                continue;
-            }
-
-            geometry.Freeze();
-
-            if (layer.Filled)
-            {
-                dc.DrawGeometry(BrushFor(layer.Color), null, geometry);
-                continue;
-            }
-
-            var pen = new Pen(BrushFor(layer.Color), 0.8);
-            pen.Freeze();
-            dc.DrawGeometry(null, pen, geometry);
-        }
+        dc.DrawImage(bild, new Rect((Feld - breite) / 2, (Feld - hoehe) / 2, breite, hoehe));
     }
 
     /// <summary>

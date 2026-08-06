@@ -17,6 +17,15 @@
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
+  <!-- Original-Bilddateien der 77 Verkehrszeichen (PNG, gemeinfrei, siehe
+       docs/FUEHRERSCHEIN.md). Build-Aktion "Resource" bettet sie in die Assembly ein statt sie
+       als lose Dateien neben der EXE abzulegen - sie überstehen damit den
+       Single-File-Publish unverändert und die App bleibt vollständig offline, es wird zur
+       Laufzeit nichts nachgeladen. -->
+  <ItemGroup>
+    <Resource Include="Assets\Verkehrszeichen\*.png" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\LernTor.Core\LernTor.Core.csproj" />
     <ProjectReference Include="..\LernTor.ContentGen\LernTor.ContentGen.csproj" />

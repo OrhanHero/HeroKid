@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using LernTor.App.Controls;
@@ -118,5 +119,34 @@ public sealed class TrafficSignRenderTests
 
             Assert.True(flaeche.IsMeasureValid, $"Zeichen {sign.Number} ({sign.Name}) konnte nicht gezeichnet werden.");
         }
+    }
+
+    /// <summary>
+    /// Jede Katalognummer hat eine Bilddatei, und keine Bilddatei liegt ohne Katalogeintrag
+    /// herum - letzteres wäre tote Last, die bei jedem Build mitgeschleppt würde. Geprüft wird
+    /// direkt auf dem Ordner, nicht über <see cref="TrafficSignImages"/>: die lädt lazy und
+    /// würde eine fehlende Datei nur an dem einen Zeichen bemerken, das sie gerade zeichnet,
+    /// nicht am ganzen Bestand auf einen Schlag.
+    /// </summary>
+    [Fact]
+    public void Jede_Katalognummer_hat_genau_eine_Bilddatei()
+    {
+        var ordner = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "src", "LernTor.App", "Assets", "Verkehrszeichen"));
+
+        Assert.True(Directory.Exists(ordner), $"Bilderordner fehlt: {ordner}");
+
+        var vorhandene = Directory.GetFiles(ordner, "*.png")
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var erwartete = TrafficSignCatalog.All.Select(sign => sign.Number).ToHashSet(StringComparer.Ordinal);
+
+        var fehlend = erwartete.Except(vorhandene).ToList();
+        var verwaist = vorhandene.Except(erwartete).ToList();
+
+        Assert.True(fehlend.Count == 0, $"Keine Bilddatei fuer: {string.Join(", ", fehlend)}");
+        Assert.True(verwaist.Count == 0, $"Bilddatei ohne Katalogeintrag: {string.Join(", ", verwaist)}");
     }
 }
