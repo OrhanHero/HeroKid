@@ -307,6 +307,8 @@ def check_subject_wiring() -> None:
 
 
 TOPIC_FACTORY_ENTRY = re.compile(r"\[GradeLevel\.(\w+)\]\s*=\s*new List<TopicFactory>\s*\{(.*?)\}", re.DOTALL)
+# [GradeLevel.X] = FeldName,  (eine fuer alle Stufen gemeinsame Themenliste)
+TOPIC_FACTORY_ALIAS = re.compile(r"\[GradeLevel\.(\w+)\]\s*=\s*([A-Za-z_]\w*)\s*[,}]")
 TOPIC_METHOD = re.compile(r"private\s+static\s+QuizQuestion\s+(\w+)\s*\(\s*Random\s+\w+\s*\)")
 TUPLE_ARRAY = re.compile(
     r"private\s+static\s+readonly\s+\((?P<fields>[^)]*)\)\[\]\s+(?P<name>\w+)\s*=", re.DOTALL)
@@ -335,6 +337,23 @@ def check_generator_consistency() -> None:
         for _grade, block in TOPIC_FACTORY_ENTRY.findall(text):
             block = re.sub(r"//.*", "", block)
             for name in (part.strip() for part in block.split(",")):
+                if name.isidentifier():
+                    referenced.add(name)
+
+        # Manche Generatoren weisen ALLEN Klassenstufen dieselbe Liste zu und legen sie dafuer
+        # in ein eigenes Feld (ErsteHilfeGenerator: ein Pool fuer alle Stufen). Dann steht in
+        # TopicsByGrade nur der Feldname - ohne diese Aufloesung meldete die Pruefung saemtliche
+        # Themen als "nie ausgespielt", obwohl der Code richtig ist.
+        for _grade, field in TOPIC_FACTORY_ALIAS.findall(text):
+            alias = re.search(
+                rf"IReadOnlyList<TopicFactory>\s+{re.escape(field)}\s*=\s*new List<TopicFactory>\s*\{{(.*?)\}}",
+                text, re.DOTALL)
+            if not alias:
+                report("generator-topics", path,
+                       f"TopicsByGrade verweist auf '{field}', aber dazu wurde keine "
+                       f"IReadOnlyList<TopicFactory>-Deklaration gefunden")
+                continue
+            for name in (part.strip() for part in re.sub(r"//.*", "", alias.group(1)).split(",")):
                 if name.isidentifier():
                     referenced.add(name)
 

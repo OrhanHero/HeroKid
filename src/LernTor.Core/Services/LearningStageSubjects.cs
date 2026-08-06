@@ -29,6 +29,7 @@ public static class LearningStageSubjects
         [LearningStage.Musik] = Subject.Musik,
         [LearningStage.Itg] = Subject.Itg,
         [LearningStage.KiWissen] = Subject.KiWissen,
+        [LearningStage.ErsteHilfe] = Subject.ErsteHilfe,
         [LearningStage.Tippen] = Subject.Tippen,
         [LearningStage.Fuehrerschein] = Subject.Fuehrerschein,
     };

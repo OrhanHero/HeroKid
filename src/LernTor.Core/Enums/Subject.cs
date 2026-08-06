@@ -25,5 +25,10 @@ public enum Subject
     /// <summary>Führerschein Klasse B: Verkehrszeichen, Theoriefragen und Theorie-Kurs. Wie
     /// Tippen ein eigener Bereich ohne Aufgaben-Generator - der Inhalt kommt aus
     /// TrafficSignCatalog, nicht aus ExerciseGeneratorBase. Am Ende angefügt.</summary>
-    Fuehrerschein
+    Fuehrerschein,
+    /// <summary>Erste Hilfe und Notfallwissen. Kein Rahmenlehrplan-Fach, sondern ein eigener
+    /// Bereich - anders als die Schulfächer mit EINEM Fragenpool für alle Klassenstufen, weil
+    /// die fünf W-Fragen mit elf dieselben sind wie mit fünfzehn (siehe ErsteHilfeGenerator).
+    /// Am Ende angefügt.</summary>
+    ErsteHilfe
 }

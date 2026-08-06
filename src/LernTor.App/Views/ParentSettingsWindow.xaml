@@ -562,6 +562,18 @@
                 <CheckBox IsChecked="{Binding DrivingAreaEnabled}" Margin="0,0,0,10" FontSize="14"
                           Content="Führerschein-Bereich für dieses Kind anzeigen" />
 
+                <!-- ===== Erste Hilfe (pro Profil) =====
+                     Eigener Bereich mit einem einzigen Fragenpool fuer alle Klassenstufen: die
+                     fuenf W-Fragen sind mit elf dieselben wie mit fuenfzehn. Pro Profil
+                     abschaltbar, weil er den Lerntag um eine Etappe verlaengert. -->
+                <TextBlock Text="🩺 Erste Hilfe und Notfallwissen (für dieses Kind)"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
+                <TextBlock Style="{StaticResource BodyText}" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,8"
+                           Text="Notruf 112, stabile Seitenlage, Wunden, Verbrennungen, Herzdruckmassage, Defibrillator, Verschlucken und Schock. Derselbe Fragenpool für alle Klassenstufen - Erste-Hilfe-Wissen kennt keine Klassenstufen." />
+
+                <CheckBox IsChecked="{Binding ErsteHilfeEnabled}" Margin="0,0,0,10" FontSize="14"
+                          Content="Erste-Hilfe-Bereich für dieses Kind anzeigen" />
+
                 <TextBlock Text="Zeichen in der täglichen Challenge"
                            Style="{StaticResource BodyText}" FontWeight="SemiBold" FontSize="13" Margin="0,4,0,4" />
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10"

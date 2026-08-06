@@ -10,7 +10,7 @@ namespace LernTor.App.ViewModels;
 /// Pflicht-Schreibabschnitt: zeigt täglich einen Story-Stub (Mix DE/TR/EN), den das Kind 5 Minuten lang fortschreiben soll.
 /// Es gibt bewusst KEINE Überspringen-Funktion – stattdessen läuft ein 5-Minuten-Timer herunter, erst danach wird "Weiter" nutzbar.
 /// </summary>
-public sealed partial class WritingViewModel : ObservableObject
+public sealed partial class WritingViewModel : ObservableObject, IPausableStage
 {
     private static readonly TimeSpan MinimumDuration = TimeSpan.FromMinutes(5);
 
@@ -92,5 +92,25 @@ public sealed partial class WritingViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(WordCount));
         OnPropertyChanged(nameof(CharCount));
+    }
+    /// <summary>Merkt sich, ob die Mindestzeit-Uhr lief, als der Planer geoeffnet wurde.</summary>
+    private bool _liefVorPause;
+
+    /// <inheritdoc />
+    public void PauseStage()
+    {
+        _liefVorPause = _timer.IsEnabled;
+        _timer.Stop();
+    }
+
+    /// <inheritdoc />
+    public void ResumeStage()
+    {
+        // Nur weiterlaufen lassen, wenn sie vorher lief - sonst startet der Planer eine Uhr,
+        // die etwa nach einer bereits beantworteten Frage bewusst stand.
+        if (_liefVorPause)
+        {
+            _timer.Start();
+        }
     }
 }

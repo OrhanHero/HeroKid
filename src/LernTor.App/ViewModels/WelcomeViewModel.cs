@@ -113,8 +113,10 @@ public sealed partial class WelcomeViewModel : ObservableObject
         Action? onAddExam = null,
         Action<ExamItemViewModel>? onDeleteExam = null,
         Action? onAddHomework = null,
-        Action<HomeworkItemViewModel>? onDeleteHomework = null)
+        Action<HomeworkItemViewModel>? onDeleteHomework = null,
+        bool isPlannerPeek = false)
     {
+        IsPlannerPeek = isPlannerPeek;
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
         {
             Homework.Add(item);
@@ -137,6 +139,13 @@ public sealed partial class WelcomeViewModel : ObservableObject
         _onContinue = onContinue;
         _onSwitchLanguage = onSwitchLanguage;
     }
+
+    /// <summary>
+    /// Ob diese Ansicht als Zwischenstopp aus einer laufenden Etappe heraus gezeigt wird
+    /// (Planer-Knopf) statt als Startseite des Tages. Ändert nur die Beschriftung des großen
+    /// Knopfes: er führt dann zurück in die Etappe, statt den Tag zu beginnen.
+    /// </summary>
+    public bool IsPlannerPeek { get; }
 
     [RelayCommand]
     private void Continue() => _onContinue();

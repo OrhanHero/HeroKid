@@ -151,6 +151,20 @@
             </TextBlock.Text>
         </TextBlock>
 
+        <!-- Planer-Zugang: aus JEDER Etappe zu Hausaufgaben und Klausuren und wieder zurueck.
+             Vorher kam man dort nur vor dem ersten Bereich hin - wer schon losgelegt hatte,
+             musste bis zum Abschlussquiz durch, um nachzusehen, was aufhat. Der Knopf haelt die
+             Mindestzeit-Uhr der Etappe an (IPausableStage) und bringt danach dieselbe
+             ViewModel-Instanz zurueck, also ohne Fortschrittsverlust. -->
+        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Planner_Open]}"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="12,0,0,12" Padding="14,7" FontSize="13"
+                Style="{StaticResource RoundedButton}"
+                Background="{StaticResource TextSecondaryBrush}"
+                Opacity="0.85"
+                Visibility="{Binding CanOpenPlanner, Converter={StaticResource BoolToVis}}"
+                Command="{Binding OpenPlannerCommand}" />
+
         <!-- Unauffälliger Eltern-Zugang, immer erreichbar, aber passwortgeschützt -->
         <Button x:Name="ParentAccessButton"
                 Content="⚙"

@@ -153,6 +153,9 @@ public static class Translations
             ["Stage_Itg"] = L("Medienbildung (ITG)", "Medya Bilgisi (ITG)"),
             ["Stage_KiWissen"] = L("KI-Bereich", "Yapay Zeka Bölümü"),
             ["Stage_Fuehrerschein"] = L("Führerschein", "Ehliyet"),
+            ["Stage_ErsteHilfe"] = L("Erste Hilfe", "İlk Yardım"),
+            ["Planner_Open"] = L("Hausaufgaben & Klausuren", "Ödevler ve sınavlar"),
+            ["Welcome_BackToLearning"] = L("Zurück zum Lernen", "Öğrenmeye geri dön"),
 
             // --- Führerschein Klasse B (bewusst nur deutsch: die Theorieprüfung ist auf Deutsch,
             // und Fachbegriffe wie "Vorfahrt gewähren" auf Türkisch zu lernen hilft dabei nicht.

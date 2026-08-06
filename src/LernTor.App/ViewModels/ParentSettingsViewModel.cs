@@ -64,6 +64,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         (Subject.Itg, "Stage_Itg"),
         (Subject.KiWissen, "Stage_KiWissen"),
         (Subject.Fuehrerschein, "Stage_Fuehrerschein"),
+        (Subject.ErsteHilfe, "Stage_ErsteHilfe"),
         (Subject.Tippen, "Stage_Tippen"),
     };
 
@@ -636,6 +637,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             NewsArticleCount,
             NewsFilterStrictness,
             DrivingAreaEnabled,
+            ErsteHilfeEnabled,
             DrivingChallengeSignCount,
             CollectDisabledSignCategories());
 
@@ -657,6 +659,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         QuizRetryQuestionCount = value?.QuizRetryQuestionCount ?? StudentProfile.DefaultQuizRetryQuestionCount;
         WeeklyGoalDays = value?.WeeklyGoalDays ?? 0;
         DrivingAreaEnabled = value?.DrivingAreaEnabled ?? true;
+        ErsteHilfeEnabled = value?.ErsteHilfeEnabled ?? true;
         DrivingChallengeSignCount = value?.DrivingChallengeSignCount ?? StudentProfile.DailySignChallengeDefaultCount;
         ApplySignCategoriesToEditor(value?.DisabledSignCategories);
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
@@ -843,6 +846,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool drivingAreaEnabled = true;
 
+    /// <summary>Erste-Hilfe-Bereich fuer dieses Kind. Wie beim Fuehrerschein pro Profil, weil er
+    /// den Tag um eine Etappe verlaengert.</summary>
+    [ObservableProperty]
+    private bool ersteHilfeEnabled = true;
+
     /// <summary>Zeichen in der täglichen Challenge (Presets 3/5/8/10).</summary>
     [ObservableProperty]
     private int drivingChallengeSignCount = StudentProfile.DailySignChallengeDefaultCount;
@@ -851,6 +859,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     public System.Collections.ObjectModel.ObservableCollection<SignCategoryToggle> SignCategories { get; } = new();
 
     partial void OnDrivingAreaEnabledChanged(bool value) => MarkDirty();
+
+    partial void OnErsteHilfeEnabledChanged(bool value) => MarkDirty();
 
     partial void OnDrivingChallengeSignCountChanged(int value) => MarkDirty();
 

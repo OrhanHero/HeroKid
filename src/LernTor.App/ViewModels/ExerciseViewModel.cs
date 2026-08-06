@@ -20,7 +20,7 @@ namespace LernTor.App.ViewModels;
 /// Das Abschlussquiz selbst bekommt bewusst keinen Countdown: dort bestraft sich Raten von
 /// selbst, weil unter 50 % der PC gesperrt bleibt.</para>
 /// </summary>
-public sealed partial class ExerciseViewModel : ObservableObject
+public sealed partial class ExerciseViewModel : ObservableObject, IPausableStage
 {
     /// <summary>Mindestzeit pro Aufgabe in Sekunden - grob die Zeit, um eine kurze Frage samt
     /// Erklärung tatsächlich zu lesen (pro Profil im Eltern-Bereich einstellbar, siehe
@@ -138,5 +138,25 @@ public sealed partial class ExerciseViewModel : ObservableObject
     {
         CurrentIndex++;
         LoadCurrent();
+    }
+    /// <summary>Merkt sich, ob die Mindestzeit-Uhr lief, als der Planer geoeffnet wurde.</summary>
+    private bool _liefVorPause;
+
+    /// <inheritdoc />
+    public void PauseStage()
+    {
+        _liefVorPause = _minTimeTimer.IsEnabled;
+        _minTimeTimer.Stop();
+    }
+
+    /// <inheritdoc />
+    public void ResumeStage()
+    {
+        // Nur weiterlaufen lassen, wenn sie vorher lief - sonst startet der Planer eine Uhr,
+        // die etwa nach einer bereits beantworteten Frage bewusst stand.
+        if (_liefVorPause)
+        {
+            _minTimeTimer.Start();
+        }
     }
 }

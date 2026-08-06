@@ -28,6 +28,7 @@ public sealed class SubjectToTitleConverter : IValueConverter
             Subject.Itg => "Stage_Itg",
             Subject.KiWissen => "Stage_KiWissen",
             Subject.Fuehrerschein => "Stage_Fuehrerschein",
+            Subject.ErsteHilfe => "Stage_ErsteHilfe",
             Subject.Tippen => "Stage_Tippen",
             Subject.News => "Stage_News",
             _ => string.Empty

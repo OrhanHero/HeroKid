@@ -196,9 +196,18 @@
                         </TextBlock.Text>
                     </TextBlock>
 
+                    <!-- Zwei Knoepfe statt einer berechneten Beschriftung: nur eine Bindung an
+                         den Localization-Indexer folgt einem Sprachwechsel sofort. Eine einfache
+                         string-Property taete das nicht. -->
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_StartButton]}"
                             Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
                             HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Visibility="{Binding IsPlannerPeek, Converter={StaticResource InverseBoolToVis}}"
+                            Command="{Binding ContinueCommand}" />
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_BackToLearning]}"
+                            Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
+                            HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Visibility="{Binding IsPlannerPeek, Converter={StaticResource BoolToVis}}"
                             Command="{Binding ContinueCommand}" />
                 </StackPanel>
             </ScrollViewer>

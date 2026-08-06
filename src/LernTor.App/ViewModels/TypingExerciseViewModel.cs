@@ -14,7 +14,7 @@ namespace LernTor.App.ViewModels;
 /// <summary>
 /// ViewModel für eine einzelne Tipp-Übung (virtuelle Tastatur, Echtzeit-Feedback, Genauigkeit).
 /// </summary>
-public sealed partial class TypingExerciseViewModel : ObservableObject
+public sealed partial class TypingExerciseViewModel : ObservableObject, IPausableStage
 {
     private readonly TypingExerciseService _service;
     private readonly TypingProgressRepository _progressRepo;
@@ -359,4 +359,24 @@ public sealed partial class KeyboardKeyViewModel : ObservableObject
 
     [ObservableProperty]
     private bool isCorrect = false;
+    /// <summary>Merkt sich, ob die Mindestzeit-Uhr lief, als der Planer geoeffnet wurde.</summary>
+    private bool _liefVorPause;
+
+    /// <inheritdoc />
+    public void PauseStage()
+    {
+        _liefVorPause = _timer.IsEnabled;
+        _timer.Stop();
+    }
+
+    /// <inheritdoc />
+    public void ResumeStage()
+    {
+        // Nur weiterlaufen lassen, wenn sie vorher lief - sonst startet der Planer eine Uhr,
+        // die etwa nach einer bereits beantworteten Frage bewusst stand.
+        if (_liefVorPause)
+        {
+            _timer.Start();
+        }
+    }
 }

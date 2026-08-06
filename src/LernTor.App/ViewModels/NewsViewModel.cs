@@ -20,7 +20,7 @@ namespace LernTor.App.ViewModels;
 /// gelesen und verstanden werden, nicht weggeklickt. Bereits erledigte Artikel (Wiederbesuch
 /// über die Marker) haben keinen Countdown.</para>
 /// </summary>
-public sealed partial class NewsViewModel : ObservableObject
+public sealed partial class NewsViewModel : ObservableObject, IPausableStage
 {
     /// <summary>Mindest-Lesezeit pro Artikel in Sekunden (pro Profil im Eltern-Bereich
     /// einstellbar, siehe StudentProfile.NewsSecondsPerArticle).</summary>
@@ -299,5 +299,25 @@ public sealed partial class NewsViewModel : ObservableObject
 
         CurrentIndex = marker.Index;
         LoadCurrentArticle();
+    }
+    /// <summary>Merkt sich, ob die Mindestzeit-Uhr lief, als der Planer geoeffnet wurde.</summary>
+    private bool _liefVorPause;
+
+    /// <inheritdoc />
+    public void PauseStage()
+    {
+        _liefVorPause = _minTimeTimer.IsEnabled;
+        _minTimeTimer.Stop();
+    }
+
+    /// <inheritdoc />
+    public void ResumeStage()
+    {
+        // Nur weiterlaufen lassen, wenn sie vorher lief - sonst startet der Planer eine Uhr,
+        // die etwa nach einer bereits beantworteten Frage bewusst stand.
+        if (_liefVorPause)
+        {
+            _minTimeTimer.Start();
+        }
     }
 }

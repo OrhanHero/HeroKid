@@ -48,6 +48,14 @@ public sealed class StudentProfileEntity
     /// </summary>
     public bool DrivingAreaDisabled { get; set; }
 
+    /// <summary>
+    /// Erste-Hilfe-Bereich, aus demselben Grund invertiert wie <see cref="DrivingAreaDisabled"/>:
+    /// der additive Schema-Abgleich gibt neuen Spalten DEFAULT 0, also ist 0 = "nicht
+    /// abgeschaltet" = an. Bei einem Feld "ErsteHilfeEnabled" waere der Bereich fuer alle
+    /// vorhandenen Profile stillschweigend AUS gewesen.
+    /// </summary>
+    public bool ErsteHilfeDisabled { get; set; }
+
     /// <summary>Zeichen in der taeglichen Challenge; 0 = Alt-Zeile ohne Wert -> Standard.</summary>
     public int DrivingChallengeSignCount { get; set; }
 

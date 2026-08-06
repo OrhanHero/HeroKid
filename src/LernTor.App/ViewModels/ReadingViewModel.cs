@@ -14,7 +14,7 @@ namespace LernTor.App.ViewModels;
 /// Neben der Drei-Spalten-Ansicht ("Alle") gibt es Sprach-Tabs, die eine einzelne Sprache größer
 /// und mit mehr Zeilenabstand zeigen, plus eine Vorlesen-Funktion (Windows-TTS, offline).
 /// </summary>
-public sealed partial class ReadingViewModel : ObservableObject
+public sealed partial class ReadingViewModel : ObservableObject, IPausableStage
 {
     private static readonly TimeSpan DefaultMinimumDuration = TimeSpan.FromMinutes(StudentProfile.DefaultReadingMinutes);
 
@@ -169,5 +169,25 @@ public sealed partial class ReadingViewModel : ObservableObject
         _tts.Stop();
         _tts.SpeakingChanged -= OnSpeakingChanged;
         _onCompleted();
+    }
+    /// <summary>Merkt sich, ob die Mindestzeit-Uhr lief, als der Planer geoeffnet wurde.</summary>
+    private bool _liefVorPause;
+
+    /// <inheritdoc />
+    public void PauseStage()
+    {
+        _liefVorPause = _timer.IsEnabled;
+        _timer.Stop();
+    }
+
+    /// <inheritdoc />
+    public void ResumeStage()
+    {
+        // Nur weiterlaufen lassen, wenn sie vorher lief - sonst startet der Planer eine Uhr,
+        // die etwa nach einer bereits beantworteten Frage bewusst stand.
+        if (_liefVorPause)
+        {
+            _timer.Start();
+        }
     }
 }

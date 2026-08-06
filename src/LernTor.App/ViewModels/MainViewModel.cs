@@ -294,7 +294,10 @@ public sealed partial class MainViewModel : ObservableObject
     /// Streak-Anzeige eingeschaltet haben (Standard aus - bewusst kein Streak-Druck), sonst 0
     /// (WelcomeViewModel blendet die Zeile dann aus).
     /// </summary>
-    private async Task<WelcomeViewModel> BuildWelcomeViewModelAsync()
+    /// <param name="plannerPeek">True, wenn die Ansicht als Zwischenstopp aus einer laufenden
+    /// Etappe heraus gezeigt wird - dann führt der große Knopf zurück in die Etappe statt in den
+    /// Tagesablauf.</param>
+    private async Task<WelcomeViewModel> BuildWelcomeViewModelAsync(bool plannerPeek = false)
     {
         var streak = 0;
         if (Settings.StreaksEnabled)
@@ -328,9 +331,15 @@ public sealed partial class MainViewModel : ObservableObject
             .ToList();
 
         return new WelcomeViewModel(
-            CurrentProfile!.Name, streak, OnWelcomeContinue, SwitchLanguage, dueReviews, weeklyGoal,
+            CurrentProfile!.Name, streak,
+            // new Action(...) ausdruecklich: zwei Methodengruppen in einem ?: haben keinen
+            // eigenen Typ, und darauf zu bauen, dass der Zieltyp es rettet, hat diese Codebasis
+            // schon einen CI-Durchlauf gekostet.
+            plannerPeek ? new Action(ClosePlanner) : OnWelcomeContinue,
+            SwitchLanguage, dueReviews, weeklyGoal,
             homework, exams, OnAddExamRequested, OnDeleteExamRequested,
-            OnAddHomeworkRequested, OnDeleteHomeworkRequested);
+            OnAddHomeworkRequested, OnDeleteHomeworkRequested,
+            plannerPeek);
     }
 
     /// <summary>
@@ -510,7 +519,12 @@ public sealed partial class MainViewModel : ObservableObject
             return true;
         }
 
-        return subject == Subject.Fuehrerschein && CurrentProfile is { DrivingAreaEnabled: false };
+        if (subject == Subject.Fuehrerschein && CurrentProfile is { DrivingAreaEnabled: false })
+        {
+            return true;
+        }
+
+        return subject == Subject.ErsteHilfe && CurrentProfile is { ErsteHilfeEnabled: false };
     }
 
     private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
@@ -526,6 +540,81 @@ public sealed partial class MainViewModel : ObservableObject
     private async void OnWelcomeContinue()
     {
         await NavigateToStageAsync(_gate.GetNextStage(LearningStage.Willkommen));
+    }
+
+    // ================= Planer-Zwischenstopp (Hausaufgaben und Klausuren) =================
+
+    /// <summary>
+    /// Die Etappe, die beim Öffnen des Planers lief. <b>Dieselbe Instanz</b> - sie wird beim
+    /// Zurückgehen unverändert wieder eingesetzt, damit eine halb beantwortete Aufgabe, ein
+    /// angefangener Text oder die Position im Zeichen-Quiz erhalten bleiben. Ein Neuaufbau
+    /// würde den Fortschritt der Etappe stillschweigend verwerfen.
+    /// </summary>
+    private object? _stashedViewModel;
+
+    public bool IsPlannerOpen => _stashedViewModel is not null;
+
+    /// <summary>
+    /// Ob der Planer-Knopf gerade sichtbar ist. Nicht ohne Profil (Profilauswahl,
+    /// Ferien-Bildschirm), nicht auf der Startseite selbst - dort steht der Planer ja schon -
+    /// und nicht, während er offen ist.
+    /// </summary>
+    public bool CanOpenPlanner =>
+        CurrentProfile is not null
+        && !IsPlannerOpen
+        && Progress.CurrentStage is not (LearningStage.Willkommen or LearningStage.Freigeschaltet);
+
+    partial void OnCurrentViewModelChanged(object? value)
+    {
+        OnPropertyChanged(nameof(CanOpenPlanner));
+        OnPropertyChanged(nameof(IsPlannerOpen));
+    }
+
+    /// <summary>
+    /// Zeigt Hausaufgaben und Klausuren, ohne die laufende Etappe zu verlieren.
+    ///
+    /// <para><b>Die Mindestzeit-Uhr der Etappe wird angehalten</b> (siehe
+    /// <see cref="IPausableStage"/>). Liefe sie weiter, wäre der Planer der bequemste Weg, eine
+    /// Mindestverweildauer abzusitzen - aufmachen, warten, zurück.</para>
+    ///
+    /// <para>Die Lernpflicht bleibt unangetastet: der Planer schaltet nichts frei und überspringt
+    /// nichts, er zeigt nur an. Zurück geht es genau dorthin, wo das Kind war.</para>
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenPlannerAsync()
+    {
+        if (!CanOpenPlanner)
+        {
+            return;
+        }
+
+        if (CurrentViewModel is IPausableStage laufend)
+        {
+            laufend.PauseStage();
+        }
+
+        _stashedViewModel = CurrentViewModel;
+
+        // Frisch aufgebaut, damit heute abgehakte Hausaufgaben und neu eingetragene Klausuren
+        // auch wirklich zu sehen sind.
+        CurrentViewModel = await BuildWelcomeViewModelAsync(plannerPeek: true);
+    }
+
+    private void ClosePlanner()
+    {
+        if (_stashedViewModel is null)
+        {
+            return;
+        }
+
+        var zurueck = _stashedViewModel;
+        _stashedViewModel = null;
+        CurrentViewModel = zurueck;
+
+        if (zurueck is IPausableStage laufend)
+        {
+            laufend.ResumeStage();
+        }
     }
 
     // ================= Führerschein Klasse B (siehe TrafficSignCatalog) =================

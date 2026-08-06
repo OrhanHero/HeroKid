@@ -315,6 +315,39 @@ angelehnt an den Aufbau von fahrschule24.de. Details in [`docs/FUEHRERSCHEIN.md`
 - **🚲 Gilt schon fürs Fahrrad**: Zeichen, die für die Kinder heute relevant sind, sind
   gekennzeichnet - der Bereich ist nicht nur Vorbereitung auf übermorgen.
 
+## 🩺 Erste Hilfe und Notfallwissen
+
+Eigener Bereich zwischen KI-Bereich und Führerschein, pro Kind im Eltern-Bereich abschaltbar.
+
+- **Ein Fragenpool für alle Klassenstufen** - anders als bei den Schulfächern. Erste-Hilfe-Wissen
+  hat keine Klasse-6-Fassung: die fünf W-Fragen sind mit elf dieselben wie mit fünfzehn, und die
+  Drucktiefe bei der Herzdruckmassage ändert sich nicht mit dem Alter dessen, der sie anwendet.
+  "Prüfen - Rufen - Drücken" wird an deutschen Schulen ab Klasse 7 mit denselben Zahlen wie bei
+  Erwachsenen unterrichtet.
+- **80 Fragen in acht Themen**: Notruf 112 und Eigenschutz, Bewusstsein und Atmung prüfen,
+  stabile Seitenlage, Wunden und starke Blutungen, Verbrennungen, Herzdruckmassage, Defibrillator
+  (AED), Verschlucken/Vergiftung/Schock. Acht getrennte Themen statt eines Blocks, damit die
+  adaptive Übungsauswahl und die Themen-Heatmap im Eltern-Bericht ihre Auflösung behalten.
+- **Auch die Grenzen stehen drin.** "Beine immer hoch" ist bei Kopf-, Brust- und Atemproblemen
+  falsch - halbgelerntes Erste-Hilfe-Wissen ist genau dort gefährlich, wo es sich vollständig
+  anfühlt. Ebenso: nichts zu tun ist der einzige echte Fehler, und ein Notruf allein ist schon
+  Erste Hilfe.
+
+## 📋 Planer aus jedem Bereich erreichbar
+
+Unten links führt ein Knopf aus **jeder** Etappe zurück zu Hausaufgaben und Klausurplan - und von
+dort mit "Zurück zum Lernen" an genau dieselbe Stelle. Vorher kam man dort nur vor dem ersten
+Bereich hin; wer schon losgelegt hatte, musste bis zum Abschlussquiz durch, um nachzusehen, was
+aufhat.
+
+Zwei Dinge daran sind wichtig:
+
+- **Kein Fortschrittsverlust.** Zurück kommt dieselbe ViewModel-Instanz, nicht eine neue - die
+  halb beantwortete Aufgabe, der angefangene Text und die Position im Zeichen-Quiz stehen noch da.
+- **Kein Schlupfloch.** Die Mindestzeit-Uhr der Etappe wird angehalten (`IPausableStage`). Liefe
+  sie weiter, wäre der Planer der bequemste Weg, eine Mindestverweildauer abzusitzen: aufmachen,
+  warten, zurück. Freigeschaltet oder übersprungen wird durch den Planer nichts.
+
 ## Eltern-Features
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.

@@ -132,6 +132,7 @@ public sealed class StudentProfileRepository
         int newsArticleCount = 0,
         NewsFilterStrictness newsFilterStrictness = NewsFilterStrictness.Normal,
         bool drivingAreaEnabled = true,
+        bool ersteHilfeEnabled = true,
         int drivingChallengeSignCount = 0,
         IReadOnlySet<TrafficSignCategory>? disabledSignCategories = null,
         CancellationToken cancellationToken = default)
@@ -161,6 +162,7 @@ public sealed class StudentProfileRepository
         entity.QuizRetryQuestionCount = quizRetryQuestionCount;
         // Invertiert - siehe StudentProfileEntity.DrivingAreaDisabled.
         entity.DrivingAreaDisabled = !drivingAreaEnabled;
+        entity.ErsteHilfeDisabled = !ersteHilfeEnabled;
         entity.DrivingChallengeSignCount = drivingChallengeSignCount;
         entity.DisabledSignCategoriesJson = JsonSerializer.Serialize(
             disabledSignCategories ?? new HashSet<TrafficSignCategory>(), JsonOptions.Default);
@@ -198,6 +200,7 @@ public sealed class StudentProfileRepository
         CustomTypingSentenceText = entity.CustomTypingSentenceText,
         CustomTypingFinalText = entity.CustomTypingFinalText,
         DrivingAreaEnabled = !entity.DrivingAreaDisabled,
+        ErsteHilfeEnabled = !entity.ErsteHilfeDisabled,
         DrivingChallengeSignCount = entity.DrivingChallengeSignCount > 0
             ? entity.DrivingChallengeSignCount
             : StudentProfile.DailySignChallengeDefaultCount,

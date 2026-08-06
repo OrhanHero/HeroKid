@@ -142,6 +142,14 @@ public sealed class StudentProfile
     public bool DrivingAreaEnabled { get; set; } = true;
 
     /// <summary>
+    /// Ob der Erste-Hilfe-Bereich für dieses Kind auftaucht. Wie beim Führerschein pro Profil,
+    /// weil er den Tag um eine Etappe verlängert - Eltern sollen das je Kind entscheiden können.
+    /// In der Datenbank steht er INVERTIERT (<c>StudentProfileEntity.ErsteHilfeDisabled</c>),
+    /// damit vorhandene Profile ihn eingeschaltet bekommen.
+    /// </summary>
+    public bool ErsteHilfeEnabled { get; set; } = true;
+
+    /// <summary>
     /// Zeichen in der täglichen Challenge, von den Eltern als Preset (3/5/8/10) einstellbar.
     /// Wer gar keine Challenge will, schaltet den Bereich über <see cref="DrivingAreaEnabled"/>
     /// ab - eine Challenge mit null Zeichen wäre nur ein leerer Bildschirm.
