@@ -88,13 +88,18 @@ public class MathGeneratorTests
     {
         // Sicherheitsnetz: kein Profil darf in irgendeinem Fach vor einer leeren Aufgabenliste
         // stehen - egal welche Klassenstufe eingetragen ist.
-        var generators = new IExerciseGenerator[]
-        {
-            new MathGenerator(), new GermanGenerator(), new TurkishGenerator(), new EnglischGenerator(),
-            new BiologieGenerator(), new ChemieGenerator(), new PhysikGenerator(), new GeschichteGenerator(),
-            new GewiGenerator(), new PolitikGenerator(), new GeoGenerator(), new EthikGenerator(),
-            new KunstGenerator(), new MusikGenerator(), new ItgGenerator(), new KiWissenGenerator()
-        };
+        // Bewusst ueber Reflexion statt einer Liste von Hand: eine aufgezaehlte Liste veraltet
+        // still, sobald ein Fach dazukommt - dann laeuft das Sicherheitsnetz gruen, waehrend das
+        // neue Fach gar nicht geprueft wird. Genau so ist der Erste-Hilfe-Generator hier zuerst
+        // durchgerutscht.
+        var generators = typeof(MathGenerator).Assembly.GetTypes()
+            .Where(typ => !typ.IsAbstract && !typ.IsInterface && typeof(IExerciseGenerator).IsAssignableFrom(typ))
+            .Select(typ => (IExerciseGenerator)Activator.CreateInstance(typ)!)
+            .ToList();
+
+        // Schutz gegen den stillen Leerlauf: fände die Reflexion nichts, wäre die Schleife
+        // darunter eine leere Schleife und der Test immer gruen.
+        Assert.True(generators.Count >= 17, $"Nur {generators.Count} Generatoren gefunden.");
 
         foreach (var generator in generators)
         {

@@ -16,9 +16,13 @@ public class QuizComposerTests
 
         var subjectsPresent = questions.Select(q => q.Subject).Distinct().ToList();
 
-        // Standard-Composer deckt 16 Fächer ab (alle außer News/Tippen, inkl. KI-Bereich);
-        // jedes bekommt mindestens 1 Frage.
-        Assert.Equal(16, subjectsPresent.Count);
+        // Standard-Composer deckt 17 Fächer ab (alle außer News/Tippen, inkl. KI-Bereich und
+        // Erste Hilfe); jedes bekommt mindestens 1 Frage.
+        //
+        // Die Zahl steht bewusst fest verdrahtet da: bei 20 Fragen auf 17 Fächer bekommt fast
+        // jedes Fach genau EINE Frage. Wer ein Fach ergänzt, soll an dieser Stelle stolpern und
+        // sich fragen, ob die Zielzahl des Abschlussquizzes noch passt.
+        Assert.Equal(17, subjectsPresent.Count);
         Assert.True(questions.Count > 0);
     }
 
