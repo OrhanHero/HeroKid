@@ -206,6 +206,31 @@ def check_httpclient_using() -> None:
 SHUTDOWN_CALL = re.compile(r"Application\.Current\.Shutdown\s*\(\s*\)")
 
 
+LAMBDA_DISCARD = re.compile(
+    r"\(\s*(?:\w+\s*,\s*)*_\s*(?:,\s*\w+\s*)*\)\s*=>\s*_\s*=[^=]"
+)
+
+
+def check_lambda_discard_shadowing() -> None:
+    """`_` als Lambda-Parameter UND als Verwerfen-Platzhalter im selben Ausdruck.
+
+    In dieser Codebasis ist `_ = IrgendwasAsync()` das uebliche Muster fuer bewusst nicht
+    abgewartete Tasks. Heisst ein Lambda-Parameter ebenfalls `_`, ist `_ =` im Rumpf keine
+    Verwerfung mehr, sondern eine ZUWEISUNG an diesen Parameter - und der Compiler meldet
+    "CS0029: Cannot implicitly convert type 'Task' to 'int'". Das ist genau einmal passiert
+    (Fuehrerschein-Bereich, Callback der Challenge) und kostete eine volle CI-Runde.
+    """
+    for path in sorted(SRC.rglob("*.cs")) + sorted(TESTS.rglob("*.cs")):
+        if "/obj/" in str(path) or "/bin/" in str(path):
+            continue
+        text = path.read_text(encoding="utf-8")
+        for match in LAMBDA_DISCARD.finditer(text):
+            line = text[: match.start()].count("\n") + 1
+            report("lambda-discard", path,
+                   f"Zeile {line}: '_' ist hier Lambda-Parameter, '_ =' im Rumpf ist deshalb "
+                   f"eine Zuweisung an ihn statt ein Verwerfen -> CS0029. Parameter umbenennen.")
+
+
 def check_shutdown_unlocks() -> None:
     """Jeder Beenden-Pfad muss vorher entsperren, sonst blockt MainWindow.Closing ihn."""
     for path in sorted(SRC.rglob("*.cs")):
@@ -506,6 +531,7 @@ def main() -> int:
         ("XAML doppelter Style", check_duplicate_style_assignment),
         ("HttpClient-using", check_httpclient_using),
         ("Shutdown/Unlock", check_shutdown_unlocks),
+        ("Lambda-Verwerfen", check_lambda_discard_shadowing),
         ("Konfigurationsdateien", check_config_files),
         ("Doppelte Typnamen", check_duplicate_type_names),
         ("News-Rubrik-Texte", check_news_category_coverage),

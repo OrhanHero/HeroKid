@@ -11,32 +11,40 @@ namespace LernTor.Core.Services;
 /// hier nichts: jedes Zeichen ist aus der Verordnungsbeschreibung als Geometrie neu beschrieben
 /// (siehe <see cref="SignPictograms"/>), die Erklärtexte sind selbst geschrieben.</para>
 ///
-/// <para><b>Auswahl:</b> rund 75 Zeichen aus allen fünf Gruppen - die, die in der Theorieprüfung
+/// <para><b>Auswahl:</b> 77 Zeichen aus allen fünf Gruppen - die, die in der Theorieprüfung
 /// und im Berliner Alltag tatsächlich vorkommen. Die amtliche Übersicht kennt rund 250; darunter
 /// sind Zollstellen, NATO-Brückenschilder und Umleitungsplanskizzen, die kein Kind je braucht.
 /// Erweitern geht jederzeit: ein Eintrag mehr im passenden Teil, sonst nichts.</para>
 /// </summary>
 public static partial class TrafficSignCatalog
 {
-    private static readonly TrafficSign[] AllSigns =
-        Gefahr.Concat(Vorschrift).Concat(Richt).Concat(Einrichtungen).Concat(Zusatz).ToArray();
+    /// <summary>
+    /// Bewusst <see cref="Lazy{T}"/> statt eines direkten Feld-Initialisierers: die Teil-Arrays
+    /// stehen in anderen Dateien derselben partiellen Klasse, und für Feld-Initialisierer über
+    /// Teildateien hinweg ist die Reihenfolge <b>nicht festgelegt</b>. Ein direkter Initialisierer
+    /// konnte also aus noch nicht befüllten Arrays gebaut werden - der Compiler hat genau davor
+    /// gewarnt (CS8604). Lazy verschiebt das Zusammenbauen auf den ersten Zugriff; dann ist der
+    /// statische Konstruktor durch und alle Teile stehen.
+    /// </summary>
+    private static readonly Lazy<TrafficSign[]> AllSigns = new(() =>
+        Gefahr.Concat(Vorschrift).Concat(Richt).Concat(Einrichtungen).Concat(Zusatz).ToArray());
 
     /// <summary>Alle Zeichen in Lernreihenfolge (Gefahr → Vorschrift → Richt → Einrichtungen → Zusatz).</summary>
-    public static IReadOnlyList<TrafficSign> All => AllSigns;
+    public static IReadOnlyList<TrafficSign> All => AllSigns.Value;
 
     /// <summary>Die Kategorien in der empfohlenen Lernreihenfolge - genau die Reihenfolge des Enums.</summary>
     public static IReadOnlyList<TrafficSignCategory> LearningOrder { get; } =
         Enum.GetValues<TrafficSignCategory>();
 
     public static IReadOnlyList<TrafficSign> ByCategory(TrafficSignCategory category) =>
-        AllSigns.Where(sign => sign.Category == category).ToList();
+        AllSigns.Value.Where(sign => sign.Category == category).ToList();
 
     /// <summary>Zeichen, die schon fürs Fahrrad gelten - für die Kinder heute relevant.</summary>
     public static IReadOnlyList<TrafficSign> ForBicycle() =>
-        AllSigns.Where(sign => sign.RelevantForBicycle).ToList();
+        AllSigns.Value.Where(sign => sign.RelevantForBicycle).ToList();
 
     public static TrafficSign? ByNumber(string number) =>
-        AllSigns.FirstOrDefault(sign => sign.Number == number);
+        AllSigns.Value.FirstOrDefault(sign => sign.Number == number);
 
     public static string CategoryLabel(TrafficSignCategory category) => category switch
     {

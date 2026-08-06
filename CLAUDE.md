@@ -238,6 +238,18 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   hook alone can't reliably catch on every Windows build), `KioskLockService` also sets the
   `NoWinKeys` registry policy (`WindowsHotkeyPolicy`, same pattern as `TaskManagerPolicy`/
   `DisableTaskMgr`) for the duration of the lock.
+- **`_` as a lambda parameter kills the `_ = SomethingAsync()` fire-and-forget idiom.** This
+  codebase writes `_ = SomeAsync()` everywhere for deliberately unawaited tasks. Inside a lambda
+  whose parameter is also named `_`, that line stops being a discard and becomes an *assignment to
+  the parameter* — `error CS0029: Cannot implicitly convert type 'Task' to 'int'`. Only surfaces in
+  CI. Give the unused parameter a real name instead; `scripts/preflight.py` now checks for it
+  (`lambda-verwerfen`).
+- **Static field initializers across `partial` class files have no defined order.** Building an
+  aggregate field from arrays declared in sibling partial files (`TrafficSignCatalog`) can read
+  them before they are populated — the compiler flags it as `CS8604`, a *warning*, so the build
+  still passes and the breakage would be a runtime `NullReferenceException` or a silently empty
+  catalog. Wrap the aggregate in `Lazy<T>` so it is built on first access, after the static
+  constructor has run.
 - Enum values serialized via `System.Text.Json` default to numeric encoding — reordering/adding
   enum members then silently reinterprets old saved data. `LernTor.Data.JsonOptions.Default`
   (a shared `JsonSerializerOptions` with `JsonStringEnumConverter`) is used for anything persisting

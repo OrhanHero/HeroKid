@@ -581,7 +581,10 @@ public sealed partial class MainViewModel : ObservableObject
             fragen,
             LocalizationService.Instance["Fs_Challenge"],
             OnSignAnsweredAsync,
-            (richtig, _) => _ = OnDrivingChallengeFinishedAsync(richtig),
+            // Der zweite Parameter (Gesamtzahl) wird hier nicht gebraucht, bekommt aber einen
+            // Namen: hiesse er "_", waere "_ =" darunter eine Zuweisung AN diesen Parameter
+            // statt ein Verwerfen - genau daran ist der Build einmal gescheitert.
+            (richtig, gesamt) => _ = OnDrivingChallengeFinishedAsync(richtig),
             () => _ = ShowDrivingDashboardAsync());
     }
 
