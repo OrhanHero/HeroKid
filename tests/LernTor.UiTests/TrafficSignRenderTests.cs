@@ -39,9 +39,18 @@ public sealed class TrafficSignRenderTests
                 try
                 {
                     var geometry = Geometry.Parse(pathData);
+                    var bounds = geometry.Bounds;
 
-                    // Ein syntaktisch gültiger, aber leerer Pfad wäre genauso unbrauchbar.
-                    if (geometry.Bounds.IsEmpty || geometry.Bounds.Width <= 0)
+                    // Ein syntaktisch gültiger, aber völlig ausdehnungsloser Pfad wäre unbrauchbar.
+                    //
+                    // Wichtig: eine Ausdehnung von 0 in EINER Richtung ist völlig in Ordnung -
+                    // eine achsenparallele Linie hat genau das. Der senkrechte Pfeilschaft
+                    // (VZ 208, 209-30) ist 0 breit, die drei waagerechten Schäfte sind 0 hoch,
+                    // und alle vier werden als Strich mit Strichstärke gezeichnet, nicht gefüllt.
+                    // Eine frühere Fassung prüfte nur die Breite und hat deshalb die senkrechten
+                    // fälschlich angeprangert - und die waagerechten aus reinem Zufall passieren
+                    // lassen. Erst wenn BEIDE Richtungen 0 sind, ist wirklich nichts da.
+                    if (bounds.IsEmpty || (bounds.Width <= 0 && bounds.Height <= 0))
                     {
                         kaputt.Add($"{sign.Number} {sign.Name}: {label} ergibt eine leere Figur.");
                     }
