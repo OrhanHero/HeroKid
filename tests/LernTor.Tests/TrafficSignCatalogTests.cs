@@ -60,17 +60,43 @@ public sealed class TrafficSignCatalogTests
         });
     }
 
+    /// <summary>
+    /// Die drei Zeichen, bei denen die FORM allein die Botschaft ist - sie brauchen weder
+    /// Piktogramm noch Aufschrift, und das ist kein Versehen, sondern der Sinn der Sache:
+    /// die StVO hat ihnen gerade deshalb unverwechselbare Umrisse gegeben, damit sie auch
+    /// verschneit, von hinten oder aus dem Augenwinkel erkennbar bleiben.
+    /// </summary>
+    public static readonly string[] ZeichenOhneInnenzeichnung =
+    {
+        "205", // Vorfahrt gewaehren - das auf der Spitze stehende Dreieck
+        "250", // Verbot fuer Fahrzeuge aller Art - der leere rote Kreis
+        "306"  // Vorfahrtstrasse - die gelbe Raute
+    };
+
     [Fact]
     public void Jedes_Zeichen_ist_erkennbar()
     {
-        // Entweder Piktogramm oder Aufschrift - sonst waere es eine leere Flaeche. Einzige
-        // gewollte Ausnahme: VZ 250, dessen Aussage GERADE der leere rote Kreis ist.
+        // Entweder Piktogramm oder Aufschrift - sonst waere es eine leere Flaeche. Ausgenommen
+        // sind genau die drei Zeichen, deren Form selbst die Aussage traegt.
         var leer = TrafficSignCatalog.All
             .Where(sign => string.IsNullOrWhiteSpace(sign.PathData) && string.IsNullOrWhiteSpace(sign.Text))
             .Select(sign => sign.Number)
+            .OrderBy(number => number, StringComparer.Ordinal)
             .ToList();
 
-        Assert.Equal(new[] { "250" }, leer);
+        Assert.Equal(ZeichenOhneInnenzeichnung, leer);
+    }
+
+    [Fact]
+    public void Die_drei_Zeichen_ohne_Innenzeichnung_haben_je_eine_eigene_Grundform()
+    {
+        // Genau darauf beruht ihre Erkennbarkeit: haetten zwei davon dieselbe Form, waeren sie
+        // ohne Innenzeichnung nicht mehr auseinanderzuhalten.
+        var formen = ZeichenOhneInnenzeichnung
+            .Select(number => TrafficSignCatalog.ByNumber(number)!.Shape)
+            .ToList();
+
+        Assert.Equal(formen.Count, formen.Distinct().Count());
     }
 
     [Fact]
