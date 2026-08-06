@@ -72,9 +72,13 @@ public sealed class SchoolCalendarTests
     [Fact]
     public void Am_Schulstart_sind_keine_Ferien_mehr()
     {
-        // 24.08.2026 ist der erste Schultag - der Tag davor ist der letzte freie.
+        // Der letzte Ferientag ist Samstag, der 22.08.2026; erster Schultag ist Montag, der
+        // 24.08.2026. Der Sonntag dazwischen gehoert zu KEINEM der beiden - ein Wochenendtag
+        // ist kein Ferientag, auch wenn er sich so anfuehlt. Genau daran ist eine erste Fassung
+        // dieses Tests gescheitert, die "der Tag vor Schulstart ist noch Ferien" annahm.
+        Assert.NotNull(SchoolCalendar.CurrentVacation(new DateOnly(2026, 8, 22)));
+        Assert.Null(SchoolCalendar.CurrentVacation(new DateOnly(2026, 8, 23)));
         Assert.Null(SchoolCalendar.CurrentVacation(SchoolCalendar.SchoolYearStart2026));
-        Assert.NotNull(SchoolCalendar.CurrentVacation(SchoolCalendar.SchoolYearStart2026.AddDays(-1)));
     }
 
     [Fact]
