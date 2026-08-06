@@ -1,0 +1,124 @@
+<UserControl x:Class="LernTor.App.Views.TheoryQuestionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization"
+             xmlns:controls="clr-namespace:LernTor.App.Controls">
+    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="760" Margin="24,48,24,32">
+
+                <TextBlock Text="{Binding Title}" Style="{StaticResource HeadlineText}"
+                           FontSize="24" TextAlignment="Center" />
+                <TextBlock Text="{Binding PositionDisplay, Mode=OneWay}" Style="{StaticResource SubtitleText}"
+                           FontSize="14" TextAlignment="Center" Margin="0,2,0,4" />
+                <!-- Das Gewicht der Frage steht dran, weil es in der Prüfung über Bestehen
+                     entscheidet - nicht die Zahl der Fragen, sondern die der Fehlerpunkte. -->
+                <TextBlock Text="{Binding Points, Mode=OneWay}" Style="{StaticResource BodyText}"
+                           FontSize="12" TextAlignment="Center" Opacity="0.8" Margin="0,0,0,16" />
+
+                <!-- Das Verkehrszeichen zur Frage, falls eines dazugehört -->
+                <Border Style="{StaticResource CardBorder}" Padding="20" HorizontalAlignment="Center"
+                        Margin="0,0,0,16"
+                        Visibility="{Binding Sign, Converter={StaticResource NullToVis}}">
+                    <controls:TrafficSignVisual Width="160" Height="160" Sign="{Binding Sign}" />
+                </Border>
+
+                <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Prompt, Mode=OneWay}" FontSize="19" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <!-- Wie viele Antworten richtig sind, steht NICHT dran - das wüsste man
+                             in der Prüfung auch nicht. -->
+                        <TextBlock Style="{StaticResource BodyText}" FontSize="13" Margin="0,6,0,0"
+                                   TextWrapping="Wrap"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_TheoryMultiHint]}"
+                                   Visibility="{Binding IsMultipleChoice, Converter={StaticResource BoolToVis}}" />
+                        <TextBlock Style="{StaticResource BodyText}" FontSize="13" Margin="0,6,0,0"
+                                   TextWrapping="Wrap"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_TheorySingleHint]}"
+                                   Visibility="{Binding IsMultipleChoice, Converter={StaticResource InverseBoolToVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Options}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Margin="0,0,0,8" HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    IsEnabled="{Binding IsEnabled}"
+                                    Command="{Binding DataContext.ToggleCommand,
+                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <!-- Angekreuzt sieht anders aus als abgegeben: solange die Frage
+                                         läuft, markiert Lila nur die eigene Wahl. Erst nach dem
+                                         Abgeben kommen Grün (richtig), Rot (falsch angekreuzt) und
+                                         Gelb (richtig, aber vergessen) - Letzteres ist bei
+                                         Mehrfachfragen der häufigste Fehler. -->
+                                    <Style TargetType="Button" BasedOn="{StaticResource OptionButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsChosen}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                                <Setter Property="Foreground" Value="White" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsCorrectAnswer}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsWrongChoice}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMissed}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_TheoryAnswer]}"
+                        Style="{StaticResource RoundedButton}" HorizontalAlignment="Center" Margin="0,10,0,0"
+                        Visibility="{Binding IsAnswered, Converter={StaticResource InverseBoolToVis}}"
+                        IsEnabled="{Binding CanAnswer}"
+                        Command="{Binding AnswerCommand}" />
+
+                <!-- Auflösung. Nur beim Üben - in der Prüfungssimulation gäbe es sonst keine
+                     Prüfung mehr, sondern nur noch eine lange Übungsrunde. -->
+                <Border Style="{StaticResource CardBorder}" Padding="18,14" Margin="0,12,0,0"
+                        Visibility="{Binding IsAnswered, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Feedback}" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{Binding WasCorrect, Converter={StaticResource BoolToSuccessBrushConverter}}"
+                                   TextWrapping="Wrap"
+                                   Visibility="{Binding Feedback, Converter={StaticResource EmptyStringToVis}}" />
+                        <TextBlock Text="{Binding Explanation}" Style="{StaticResource BodyText}"
+                                   TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Visibility="{Binding Explanation, Converter={StaticResource EmptyStringToVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Next]}"
+                        Style="{StaticResource RoundedButton}" HorizontalAlignment="Center" Margin="0,16,0,0"
+                        Visibility="{Binding IsAnswered, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding NextCommand}" />
+
+                <!-- Abbrechen ist erlaubt: der Führerschein-Bereich ist freiwillig, und ein
+                     Ausgang, den man nicht findet, macht aus Freiwilligkeit eine Falle. -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Back]}"
+                        Style="{StaticResource RoundedButton}" HorizontalAlignment="Center" Margin="0,24,0,0"
+                        FontSize="14" Padding="18,8"
+                        Background="{StaticResource TextSecondaryBrush}"
+                        Command="{Binding BackCommand}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -133,6 +133,9 @@ public static class Translations
             ["Typing_Continue"] = L("➡️ Weiter", "➡️ Devam"),
 
             ["Steps_Typing"] = L("Tippen", "Yazma"),
+            // Fehlte, bis scripts/preflight.py danach gesucht hat: die Überschrift der
+            // News-Ansicht stand deshalb wörtlich als "[Stage_News]" auf dem Bildschirm.
+            ["Stage_News"] = L("Nachrichten", "Haberler"),
             ["Stage_Mathematik"] = L("Mathematik", "Matematik"),
             ["Stage_Deutsch"] = L("Deutsch", "Almanca"),
             ["Stage_Tuerkisch"] = L("Türkisch", "Türkçe"),
@@ -161,7 +164,9 @@ public static class Translations
             ["Fs_AreaSigns"] = L("Verkehrszeichen", "Trafik işaretleri"),
             ["Fs_AreaSignsHint"] = L("Alle Schilder mit Karteikarten und Quiz", "Tüm levhalar: kartlar ve test"),
             ["Fs_AreaTheory"] = L("Theoriefragen", "Teori soruları"),
-            ["Fs_AreaTheoryHint"] = L("Kommt als Nächstes", "Sırada bu var"),
+            ["Fs_AreaTheoryHint"] = L("14 Sachgebiete, Prüfungssimulation und Schwachstellen-Trainer",
+                "14 konu alanı, sınav simülasyonu ve zayıf nokta antrenörü"),
+            ["Fs_AreaTheoryOpen"] = L("Theorie üben", "Teoriye geç"),
             ["Fs_AreaCourse"] = L("Theorie-Kurs", "Teori kursu"),
             ["Fs_AreaCourseHint"] = L("Kommt als Nächstes", "Sırada bu var"),
             ["Fs_Challenge"] = L("Tägliche Challenge", "Günlük meydan okuma"),
@@ -184,6 +189,53 @@ public static class Translations
             ["Fs_Correct"] = L("Richtig!", "Doğru!"),
             ["Fs_Wrong"] = L("Das war {0}.", "Bu {0} idi."),
             ["Fs_Number"] = L("Zeichen {0}", "İşaret {0}"),
+
+            // --- Theoriefragen ---
+            ["Fs_TheoryTitle"] = L("Theoriefragen", "Teori soruları"),
+            ["Fs_TheoryIntro"] = L(
+                "Wie in der echten Prüfung: manchmal ist mehr als eine Antwort richtig, und jede Frage wiegt unterschiedlich schwer.",
+                "Gerçek sınavdaki gibi: bazen birden fazla cevap doğrudur ve her sorunun ağırlığı farklıdır."),
+            ["Fs_TheoryOverall"] = L("{0} von {1} Fragen sitzen", "{1} sorudan {0} tanesi oturdu"),
+            ["Fs_TheoryTopicProgress"] = L("{0} von {1}", "{1} sorudan {0}"),
+            ["Fs_TheoryTopicComplete"] = L("Sitzt komplett 🎉", "Tamamen oturdu 🎉"),
+            ["Fs_TheoryPractice"] = L("Üben", "Alıştırma"),
+            ["Fs_TheoryTopics"] = L("Sachgebiete", "Konu alanları"),
+            ["Fs_TheoryWeakMark"] = L("Schwachstelle", "Zayıf nokta"),
+            ["Fs_TheoryWrong"] = L("Leider falsch.", "Maalesef yanlış."),
+            ["Fs_TheoryMultiHint"] = L("Mehrere Antworten können richtig sein - kreuze alle an.",
+                "Birden fazla cevap doğru olabilir - hepsini işaretle."),
+            ["Fs_TheorySingleHint"] = L("Wähle eine Antwort.", "Bir cevap seç."),
+            ["Fs_TheoryAnswer"] = L("Antworten", "Cevapla"),
+            ["Fs_TheoryMissed"] = L("Diese Antwort war auch richtig.", "Bu cevap da doğruydu."),
+            ["Fs_PointsWeight"] = L("{0} Fehlerpunkte", "{0} hata puanı"),
+
+            // --- Prüfungssimulation ---
+            ["Fs_Exam"] = L("Prüfungssimulation", "Sınav simülasyonu"),
+            ["Fs_ExamHint"] = L(
+                "{0} Fragen wie beim TÜV - ohne Auflösung zwischendurch. Bestanden mit höchstens {1} Fehlerpunkten.",
+                "TÜV'deki gibi {0} soru - arada cevap gösterilmez. En fazla {1} hata puanıyla geçilir."),
+            ["Fs_ExamStart"] = L("Prüfung starten", "Sınavı başlat"),
+            ["Fs_ExamPassed"] = L("Bestanden 🎉", "Geçtin 🎉"),
+            ["Fs_ExamFailed"] = L("Nicht bestanden", "Geçemedin"),
+            ["Fs_ExamPoints"] = L("{0} von höchstens {1} Fehlerpunkten", "{1} hata puanından {0} tanesi"),
+            ["Fs_ExamCount"] = L("{0} von {1} Fragen richtig", "{1} sorudan {0} doğru"),
+            ["Fs_ExamRepeat"] = L("Neue Prüfung", "Yeni sınav"),
+            ["Fs_ExamMistakes"] = L("Das ist schiefgegangen", "Yanlış gidenler"),
+            ["Fs_ExamYourAnswer"] = L("Deine Antwort", "Senin cevabın"),
+            ["Fs_ExamCorrectAnswer"] = L("Richtig wäre", "Doğrusu"),
+            ["Fs_ExamNoMistakes"] = L("Keine einzige falsche Antwort - so sieht eine gute Prüfung aus.",
+                "Tek bir yanlış bile yok - iyi bir sınav böyle olur."),
+            ["Fs_LastExam"] = L("Letzte Prüfung: {0} ({1} Fehlerpunkte, {2})",
+                "Son sınav: {0} ({1} hata puanı, {2})"),
+
+            // --- Schwachstellen-Trainer ---
+            ["Fs_WeakSpots"] = L("Schwachstellen-Trainer", "Zayıf nokta antrenörü"),
+            ["Fs_WeakSpotsFound"] = L("{0} Sachgebiete brauchen noch Arbeit - los geht's damit.",
+                "{0} konu alanı hâlâ çalışma istiyor - oradan başla."),
+            ["Fs_WeakSpotsNone"] = L(
+                "Noch zu wenig geübt, um Schwachstellen zu erkennen. Bis dahin kommt ein gemischter Satz.",
+                "Zayıf noktaları görmek için henüz yeterince çalışılmadı. O zamana kadar karışık bir set gelir."),
+            ["Fs_WeakSpotsStart"] = L("Schwachstellen üben", "Zayıf noktaları çalış"),
             ["Ki_Intro"] = L("Hier lernst du, wie KI wirklich funktioniert - und wie du sie schlau und sicher nutzt. Lies die drei Module durch, dann zeigt die KI-Checkliste, was du drauf hast.",
                 "Burada yapay zekanın gerçekte nasıl çalıştığını ve onu akıllıca, güvenle nasıl kullanacağını öğrenirsin. Üç modülü oku, sonra kontrol listesi neler bildiğini gösterir."),
             ["Ki_StartQuestions"] = L("Zur KI-Checkliste ✨", "Kontrol listesine geç ✨"),

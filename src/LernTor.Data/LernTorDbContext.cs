@@ -23,6 +23,8 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<HomeworkTaskEntity> HomeworkTasks => Set<HomeworkTaskEntity>();
     public DbSet<ExamEntryEntity> Exams => Set<ExamEntryEntity>();
     public DbSet<TrafficSignProgressEntity> TrafficSignProgress => Set<TrafficSignProgressEntity>();
+    public DbSet<TheoryAnswerEntity> TheoryAnswers => Set<TheoryAnswerEntity>();
+    public DbSet<TheoryExamRunEntity> TheoryExamRuns => Set<TheoryExamRunEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -129,6 +131,19 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(t => t.Id);
             e.HasIndex(t => new { t.ProfileId, t.SignNumber }).IsUnique();
+            e.HasIndex(t => t.ProfileId);
+        });
+
+        modelBuilder.Entity<TheoryAnswerEntity>(e =>
+        {
+            e.HasKey(t => t.Id);
+            e.HasIndex(t => new { t.ProfileId, t.QuestionId }).IsUnique();
+            e.HasIndex(t => t.ProfileId);
+        });
+
+        modelBuilder.Entity<TheoryExamRunEntity>(e =>
+        {
+            e.HasKey(t => t.Id);
             e.HasIndex(t => t.ProfileId);
         });
     }

@@ -290,11 +290,26 @@ angelehnt an den Aufbau von fahrschule24.de. Details in [`docs/FUEHRERSCHEIN.md`
   lieber ein vereinfachtes richtiges Schild als ein originalgetreues falsches.
 - **Rechtlich sauber**: Verkehrszeichen stehen in StVO Anlage 1-3 und sind als amtliches Werk
   gemeinfrei (§ 5 UrhG). Der amtliche *Fragenkatalog* dagegen ist es nicht - er gehört der
-  TÜV|DEKRA arge tp 21. Stufe 2 bringt deshalb **eigene** Fragen zu denselben 14 amtlichen
-  Sachgebieten, nicht die Originalfragen.
+  TÜV|DEKRA arge tp 21. Die Theoriefragen hier sind deshalb **selbst geschrieben** und decken
+  dieselben 14 amtlichen Sachgebiete ab, sind aber nicht die Originalfragen.
 - **Gekonnt = zweimal hintereinander richtig**, ein Fehler setzt auf null zurück. Dieselbe Regel
   wie in der Fehler-Kartei. Die Karteikarten zählen bewusst NICHT mit: "wusste ich" drückt sich
   jeder gern, und beim Blick auf die Rückseite meint man ohnehin, es gewusst zu haben.
+- **65 Theoriefragen** zu den 14 amtlichen Sachgebieten - und zwar so gebaut, wie die Prüfung
+  wirklich läuft: bei 10 Fragen sind **mehrere Antworten richtig** (Teilpunkte gibt es nicht),
+  und jede Frage wiegt 2 bis 5 **Fehlerpunkte**. Wer mit Ein-aus-vier-Quizzen übt, lernt genau
+  das Falsche.
+- **Prüfungssimulation**: 30 Fragen über alle Sachgebiete gestreut, zwischendurch ohne Auflösung.
+  Bestanden mit höchstens 10 Fehlerpunkten **und** weniger als zwei falschen 5-Punkte-Fragen -
+  man kann also 28 von 30 richtig haben und trotzdem durchfallen. Deshalb zeigt der
+  Ergebnisbildschirm Fehlerpunkte statt Prozent, danach jede falsche Frage einzeln mit der
+  eigenen Antwort, der richtigen und der Begründung.
+- **Schwachstellen-Trainer**: zieht bevorzugt aus Sachgebieten unter 70 % - aber erst ab vier
+  beantworteten Fragen darin, denn zwei falsche Antworten machen noch keine Schwachstelle.
+  Gemessen wird, was *gerade* sitzt, nicht der Durchschnitt der ganzen Historie.
+- **Die richtige Antwort steht im Katalog immer vorn** (so ist eine Frage beim Nachlesen sofort
+  zu erfassen) und wird vor der Anzeige an genau einer Stelle gemischt. Ohne das hätte "immer die
+  erste ankreuzen" volle Punktzahl gegeben.
 - **🚲 Gilt schon fürs Fahrrad**: Zeichen, die für die Kinder heute relevant sind, sind
   gekennzeichnet - der Bereich ist nicht nur Vorbereitung auf übermorgen.
 

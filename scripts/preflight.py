@@ -19,6 +19,7 @@ Es ersetzt KEINEN Compiler - es prüft nur bekannte, statisch erkennbare Fallen:
   8. JSON-/YAML-Gültigkeit der Konfigurations- und Zustandsdateien
   9. Zwei Typen gleichen Namens im selben Namensraum (CS0101)
  10. Vollstaendigkeit der Einordnungstexte bei neuen NewsCategory-Werten
+ 11. Uebersetzungsschluessel, die benutzt, aber nirgends definiert sind -> "[Stage_News]" auf dem Schirm
 
 Nutzung:  python3 scripts/preflight.py            (alles prüfen)
           python3 scripts/preflight.py --quick    (ohne die langsameren Repo-weiten Scans)
@@ -499,6 +500,39 @@ def check_news_category_coverage() -> None:
                         f"fuer {variant} - faellt still auf string.Empty zurueck.")
 
 
+def check_translation_keys() -> None:
+    """Benutzte, aber nicht definierte Uebersetzungsschluessel.
+
+    Der Indexer von LocalizationService gibt fuer einen unbekannten Schluessel "[Schluessel]"
+    zurueck - kein Absturz, keine Warnung, nur ein eckig geklammerter Bezeichner mitten in der
+    Oberflaeche. Genau so stand "[Stage_News]" als Ueberschrift ueber der Nachrichtenansicht,
+    ohne dass es jemandem auffiel.
+    """
+    translations = SRC / "LernTor.App" / "Localization" / "Translations.cs"
+    if not translations.exists():
+        return
+
+    defined = set(re.findall(r'\["([A-Za-z0-9_]+)"\]\s*=\s*L\(',
+                            translations.read_text(encoding="utf-8")))
+    if not defined:
+        return
+
+    app = SRC / "LernTor.App"
+
+    for path in sorted(app.rglob("*.xaml")):
+        used = set(re.findall(r"Path=\[([A-Za-z0-9_]+)\]", path.read_text(encoding="utf-8")))
+        for key in sorted(used - defined):
+            report("uebersetzung-fehlt", path, f"'{key}' wird gebunden, steht aber nicht in Translations.Map")
+
+    for path in sorted(app.rglob("*.cs")):
+        if path.name == "Translations.cs":
+            continue
+        text = path.read_text(encoding="utf-8")
+        used = set(re.findall(r'LocalizationService\.Instance\["([A-Za-z0-9_]+)"\]', text))
+        for key in sorted(used - defined):
+            report("uebersetzung-fehlt", path, f"'{key}' wird abgefragt, steht aber nicht in Translations.Map")
+
+
 def check_config_files() -> None:
     state = ROOT / "docs" / "CLAUDE_STATE.json"
     if state.exists():
@@ -535,6 +569,7 @@ def main() -> int:
         ("Konfigurationsdateien", check_config_files),
         ("Doppelte Typnamen", check_duplicate_type_names),
         ("News-Rubrik-Texte", check_news_category_coverage),
+        ("Uebersetzungsschluessel", check_translation_keys),
     ]
     if not args.quick:
         checks += [

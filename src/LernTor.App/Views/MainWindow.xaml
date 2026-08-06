@@ -58,6 +58,15 @@
         <DataTemplate DataType="{x:Type vm:SignQuizViewModel}">
             <views:SignQuizView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TheoryHubViewModel}">
+            <views:TheoryHubView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TheoryQuestionViewModel}">
+            <views:TheoryQuestionView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TheoryResultViewModel}">
+            <views:TheoryResultView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SignFlashcardViewModel}">
             <views:SignFlashcardView />
         </DataTemplate>

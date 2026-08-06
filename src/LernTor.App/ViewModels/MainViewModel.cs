@@ -39,6 +39,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly HomeworkTaskRepository _homeworkRepo;
     private readonly ExamEntryRepository _examRepo;
     private readonly TrafficSignProgressRepository _signProgressRepo;
+    private readonly TheoryProgressRepository _theoryRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
@@ -87,6 +88,7 @@ public sealed partial class MainViewModel : ObservableObject
         HomeworkTaskRepository homeworkRepo,
         ExamEntryRepository examRepo,
         TrafficSignProgressRepository signProgressRepo,
+        TheoryProgressRepository theoryRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
@@ -113,6 +115,7 @@ public sealed partial class MainViewModel : ObservableObject
         _homeworkRepo = homeworkRepo;
         _examRepo = examRepo;
         _signProgressRepo = signProgressRepo;
+        _theoryRepo = theoryRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
@@ -547,6 +550,7 @@ public sealed partial class MainViewModel : ObservableObject
     private async Task<DrivingDashboardViewModel> BuildDrivingDashboardViewModelAsync()
     {
         var gekonnt = await _signProgressRepo.GetMasteredNumbersAsync(CurrentProfile!.Id);
+        var theorieGekonnt = await _theoryRepo.GetMasteredQuestionIdsAsync(CurrentProfile!.Id);
 
         return new DrivingDashboardViewModel(
             DrivingSignPool(),
@@ -557,6 +561,9 @@ public sealed partial class MainViewModel : ObservableObject
             () => _ = StartDrivingChallengeAsync(),
             category => _ = StartSignFlashcardsAsync(category),
             category => _ = StartSignQuizAsync(category),
+            DrivingTheoryCatalog.All.Count(frage => theorieGekonnt.Contains(frage.Id)),
+            DrivingTheoryCatalog.All.Count,
+            () => _ = ShowTheoryHubAsync(),
             OnDrivingCompleted);
     }
 
@@ -667,6 +674,174 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         return signs;
+    }
+
+    // ----------------- Unterbereich Theoriefragen (siehe DrivingTheoryCatalog) -----------------
+
+    /// <summary>Fragen im Schwachstellen-Training. Genug für eine Viertelstunde, nicht mehr -
+    /// ein Trainer, der wie eine zweite Prüfung wirkt, wird nicht angefasst.</summary>
+    private const int WeakSpotQuestionCount = 10;
+
+    /// <summary>
+    /// Trefferquote je Sachgebiet - Grundlage des Schwachstellen-Trainers.
+    ///
+    /// <para><b>Gemessen wird der Jetzt-Zustand, nicht der Durchschnitt der Historie:</b> eine
+    /// Frage zählt als richtig, wenn sie <i>gerade</i> sitzt (siehe <see cref="TheoryProgress"/>).
+    /// Über alle je gegebenen Antworten zu mitteln würde ein Sachgebiet noch monatelang als
+    /// Schwachstelle führen, nachdem das Kind es längst kann.</para>
+    ///
+    /// <para>Fragen, die es im Katalog nicht mehr gibt, fallen still heraus - ihr Sachgebiet
+    /// steht nur dort und nicht in der Datenbank.</para>
+    /// </summary>
+    private async Task<IReadOnlyList<TopicMastery>> BuildTheoryMasteryAsync()
+    {
+        var antworten = await _theoryRepo.GetAnswersAsync(CurrentProfile!.Id);
+
+        var paare = new List<(DrivingTheoryTopic Topic, bool WasCorrect)>();
+
+        foreach (var eintrag in antworten.Values)
+        {
+            if (DrivingTheoryCatalog.ById(eintrag.QuestionId) is { } frage)
+            {
+                paare.Add((frage.Topic, TheoryProgress.IsMastered(eintrag.CorrectStreak)));
+            }
+        }
+
+        return TheoryExamComposer.BuildMastery(paare);
+    }
+
+    private async Task ShowTheoryHubAsync()
+    {
+        var gekonnt = await _theoryRepo.GetMasteredQuestionIdsAsync(CurrentProfile!.Id);
+        var staerken = await BuildTheoryMasteryAsync();
+        var letzte = await _theoryRepo.GetRecentExamsAsync(CurrentProfile!.Id, 1);
+
+        CurrentViewModel = new TheoryHubViewModel(
+            DrivingTheoryCatalog.All,
+            gekonnt,
+            staerken,
+            letzte.FirstOrDefault(),
+            topic => _ = StartTheoryTopicAsync(topic),
+            () => _ = StartTheoryExamAsync(),
+            () => _ = StartTheoryWeakSpotsAsync(),
+            () => _ = ShowDrivingDashboardAsync());
+    }
+
+    /// <summary>
+    /// Übungsrunde zu einem Sachgebiet: alle Fragen daraus, noch nicht sitzende zuerst. Wer ein
+    /// Gebiet gezielt anwählt, will daran arbeiten - dann soll nicht zuerst das kommen, was
+    /// ohnehin schon sitzt.
+    /// </summary>
+    private async Task StartTheoryTopicAsync(DrivingTheoryTopic topic)
+    {
+        var gekonnt = await _theoryRepo.GetMasteredQuestionIdsAsync(CurrentProfile!.Id);
+
+        var fragen = ShuffleQuestions(DrivingTheoryCatalog.ByTopic(topic).ToList())
+            .OrderBy(frage => gekonnt.Contains(frage.Id) ? 1 : 0)
+            .ToList();
+
+        StartTheoryRun(fragen, DrivingTheoryCatalog.TopicLabel(topic), TheoryRunMode.Uebung);
+    }
+
+    private async Task StartTheoryWeakSpotsAsync()
+    {
+        var staerken = await BuildTheoryMasteryAsync();
+
+        var fragen = TheoryExamComposer.ComposeWeakSpotSet(
+            DrivingTheoryCatalog.All, staerken, WeakSpotQuestionCount, _random);
+
+        StartTheoryRun(
+            fragen.ToList(),
+            LocalizationService.Instance["Fs_WeakSpots"],
+            TheoryRunMode.Uebung);
+    }
+
+    private async Task StartTheoryExamAsync()
+    {
+        var fragen = TheoryExamComposer.ComposeExam(DrivingTheoryCatalog.All, _random);
+
+        StartTheoryRun(
+            fragen.ToList(),
+            LocalizationService.Instance["Fs_Exam"],
+            TheoryRunMode.Pruefung);
+
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Baut die Ansicht für einen Fragensatz. Ein leerer Satz führt zurück zur Übersicht statt in
+    /// eine Ansicht ohne Fragen - sonst riefe der Durchlauf sein Ende schon im Konstruktor auf,
+    /// und die Zuweisung danach würde die Ergebnisansicht gleich wieder überschreiben.
+    /// </summary>
+    private void StartTheoryRun(IReadOnlyList<TheoryQuestion> questions, string title, TheoryRunMode mode)
+    {
+        if (questions.Count == 0)
+        {
+            _ = ShowTheoryHubAsync();
+            return;
+        }
+
+        var gestellt = TheoryQuestionPresenter.PresentAll(questions, _random);
+
+        CurrentViewModel = new TheoryQuestionViewModel(
+            gestellt,
+            title,
+            mode,
+            OnTheoryAnsweredAsync,
+            records => _ = OnTheoryRunFinishedAsync(mode, records),
+            () => _ = ShowTheoryHubAsync());
+    }
+
+    /// <summary>
+    /// Jede Antwort schreibt den Lernstand fort. Eine neu sitzende Frage ist einen Stern wert -
+    /// aber nur beim ersten Mal, sonst ließe sich dieselbe Frage endlos für Sterne wiederholen.
+    /// </summary>
+    private async Task OnTheoryAnsweredAsync(TheoryQuestion question, bool wasCorrect)
+    {
+        var neuGekonnt = await _theoryRepo.RecordAnswerAsync(CurrentProfile!.Id, question.Id, wasCorrect);
+
+        if (neuGekonnt)
+        {
+            await AwardStarsAsync(1);
+        }
+    }
+
+    private async Task OnTheoryRunFinishedAsync(
+        TheoryRunMode mode, IReadOnlyList<TheoryAnswerRecord> records)
+    {
+        if (mode != TheoryRunMode.Pruefung)
+        {
+            await ShowTheoryHubAsync();
+            return;
+        }
+
+        var ergebnis = TheoryExamRules.Evaluate(
+            records.Select(antwort => antwort.Question.Question).ToList(),
+            records.Select(antwort => antwort.WasCorrect).ToList());
+
+        await _theoryRepo.RecordExamAsync(CurrentProfile!.Id, ergebnis);
+
+        if (ergebnis.Passed)
+        {
+            await AwardStarsAsync(5);
+        }
+
+        CurrentViewModel = new TheoryResultViewModel(
+            ergebnis,
+            records,
+            () => _ = StartTheoryExamAsync(),
+            () => _ = ShowTheoryHubAsync());
+    }
+
+    private List<TheoryQuestion> ShuffleQuestions(List<TheoryQuestion> questions)
+    {
+        for (var i = questions.Count - 1; i > 0; i--)
+        {
+            var j = _random.Next(i + 1);
+            (questions[i], questions[j]) = (questions[j], questions[i]);
+        }
+
+        return questions;
     }
 
     private async Task<ReadingViewModel> BuildReadingViewModelAsync()

@@ -7,7 +7,7 @@ Abschlussquiz.
 | Unterbereich | Stand | Inhalt |
 |---|---|---|
 | **Verkehrszeichen** | ✅ fertig | 77 Zeichen in fünf Gruppen (42 im Original, 35 nachgezeichnet), Karteikarten und Quiz, tägliche Challenge |
-| **Theoriefragen** | 🔜 Stufe 2 | Eigene Fragen zu den 14 amtlichen Sachgebieten, Prüfungssimulation, Schwachstellen-Trainer |
+| **Theoriefragen** | ✅ fertig | 65 eigene Fragen zu den 14 amtlichen Sachgebieten, Prüfungssimulation nach Fehlerpunkten, Schwachstellen-Trainer |
 | **Theorie-Kurs** | 🔜 Stufe 3 | Erklärseiten mit Zeichnungen, Quiz, Lernstandskontrolle |
 
 ## Was Pflicht ist und was nicht
@@ -38,9 +38,10 @@ bestätigten Zeichen sind weiterhin aus der Verordnungsbeschreibung nachgezeichn
 
 **Der amtliche Fragenkatalog ist NICHT frei.** Die offiziellen Theorie-Prüfungsfragen gehören der
 TÜV|DEKRA arge tp 21; kommerzielle Lern-Apps lizenzieren sie. Sie dürfen hier nicht hinein.
-Stufe 2 bringt deshalb **eigene** Fragen zu denselben 14 amtlichen Sachgebieten aus StVO und
-StVZO — zum Lernen gleichwertig, aber nicht wortgleich mit der Prüfung. Wer wortgleiche Fragen
-will, muss sie über den vorhandenen Eltern-Import selbst eintragen.
+Die 65 Fragen in `DrivingTheoryCatalog` sind deshalb **selbst geschrieben** und decken dieselben
+14 amtlichen Sachgebiete aus StVO und StVZO ab — zum Lernen gleichwertig, aber nicht wortgleich
+mit der Prüfung. Wer wortgleiche Fragen will, muss sie über den vorhandenen Eltern-Import selbst
+eintragen.
 
 **Keine Videos.** LernTor ist vollständig offline. Der Theorie-Kurs bekommt stattdessen
 bebilderte Erklärseiten mit denselben gezeichneten Zeichen.
@@ -141,6 +142,67 @@ Die Ablenker kommen aus **derselben Gruppe** wie das gefragte Zeichen. Sonst wä
 die halbe Antwort: wer ein rotes Dreieck sieht, könnte alles Blaue ausschließen, ohne das Zeichen
 zu kennen.
 
+## Theoriefragen
+
+### Warum die Fragen nicht wie ein Quiz funktionieren
+
+Die echte Prüfung unterscheidet sich in zwei Punkten von einem Ein-aus-vier-Quiz, und an beiden
+scheitern Prüflinge, die nur Quiz geübt haben:
+
+- **Mehrere Antworten können richtig sein.** Wer eine von zwei richtigen ankreuzt, hat die Frage
+  falsch — Teilpunkte gibt es nicht. 10 der 65 Fragen sind Mehrfachfragen.
+- **Gezählt werden Fehler*punkte*, nicht Fragen.** Jede Frage wiegt 2 bis 5 Punkte, je nachdem,
+  wie gefährlich der Irrtum wäre.
+
+`TheoryExamRules` bildet das ab: bestanden ist, wer **höchstens 10 Fehlerpunkte** hat **und**
+nicht zwei 5-Punkte-Fragen verhauen hat. Beide Bedingungen zählen einzeln — bei 30 Fragen kann
+man also 28 richtig haben und trotzdem durchfallen. Eine Prozentanzeige würde genau das
+verschleiern, deshalb steht auf dem Ergebnisbildschirm die Punktzahl groß und keine Prozentzahl.
+
+### Warum die Antworten gemischt werden
+
+Im Katalog steht die richtige Antwort **bewusst an erster Stelle** — so ist eine Frage beim
+Schreiben und beim späteren Nachlesen sofort zu erfassen. Genau so angezeigt wäre sie wertlos:
+"immer die erste ankreuzen" hätte volle Punktzahl gegeben.
+
+`TheoryQuestionPresenter.Present` ist die **einzige** Stelle, an der eine Frage in eine
+anzeigbare Form kommt, und mischt dabei. Keine Ansicht kann es vergessen, weil man an die
+Antworten sonst gar nicht herankommt. `TheoryQuestionPresenterTests` prüft, dass die richtigen
+Positionen mitwandern und die richtige Antwort nicht immer auf Platz eins landet.
+
+Die zweite Falle (längste Antwort = richtige) ist mit 49 % gemessen und in
+`DrivingTheoryCatalogTests` bei 60 % gedeckelt. Auf 25 % zu drücken wäre falsch: "die längste ist
+nie die richtige" wäre das nächste ausnutzbare Muster.
+
+### Üben, Prüfung, Schwachstellen
+
+| Modus | Rückmeldung | Fragen |
+|---|---|---|
+| Sachgebiet üben | sofort, mit Begründung; "Weiter" muss gedrückt werden | alle des Gebiets, noch nicht sitzende zuerst |
+| Prüfungssimulation | **keine** bis zum Ende | 30, über alle Sachgebiete gestreut |
+| Schwachstellen-Trainer | sofort, mit Begründung | 10, bevorzugt aus schwachen Gebieten |
+
+Die Prüfung gibt zwischendurch bewusst keine Auflösung — sonst wäre es keine Simulation, sondern
+eine lange Übungsrunde. Die Auswertung kommt am Ende dafür vollständig: **jede falsche Frage
+einzeln**, mit der eigenen Antwort, der richtigen und der Begründung. Das ist der Ertrag des
+Durchlaufs; die Punktzahl allein bringt niemanden weiter.
+
+`TheoryExamComposer.ComposeExam` streut reihum über die Sachgebiete, statt zufällig aus dem Topf
+zu ziehen. Sonst kämen an einem Tag zwölf Vorfahrt-Fragen und am nächsten keine — wer nur einen
+Ausschnitt übt, hält sich für weiter, als er ist.
+
+### Was als Schwachstelle gilt
+
+Ein Sachgebiet ist eine Schwachstelle, wenn es **belastbar gemessen** (mindestens 4 beantwortete
+Fragen) **und** unter 70 % ist. Zwei falsche Antworten machen noch keine Schwachstelle; solange
+zu wenig geübt wurde, schickt der Trainer einen gemischten Satz und sagt das auch.
+
+Gemessen wird der **Jetzt-Zustand**, nicht der Durchschnitt der Historie: eine Frage zählt als
+richtig, wenn sie gerade sitzt (zweimal hintereinander richtig, `TheoryProgress.MasteredStreak`
+— dieselbe Schwelle wie bei den Zeichen). Über alles je Beantwortete zu mitteln würde ein Gebiet
+noch monatelang als Schwachstelle führen, nachdem das Kind es längst kann, und der Trainer würde
+weiter Fragen daraus schicken statt zum nächsten Problem zu gehen.
+
 ## Eltern-Einstellungen (pro Profil)
 
 | Einstellung | Standard | Wirkung |
@@ -148,7 +210,8 @@ zu kennen.
 | Bereich anzeigen | an | Aus = die Etappe wird übersprungen |
 | Zeichen in der Challenge | 5 | Presets 3/5/8/10 |
 | Zeichengruppen | alle fünf | Einzeln abwählbar; abgewählte kommen weder im Quiz noch in der Challenge vor |
-| Lernstand zurücksetzen | — | Nur die Verkehrszeichen; Sterne und übriger Fortschritt bleiben |
+| Verkehrszeichen-Lernstand zurücksetzen | — | Nur die Verkehrszeichen; Sterne und übriger Fortschritt bleiben |
+| Theorie-Lernstand zurücksetzen | — | Gelernte Fragen und Prüfungshistorie; die Zeichen bleiben unangetastet |
 
 Zusätzlich gibt es den globalen Fächer-Schalter (`AppSettings.DisabledSubjects`), der wie bei
 allen Fächern für beide Kinder zugleich gilt. **Beide Schalter zählen: aus ist aus.**
@@ -161,6 +224,17 @@ Bildschirm, aus dem man nicht mehr herauskommt, wäre die schlechtere Antwort.
 `TrafficSignProgressEntity` (Tabelle `TrafficSignProgress`), Schlüssel `ProfileId|SignNumber`.
 Die **Zeichennummer ist der Schlüssel des Lernstands** — sie darf sich nicht ändern, sonst
 verlieren die Kinder ihren Fortschritt.
+
+`TheoryAnswerEntity` (Tabelle `TheoryAnswers`), Schlüssel `ProfileId|QuestionId`, und
+`TheoryExamRunEntity` (Tabelle `TheoryExamRuns`) für die Prüfungsdurchläufe.
+
+Zwei Dinge stehen dort bewusst **nicht** drin:
+
+- **Das Sachgebiet einer Frage.** Es steht im Katalog und wird von dort geholt. Zweimal
+  gespeichert hieße, dass beide Stellen auseinanderlaufen, sobald eine Frage umsortiert wird.
+  Fragen, die es im Katalog nicht mehr gibt, fallen dadurch von selbst aus der Auswertung.
+- **Bestanden/durchgefallen.** Wird aus den gespeicherten Zahlen neu berechnet. Ein gespeichertes
+  Häkchen würde alte Läufe nach einer Regeländerung anders bewerten als die Zahlen daneben.
 
 Am Profil kamen drei Spalten dazu. `DrivingAreaDisabled` ist bewusst **invertiert** benannt: der
 additive Schema-Abgleich gibt neuen Spalten in bestehenden Zeilen `DEFAULT 0`. Bei einem Feld

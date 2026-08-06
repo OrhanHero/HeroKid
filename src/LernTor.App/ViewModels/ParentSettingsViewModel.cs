@@ -37,6 +37,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly PiperTtsEngine _piperTts;
     private readonly RewardRepository _rewardRepo;
     private readonly TrafficSignProgressRepository _signProgressRepo;
+    private readonly TheoryProgressRepository _theoryRepo;
     private readonly AutoBackupService _autoBackup;
     private readonly QuizComposer _quizComposer;
 
@@ -372,11 +373,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         PiperTtsEngine piperTts,
         RewardRepository rewardRepo,
         TrafficSignProgressRepository signProgressRepo,
+        TheoryProgressRepository theoryRepo,
         AutoBackupService autoBackup,
         QuizComposer quizComposer)
     {
         _rewardRepo = rewardRepo;
         _signProgressRepo = signProgressRepo;
+        _theoryRepo = theoryRepo;
         _autoBackup = autoBackup;
         _quizComposer = quizComposer;
         _settingsRepo = settingsRepo;
@@ -881,6 +884,35 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         await _signProgressRepo.ResetAsync(SelectedProfile.Id);
+    }
+
+    /// <summary>
+    /// Setzt den Theorie-Lernstand des gewählten Kindes zurück: gelernte Fragen und die
+    /// Prüfungshistorie. Getrennt vom Zeichen-Lernstand, weil es zwei verschiedene Dinge sind -
+    /// wer die Zeichen kann, muss deshalb nicht die Theorie noch einmal von vorn anfangen.
+    /// </summary>
+    [RelayCommand]
+    private async Task ResetTheoryProgressAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        var antwort = System.Windows.MessageBox.Show(
+            $"Theorie-Lernstand von {SelectedProfile.Name} wirklich zurücksetzen? "
+            + "Gelernte Fragen und alle Prüfungsdurchläufe werden gelöscht. Sterne, Verkehrszeichen "
+            + "und der übrige Fortschritt bleiben erhalten.",
+            "Lernstand zurücksetzen",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question);
+
+        if (antwort != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        await _theoryRepo.ResetAsync(SelectedProfile.Id);
     }
 
     /// <summary>
