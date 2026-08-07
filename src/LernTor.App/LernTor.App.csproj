@@ -26,6 +26,15 @@
     <Resource Include="Assets\Verkehrszeichen\*.png" />
   </ItemGroup>
 
+  <!-- Bilder der sieben Weltwunder der Antike - KI-generierte Rekonstruktionen, von der Familie
+       selbst erstellt (siehe Assets\Weltwunder\QUELLEN.md). Sechs der sieben Bauwerke existieren
+       nicht mehr, ein Foto davon kann es also gar nicht geben.
+       Das Platzhalter-Muster ist Absicht: solange noch keine Datei im Ordner liegt, greift es
+       einfach ins Leere, statt den Build mit einer fehlenden Datei scheitern zu lassen. -->
+  <ItemGroup>
+    <Resource Include="Assets\Weltwunder\*.png" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\LernTor.Core\LernTor.Core.csproj" />
     <ProjectReference Include="..\LernTor.ContentGen\LernTor.ContentGen.csproj" />
