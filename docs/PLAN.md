@@ -13,7 +13,7 @@ steht oben.
 | Code | 345 `.cs`-Dateien, ~59.300 Zeilen, 30 XAML-Ansichten *(gemessen 07.08.2026)* |
 | Fächer | 17 mit eigenem Generator, **4.671 Frage-Tupel** in 337 Themen *(gezählt, nicht geschätzt)* |
 | Etappen | 20 (`LearningStage`), davon 17 Fach-Etappen |
-| Tests | **605 Testmethoden** (+223 `InlineData`-Fälle) in 71 Dateien, plus 17 statische Prüfungen |
+| Tests | **613 Testmethoden** (+223 `InlineData`-Fälle) in 71 Dateien, plus 17 statische Prüfungen |
 | Bereiche | Lesen, Tippen, Schreiben, News, 15 Schulfächer, KI-Bereich, Erste Hilfe, Führerschein (3 Unterbereiche), Abschlussquiz |
 | Verteilung | ZIP-Artefakt aus GitHub Actions, kein Installer |
 | Kalender | Ferien bis 14.08.2027, Feiertage bis 26.12.2027 |
@@ -82,7 +82,7 @@ starten, um den echten Kiosk zu sehen — aber nur, wenn eine zweite Person am R
 
 ---
 
-## Phase 1.0 — Drei gefundene Fehler ✅ *(1.0.1 und 1.0.2 sind BEHOBEN, siehe unten)*
+## Phase 1.0 — Drei gefundene Fehler ✅ *(alle drei BEHOBEN am 07.08.2026)*
 
 **Am 07.08.2026 durch gezielte Analyse gefunden und jeweils im Code nachgeprüft.** Sie stehen vor
 allem anderen in Phase 1, weil sie Daten verlieren bzw. Einstellungen still zurücksetzen — nicht,
@@ -133,13 +133,29 @@ und ist damit ausnahmsweise die richtige Vorgabe — anders als bei `DrivingArea
 hier nichts invertiert werden. Beim Testen trotzdem nachstellen: Punkt 4.12 in
 [`TESTPLAN.md`](TESTPLAN.md).
 
-### 1.0.3 Core und App sind sich über abgeschaltete Bereiche nicht einig — **offen**
+### 1.0.3 Abgeschaltete Bereiche kamen trotzdem im Abschlussquiz vor — ✅ **behoben am 07.08.2026**
 
-`ProgressGateService:98` kennt nur die **globale** Menge `AppSettings.DisabledSubjects`;
-`MainViewModel.IsSubjectDisabled` (`:523-536`) kennt zusätzlich die **profilbezogenen** Schalter
-`DrivingAreaEnabled` / `ErsteHilfeEnabled`. Die Fortschrittsanzeige (`:479-480`) rechnet ebenfalls
-nur mit der globalen Menge — profilweise abgeschaltete Bereiche blähen den Nenner „n/m" auf.
-Weiter ist `ProgressGateService.CanEnterStage` (`:51-72`) **toter Code**: nur Tests rufen es auf.
+Die Regel „welche Bereiche fallen für dieses Kind aus" gab es in **zwei Fassungen**.
+`MainViewModel.IsSubjectDisabled` kannte beide Schalter — den globalen und die profilbezogenen
+(`DrivingAreaEnabled` / `ErsteHilfeEnabled`). Das **Abschlussquiz** (`BuildFinalQuizViewModelAsync`)
+und der **Etappen-Zähler** kannten nur den globalen. Folgen:
+
+- Wer den Führerschein-Bereich oder Erste Hilfe für ein Kind abschaltete, bekam **trotzdem Fragen
+  daraus im Abschlussquiz** — aus einem Bereich, den dieses Kind an dem Tag nie gesehen hatte. Die
+  falschen Antworten drückten es unter die Bestehensschwelle, und der PC blieb gesperrt.
+- Dasselbe galt für die von Eltern selbst eingetragenen Aufgaben (`customQuestions`).
+- Der Zähler „Fächer 3/9" rechnete abgeschaltete Bereiche in den Nenner und erreichte sein
+  eigenes Ziel nie.
+
+**Behoben:** die Regel steht jetzt einmal, in `LernTor.Core.Services.SubjectAvailability` — dort
+ist sie ohne WPF prüfbar. Die Mengenform wird **aus** der Einzelabfrage abgeleitet statt daneben
+gepflegt, damit die beiden nicht wieder auseinanderlaufen können; ein Test vergleicht beide über
+alle Schalterkombinationen hinweg. `MainViewModel` benutzt sie an allen drei Stellen.
+
+**Angemerkt, nicht behoben:** `ProgressGateService.CanEnterStage` (`:51-72`) ist **toter Code** —
+nur Tests rufen es auf. Es ist damit keine Schutzfunktion, sondern eine, die es zu sein
+scheint. Entweder produktiv einsetzen oder entfernen; das gehört zu 4.1 und ist kein Defekt am
+laufenden Programm.
 
 ---
 

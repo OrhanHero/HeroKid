@@ -476,8 +476,11 @@ public sealed partial class MainViewModel : ObservableObject
     {
         var stage = Progress.CurrentStage;
         var loc = LocalizationService.Instance;
+        // Ueber IsSubjectDisabled, nicht ueber Settings.DisabledSubjects allein: sonst zaehlen
+        // profilweise abgeschaltete Bereiche (Fuehrerschein, Erste Hilfe) als offen mit, und der
+        // Zaehler "Faecher 3/9" erreicht nie sein eigenes Ziel.
         var activeSubjects = LearningStageSubjects.Map.Values
-            .Where(s => !Settings.DisabledSubjects.Contains(s)).ToList();
+            .Where(s => !IsSubjectDisabled(s)).ToList();
         var doneSubjects = Progress.CompletedExerciseSubjects.Count(activeSubjects.Contains);
         var isSubjectStage = LearningStageSubjects.Map.ContainsKey(stage);
 
@@ -515,25 +518,33 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Ob ein Fach für die heutige Sitzung ausfällt. Zwei Schalter, beide zählen:
-    /// der globale Fächer-Schalter im Eltern-Bereich (gilt für alle Kinder) und - nur beim
-    /// Führerschein-Bereich - der Schalter am einzelnen Profil. Ein Elfjähriger und ein
-    /// Fünfzehnjähriger sind hier unterschiedlich weit, das lässt sich global nicht abbilden.
+    /// Ob ein Bereich für die heutige Sitzung ausfällt. Die Regel selbst steht in
+    /// <see cref="SubjectAvailability"/> (Core) - dort ist sie ohne WPF prüfbar, und sie hat
+    /// genau EINE Fassung. Vorher gab es zwei, und die eine kannte die Profilschalter nicht.
     /// </summary>
-    private bool IsSubjectDisabled(Subject subject)
-    {
-        if (Settings.DisabledSubjects.Contains(subject))
-        {
-            return true;
-        }
+    private bool IsSubjectDisabled(Subject subject) =>
+        SubjectAvailability.IsDisabled(
+            subject,
+            Settings.DisabledSubjects,
+            CurrentProfile?.DrivingAreaEnabled ?? true,
+            CurrentProfile?.ErsteHilfeEnabled ?? true);
 
-        if (subject == Subject.Fuehrerschein && CurrentProfile is { DrivingAreaEnabled: false })
-        {
-            return true;
-        }
-
-        return subject == Subject.ErsteHilfe && CurrentProfile is { ErsteHilfeEnabled: false };
-    }
+    /// <summary>
+    /// Dieselbe Auskunft wie <see cref="IsSubjectDisabled"/>, nur als Menge - fuer alles, was
+    /// nicht Fach fuer Fach fragt (Abschlussquiz, eigene Aufgaben der Eltern).
+    ///
+    /// <para><b>Bewusst AUS der Abfrage abgeleitet statt daneben gepflegt.</b> Vorher gab es zwei
+    /// Wahrheiten: <c>IsSubjectDisabled</c> kannte beide Schalter, das Abschlussquiz und der
+    /// Etappen-Zaehler nur den globalen. Wer den Fuehrerschein-Bereich fuer ein Kind abschaltete,
+    /// bekam trotzdem Fuehrerschein-Fragen im Abschlussquiz - in einem Bereich, den dieses Kind an
+    /// dem Tag nie gesehen hatte -, und der Zaehler "Faecher 3/9" erreichte nie sein eigenes Ziel.
+    /// Als abgeleitete Menge koennen die beiden nicht mehr auseinanderlaufen.</para>
+    /// </summary>
+    private HashSet<Subject> EffectiveDisabledSubjects() =>
+        SubjectAvailability.EffectiveDisabled(
+            Settings.DisabledSubjects,
+            CurrentProfile?.DrivingAreaEnabled ?? true,
+            CurrentProfile?.ErsteHilfeEnabled ?? true);
 
     private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
         LearningStageSubjects.TryGetSubject(stage, out subject);
@@ -1391,7 +1402,10 @@ public sealed partial class MainViewModel : ObservableObject
     private async Task<FinalQuizViewModel> BuildFinalQuizViewModelAsync()
     {
         var grade = CurrentProfile!.GradeLevel;
-        var disabledSubjects = Settings.DisabledSubjects;
+        // EffectiveDisabledSubjects statt Settings.DisabledSubjects: sonst fragt das
+        // Abschlussquiz Faecher ab, die fuer DIESES Kind abgeschaltet sind und die es folglich
+        // nie geuebt hat - und die falschen Antworten druecken es unter die Bestehensschwelle.
+        var disabledSubjects = EffectiveDisabledSubjects();
         var relevantSubjects = Progress.SubjectsToRetry.Count > 0 ? Progress.SubjectsToRetry : null;
         var excludedPrompts = await BuildExcludedPromptsAsync();
         IEnumerable<QuizQuestion> questions;
