@@ -26,6 +26,12 @@ public sealed class ReviewQuestionEntity
     public string Explanation { get; set; } = string.Empty;
     public string? HelpHint { get; set; }
     public string? ImageUrl { get; set; }
+
+    /// <summary>Bild und Unterschrift zur Erklaerung - mitgespeichert, weil eine
+    /// wiederkehrende Karte sonst genau das verlieren wuerde, was sie erklaert.</summary>
+    public string? ExplanationImageUrl { get; set; }
+
+    public string? ExplanationImageCaption { get; set; }
     public bool RequiresTurkishCharacters { get; set; }
 
     /// <summary>Wie oft insgesamt falsch beantwortet - sortiert die fälligsten zuerst.</summary>

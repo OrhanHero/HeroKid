@@ -93,6 +93,8 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
             "Halikarnassos ist das heutige Bodrum an der türkischen Ägäisküste. Damit standen zwei der sieben antiken Weltwunder in der heutigen Türkei."),
         ("Woher stammt das Wort \"Mausoleum\" für ein prunkvolles Grabmal?", new[] { "Vom Grabmal des Herrschers Maussollos in Halikarnassos", "Vom griechischen Wort für einen sehr hohen Turm", "Vom Namen eines ägyptischen Pharaos der Frühzeit" }, "Vom Grabmal des Herrschers Maussollos in Halikarnassos",
             "Das Grabmal wurde für den Herrscher Maussollos errichtet. Seither heißt jedes große, prunkvolle Grabgebäude \"Mausoleum\"."),
+        ("Was zeigte die Zeusstatue von Olympia?", new[] { "Den Göttervater Zeus sitzend auf einem Thron, aus Gold und Elfenbein", "Zeus zu Pferd, vollständig aus massivem Marmor gehauen", "Zeus als Krieger mit Schild, aus Bronze gegossen" }, "Den Göttervater Zeus sitzend auf einem Thron, aus Gold und Elfenbein",
+            "Der Bildhauer Phidias schuf sie um 435 v. Chr. Sie war etwa zwölf Meter hoch - stehend hätte die Figur das Dach des Tempels durchstoßen, deshalb saß sie."),
         ("Welches der sieben antiken Weltwunder ist archäologisch nicht sicher nachgewiesen?", new[] { "Die Hängenden Gärten von Babylon", "Die Große Pyramide von Gizeh", "Der Tempel der Artemis in Ephesos" }, "Die Hängenden Gärten von Babylon",
             "Für die Hängenden Gärten gibt es bis heute keinen sicheren archäologischen Fund. Ob sie wirklich in Babylon standen, ist unter Fachleuten umstritten."),
         ("Was war der Koloss von Rhodos?", new[] { "Eine etwa 33 Meter hohe Bronzestatue des Sonnengottes Helios", "Ein unterirdisches Grabmal für mehrere Königsfamilien", "Ein weitläufiger Tempel für die Göttin Athene" }, "Eine etwa 33 Meter hohe Bronzestatue des Sonnengottes Helios",
@@ -138,11 +140,52 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
 
     private static QuizQuestion WeltwunderK9(Random r) => Weltwunder(r, GradeLevel.Klasse9);
 
+    /// <summary>
+    /// Welches Bild zu einer Frage gehört - erkannt am genannten Bauwerk.
+    ///
+    /// <para>Die Reihenfolge zählt: geprüft wird gegen Frage, Antwort UND Erklärung zusammen,
+    /// aber ausdrücklich NICHT gegen die Antwortoptionen. In den Optionen stehen die anderen
+    /// Weltwunder als Ablenker - danach zu suchen hätte der Frage „Welches steht heute noch?"
+    /// das Bild des Kolosses zugeordnet.</para>
+    ///
+    /// <para>Fragen ohne ein bestimmtes Bauwerk (etwa nach der Abstimmung von 2007) bekommen
+    /// bewusst kein Bild: ein beliebiges danebenzustellen wäre Dekoration, nicht Erklärung.</para>
+    /// </summary>
+    private static readonly (string Stichwort, string Bild, string Unterschrift)[] WeltwunderBilder =
+    {
+        ("Koloss von Rhodos", WonderImages.KolossRhodos, WonderImages.HinweisLegende),
+        ("Halikarnassos", WonderImages.Mausoleum, WonderImages.Hinweis),
+        ("Ephesos", WonderImages.ArtemisTempel, WonderImages.Hinweis),
+        ("Hängenden Gärten", WonderImages.HaengendeGaerten, WonderImages.Hinweis),
+        ("Alexandria", WonderImages.LeuchtturmAlexandria, WonderImages.Hinweis),
+        ("Zeusstatue", WonderImages.Zeusstatue, WonderImages.Hinweis),
+        ("Gizeh", WonderImages.PyramideGizeh, WonderImages.Hinweis)
+    };
+
+    internal static (string? Bild, string? Unterschrift) WeltwunderBildFuer(
+        string frage, string antwort, string erklaerung)
+    {
+        var text = $"{frage} {antwort} {erklaerung}";
+
+        foreach (var (stichwort, bild, unterschrift) in WeltwunderBilder)
+        {
+            if (text.Contains(stichwort, StringComparison.OrdinalIgnoreCase))
+            {
+                return (bild, unterschrift);
+            }
+        }
+
+        return (null, null);
+    }
+
     private static QuizQuestion Weltwunder(Random r, GradeLevel stufe)
     {
         var f = WeltwunderListe[r.Next(WeltwunderListe.Length)];
+        var (bild, unterschrift) = WeltwunderBildFuer(f.Frage, f.Antwort, f.Erklaerung);
         return new QuizQuestion
         {
+            ExplanationImageUrl = bild,
+            ExplanationImageCaption = unterschrift,
             Id = NewId(), Subject = Subject.Geschichte, GradeLevel = stufe,
             Topic = "Die sieben Weltwunder - antike Liste und die Abstimmung von 2007", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,

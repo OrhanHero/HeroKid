@@ -29,8 +29,24 @@ public sealed class QuizQuestion
     /// </summary>
     public string? HelpHint { get; init; }
 
-    /// <summary>Optionales Bild (z.B. für News-Artikel-Fragen).</summary>
+    /// <summary>Optionales Bild (z.B. für News-Artikel-Fragen). Steht ÜBER der Frage.</summary>
     public string? ImageUrl { get; init; }
+
+    /// <summary>
+    /// Optionales Bild zur ERKLÄRUNG - wird erst nach dem Antworten gezeigt.
+    ///
+    /// <para>Bewusst getrennt von <see cref="ImageUrl"/>: ein Bild über der Frage kann die
+    /// Antwort verraten. „Was war der Koloss von Rhodos?" mit einer Bronzestatue daneben ist
+    /// keine Frage mehr. Nach der Antwort ist dasselbe Bild dagegen Belohnung und Merkhilfe.</para>
+    /// </summary>
+    public string? ExplanationImageUrl { get; init; }
+
+    /// <summary>
+    /// Bildunterschrift zu <see cref="ExplanationImageUrl"/> - etwa der Hinweis, dass es sich um
+    /// eine KI-generierte Rekonstruktion handelt. Steht je Frage, weil ein Bild auch etwas
+    /// zeigen kann, das ausdrücklich NICHT so war (siehe Koloss von Rhodos).
+    /// </summary>
+    public string? ExplanationImageCaption { get; init; }
 
     /// <summary>
     /// Zeigt bei offenen Fragen die türkische Sonderzeichen-Hilfe (ç ğ ı İ ş) an, auch wenn

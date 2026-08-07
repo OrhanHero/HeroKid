@@ -57,6 +57,8 @@ public sealed class ReviewQuestionRepository
                     Explanation = question.Explanation,
                     HelpHint = question.HelpHint,
                     ImageUrl = question.ImageUrl,
+                    ExplanationImageUrl = question.ExplanationImageUrl,
+                    ExplanationImageCaption = question.ExplanationImageCaption,
                     RequiresTurkishCharacters = question.RequiresTurkishCharacters
                 };
                 _db.ReviewQuestions.Add(entity);
@@ -139,6 +141,8 @@ public sealed class ReviewQuestionRepository
         Explanation = entity.Explanation,
         HelpHint = entity.HelpHint,
         ImageUrl = entity.ImageUrl,
+        ExplanationImageUrl = entity.ExplanationImageUrl,
+        ExplanationImageCaption = entity.ExplanationImageCaption,
         RequiresTurkishCharacters = entity.RequiresTurkishCharacters
     };
 }

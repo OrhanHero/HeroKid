@@ -50,6 +50,18 @@ Beim Ansehen der ersten Fassung sind drei Dinge aufgefallen; zwei davon wurden n
   dem Widerspruch die beste Lektion des Themas: ein Bild kann überzeugend aussehen und trotzdem
   falsch sein.
 
+## Wo die Bilder auftauchen
+
+An der **Erklärung** der Weltwunder-Fragen - also erst NACH dem Antworten, nicht über der Frage.
+Ein Bild über der Frage würde die Antwort verraten: „Was war der Koloss von Rhodos?" mit einer
+Bronzestatue daneben ist keine Frage mehr. Dafür gibt es `QuizQuestion.ExplanationImageUrl`
+getrennt von `ImageUrl`.
+
+Welches Bild zu welcher Frage gehört, entscheidet `GeschichteGenerator.WeltwunderBildFuer` am
+genannten Bauwerk - geprüft gegen Frage, Antwort und Erklärung, ausdrücklich **nicht** gegen die
+Antwortoptionen: dort stehen die anderen Weltwunder als Ablenker. Fragen ohne ein bestimmtes
+Bauwerk (etwa zur Abstimmung von 2007) bekommen bewusst kein Bild.
+
 ## Einbindung
 
 Die Dateien werden über `<Resource Include="Assets\Weltwunder\*.png" />` in

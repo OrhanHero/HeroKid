@@ -186,6 +186,23 @@
                            Style="{StaticResource SubtitleText}" Margin="0,12,0,4" FontWeight="Bold" />
                 <TextBlock Text="{Binding Question.Explanation}" Style="{StaticResource BodyText}" />
 
+                <!-- Bild zur ERKLAERUNG - erst nach dem Antworten sichtbar, deshalb ein eigenes
+                     Feld statt Question.ImageUrl (das steht ueber der Frage und wuerde die
+                     Antwort verraten: "Was war der Koloss von Rhodos?" mit einer Bronzestatue
+                     daneben ist keine Frage mehr).
+
+                     Die Unterschrift ist Pflichtprogramm, nicht Zierde: von sechs der sieben
+                     antiken Weltwunder weiss niemand, wie sie wirklich aussahen. Beim Koloss
+                     sagt sie zusaetzlich, dass das Bild die LEGENDE zeigt. -->
+                <StackPanel Margin="0,12,0,0"
+                            Visibility="{Binding Question.ExplanationImageUrl, Converter={StaticResource NullToVis}}">
+                    <Image Source="{Binding Question.ExplanationImageUrl}"
+                           MaxHeight="240" Stretch="Uniform" HorizontalAlignment="Left" />
+                    <TextBlock Text="{Binding Question.ExplanationImageCaption}"
+                               Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75"
+                               TextWrapping="Wrap" Margin="0,6,0,0" />
+                </StackPanel>
+
                 <!-- Anti-Durchklick (nur Übungsteil, siehe QuestionAnswerViewModel): nach falscher
                      Antwort muss die Erklärung aktiv bestätigt werden, erst dann wird "Weiter" frei. -->
                 <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_AcknowledgeExplanation]}"
