@@ -279,6 +279,14 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   SDK-less environment; it cost a full round on `TheoryQuestionPresenter.PresentedQuestion`. The
   fix is always the same: copy the members into locals *before* the lambda. `scripts/preflight.py`
   now checks for it (`struct-lambda`).
+- **A tuple element named `Rest` is a compile error** (`CS8126: Tuple element name 'Rest' is
+  disallowed at any position`). `ValueTuple` uses `Rest` internally for tuples with eight or more
+  fields, so the name is reserved *everywhere* — including in a two-element tuple like
+  `(DayOfWeek? Tag, string Rest)`. It reads perfectly, and in this German-commented codebase "Rest"
+  is also the obvious word for "the remainder of the line", so nothing about it looks wrong.
+  Only the compiler notices, and this environment has none — it cost a full CI round on
+  `TimetableTextParser.TagAbtrennen`. Same trap for `ToString`/`Equals`/`GetHashCode`/`GetType`
+  (inherited from `object`). `scripts/preflight.py` now checks for it (`tupel-feldname`).
 - **Static field initializers across `partial` class files have no defined order.** Building an
   aggregate field from arrays declared in sibling partial files (`TrafficSignCatalog`) can read
   them before they are populated — the compiler flags it as `CS8604`, a *warning*, so the build

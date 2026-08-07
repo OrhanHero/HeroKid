@@ -146,7 +146,10 @@ public static class TimetableTextParser
         return new TimetableParseResult(bereinigt, warnungen);
     }
 
-    private static (DayOfWeek? Tag, string Rest) TagAbtrennen(string zeile)
+    /// <remarks>Das zweite Feld heißt bewusst NICHT "Rest": <c>Rest</c> ist als Tupel-Feldname
+    /// reserviert (<c>ValueTuple</c> nutzt ihn für Tupel ab acht Feldern) und ist an JEDER
+    /// Position verboten - <c>CS8126</c>, ein Compilerfehler.</remarks>
+    private static (DayOfWeek? Tag, string Restzeile) TagAbtrennen(string zeile)
     {
         var doppelpunkt = zeile.IndexOf(':');
         if (doppelpunkt > 0)

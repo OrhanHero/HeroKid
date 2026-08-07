@@ -681,6 +681,45 @@ def check_toolkit_usings() -> None:
                        f"[{attribut}] benutzt, aber 'using {namensraum};' fehlt -> CS0246")
 
 
+# Tupel-Feldnamen, die der Compiler nicht zulaesst. "Rest" ist der ueberraschende:
+# ValueTuple nutzt ihn intern fuer Tupel ab acht Feldern, und er ist an JEDER Position
+# verboten - auch im Zweierpaar. Die uebrigen kommen von object/ITuple.
+RESERVED_TUPLE_NAMES = {
+    "Rest", "ToString", "Equals", "GetHashCode", "GetType", "CompareTo", "Deconstruct",
+}
+
+TUPLE_TYPE = re.compile(r"\(\s*([^()\n]{3,200}?)\s*\)\s+[A-Za-z_]\w*\s*(?:\(|=>|\{|;)")
+
+
+def check_reserved_tuple_names() -> None:
+    """Ein Tupelfeld namens 'Rest' -> CS8126, ein Compilerfehler.
+
+    Liest sich voellig harmlos ("(DayOfWeek? Tag, string Rest)") und ist auf Deutsch auch noch
+    das naheliegende Wort fuer den uebrigen Zeilenteil. Nur der Compiler weiss es besser, und
+    diese Umgebung hat keinen - gekostet hat es einen vollen CI-Durchlauf.
+    """
+    for path in sorted(SRC.rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+
+        for nummer, zeile in enumerate(text.splitlines(), 1):
+            treffer = TUPLE_TYPE.search(zeile)
+            if not treffer:
+                continue
+
+            inhalt = treffer.group(1)
+            # Ein Tupeltyp hat mindestens ein Komma und je Feld "Typ Name".
+            if "," not in inhalt:
+                continue
+
+            for feld in inhalt.split(","):
+                teile = feld.strip().split()
+                if len(teile) < 2:
+                    continue
+                if teile[-1] in RESERVED_TUPLE_NAMES:
+                    report("tupel-feldname", path,
+                           f"Zeile {nummer}: Tupelfeld '{teile[-1]}' ist reserviert -> CS8126")
+
+
 def check_translation_keys() -> None:
     """Benutzte, aber nicht definierte Uebersetzungsschluessel.
 
@@ -754,6 +793,7 @@ def main() -> int:
         ("struct-Lambda (CS1673)", check_struct_lambda_capture),
         ("Schnittstellen (CS0535)", check_interface_implementation),
         ("Toolkit-usings (CS0246)", check_toolkit_usings),
+        ("Tupel-Feldnamen (CS8126)", check_reserved_tuple_names),
     ]
     if not args.quick:
         checks += [
