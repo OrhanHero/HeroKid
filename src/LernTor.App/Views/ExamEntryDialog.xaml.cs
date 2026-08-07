@@ -14,11 +14,15 @@ public partial class ExamEntryDialog : Window
     {
         InitializeComponent();
 
-        // News ist kein Schulfach, in dem man eine Klausur schreibt.
-        SubjectBox.ItemsSource = System.Enum.GetValues<Subject>()
-            .Where(s => s != Subject.News)
-            .ToList();
-        SubjectBox.SelectedItem = Subject.Mathematik;
+        // Nur echte Schulfaecher (siehe SchoolSubjects), und mit ihrem ANGEZEIGTEN Namen.
+        // Vorher standen Tipptrainer, KI-Bereich, Fuehrerschein und Erste Hilfe mit in der
+        // Liste - "Klausur in Fuehrerschein" ist kein Termin, den es gibt. Und die Namen kamen
+        // roh aus der Aufzaehlung: dort stand der Enum-Name "Tuerkisch" statt "Türkisch" und
+        // "Itg" statt "Medienbildung (ITG)".
+        var faecher = SubjectChoice.SchoolSubjectList();
+        SubjectBox.ItemsSource = faecher;
+        SubjectBox.DisplayMemberPath = nameof(SubjectChoice.Title);
+        SubjectBox.SelectedItem = faecher.FirstOrDefault(eintrag => eintrag.Subject == Subject.Mathematik);
 
         // Vorgabe eine Woche voraus: genau der Punkt, ab dem die Übungen anziehen.
         DateBox.SelectedDate = System.DateTime.Today.AddDays(7);
@@ -49,7 +53,7 @@ public partial class ExamEntryDialog : Window
             return;
         }
 
-        SelectedSubject = SubjectBox.SelectedItem is Subject subject ? subject : Subject.Mathematik;
+        SelectedSubject = SubjectBox.SelectedItem is SubjectChoice choice ? choice.Subject : Subject.Mathematik;
         SelectedDate = chosen;
         EnteredTitle = TitleBox.Text.Trim();
         EnteredTopics = TopicsBox.Text.Trim();

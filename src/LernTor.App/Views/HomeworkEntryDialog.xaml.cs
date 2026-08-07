@@ -14,11 +14,13 @@ public partial class HomeworkEntryDialog : Window
     {
         InitializeComponent();
 
-        // News ist kein Schulfach, in dem es Hausaufgaben gibt.
-        SubjectBox.ItemsSource = System.Enum.GetValues<Subject>()
-            .Where(s => s != Subject.News)
-            .ToList();
-        SubjectBox.SelectedItem = Subject.Mathematik;
+        // Nur echte Schulfaecher (siehe SchoolSubjects) und mit ihrem ANGEZEIGTEN Namen:
+        // fuer den Tipptrainer, den KI-Bereich, den Fuehrerschein und Erste Hilfe gibt die
+        // Schule nichts auf, und die Namen kamen roh aus der Aufzaehlung.
+        var faecher = SubjectChoice.SchoolSubjectList();
+        SubjectBox.ItemsSource = faecher;
+        SubjectBox.DisplayMemberPath = nameof(SubjectChoice.Title);
+        SubjectBox.SelectedItem = faecher.FirstOrDefault(eintrag => eintrag.Subject == Subject.Mathematik);
 
         // Vorgabe morgen: der mit Abstand haeufigste Fall bei Hausaufgaben.
         DateBox.SelectedDate = System.DateTime.Today.AddDays(1);
@@ -46,7 +48,7 @@ public partial class HomeworkEntryDialog : Window
 
         // Anders als bei Klausuren ist ein Datum in der Vergangenheit hier ZULAESSIG: eine
         // vergessene Hausaufgabe von gestern nachzutragen ist ein voellig normaler Fall.
-        SelectedSubject = SubjectBox.SelectedItem is Subject subject ? subject : Subject.Mathematik;
+        SelectedSubject = SubjectBox.SelectedItem is SubjectChoice choice ? choice.Subject : Subject.Mathematik;
         SelectedDate = System.DateOnly.FromDateTime(date);
         EnteredDescription = DescriptionBox.Text.Trim();
 

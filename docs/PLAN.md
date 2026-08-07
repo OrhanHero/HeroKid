@@ -1,6 +1,6 @@
 # Weiterer Plan für LernTor
 
-Stand: 06.08.2026. Reine Planung — nichts hiervon ist umgesetzt.
+Stand: 07.08.2026. Reine Planung — nichts hiervon ist umgesetzt.
 
 Dieser Plan ordnet nach **Risiko für die Familie**, nicht nach technischer Eleganz. Die App wird
 täglich von zwei Kindern benutzt; was sie am ehesten kaputtmacht oder ihnen Arbeit vernichtet,
@@ -13,10 +13,11 @@ steht oben.
 | Code | 326 `.cs`-Dateien, ~56.600 Zeilen, 30 XAML-Ansichten |
 | Fächer | 17 mit eigenem Generator, ~5.030 kuratierte Fragen |
 | Etappen | 20 (`LearningStage`), davon 17 Fach-Etappen |
-| Tests | ~765, plus 14 statische Prüfungen in `scripts/preflight.py` |
+| Tests | ~790, plus 16 statische Prüfungen in `scripts/preflight.py` |
 | Bereiche | Lesen, Tippen, Schreiben, News, 15 Schulfächer, KI-Bereich, Erste Hilfe, Führerschein (3 Unterbereiche), Abschlussquiz |
 | Verteilung | ZIP-Artefakt aus GitHub Actions, kein Installer |
 | Kalender | Ferien bis 14.08.2027, Feiertage bis 26.12.2027 |
+| Stundenplan | pro Profil, eigenes Zeitraster je Schule (seit 07.08.2026) |
 
 **Der wichtigste Satz über den Stand:** Kein Mensch hat die App je von Anfang bis Ende
 durchgespielt. Alles, was bisher gefunden wurde — das falsche STOP-Schild, das doppelte „STOP",
@@ -105,6 +106,71 @@ kann.
 ---
 
 ## Phase 2 — Inhaltliche Tragfähigkeit
+
+### 2.0 Zeitbudget statt Etappenzahl — **die wichtigste Änderung, und zugleich eine Warnung**
+
+> Status: **nur Planung.** Umgesetzt wird das frühestens, wenn die neuen Stundenpläne für das
+> Schuljahr 2026/27 da sind (ab 24.08.2026) — die Fächerauswahl soll sich am Stundenplan
+> orientieren, und den gibt es vorher nicht.
+
+**Das Problem.** Die App hat 20 Etappen. Jede einzelne war für sich eine gute Idee. Zusammen sind
+sie die einzige Art, wie dieses Projekt scheitern kann: nicht durch einen Fehler, sondern dadurch,
+dass der Tag so lang wird, dass die Kinder ihn zu hassen anfangen. Das zeigt sich nicht in einem
+Testlauf, sondern an einem Dienstag im November. Bisher begegnet die App dem Wachstum nur
+verwaltend — Eltern können Bereiche abschalten, Aufgabenzahlen senken, Mindestzeiten kürzen. Das
+sind alles Stellschrauben an einer Struktur, deren Grundgröße **die Anzahl der Bereiche** ist. Und
+die wächst mit jedem Modul.
+
+**Die Umkehr.** Nicht mehr „alle Bereiche, jeder etwas kürzer", sondern: die Eltern stellen ein
+**Zeitbudget** ein (z. B. 45 Minuten), und die App entscheidet, was heute hineinpasst. Die Fächer
+**rotieren über die Woche**, statt jeden Tag alle vorzukommen — Montag Mathe/Deutsch/Bio, Dienstag
+Physik/Geschichte/Englisch. Damit ist die Tageslänge eine **eingestellte Größe** statt einer Folge
+davon, wie viele Module es gerade gibt. Ein neues Modul verlängert den Tag dann nicht mehr; es
+konkurriert um Platz. Das ist der eigentliche Punkt.
+
+**Was schon da liegt** (nichts davon muss neu erfunden werden):
+- `AdaptiveTopicWeighting` weiß, welche Themen am nötigsten sind — das ist die Auswahlregel.
+- `ExamEntry.LearningWeight` zieht Fächer vor Klausuren nach vorn — muss im Budget Vorrang haben.
+- Die Mindestzeiten je Etappe (`ExerciseSecondsPerQuestion`, `NewsSecondsPerArticle`,
+  `ReadingMinutes`) sind bereits pro Profil einstellbar und ergeben zusammen eine **Schätzung**
+  der Dauer je Bereich.
+- `ActivityLog` hat Zeitstempel je Antwort — daraus lässt sich die **tatsächliche** Dauer je Fach
+  messen, statt sie zu schätzen. Das ist der Unterschied zwischen einem Budget, das stimmt, und
+  einem, das nur so heißt.
+- Der **Stundenplan** (seit 08/2026) sagt, welche Fächer ein Kind an diesem Tag überhaupt hatte.
+
+**Skizze, nicht Bauplan:**
+1. `StudentProfile.DailyTimeBudgetMinutes` (0 = aus, dann bleibt alles wie heute — der Umstieg
+   muss abschaltbar sein, sonst ist er nicht testbar).
+2. Ein `DayPlanner` in Core: bekommt Budget, gemessene Ø-Dauer je Bereich, Schwächen, anstehende
+   Klausuren und den Stundenplan des Tages; gibt die Liste der heutigen Etappen zurück. Rein
+   rechnend, ohne Datenbank — also vollständig prüfbar, so wie `ProgressGateService`.
+3. Feste Etappen bleiben außerhalb des Budgets oder bekommen einen kleinen Fixanteil (Vorlesen,
+   News, Abschlussquiz). Über das Abschlussquiz muss dabei mitentschieden werden — siehe 2.2,
+   die beiden Punkte hängen zusammen.
+4. Eine **Rotationsgarantie**: kein Fach darf länger als N Tage ausfallen, sonst frisst die
+   Schwächen-Gewichtung schwache Fächer auf und starke verschwinden ganz.
+
+**Kopplung an den Stundenplan** — der eigentlich neue Teil und der Grund für das Warten:
+Fächer, die das Kind heute **in der Schule hatte**, am selben Tag zu üben, ist die naheliegende
+Regel; Fächer, die **morgen** dran sind, vorzubereiten, die zweite. Welche der beiden besser ist,
+lässt sich nicht am Schreibtisch entscheiden — dafür brauchen wir die echten Pläne und ein paar
+Wochen Erfahrung damit. Deshalb steht hier bewusst kein fertiger Algorithmus.
+
+**Offene Fragen, die vor dem Bauen zu klären sind:**
+- Was passiert, wenn das Budget aufgebraucht ist, das Kind aber mitten in einem Fach steckt?
+  (Abschneiden ist respektlos, Überziehen macht das Budget wertlos — vermutlich: laufendes Fach
+  zu Ende, dann Schluss.)
+- Zählt die Zeit im Eltern-Planer, im KI-Chat, im Führerschein-Bereich mit?
+- Was ist an einem Tag, an dem ein Kind schnell ist? Endet der Tag früher, oder kommt mehr?
+  (Früher enden ist die ehrlichere Antwort und der eigentliche Anreiz.)
+- Wie sieht das Kind, **warum** heute Physik dran ist und nicht Mathe? Ohne Begründung fühlt sich
+  Rotation wie Willkür an — der Klausur-Lernplan hat genau dieses Problem schon einmal gelöst.
+
+**Risiko, klar benannt:** das ist der tiefste Eingriff in den Ablauf, den die App bisher gesehen
+hat. `ProgressGateService.SequentialOrder`, `LearningStage`, `SessionSteps` und der gesamte
+Fortschrittsspeicher gehen heute davon aus, dass die Etappenliste **fest** ist. Vor dem ersten
+Handgriff gehört Phase 1 (Sicherung/Wiederherstellung) nachweislich abgeschlossen.
 
 ### 2.1 Pool-Erschöpfung ausrechnen statt schätzen
 
@@ -318,7 +384,9 @@ sich bisher jedes Mal gelohnt hat:
 - **LLM-Benchmarking auf schwacher Hardware.** Erst messen, wenn es auf dem Familienrechner
   tatsächlich zu langsam ist. Vorher optimiert man ins Blaue.
 - **Mehr Fächer, mehr Module.** Der Tagesablauf hat 20 Etappen. Jede weitere verlängert den Tag
-  für zwei Kinder, die schon zur Schule gehen.
+  für zwei Kinder, die schon zur Schule gehen. Solange die Tageslänge aus der Anzahl der Bereiche
+  folgt, ist jede weitere Idee ein Preis, den die Kinder zahlen — deshalb steht das Zeitbudget
+  (2.0) vor jedem neuen Modul und nicht dahinter.
 
 ---
 
@@ -329,7 +397,7 @@ Phase 0  App durchspielen                  ← sperrt alles andere
    │
    ├─ Phase 1  Sicherung/Wiederherstellung  ← höchstes Risiko
    │
-   ├─ Phase 2  Pool-Reichweite, Abschlussquiz
+   ├─ Phase 2  Zeitbudget (2.0, ab 24.08.2026), Pool-Reichweite, Abschlussquiz
    │
    ├─ Phase 3  Schuljahreswechsel (vor Aug 2027), Kalender (Frühjahr 2027)
    │
@@ -339,7 +407,7 @@ Phase 0  App durchspielen                  ← sperrt alles andere
 ## Prüfkommandos
 
 ```bash
-python3 scripts/preflight.py                  # 14 statische Prüfungen
+python3 scripts/preflight.py                  # 16 statische Prüfungen
 python3 scripts/check-answer-length-bias.py   # Gate 60 % je Generator
 dotnet test tests/LernTor.Tests/LernTor.Tests.csproj
 ```
