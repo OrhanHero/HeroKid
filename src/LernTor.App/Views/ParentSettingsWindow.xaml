@@ -660,6 +660,124 @@
                            Margin="0,0,0,12" Opacity="0.8"
                            Text="Setzt die 14 Kurslektionen auf ungelesen zurück. Die Theoriefragen bleiben, denn die Lernstandskontrollen zählen in denselben Fragen-Lernstand." />
 
+                <!-- ===== Stundenplan (pro Profil) =====
+                     Ein Eingaberaster und ausdruecklich KEIN PDF-Importeur: die Plaene der beiden
+                     Schulen sehen voellig verschieden aus (ein eingescannter Untis-Ausdruck mit
+                     OCR-Text voller Lesefehler, eine Word-Tabelle mit umbrochenen Zellen), und ein
+                     still falsch uebernommener Stundenplan ist schlechter als gar keiner. Das
+                     Raster wird einmal je Halbjahr ausgefuellt und ist danach nachweislich richtig.
+
+                     Die Uhrzeiten stehen JE PROFIL daneben - die beiden Kinder gehen auf
+                     verschiedene Schulen mit verschiedenen Anfangs- und Endzeiten. -->
+                <TextBlock Text="🕘 Stundenplan"
+                           Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,24,0,4" />
+                <TextBlock Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap"
+                           Opacity="0.85" Margin="0,0,0,10"
+                           Text="Gilt für das oben gewählte Profil. Der Plan erscheint links auf der Startseite des Kindes, über den Hausaufgaben – am Wochenende, an Feiertagen und nach der letzten Stunde automatisch der nächste Schultag. Ein Raum darf in Klammern hinter dem Fach stehen: „Mathe (A012a)“." />
+
+                <Border Background="{StaticResource CardBrush}" CornerRadius="12" Padding="12,10"
+                        Margin="0,0,0,8">
+                    <StackPanel>
+                        <!-- Kopfzeile des Rasters. Feste Kuerzel statt Uebersetzungs-Indexer:
+                             der Eltern-Bereich ist durchgaengig deutsch. -->
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="118" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="von – bis" FontSize="11" Opacity="0.7" />
+                            <TextBlock Grid.Column="2" Text="Mo" FontSize="12" FontWeight="Bold" Margin="3,0" />
+                            <TextBlock Grid.Column="3" Text="Di" FontSize="12" FontWeight="Bold" Margin="3,0" />
+                            <TextBlock Grid.Column="4" Text="Mi" FontSize="12" FontWeight="Bold" Margin="3,0" />
+                            <TextBlock Grid.Column="5" Text="Do" FontSize="12" FontWeight="Bold" Margin="3,0" />
+                            <TextBlock Grid.Column="6" Text="Fr" FontSize="12" FontWeight="Bold" Margin="3,0" />
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding TimetableRows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="28" />
+                                            <ColumnDefinition Width="118" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding PeriodDisplay}"
+                                                   FontSize="12" Opacity="0.7" VerticalAlignment="Center" />
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <TextBox Text="{Binding StartText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="48" FontSize="12" Padding="3,2" />
+                                            <TextBlock Text="–" FontSize="12" Margin="4,0" VerticalAlignment="Center" Opacity="0.6" />
+                                            <TextBox Text="{Binding EndText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="48" FontSize="12" Padding="3,2" />
+                                        </StackPanel>
+
+                                        <TextBox Grid.Column="2" Margin="3,0" FontSize="12" Padding="3,2"
+                                                 Text="{Binding Monday, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBox Grid.Column="3" Margin="3,0" FontSize="12" Padding="3,2"
+                                                 Text="{Binding Tuesday, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBox Grid.Column="4" Margin="3,0" FontSize="12" Padding="3,2"
+                                                 Text="{Binding Wednesday, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBox Grid.Column="5" Margin="3,0" FontSize="12" Padding="3,2"
+                                                 Text="{Binding Thursday, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBox Grid.Column="6" Margin="3,0" FontSize="12" Padding="3,2"
+                                                 Text="{Binding Friday, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <Button Content="Stundenplan speichern" Style="{StaticResource RoundedButton}"
+                            FontSize="13" Padding="12,6" Margin="0,0,8,0"
+                            Command="{Binding SaveTimetableCommand}" />
+                    <Button Content="Fächer leeren" Style="{StaticResource RoundedButton}"
+                            FontSize="13" Padding="12,6" Margin="0,0,8,0"
+                            Command="{Binding ClearTimetableSubjectsCommand}" />
+                    <Button Content="Zeiten auf Vorgabe" Style="{StaticResource RoundedButton}"
+                            FontSize="13" Padding="12,6"
+                            Command="{Binding ResetTimetablePeriodsCommand}" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding TimetableStatus, Mode=OneWay}" FontSize="12"
+                           Foreground="{StaticResource SuccessBrush}" TextWrapping="Wrap"
+                           Margin="0,0,0,4" />
+                <TextBlock Text="{Binding TimetableWarnings, Mode=OneWay}" FontSize="12"
+                           Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap"
+                           Margin="0,0,0,8"
+                           Visibility="{Binding HasTimetableWarnings, Converter={StaticResource BoolToVis}}" />
+
+                <!-- Abkuerzung fuer alle, die lieber schreiben als klicken. Fuellt NUR das Raster
+                     darueber; gespeichert wird erst mit "Stundenplan speichern" - nichts wird
+                     ungesehen uebernommen. -->
+                <Expander Header="Stundenplan als Text eintippen" FontSize="13" Margin="0,0,0,12">
+                    <StackPanel Margin="0,8,0,0">
+                        <TextBlock Text="{Binding TimetableTextHint, Mode=OneWay}"
+                                   Style="{StaticResource BodyText}" FontSize="12"
+                                   TextWrapping="Wrap" Opacity="0.85" Margin="0,0,0,6" />
+                        <TextBox Text="{Binding TimetableText, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="90" MaxHeight="180"
+                                 VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12"
+                                 Padding="6,4" Margin="0,0,0,6" />
+                        <Button Content="Einlesen (füllt nur das Raster)" Style="{StaticResource RoundedButton}"
+                                FontSize="13" Padding="12,6" HorizontalAlignment="Left"
+                                Command="{Binding ApplyTimetableTextCommand}" />
+                    </StackPanel>
+                </Expander>
+
                 <!-- ===== Ferien und Feiertage Berlin (reine Anzeige) =====
                      Die Termine stehen fest einkompiliert in SchoolCalendar.cs - die App ist ein
                      Kiosk ohne verlaessliche Netzverbindung, und ein Kalender, der beim Start

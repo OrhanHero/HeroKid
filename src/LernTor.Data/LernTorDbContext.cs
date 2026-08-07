@@ -26,6 +26,8 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<TheoryAnswerEntity> TheoryAnswers => Set<TheoryAnswerEntity>();
     public DbSet<TheoryExamRunEntity> TheoryExamRuns => Set<TheoryExamRunEntity>();
     public DbSet<CourseLessonProgressEntity> CourseLessonProgress => Set<CourseLessonProgressEntity>();
+    public DbSet<TimetableLessonEntity> TimetableLessons => Set<TimetableLessonEntity>();
+    public DbSet<TimetablePeriodEntity> TimetablePeriods => Set<TimetablePeriodEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -153,6 +155,23 @@ public sealed class LernTorDbContext : DbContext
             e.HasKey(t => t.Id);
             e.HasIndex(t => new { t.ProfileId, t.LessonId }).IsUnique();
             e.HasIndex(t => t.ProfileId);
+        });
+
+        modelBuilder.Entity<TimetableLessonEntity>(e =>
+        {
+            e.HasKey(t => t.Id);
+            // Reiner Nachschlage-Index, bewusst ohne UNIQUE: die Eindeutigkeit je (Tag, Stunde)
+            // stellt schon das Modell her (Timetable-Konstruktor), und ein zusaetzlicher
+            // Datenbankzwang wuerde eine kuenftige Doppelstunde mit einer Ausnahme beim
+            // Speichern quittieren statt mit einer Anzeige.
+            e.HasIndex(t => new { t.ProfileId, t.Day });
+            e.HasIndex(t => t.ProfileId);
+        });
+
+        modelBuilder.Entity<TimetablePeriodEntity>(e =>
+        {
+            e.HasKey(t => t.Id);
+            e.HasIndex(t => new { t.ProfileId, t.Period }).IsUnique();
         });
     }
 

@@ -413,7 +413,8 @@ Zwei Dinge daran sind wichtig:
   seit der Tagesrotation wird nicht mehr jede Quelle täglich abgerufen, ein Eintrag kann also Tage
   alt sein. Nötig, weil die App tote Feeds geräuschlos überspringt - bei 44 Quellen könnte sonst
   die Hälfte kaputt sein, ohne dass es auffällt.
-- **Aufteilung des Startbildschirms**: Hausaufgaben stehen **links**, Klausuren **rechts**, in der
+- **Aufteilung des Startbildschirms**: Stundenplan und Hausaufgaben stehen **links**, Klausuren und
+  die Ferien-Kachel **rechts**, in der
   Mitte Begrüßung und der "Los geht's"-Knopf. Vorher stand alles untereinander in einer mittigen
   Spalte - bei neun Hausaufgaben und acht Klausuren wuchs sie über die Bildschirmhöhe hinaus und
   schob den Start-Knopf hinaus, das Kind kam schlicht nicht weiter. Die Spalten allein reichen
@@ -421,6 +422,26 @@ Zwei Dinge daran sind wichtig:
   **jede Spalte in einem ScrollViewer**: lange Listen scrollen innerhalb ihrer Spalte, statt die
   Seite wachsen zu lassen. Der Start-Knopf kann damit unabhängig von der Anzahl der Einträge nie
   mehr verschwinden.
+- **🕘 Stundenplan**: der Plan des Kindes steht **links, über den Hausaufgaben** - also zwischen der
+  Datum/Uhrzeit-Anzeige oben links im Fenster und dem Hausaufgabenplan, genau die Reihenfolge, in
+  der ein Kind morgens danach schaut. Gezeigt wird immer der Tag, der **wirklich als Nächstes
+  dran** ist: nach der letzten Stunde, am Wochenende, an Feiertagen und in den Ferien springt die
+  Kachel automatisch auf den nächsten Unterrichtstag (`TimetableToday`, nutzt denselben
+  `SchoolCalendar` wie die Ferien-Kachel). Die laufende Stunde ist hervorgehoben.
+  **Das Zeitraster hängt am Profil, nicht an der App**: die beiden Kinder gehen auf verschiedene
+  Schulen mit verschiedenen Anfangs- und Endzeiten, ein fest eingebautes Raster hätte bei einem
+  von beiden immer danebengelegen. Eingetragen wird im Eltern-Bereich in einem Raster Mo–Fr ×
+  10 Stunden mit den Uhrzeiten daneben; wer lieber tippt, kann den Plan auch als Text einlesen
+  (`Mo: 1 Deutsch, 2 Mathe, 3 Sport (TH1)` - füllt nur das Raster, gespeichert wird erst
+  ausdrücklich). Das **Fach bleibt freier Text**, kein `Subject`-Enum: auf einem echten Plan
+  stehen NaWi, GeWi, Sport, WPU Spanisch oder Klassenrat, und die kennt LernTor als Lernbereich
+  nicht - angezeigt wird deshalb genau das, was auf dem Plan der Schule steht; die Zuordnung zu
+  einem LernTor-Fach entscheidet nur über das Symbol davor.
+  **Bewusst kein PDF-Importeur**: die Pläne der beiden Schulen sehen völlig verschieden aus - der
+  eine ein eingescannter Untis-Ausdruck, dessen Textebene aus OCR stammt und sichtbare Lesefehler
+  enthält, der andere eine Word-Tabelle mit umbrochenen Zellen. Ein Importeur müsste bei jedem
+  neuen Plan neu raten, und ein still falsch übernommener Stundenplan ist schlechter als gar
+  keiner, weil ihn niemand nachprüft.
 - **📒 Hausaufgaben**: Fach, Stichtag und Text - **von Eltern UND Kindern eintragbar** (Knopf auf
   dem Startbildschirm, linke Spalte). Dieselbe Asymmetrie wie beim Klausurkalender: eigene Einträge darf das Kind
   löschen, Eltern-Einträge nur **abhaken** - das ist ja der Sinn der Sache; nur das Wegräumen

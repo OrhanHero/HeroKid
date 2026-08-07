@@ -42,6 +42,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly TrafficSignProgressRepository _signProgressRepo;
     private readonly TheoryProgressRepository _theoryRepo;
     private readonly CourseProgressRepository _courseRepo;
+    private readonly TimetableRepository _timetableRepo;
     private readonly RewardRepository _rewardRepo;
     private readonly RssNewsService _newsService;
     private readonly WeatherService _weatherService;
@@ -92,6 +93,7 @@ public sealed partial class MainViewModel : ObservableObject
         TrafficSignProgressRepository signProgressRepo,
         TheoryProgressRepository theoryRepo,
         CourseProgressRepository courseRepo,
+        TimetableRepository timetableRepo,
         RewardRepository rewardRepo,
         RssNewsService newsService,
         WeatherService weatherService,
@@ -120,6 +122,7 @@ public sealed partial class MainViewModel : ObservableObject
         _signProgressRepo = signProgressRepo;
         _theoryRepo = theoryRepo;
         _courseRepo = courseRepo;
+        _timetableRepo = timetableRepo;
         _rewardRepo = rewardRepo;
         _newsService = newsService;
         _quizComposer = quizComposer;
@@ -331,6 +334,10 @@ public sealed partial class MainViewModel : ObservableObject
                 exam, today, LocalizationService.Instance[$"Stage_{exam.Subject}"]))
             .ToList();
 
+        // Stundenplan des Kindes - links auf der Startseite. Pro Profil, samt eigenem Zeitraster:
+        // die beiden gehen auf verschiedene Schulen mit verschiedenen Anfangs- und Endzeiten.
+        var timetable = await _timetableRepo.GetForProfileAsync(CurrentProfile!.Id);
+
         return new WelcomeViewModel(
             CurrentProfile!.Name, streak,
             // new Action(...) ausdruecklich: zwei Methodengruppen in einem ?: haben keinen
@@ -340,7 +347,7 @@ public sealed partial class MainViewModel : ObservableObject
             SwitchLanguage, dueReviews, weeklyGoal,
             homework, exams, OnAddExamRequested, OnDeleteExamRequested,
             OnAddHomeworkRequested, OnDeleteHomeworkRequested,
-            plannerPeek);
+            plannerPeek, today, timetable);
     }
 
     /// <summary>

@@ -167,6 +167,22 @@ public static class Translations
             ["Cal_OnWeekend"] = L("(fällt aufs Wochenende)", "(hafta sonuna denk geliyor)"),
             ["Welcome_BackToLearning"] = L("Zurück zum Lernen", "Öğrenmeye geri dön"),
 
+            // --- Stundenplan ---
+            // Die Wochentage stehen hier und werden NICHT aus der Kultur des Betriebssystems
+            // geholt: die Oberfläche kann auf Türkisch stehen, während Windows deutsch bleibt.
+            ["Timetable_Title"] = L("Stundenplan", "Ders programı"),
+            ["Timetable_Today"] = L("Heute · {0}", "Bugün · {0}"),
+            ["Timetable_NextSchoolDay"] = L("Nächster Schultag · {0}", "Sonraki okul günü · {0}"),
+            ["Timetable_Now"] = L("jetzt", "şimdi"),
+            ["Timetable_Next"] = L("gleich", "birazdan"),
+            ["Weekday_Monday"] = L("Montag", "Pazartesi"),
+            ["Weekday_Tuesday"] = L("Dienstag", "Salı"),
+            ["Weekday_Wednesday"] = L("Mittwoch", "Çarşamba"),
+            ["Weekday_Thursday"] = L("Donnerstag", "Perşembe"),
+            ["Weekday_Friday"] = L("Freitag", "Cuma"),
+            ["Weekday_Saturday"] = L("Samstag", "Cumartesi"),
+            ["Weekday_Sunday"] = L("Sonntag", "Pazar"),
+
             // --- Führerschein Klasse B (bewusst nur deutsch: die Theorieprüfung ist auf Deutsch,
             // und Fachbegriffe wie "Vorfahrt gewähren" auf Türkisch zu lernen hilft dabei nicht.
             // Die Menütexte drumherum sind trotzdem übersetzt, damit der Bereich sich nicht

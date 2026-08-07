@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.Core.Enums;
+using LernTor.Core.Models;
 using LernTor.Core.Services;
 
 namespace LernTor.App.ViewModels;
@@ -115,10 +116,13 @@ public sealed partial class WelcomeViewModel : ObservableObject
         Action? onAddHomework = null,
         Action<HomeworkItemViewModel>? onDeleteHomework = null,
         bool isPlannerPeek = false,
-        DateOnly? today = null)
+        DateOnly? today = null,
+        Timetable? timetable = null,
+        DateTime? now = null)
     {
         IsPlannerPeek = isPlannerPeek;
         Calendar = SchoolCalendar.Today(today ?? DateOnly.FromDateTime(DateTime.Today));
+        FillTimetable(timetable, now ?? DateTime.Now);
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
         {
             Homework.Add(item);
@@ -225,6 +229,59 @@ public sealed partial class WelcomeViewModel : ObservableObject
             return naechster.FallsOnWeekend ? $"{text} {l["Cal_OnWeekend"]}" : text;
         }
     }
+
+    // ---------------- Stundenplan ----------------
+
+    /// <summary>
+    /// Die Stunden des angezeigten Schultages. Links auf der Startseite, zwischen der
+    /// Datum/Uhrzeit-Anzeige und den Hausaufgaben - also genau dort, wo das Kind ohnehin
+    /// hinschaut, bevor es losgeht.
+    /// </summary>
+    public ObservableCollection<TimetableLessonViewModel> TimetableLessons { get; } = new();
+
+    /// <summary>Ohne eingetragenen Plan bleibt die Kachel ganz weg. Eine leere Kachel mit
+    /// "noch nichts eingetragen" wäre für das Kind eine Aufforderung, die es nicht erfüllen
+    /// kann - eingetragen wird der Stundenplan im Eltern-Bereich.</summary>
+    public bool ShowTimetable => TimetableLessons.Count > 0;
+
+    /// <summary>"Heute · Montag" bzw. "Nächster Schultag · Montag" - nach Schulschluss, am
+    /// Wochenende und in den Ferien ist der heutige Plan nicht die Antwort auf die Frage, die
+    /// ein Kind hat.</summary>
+    public string TimetableHeadline { get; private set; } = string.Empty;
+
+    private void FillTimetable(Timetable? plan, DateTime now)
+    {
+        if (plan is null || plan.IsEmpty)
+        {
+            return;
+        }
+
+        var tag = TimetableToday.Resolve(plan, now);
+        if (!tag.HasLessons)
+        {
+            return;
+        }
+
+        var l = Localization.LocalizationService.Instance;
+        var name = Wochentagsname(tag.Day);
+        TimetableHeadline = string.Format(
+            tag.IsToday ? l["Timetable_Today"] : l["Timetable_NextSchoolDay"], name);
+
+        foreach (var stunde in tag.Lessons)
+        {
+            TimetableLessons.Add(new TimetableLessonViewModel(
+                stunde,
+                plan.PeriodOf(stunde.Period),
+                isCurrent: tag.CurrentPeriod == stunde.Period,
+                isNext: tag.NextPeriod == stunde.Period));
+        }
+    }
+
+    /// <summary>Der Wochentag in der eingestellten Sprache - über den Übersetzungs-Indexer, nicht
+    /// über die Kultur des Betriebssystems: die Oberfläche kann auf Türkisch stehen, während
+    /// Windows deutsch bleibt.</summary>
+    private static string Wochentagsname(DayOfWeek tag) =>
+        Localization.LocalizationService.Instance[$"Weekday_{tag}"];
 
     [RelayCommand]
     private void Continue() => _onContinue();

@@ -39,6 +39,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly TrafficSignProgressRepository _signProgressRepo;
     private readonly TheoryProgressRepository _theoryRepo;
     private readonly CourseProgressRepository _courseRepo;
+    private readonly TimetableRepository _timetableRepo;
     private readonly AutoBackupService _autoBackup;
     private readonly QuizComposer _quizComposer;
 
@@ -377,6 +378,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         TrafficSignProgressRepository signProgressRepo,
         TheoryProgressRepository theoryRepo,
         CourseProgressRepository courseRepo,
+        TimetableRepository timetableRepo,
         AutoBackupService autoBackup,
         QuizComposer quizComposer)
     {
@@ -384,6 +386,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _signProgressRepo = signProgressRepo;
         _theoryRepo = theoryRepo;
         _courseRepo = courseRepo;
+        _timetableRepo = timetableRepo;
         _autoBackup = autoBackup;
         _quizComposer = quizComposer;
         _settingsRepo = settingsRepo;
@@ -400,6 +403,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         _teacherImportService = teacherImportService;
         _piperTts = piperTts;
         IsPiperInstalled = piperTts.IsInstalled;
+
+        // Das Stundenplan-Raster steht von Anfang an da - eines, das erst nach einer Profilwahl
+        // erscheint, sieht aus wie ein Fehler.
+        EnsureTimetableRows();
     }
 
     /// <summary>Unterdrückt das Sofort-Speichern, während InitializeAsync die Werte aus der DB in
@@ -643,8 +650,6 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     private void ApplyProfileToEditor(StudentProfile? value)
     {
-        _ = ReloadActivityForSelectedProfileAsync();
-
         TypingMinAccuracyPercent = PercentFromFraction(value?.TypingMinAccuracy, 25);
         QuizFirstAttemptThresholdPercent = PercentFromFraction(value?.QuizFirstAttemptThreshold, 50);
         QuizRetryThresholdPercent = PercentFromFraction(value?.QuizRetryThreshold, 25);
@@ -664,10 +669,26 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         ApplySignCategoriesToEditor(value?.DisabledSignCategories);
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
         CustomTypingFinalText = value?.CustomTypingFinalText ?? string.Empty;
-        _ = ReloadCustomReadingTextsAsync();
-        _ = ReloadVocabularyAsync();
-        _ = ReloadHomeworkAsync();
-        _ = ReloadExamsAsync();
+        _ = ReloadProfileListsAsync();
+    }
+
+    /// <summary>
+    /// Laedt die profilbezogenen Listen NACHEINANDER neu.
+    ///
+    /// <para>Vorher wurde jede fuer sich als <c>_ = …Async()</c> losgeschickt. Sie teilen sich
+    /// aber einen einzigen (Singleton-)DbContext, und der vertraegt keine zwei gleichzeitig
+    /// laufenden Abfragen - jede haette nach ihrem ersten <c>await</c> die naechste starten
+    /// lassen. Mit der Stundenplan-Liste waeren es sechs parallele Abfragen auf einem
+    /// DbContext gewesen; nacheinander ist es eine.</para>
+    /// </summary>
+    private async Task ReloadProfileListsAsync()
+    {
+        await ReloadActivityForSelectedProfileAsync();
+        await ReloadCustomReadingTextsAsync();
+        await ReloadVocabularyAsync();
+        await ReloadHomeworkAsync();
+        await ReloadExamsAsync();
+        await ReloadTimetableAsync();
     }
 
     private static int PercentFromFraction(double? fraction, int fallbackPercent) =>
