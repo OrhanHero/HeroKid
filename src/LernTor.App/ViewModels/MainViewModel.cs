@@ -142,6 +142,21 @@ public sealed partial class MainViewModel : ObservableObject
         _clockTimer.Start();
     }
 
+    /// <summary>
+    /// Hinweis, dass die Kiosk-Sperre gerade NICHT aktiv ist - leer, wenn gesperrt.
+    ///
+    /// <para><b>Warum das sichtbar sein muss:</b> ohne Sperre lässt sich das Fenster ganz normal
+    /// schließen, auch über das „X" in der Alt+Tab-Vorschau (<c>MainWindow.Closing</c> blockiert
+    /// nur, solange <c>IsLocked</c> gilt - und das ist richtig so). Nur SAH man der App das nicht
+    /// an: gesperrt und ungesperrt sehen identisch aus. Ein Elternteil hält den PC dann für
+    /// gesichert, obwohl er es nicht ist - und falsches Vertrauen ist schlimmer als gar keine
+    /// Sperre. Genau diese Verwechslung ist beim Testen aufgetreten.</para>
+    /// </summary>
+    public string KioskSkipNotice =>
+        _kioskLock.SkipReason.Length == 0
+            ? string.Empty
+            : $"🔓 Kiosk-Sperre ist AUS: {_kioskLock.SkipReason}. Das Fenster lässt sich normal schließen.";
+
     private void UpdateClock()
     {
         CurrentDateTimeDisplay = DateTime.Now.ToString("dddd, d. MMMM yyyy – HH:mm:ss", CultureInfo.GetCultureInfo("de-DE"));

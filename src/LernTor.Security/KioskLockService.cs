@@ -26,6 +26,28 @@ public sealed class KioskLockService : IDisposable
     /// <summary>Warnungen zu Härtungsmaßnahmen, die auf diesem Rechner nicht angewendet werden konnten.</summary>
     public IReadOnlyList<string> Warnings { get; private set; } = Array.Empty<string>();
 
+    /// <summary>
+    /// Warum die Sperre bewusst NICHT gesetzt wurde (Entwicklermodus, Debugger, Pausenmodus) -
+    /// leer, wenn gesperrt wurde oder die Frage sich noch nicht gestellt hat.
+    ///
+    /// <para><b>Warum es das gibt:</b> ohne Sperre lässt sich das Fenster ganz normal schließen -
+    /// auch über das „X" in der Alt+Tab-Vorschau, denn <c>MainWindow.Closing</c> blockiert nur,
+    /// solange <see cref="IsLocked"/> gilt. Das ist richtig so. Nur SAH man der App nicht an,
+    /// dass sie ungesperrt läuft: sie sieht in beiden Fällen identisch aus. Ein Elternteil hält
+    /// den PC dann für gesperrt, obwohl er es nicht ist - falsches Vertrauen ist schlimmer als
+    /// gar keine Sperre. Deshalb wird der Grund festgehalten und angezeigt.</para>
+    /// </summary>
+    public string SkipReason { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Hält fest, dass und warum die Sperre übersprungen wurde. Ändert selbst nichts - sie macht
+    /// nur sichtbar, was ohnehin gerade gilt.
+    /// </summary>
+    public void SkipLock(string reason)
+    {
+        SkipReason = reason;
+    }
+
     public void Lock()
     {
         if (_isLocked)

@@ -165,6 +165,26 @@
                 Visibility="{Binding CanOpenPlanner, Converter={StaticResource BoolToVis}}"
                 Command="{Binding OpenPlannerCommand}" />
 
+        <!-- Hinweis, dass die Kiosk-Sperre gerade AUS ist (Entwicklermodus, Debugger oder der
+             Ferien-/Pausenmodus aus dem Eltern-Bereich).
+
+             Vorher sah die App gesperrt und ungesperrt identisch aus. Ohne Sperre laesst sich das
+             Fenster aber ganz normal schliessen - auch ueber das "X" in der Alt+Tab-Vorschau,
+             weil MainWindow.Closing nur bei IsLocked blockiert. Wer das nicht weiss, haelt den PC
+             fuer gesichert, obwohl er es nicht ist; falsches Vertrauen ist schlimmer als gar
+             keine Sperre. Genau diese Verwechslung ist beim Testen aufgetreten.
+
+             Unten mittig: oben links steht die Uhr, oben mittig die Etappenleiste, oben rechts das
+             Profil, unten links der Planer und unten rechts der Eltern-Zugang. -->
+        <Border HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                Margin="0,0,0,12" Padding="14,7" CornerRadius="12"
+                Background="{StaticResource ErrorBrush}" Opacity="0.9"
+                Visibility="{Binding KioskSkipNotice, Converter={StaticResource EmptyStringToVis}}">
+            <TextBlock Text="{Binding KioskSkipNotice, Mode=OneWay}"
+                       FontSize="13" FontWeight="SemiBold" Foreground="White"
+                       TextWrapping="Wrap" MaxWidth="640" TextAlignment="Center" />
+        </Border>
+
         <!-- Unauffälliger Eltern-Zugang, immer erreichbar, aber passwortgeschützt -->
         <Button x:Name="ParentAccessButton"
                 Content="⚙"

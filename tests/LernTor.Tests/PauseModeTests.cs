@@ -58,4 +58,23 @@ public sealed class PauseModeTests
 
         Assert.False(PauseMode.IsActive(altesDatum, new DateOnly(2026, 8, 1)));
     }
+
+    [Fact]
+    public void Der_Berliner_Ferienkalender_entscheidet_NICHT_ueber_die_Sperre()
+    {
+        // Im Eltern-Bereich heissen ZWEI verschiedene Dinge "Ferien...": dieser Pausenmodus (ein
+        // von Hand gesetztes Datum, das die Kiosk-Sperre aussetzt) und die reine Anzeige der
+        // Berliner Schulferien (SchoolCalendar). Beim Testen wurde genau das verwechselt - die
+        // App liess sich ueber das X in der Alt+Tab-Vorschau schliessen, und der Verdacht fiel
+        // zuerst auf den Kalender.
+        //
+        // Der 07.08.2026 liegt mitten in den Berliner Sommerferien. Fuer den Pausenmodus ist das
+        // ohne Bedeutung, und das soll so bleiben: die Sperre stillschweigend ueber sechs Wochen
+        // Sommerferien auszusetzen, weil ein Kalendereintrag das sagt, waere eine Entscheidung -
+        // keine Nebenwirkung. Waeren die beiden je gekoppelt, meldet dieser Test es.
+        var mittenInDenSommerferien = new DateOnly(2026, 8, 7);
+
+        Assert.NotNull(SchoolCalendar.CurrentVacation(mittenInDenSommerferien));
+        Assert.False(PauseMode.IsActive(null, mittenInDenSommerferien));
+    }
 }

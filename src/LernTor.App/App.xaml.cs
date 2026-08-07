@@ -247,9 +247,22 @@ public partial class App : Application
         // in der Runner-Session nicht zuverlässig auslesbar, die Log-Zeile ist es immer.
         AppLog.Info("App", "Hauptfenster angezeigt");
 
-        var shouldSkipKioskLock =
-            Environment.GetEnvironmentVariable("LERNTOR_SKIP_LOCK") == "1" ||
-            System.Diagnostics.Debugger.IsAttached;
+        // Der Grund wird mitgefuehrt, nicht nur das Ja/Nein: ohne Sperre laesst sich das Fenster
+        // ganz normal schliessen (MainWindow.Closing blockiert nur bei IsLocked) - und genau das
+        // sah man der App bisher nicht an. Sie sieht gesperrt und ungesperrt identisch aus, und
+        // ein Elternteil haelt den PC dann fuer gesichert, obwohl er es nicht ist.
+        var skipReason = string.Empty;
+
+        if (Environment.GetEnvironmentVariable("LERNTOR_SKIP_LOCK") == "1")
+        {
+            skipReason = "Entwicklermodus (LERNTOR_SKIP_LOCK=1)";
+        }
+        else if (System.Diagnostics.Debugger.IsAttached)
+        {
+            skipReason = "Debugger angehängt";
+        }
+
+        var shouldSkipKioskLock = skipReason.Length > 0;
 
         if (!shouldSkipKioskLock)
         {
@@ -262,13 +275,23 @@ public partial class App : Application
                 && PauseMode.IsActive(pauseUntil, DateOnly.FromDateTime(DateTime.Today)))
             {
                 shouldSkipKioskLock = true;
-                AppLog.Info("App", $"Ferienmodus aktiv bis {pauseUntil:yyyy-MM-dd} - Kiosk-Sperre übersprungen");
+                skipReason = $"Ferien-/Pausenmodus aktiv bis {pauseUntil:dd.MM.yyyy}";
             }
         }
 
-        if (!shouldSkipKioskLock)
+        var kioskLock = _host.Services.GetRequiredService<KioskLockService>();
+
+        if (shouldSkipKioskLock)
         {
-            _host.Services.GetRequiredService<KioskLockService>().Lock();
+            // Immer protokollieren, nicht nur beim Pausenmodus: bei LERNTOR_SKIP_LOCK stand
+            // vorher gar nichts im Log, und dann laesst sich hinterher nicht mehr feststellen,
+            // warum die Sperre an einem Tag nicht griff.
+            kioskLock.SkipLock(skipReason);
+            AppLog.Info("App", $"Kiosk-Sperre übersprungen: {skipReason}");
+        }
+        else
+        {
+            kioskLock.Lock();
         }
 
         var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
