@@ -173,6 +173,9 @@ public static class Translations
             ["Timetable_Title"] = L("Stundenplan", "Ders programı"),
             ["Timetable_Today"] = L("Heute · {0}", "Bugün · {0}"),
             ["Timetable_NextSchoolDay"] = L("Nächster Schultag · {0}", "Sonraki okul günü · {0}"),
+            // Mit Datum, sobald der nächste Schultag mehr als eine Woche weg ist: mitten in den
+            // Sommerferien ist "Montag" keine brauchbare Auskunft, weil jeder an übermorgen denkt.
+            ["Timetable_NextSchoolDayDated"] = L("Nächster Schultag · {0}, {1}", "Sonraki okul günü · {0}, {1}"),
             ["Timetable_Now"] = L("jetzt", "şimdi"),
             ["Timetable_Next"] = L("gleich", "birazdan"),
             ["Weekday_Monday"] = L("Montag", "Pazartesi"),

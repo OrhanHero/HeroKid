@@ -262,10 +262,7 @@ public sealed partial class WelcomeViewModel : ObservableObject
             return;
         }
 
-        var l = Localization.LocalizationService.Instance;
-        var name = Wochentagsname(tag.Day);
-        TimetableHeadline = string.Format(
-            tag.IsToday ? l["Timetable_Today"] : l["Timetable_NextSchoolDay"], name);
+        TimetableHeadline = Ueberschrift(tag, DateOnly.FromDateTime(now));
 
         foreach (var stunde in tag.Lessons)
         {
@@ -275,6 +272,28 @@ public sealed partial class WelcomeViewModel : ObservableObject
                 isCurrent: tag.CurrentPeriod == stunde.Period,
                 isNext: tag.NextPeriod == stunde.Period));
         }
+    }
+
+    /// <summary>
+    /// "Heute · Montag", "Nächster Schultag · Montag" - und ab einer Woche Abstand mit Datum
+    /// dahinter.
+    ///
+    /// <para>Ohne das Datum stand mitten in den Sommerferien nur "Nächster Schultag · Montag" da,
+    /// obwohl der Montag siebzehn Tage entfernt war. Jeder liest das als "übermorgen".</para>
+    /// </summary>
+    private static string Ueberschrift(TimetableDay tag, DateOnly heute)
+    {
+        var l = Localization.LocalizationService.Instance;
+        var name = Wochentagsname(tag.Day);
+
+        if (tag.IsToday)
+        {
+            return string.Format(l["Timetable_Today"], name);
+        }
+
+        return tag.DaysAhead(heute) < 7
+            ? string.Format(l["Timetable_NextSchoolDay"], name)
+            : string.Format(l["Timetable_NextSchoolDayDated"], name, tag.Date.ToString("dd.MM.yyyy"));
     }
 
     /// <summary>Der Wochentag in der eingestellten Sprache - über den Übersetzungs-Indexer, nicht

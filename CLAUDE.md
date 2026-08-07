@@ -287,6 +287,14 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   Only the compiler notices, and this environment has none — it cost a full CI round on
   `TimetableTextParser.TagAbtrennen`. Same trap for `ToString`/`Equals`/`GetHashCode`/`GetType`
   (inherited from `object`). `scripts/preflight.py` now checks for it (`tupel-feldname`).
+- **WPF does not render flag emoji.** A flag like 🇹🇷 is two Regional Indicator code points
+  (U+1F1E6–U+1F1FF) that a browser or phone composes into a flag; WPF/Segoe UI Emoji does not
+  compose them and draws the two *letters* instead — the timetable tile showed a bare "TR" in
+  front of Türkisch, and the news categories had been showing "DE"/"TR" for much longer without
+  anyone noticing. Compiles, all tests green, only visible in a screenshot of the running app.
+  Use a non-flag emoji for anything language- or country-flavoured.
+  `scripts/preflight.py` now checks for it (`flaggen-emoji`) — including inside comments, so
+  don't paste a flag into an explanatory comment either.
 - **Static field initializers across `partial` class files have no defined order.** Building an
   aggregate field from arrays declared in sibling partial files (`TrafficSignCatalog`) can read
   them before they are populated — the compiler flags it as `CS8604`, a *warning*, so the build

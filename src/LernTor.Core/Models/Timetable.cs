@@ -157,19 +157,28 @@ public sealed class Timetable
 /// <summary>
 /// Welcher Schultag dem Kind gerade gezeigt wird, und wo an diesem Tag gerade die Uhr steht.
 /// </summary>
-/// <param name="Day">Der angezeigte Wochentag.</param>
+/// <param name="Date">Das Datum des angezeigten Tages.</param>
 /// <param name="IsToday">Ist das der heutige Tag? Sonst der nächste Schultag.</param>
 /// <param name="Lessons">Die Stunden dieses Tages, aufsteigend.</param>
 /// <param name="CurrentPeriod">Stunde, die gerade läuft - nur an einem heutigen Schultag.</param>
 /// <param name="NextPeriod">Nächste Stunde des heutigen Tages, die noch kommt.</param>
 public readonly record struct TimetableDay(
-    DayOfWeek Day,
+    DateOnly Date,
     bool IsToday,
     IReadOnlyList<TimetableLesson> Lessons,
     int? CurrentPeriod,
     int? NextPeriod)
 {
+    public DayOfWeek Day => Date.DayOfWeek;
+
     public bool HasLessons => Lessons.Count > 0;
+
+    /// <summary>
+    /// Wie viele Tage der angezeigte Tag entfernt ist. Mitten in den Sommerferien liegt der
+    /// nächste Schultag über zwei Wochen weg - dann reicht "Montag" als Auskunft nicht, weil
+    /// jeder erst einmal an übermorgen denkt.
+    /// </summary>
+    public int DaysAhead(DateOnly from) => Math.Max(0, Date.DayNumber - from.DayNumber);
 }
 
 /// <summary>
@@ -205,7 +214,7 @@ public static class TimetableToday
             if (heutigeStunden.Count > 0 && !SchultagVorbei(plan, heutigeStunden, jetzt))
             {
                 return new TimetableDay(
-                    heute.DayOfWeek,
+                    heute,
                     true,
                     heutigeStunden,
                     LaufendeStunde(plan, heutigeStunden, jetzt),
@@ -224,11 +233,11 @@ public static class TimetableToday
             var stunden = plan.ForDay(tag.DayOfWeek);
             if (stunden.Count > 0)
             {
-                return new TimetableDay(tag.DayOfWeek, false, stunden, null, null);
+                return new TimetableDay(tag, false, stunden, null, null);
             }
         }
 
-        return new TimetableDay(heute.DayOfWeek, true, Array.Empty<TimetableLesson>(), null, null);
+        return new TimetableDay(heute, true, Array.Empty<TimetableLesson>(), null, null);
     }
 
     /// <summary>Wochenende, Feiertag oder Ferien - an all dem findet kein Unterricht statt.</summary>

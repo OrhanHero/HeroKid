@@ -169,6 +169,32 @@ public sealed class TimetableTests
     }
 
     [Fact]
+    public void Der_angezeigte_Tag_kennt_sein_Datum_und_seinen_Abstand()
+    {
+        // Am 07.08.2026 laufen die Sommerferien (09.07.-22.08.). Der erste Schultag danach ist
+        // Montag, der 24.08.2026 - siebzehn Tage entfernt. Genau deshalb steht das Datum in der
+        // Ueberschrift: "Nächster Schultag · Montag" allein liest jeder als "übermorgen".
+        var heute = new DateOnly(2026, 8, 7);
+        var stand = TimetableToday.Resolve(Wochenplan(), heute.ToDateTime(new TimeOnly(11, 25)));
+
+        Assert.False(stand.IsToday);
+        Assert.Equal(new DateOnly(2026, 8, 24), stand.Date);
+        Assert.Equal(DayOfWeek.Monday, stand.Day);
+        Assert.Equal(17, stand.DaysAhead(heute));
+    }
+
+    [Fact]
+    public void Der_Abstand_eines_heutigen_Tages_ist_null()
+    {
+        var heute = new DateOnly(2026, 9, 14);
+        var stand = TimetableToday.Resolve(Wochenplan(), heute.ToDateTime(new TimeOnly(9, 0)));
+
+        Assert.True(stand.IsToday);
+        Assert.Equal(heute, stand.Date);
+        Assert.Equal(0, stand.DaysAhead(heute));
+    }
+
+    [Fact]
     public void Ohne_jede_eingetragene_Stunde_gibt_es_nichts_zu_zeigen()
     {
         var stand = TimetableToday.Resolve(Timetable.Empty, new DateTime(2026, 9, 14, 9, 0, 0));

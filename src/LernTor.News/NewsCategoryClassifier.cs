@@ -77,9 +77,13 @@ public static class NewsCategoryClassifier
     public static string EmojiFor(NewsCategory category) => category switch
     {
         NewsCategory.Berlin => "🐻",
-        NewsCategory.Deutschland => "🇩🇪",
+        // KEINE Flaggen-Emoji: WPF setzt sie nicht als Flagge, sondern zeigt die beiden
+        // Regional-Indicator-Buchstaben - aus der Deutschlandflagge wird ein nacktes "DE".
+        // Aufgefallen ist es im Stundenplan, wo vor Türkisch "TR" stand; hier lag derselbe
+        // Fehler schon länger. (Auch hier steht deshalb kein Beispiel-Emoji im Kommentar.)
+        NewsCategory.Deutschland => "🏛️",
         NewsCategory.Welt => "🌍",
-        NewsCategory.Tuerkei => "🇹🇷",
+        NewsCategory.Tuerkei => "🌙",
         NewsCategory.Ki => "🤖",
         NewsCategory.Spiele => "🎮",
         NewsCategory.Finanzen => "💰",

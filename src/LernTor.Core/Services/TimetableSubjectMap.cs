@@ -107,8 +107,11 @@ public static class TimetableSubjectMap
     {
         Subject.Mathematik => "🔢",
         Subject.Deutsch => "📖",
-        Subject.Tuerkisch => "🇹🇷",
-        Subject.Englisch => "🇬🇧",
+        // KEINE Flaggen-Emoji: WPF setzt sie nicht als Flagge, sondern zeigt die beiden
+        // Regional-Indicator-Buchstaben - im Stundenplan stand vor Türkisch schlicht "TR".
+        // Nachgewiesen am laufenden Programm, nicht vermutet.
+        Subject.Tuerkisch => "💬",
+        Subject.Englisch => "🔤",
         Subject.Biologie => "🌿",
         Subject.Chemie => "🧪",
         Subject.Physik => "🔬",

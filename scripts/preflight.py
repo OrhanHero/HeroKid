@@ -720,6 +720,31 @@ def check_reserved_tuple_names() -> None:
                            f"Zeile {nummer}: Tupelfeld '{teile[-1]}' ist reserviert -> CS8126")
 
 
+# Regional-Indicator-Buchstaben (U+1F1E6..U+1F1FF). Zwei davon ergeben in einem Browser oder
+# auf dem Handy eine Landesflagge - WPF setzt sie NICHT zusammen und zeigt stattdessen die
+# beiden Buchstaben.
+REGIONAL_INDICATOR = re.compile(r"[\U0001F1E6-\U0001F1FF]")
+
+
+def check_flag_emoji() -> None:
+    """Flaggen-Emoji in der Oberflaeche - WPF macht daraus "TR" statt einer Flagge.
+
+    Am laufenden Programm nachgewiesen: im Stundenplan stand vor Tuerkisch schlicht "TR", und
+    in den Nachrichten-Rubriken lag derselbe Fehler schon laenger. Kein Compilerfehler, kein
+    fehlgeschlagener Test - es faellt nur auf, wenn jemand hinsieht.
+    """
+    for ordner in (SRC,):
+        for path in sorted(ordner.rglob("*")):
+            if path.suffix not in {".cs", ".xaml"} or not path.is_file():
+                continue
+
+            for nummer, zeile in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                if REGIONAL_INDICATOR.search(zeile) and "REGIONAL_INDICATOR" not in zeile:
+                    report("flaggen-emoji", path,
+                           f"Zeile {nummer}: Flaggen-Emoji - WPF zeigt dafuer nur die zwei "
+                           f"Buchstaben (aus der Tuerkei-Flagge wird 'TR')")
+
+
 def check_translation_keys() -> None:
     """Benutzte, aber nicht definierte Uebersetzungsschluessel.
 
@@ -794,6 +819,7 @@ def main() -> int:
         ("Schnittstellen (CS0535)", check_interface_implementation),
         ("Toolkit-usings (CS0246)", check_toolkit_usings),
         ("Tupel-Feldnamen (CS8126)", check_reserved_tuple_names),
+        ("Flaggen-Emoji (WPF)", check_flag_emoji),
     ]
     if not args.quick:
         checks += [
