@@ -10,10 +10,10 @@ steht oben.
 
 | Größe | Wert |
 |---|---|
-| Code | 326 `.cs`-Dateien, ~56.600 Zeilen, 30 XAML-Ansichten |
-| Fächer | 17 mit eigenem Generator, ~5.030 kuratierte Fragen |
+| Code | 345 `.cs`-Dateien, ~59.300 Zeilen, 30 XAML-Ansichten *(gemessen 07.08.2026)* |
+| Fächer | 17 mit eigenem Generator, **4.671 Frage-Tupel** in 337 Themen *(gezählt, nicht geschätzt)* |
 | Etappen | 20 (`LearningStage`), davon 17 Fach-Etappen |
-| Tests | ~790, plus 16 statische Prüfungen in `scripts/preflight.py` |
+| Tests | **601 Testmethoden** (+223 `InlineData`-Fälle) in 71 Dateien, plus 16 statische Prüfungen |
 | Bereiche | Lesen, Tippen, Schreiben, News, 15 Schulfächer, KI-Bereich, Erste Hilfe, Führerschein (3 Unterbereiche), Abschlussquiz |
 | Verteilung | ZIP-Artefakt aus GitHub Actions, kein Installer |
 | Kalender | Ferien bis 14.08.2027, Feiertage bis 26.12.2027 |
@@ -21,7 +21,14 @@ steht oben.
 
 **Der wichtigste Satz über den Stand:** Kein Mensch hat die App je von Anfang bis Ende
 durchgespielt. Alles, was bisher gefunden wurde — das falsche STOP-Schild, das doppelte „STOP",
-die unbrauchbaren vektorisierten Zeichen — kam aus dem Hinsehen, nicht aus Tests.
+die unbrauchbaren vektorisierten Zeichen, zuletzt das „TR" statt der türkischen Flagge — kam aus
+dem Hinsehen, nicht aus Tests. 601 Testmethoden und 16 statische Prüfungen haben **keinen
+einzigen** davon gefunden. Das ist kein Vorwurf an die Tests; es ist der Grund, warum Phase 0
+alles andere sperrt.
+
+**Das ausführliche, nach Rollen geordnete Testprotokoll steht in [`TESTPLAN.md`](TESTPLAN.md)** —
+fünf Rollen (die beiden Kinder, Elternteil, Kind-das-rauswill, Notfall), weil sich Fehler an der
+ABSICHT zeigen und nicht am Knopf.
 
 ---
 
@@ -72,6 +79,58 @@ starten, um den echten Kiosk zu sehen — aber nur, wenn eine zweite Person am R
 - [ ] Nach Bestehen: Sperre wirklich weg, Desktop erreichbar
 
 **Ergebnis:** eine Liste konkreter Beobachtungen. Die ist mehr wert als jedes statische Audit.
+
+---
+
+## Phase 1.0 — Drei Fehler, die schon jetzt in der App stecken
+
+**Am 07.08.2026 durch gezielte Analyse gefunden und jeweils im Code nachgeprüft.** Sie stehen vor
+allem anderen in Phase 1, weil sie Daten verlieren bzw. Einstellungen still zurücksetzen — nicht,
+weil sie laut sind. Keiner von ihnen wird durch die 601 Tests oder die 16 statischen Prüfungen
+erfasst.
+
+### 1.0.1 Einen Lesetext anzuheften setzt sechs andere Einstellungen zurück — **verifiziert**
+
+`ParentSettingsViewModel.SetPinnedReadingTextAsync` (`:2388`) ruft
+`StudentProfileRepository.UpdateSettingsAsync` (`:117`, **20 Parameter + CancellationToken**) mit
+nur **14 Argumenten** auf, rein positional. Alles danach fällt auf die Defaults der Signatur:
+
+| Einstellung | wird still auf | Folge |
+|---|---|---|
+| `NewsArticleCount` | 0 → 12 | eingestellte Artikelzahl weg |
+| `NewsFilterStrictness` | `Normal` | ein auf „Streng" gestellter Jugendschutzfilter wird **gelockert** |
+| `DrivingAreaEnabled` | `true` | abgeschalteter Führerschein-Bereich ist **wieder an** |
+| `ErsteHilfeEnabled` | `true` | abgeschaltete Erste Hilfe ist **wieder an** |
+| `DrivingChallengeSignCount` | 0 → 5 | Challenge-Größe weg |
+| `DisabledSignCategories` | leer | **alle** Schilderkategorien wieder aktiv |
+
+Die Methode ist ein Voll-Überschreiber ohne Patch-Semantik. Ein vergessenes Argument ist damit
+**Datenverlust ohne Compilerfehler** — und weil viele Parameter denselben Typ (`int`, `bool`)
+haben, verschiebt ein neu eingefügter Parameter still die Bedeutung aller folgenden.
+
+**Behebung, in dieser Reihenfolge:** (1) den fehlenden Aufruf reparieren; (2) `UpdateSettingsAsync`
+auf ein **Einstellungs-Objekt** statt 20 Positionsparameter umstellen, damit derselbe Fehler
+strukturell nicht mehr möglich ist; (3) eine Preflight-Prüfung, die Aufrufe mit weniger Argumenten
+als Pflichtparametern meldet.
+
+### 1.0.2 `HasCompletedTyping` und `HasCompletedWriting` werden nie gespeichert — **verifiziert**
+
+`StudentProgress` hat drei Merker (`:18`, `:23`, `:28`), `ProgressEntity` hat **nur
+`HasCompletedReading`** (`:10`), und `ProgressRepository` bildet auch nur diesen ab (`:39`, `:63`).
+`ProgressGateService:88` liest `HasCompletedTyping`, `MainViewModel:1145` setzt es — nach einem
+Neustart ist es wieder `false`. Ein Kind, dem mitten in der Sitzung der PC abstürzt, macht den
+Tipptrainer noch einmal.
+
+**Behebung:** zwei Spalten ergänzen (additiv, `SqliteSchemaUpdater` zieht das nach) und beim
+Testen gezielt nachstellen — das ist Punkt 4.12 in [`TESTPLAN.md`](TESTPLAN.md).
+
+### 1.0.3 Core und App sind sich über abgeschaltete Bereiche nicht einig
+
+`ProgressGateService:98` kennt nur die **globale** Menge `AppSettings.DisabledSubjects`;
+`MainViewModel.IsSubjectDisabled` (`:523-536`) kennt zusätzlich die **profilbezogenen** Schalter
+`DrivingAreaEnabled` / `ErsteHilfeEnabled`. Die Fortschrittsanzeige (`:479-480`) rechnet ebenfalls
+nur mit der globalen Menge — profilweise abgeschaltete Bereiche blähen den Nenner „n/m" auf.
+Weiter ist `ProgressGateService.CanEnterStage` (`:51-72`) **toter Code**: nur Tests rufen es auf.
 
 ---
 
@@ -393,7 +452,9 @@ sich bisher jedes Mal gelohnt hat:
 ## Reihenfolge
 
 ```
-Phase 0  App durchspielen                  ← sperrt alles andere
+Phase 0  App durchspielen (TESTPLAN.md)    ← sperrt alles andere
+   │
+   ├─ Phase 1.0 Drei verifizierte Fehler     ← Datenverlust, sofort
    │
    ├─ Phase 1  Sicherung/Wiederherstellung  ← höchstes Risiko
    │
