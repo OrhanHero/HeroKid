@@ -301,6 +301,14 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   `MainViewModel`, but never persisted — a restart mid-session made the child redo the typing
   trainer. When adding a flag to a Core model, check that the entity AND both directions of the
   repository mapping learn about it; nothing in the type system connects them.
+- **A `TopicFactory` only receives a `Random`, so the grade level has to be baked into the
+  returned question — and a topic listed under several grades therefore needs one thin factory
+  per grade.** A single `Weltwunder(Random)` with a hard-coded `GradeLevel.Klasse6`, registered
+  under Klasse6/7/9, produced correctly-worded questions that reported the wrong grade; two
+  existing tests (`… liefert eigene Klasse7-Themen ohne Rueckfall`) caught it, but only after a
+  full CI round. A wrongly graded question also skews the parent report. Pattern:
+  `WeltwunderK6/K7/K9` delegating to `Weltwunder(Random, GradeLevel)`.
+  `scripts/preflight.py` now checks it (`themen-stufe`).
 - **WPF does not render flag emoji.** A flag like 🇹🇷 is two Regional Indicator code points
   (U+1F1E6–U+1F1FF) that a browser or phone composes into a flag; WPF/Segoe UI Emoji does not
   compose them and draws the two *letters* instead — the timetable tile showed a bare "TR" in

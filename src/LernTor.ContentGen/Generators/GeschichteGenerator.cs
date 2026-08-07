@@ -12,9 +12,9 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Epochenueberblick, ArmutUndReichtumMigration, JudenChristenMuslime, Weltwunder },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { MittelalterLebenswelten, EntdeckungenUndKolonialismus, ReformationK7, AbsolutismusK7, FranzoesischeRevolutionK7, IndustrialisierungK7, Weltwunder },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg, FeindbilderUndPropaganda, Weltwunder }
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Epochenueberblick, ArmutUndReichtumMigration, JudenChristenMuslime, WeltwunderK6 },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MittelalterLebenswelten, EntdeckungenUndKolonialismus, ReformationK7, AbsolutismusK7, FranzoesischeRevolutionK7, IndustrialisierungK7, WeltwunderK7 },
+            [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg, FeindbilderUndPropaganda, WeltwunderK9 }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EpochenueberblickListe =
@@ -125,12 +125,25 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
             "Ob eine Fachkommission prüft oder ob per Telefon abgestimmt wird, ändert das Ergebnis. Diese Frage lohnt sich bei jeder Bestenliste, auch im Internet.")
     };
 
-    private static QuizQuestion Weltwunder(Random r)
+    // Drei duenne Fabriken auf denselben Pool - eine je Klassenstufe.
+    //
+    // Noetig, weil TopicFactory nur einen Random bekommt und die Stufe deshalb IM Ergebnis
+    // stehen muss: eine Fabrik mit fest eingetragenem Klasse6 haette in Klasse 7 und 9 Fragen
+    // mit falscher Stufenangabe geliefert. Genau daran sind zwei bestehende Tests haengen
+    // geblieben ("liefert eigene Klasse7-Themen ohne Rueckfall") - zu Recht, denn eine falsch
+    // eingestufte Frage verfaelscht auch den Eltern-Bericht.
+    private static QuizQuestion WeltwunderK6(Random r) => Weltwunder(r, GradeLevel.Klasse6);
+
+    private static QuizQuestion WeltwunderK7(Random r) => Weltwunder(r, GradeLevel.Klasse7);
+
+    private static QuizQuestion WeltwunderK9(Random r) => Weltwunder(r, GradeLevel.Klasse9);
+
+    private static QuizQuestion Weltwunder(Random r, GradeLevel stufe)
     {
         var f = WeltwunderListe[r.Next(WeltwunderListe.Length)];
         return new QuizQuestion
         {
-            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse6,
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = stufe,
             Topic = "Die sieben Weltwunder - antike Liste und die Abstimmung von 2007", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Antik: Pyramide von Gizeh (als einzige erhalten), Hängende Gärten, Zeusstatue, Artemis-Tempel in Ephesos, Mausoleum von Halikarnassos (heute Bodrum), Koloss von Rhodos, Leuchtturm von Alexandria. Zwei davon stehen in der heutigen Türkei."

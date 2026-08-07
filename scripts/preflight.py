@@ -807,6 +807,43 @@ def argumente_zerlegen(text: str) -> list[str]:
     return teile
 
 
+def check_topic_grade_stamp() -> None:
+    """Ein Thema in mehreren Klassenstufen, dessen Fabrik die Stufe FEST eintraegt.
+
+    TopicFactory bekommt nur einen Random - die Klassenstufe muss deshalb im Ergebnis stehen.
+    Steht dort ein fester Wert und ist dasselbe Thema in mehreren Stufen eingetragen, liefert es
+    ueberall die Stufe der ersten: die Frage ist dann falsch eingestuft, was den Eltern-Bericht
+    verfaelscht. Zwei bestehende Tests fangen das ab ("liefert eigene Klasse7-Themen ohne
+    Rueckfall") - aber erst nach acht Minuten CI.
+    """
+    for path in sorted((SRC / "LernTor.ContentGen" / "Generators").glob("*Generator.cs")):
+        text = path.read_text(encoding="utf-8")
+
+        # Welche Fabrik steht in welchen Stufen?
+        stufen: dict[str, set[str]] = {}
+        for eintrag in re.finditer(r"\[GradeLevel\.(\w+)\]\s*=\s*(?:new List<TopicFactory>\s*)?\{([^}]*)\}", text):
+            stufe, inhalt = eintrag.group(1), eintrag.group(2)
+            for name in re.findall(r"[A-Za-z_]\w*", inhalt):
+                stufen.setdefault(name, set()).add(stufe)
+
+        for name, benutzt in stufen.items():
+            if len(benutzt) < 2:
+                continue
+
+            # Rumpf der Fabrik suchen und auf eine fest eingetragene Stufe pruefen.
+            rumpf = re.search(
+                rf"QuizQuestion {re.escape(name)}\(Random \w+\)(.{{0,1200}}?)(?=\n    private |\n\}}$)",
+                text, re.S)
+            if not rumpf:
+                continue
+
+            fest = re.search(r"GradeLevel\s*=\s*GradeLevel\.(\w+)", rumpf.group(1))
+            if fest and fest.group(1) not in {"stufe", "grade"}:
+                report("themen-stufe", path,
+                       f"'{name}' steht in {len(benutzt)} Klassenstufen ({', '.join(sorted(benutzt))}), "
+                       f"traegt aber fest GradeLevel.{fest.group(1)} ein")
+
+
 def check_translation_keys() -> None:
     """Benutzte, aber nicht definierte Uebersetzungsschluessel.
 
@@ -883,6 +920,7 @@ def main() -> int:
         ("Tupel-Feldnamen (CS8126)", check_reserved_tuple_names),
         ("Flaggen-Emoji (WPF)", check_flag_emoji),
         ("Voll-Ueberschreiber", check_full_overwrite_calls),
+        ("Themen-Klassenstufe", check_topic_grade_stamp),
     ]
     if not args.quick:
         checks += [
