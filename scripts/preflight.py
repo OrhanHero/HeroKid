@@ -745,6 +745,68 @@ def check_flag_emoji() -> None:
                            f"Buchstaben (aus der Tuerkei-Flagge wird 'TR')")
 
 
+def check_full_overwrite_calls() -> None:
+    """Voll-Ueberschreiber, die mit zu wenigen Argumenten gerufen werden.
+
+    UpdateSettingsAsync schreibt ALLE Einstellungen eines Profils und hat zwanzig
+    Positionsparameter, zehn davon optional. Der Aufruf zum Anheften eines Lesetextes uebergab
+    vierzehn - die restlichen sechs fielen still auf die Vorgabewerte zurueck und loeschten damit
+    die Artikelzahl, lockerten den Jugendschutzfilter von "Streng" auf "Normal" und schalteten
+    abgeschaltete Bereiche wieder ein. Kein Compilerfehler, kein fehlgeschlagener Test.
+
+    Wer nur ein Feld aendern will, schreibt sich eine eigene Methode dafuer (siehe
+    SetPinnedReadingTextAsync); wer den Voll-Ueberschreiber ruft, uebergibt alles.
+    """
+    definition = SRC / "LernTor.Data" / "Repositories" / "StudentProfileRepository.cs"
+    if not definition.exists():
+        return
+
+    treffer = re.search(
+        r"public\s+async\s+Task\s+UpdateSettingsAsync\s*\((.*?)\)\s*\{",
+        definition.read_text(encoding="utf-8"), re.S)
+    if not treffer:
+        return
+
+    # CancellationToken zaehlt nicht mit - den laesst jeder Aufrufer weg.
+    parameter = [t.strip() for t in argumente_zerlegen(treffer.group(1)) if t.strip()]
+    erwartet = len([p for p in parameter if "CancellationToken" not in p])
+
+    for path in sorted((SRC / "LernTor.App").rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+        for aufruf in re.finditer(r"UpdateSettingsAsync\s*\(", text):
+            start = aufruf.end()
+            tiefe, i = 1, start
+            while i < len(text) and tiefe > 0:
+                if text[i] == "(":
+                    tiefe += 1
+                elif text[i] == ")":
+                    tiefe -= 1
+                i += 1
+            anzahl = len([a for a in argumente_zerlegen(text[start:i - 1]) if a.strip()])
+            if anzahl < erwartet:
+                zeile = text[:aufruf.start()].count("\n") + 1
+                report("voll-ueberschreiber", path,
+                       f"Zeile {zeile}: UpdateSettingsAsync mit {anzahl} statt {erwartet} "
+                       f"Argumenten - die fehlenden werden still auf Vorgabewerte zurueckgesetzt")
+
+
+def argumente_zerlegen(text: str) -> list[str]:
+    """Auf oberster Klammerebene an Kommas trennen - verschachtelte Aufrufe bleiben ganz."""
+    teile, tiefe, aktuell = [], 0, []
+    for zeichen in text:
+        if zeichen in "([{":
+            tiefe += 1
+        elif zeichen in ")]}":
+            tiefe -= 1
+        if zeichen == "," and tiefe == 0:
+            teile.append("".join(aktuell))
+            aktuell = []
+        else:
+            aktuell.append(zeichen)
+    teile.append("".join(aktuell))
+    return teile
+
+
 def check_translation_keys() -> None:
     """Benutzte, aber nicht definierte Uebersetzungsschluessel.
 
@@ -820,6 +882,7 @@ def main() -> int:
         ("Toolkit-usings (CS0246)", check_toolkit_usings),
         ("Tupel-Feldnamen (CS8126)", check_reserved_tuple_names),
         ("Flaggen-Emoji (WPF)", check_flag_emoji),
+        ("Voll-Ueberschreiber", check_full_overwrite_calls),
     ]
     if not args.quick:
         checks += [

@@ -114,6 +114,36 @@ public sealed class StudentProfileRepository
     /// Speichert die von den Eltern im Eltern-Bereich pro Profil eingestellten Schwierigkeitsstufen
     /// (Tipptrainer-Mindestgenauigkeit, Abschlussquiz-Schwellenwerte für 1./2. Versuch).
     /// </summary>
+    /// <summary>
+    /// Setzt NUR den angehefteten Lesetext - und lässt jede andere Einstellung des Profils
+    /// unangetastet.
+    ///
+    /// <para><b>Warum eine eigene Methode und nicht <see cref="UpdateSettingsAsync"/>:</b> die ist
+    /// ein Voll-Überschreiber mit zwanzig Positionsparametern, von denen zehn optional sind. Der
+    /// Aufruf im Eltern-Bereich übergab davon vierzehn - die restlichen sechs fielen still auf die
+    /// Vorgabewerte der Signatur zurück. Einen Lesetext anzuheften hat damit die eingestellte
+    /// Artikelzahl gelöscht, einen auf „Streng" gestellten Jugendschutzfilter auf „Normal"
+    /// GELOCKERT, abgeschaltete Bereiche (Führerschein, Erste Hilfe) wieder eingeschaltet und alle
+    /// abgewählten Schilderkategorien zurückgeholt. Kein Compilerfehler, kein fehlgeschlagener
+    /// Test, keine Meldung - die Einstellungen waren einfach weg.</para>
+    ///
+    /// <para>Wer künftig ein einzelnes Feld ändern will, schreibt sich eine solche Methode dazu,
+    /// statt <see cref="UpdateSettingsAsync"/> mit einer unvollständigen Argumentliste
+    /// aufzurufen.</para>
+    /// </summary>
+    public async Task SetPinnedReadingTextAsync(
+        string profileId, string? pinnedReadingTextKey, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        entity.PinnedReadingTextKey = pinnedReadingTextKey;
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task UpdateSettingsAsync(
         string profileId,
         double typingMinAccuracy,

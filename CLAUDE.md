@@ -287,6 +287,20 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   Only the compiler notices, and this environment has none — it cost a full CI round on
   `TimetableTextParser.TagAbtrennen`. Same trap for `ToString`/`Equals`/`GetHashCode`/`GetType`
   (inherited from `object`). `scripts/preflight.py` now checks for it (`tupel-feldname`).
+- **A repository method that overwrites ALL fields is a loaded gun when it takes positional
+  parameters.** `StudentProfileRepository.UpdateSettingsAsync` writes every per-profile setting and
+  takes 20 positional parameters, 10 of them optional. A call site passed 14 — the other six
+  silently fell back to the signature's defaults, so *pinning a reading text* wiped the article
+  count, **loosened a parental news filter set to "Streng" back to "Normal"**, re-enabled areas the
+  parents had switched off, and restored every deselected traffic-sign category. No compile error,
+  no failing test, no message. Prefer a method that writes exactly the one column you mean
+  (`SetPinnedReadingTextAsync` is the pattern); if you must call the full overwriter, pass
+  everything. `scripts/preflight.py` now checks it (`voll-ueberschreiber`).
+- **`StudentProgress` had three completion flags but `ProgressEntity` only stored one.**
+  `HasCompletedTyping`/`HasCompletedWriting` were read by `ProgressGateService` and set by
+  `MainViewModel`, but never persisted — a restart mid-session made the child redo the typing
+  trainer. When adding a flag to a Core model, check that the entity AND both directions of the
+  repository mapping learn about it; nothing in the type system connects them.
 - **WPF does not render flag emoji.** A flag like 🇹🇷 is two Regional Indicator code points
   (U+1F1E6–U+1F1FF) that a browser or phone composes into a flag; WPF/Segoe UI Emoji does not
   compose them and draws the two *letters* instead — the timetable tile showed a bare "TR" in

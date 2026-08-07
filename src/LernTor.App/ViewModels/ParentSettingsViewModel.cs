@@ -2377,6 +2377,16 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         UpdateReadingLibraryStatus();
     }
 
+    /// <summary>
+    /// Heftet einen Lesetext an - und ruehrt sonst nichts an.
+    ///
+    /// <para>Vorher lief das ueber <c>UpdateSettingsAsync</c>, einen Voll-Ueberschreiber mit
+    /// zwanzig Positionsparametern, von denen hier nur vierzehn uebergeben wurden. Die restlichen
+    /// sechs fielen still auf die Vorgabewerte zurueck: ein auf "Streng" gestellter
+    /// Jugendschutzfilter wurde dabei GELOCKERT, abgeschaltete Bereiche gingen wieder an, und alle
+    /// abgewaehlten Schilderkategorien kamen zurueck. Jetzt gibt es dafuer eine Methode im
+    /// Repository, die genau eine Spalte schreibt.</para>
+    /// </summary>
     private async Task SetPinnedReadingTextAsync(string? key)
     {
         if (SelectedProfile is null)
@@ -2385,21 +2395,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
 
         SelectedProfile.PinnedReadingTextKey = key;
-        await _profileRepo.UpdateSettingsAsync(
-            SelectedProfile.Id,
-            SelectedProfile.TypingMinAccuracy,
-            SelectedProfile.QuizFirstAttemptThreshold,
-            SelectedProfile.QuizRetryThreshold,
-            SelectedProfile.ReadingMinutes,
-            SelectedProfile.NewsSecondsPerArticle,
-            SelectedProfile.ExerciseSecondsPerQuestion,
-            SelectedProfile.ExercisesPerSubject,
-            SelectedProfile.QuizQuestionCount,
-            SelectedProfile.QuizRetryQuestionCount,
-            SelectedProfile.CustomTypingSentenceText,
-            SelectedProfile.CustomTypingFinalText,
-            SelectedProfile.WeeklyGoalDays,
-            key);
+        await _profileRepo.SetPinnedReadingTextAsync(SelectedProfile.Id, key);
     }
 
     /// <summary>

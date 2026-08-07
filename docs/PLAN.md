@@ -13,7 +13,7 @@ steht oben.
 | Code | 345 `.cs`-Dateien, ~59.300 Zeilen, 30 XAML-Ansichten *(gemessen 07.08.2026)* |
 | Fächer | 17 mit eigenem Generator, **4.671 Frage-Tupel** in 337 Themen *(gezählt, nicht geschätzt)* |
 | Etappen | 20 (`LearningStage`), davon 17 Fach-Etappen |
-| Tests | **601 Testmethoden** (+223 `InlineData`-Fälle) in 71 Dateien, plus 16 statische Prüfungen |
+| Tests | **605 Testmethoden** (+223 `InlineData`-Fälle) in 71 Dateien, plus 17 statische Prüfungen |
 | Bereiche | Lesen, Tippen, Schreiben, News, 15 Schulfächer, KI-Bereich, Erste Hilfe, Führerschein (3 Unterbereiche), Abschlussquiz |
 | Verteilung | ZIP-Artefakt aus GitHub Actions, kein Installer |
 | Kalender | Ferien bis 14.08.2027, Feiertage bis 26.12.2027 |
@@ -82,14 +82,14 @@ starten, um den echten Kiosk zu sehen — aber nur, wenn eine zweite Person am R
 
 ---
 
-## Phase 1.0 — Drei Fehler, die schon jetzt in der App stecken
+## Phase 1.0 — Drei gefundene Fehler ✅ *(1.0.1 und 1.0.2 sind BEHOBEN, siehe unten)*
 
 **Am 07.08.2026 durch gezielte Analyse gefunden und jeweils im Code nachgeprüft.** Sie stehen vor
 allem anderen in Phase 1, weil sie Daten verlieren bzw. Einstellungen still zurücksetzen — nicht,
 weil sie laut sind. Keiner von ihnen wird durch die 601 Tests oder die 16 statischen Prüfungen
 erfasst.
 
-### 1.0.1 Einen Lesetext anzuheften setzt sechs andere Einstellungen zurück — **verifiziert**
+### 1.0.1 Einen Lesetext anzuheften setzt sechs andere Einstellungen zurück — ✅ **behoben am 07.08.2026**
 
 `ParentSettingsViewModel.SetPinnedReadingTextAsync` (`:2388`) ruft
 `StudentProfileRepository.UpdateSettingsAsync` (`:117`, **20 Parameter + CancellationToken**) mit
@@ -108,12 +108,18 @@ Die Methode ist ein Voll-Überschreiber ohne Patch-Semantik. Ein vergessenes Arg
 **Datenverlust ohne Compilerfehler** — und weil viele Parameter denselben Typ (`int`, `bool`)
 haben, verschiebt ein neu eingefügter Parameter still die Bedeutung aller folgenden.
 
-**Behebung, in dieser Reihenfolge:** (1) den fehlenden Aufruf reparieren; (2) `UpdateSettingsAsync`
-auf ein **Einstellungs-Objekt** statt 20 Positionsparameter umstellen, damit derselbe Fehler
-strukturell nicht mehr möglich ist; (3) eine Preflight-Prüfung, die Aufrufe mit weniger Argumenten
-als Pflichtparametern meldet.
+**Behoben:** `StudentProfileRepository.SetPinnedReadingTextAsync` schreibt jetzt **genau eine
+Spalte** und rührt sonst nichts an; der Eltern-Bereich ruft sie statt des Voll-Überschreibers auf.
+Dazu die Preflight-Prüfung `voll-ueberschreiber`, die jeden Aufruf von `UpdateSettingsAsync` mit
+zu wenigen Argumenten meldet — mit dem wieder eingebauten Fehler meldet sie „14 statt 20", ohne
+ihn nicht. Vier Tests halten fest, dass Anheften und Lösen alle anderen Einstellungen in Ruhe
+lassen.
 
-### 1.0.2 `HasCompletedTyping` und `HasCompletedWriting` werden nie gespeichert — **verifiziert**
+**Offen geblieben (Phase 4):** `UpdateSettingsAsync` hat weiterhin 20 Positionsparameter. Der eine
+verbliebene Aufrufer übergibt alle, und die Preflight-Prüfung bewacht das — die Umstellung auf ein
+**Einstellungs-Objekt** bleibt trotzdem die saubere Lösung und gehört zu 4.1.
+
+### 1.0.2 `HasCompletedTyping` und `HasCompletedWriting` werden nie gespeichert — ✅ **behoben am 07.08.2026**
 
 `StudentProgress` hat drei Merker (`:18`, `:23`, `:28`), `ProgressEntity` hat **nur
 `HasCompletedReading`** (`:10`), und `ProgressRepository` bildet auch nur diesen ab (`:39`, `:63`).
@@ -121,10 +127,13 @@ als Pflichtparametern meldet.
 Neustart ist es wieder `false`. Ein Kind, dem mitten in der Sitzung der PC abstürzt, macht den
 Tipptrainer noch einmal.
 
-**Behebung:** zwei Spalten ergänzen (additiv, `SqliteSchemaUpdater` zieht das nach) und beim
-Testen gezielt nachstellen — das ist Punkt 4.12 in [`TESTPLAN.md`](TESTPLAN.md).
+**Behoben:** zwei Spalten in `ProgressEntity` ergänzt und in beide Richtungen abgebildet. Additiv,
+`SqliteSchemaUpdater` zieht sie beim nächsten Start nach; `DEFAULT 0` heißt „noch nicht erledigt"
+und ist damit ausnahmsweise die richtige Vorgabe — anders als bei `DrivingAreaDisabled` musste
+hier nichts invertiert werden. Beim Testen trotzdem nachstellen: Punkt 4.12 in
+[`TESTPLAN.md`](TESTPLAN.md).
 
-### 1.0.3 Core und App sind sich über abgeschaltete Bereiche nicht einig
+### 1.0.3 Core und App sind sich über abgeschaltete Bereiche nicht einig — **offen**
 
 `ProgressGateService:98` kennt nur die **globale** Menge `AppSettings.DisabledSubjects`;
 `MainViewModel.IsSubjectDisabled` (`:523-536`) kennt zusätzlich die **profilbezogenen** Schalter
@@ -468,7 +477,7 @@ Phase 0  App durchspielen (TESTPLAN.md)    ← sperrt alles andere
 ## Prüfkommandos
 
 ```bash
-python3 scripts/preflight.py                  # 16 statische Prüfungen
+python3 scripts/preflight.py                  # 17 statische Prüfungen
 python3 scripts/check-answer-length-bias.py   # Gate 60 % je Generator
 dotnet test tests/LernTor.Tests/LernTor.Tests.csproj
 ```
