@@ -166,6 +166,9 @@ public static class Translations
             ["Cal_Tomorrow"] = L("Schon morgen!", "Yarın başlıyor!"),
             ["Cal_OnWeekend"] = L("(fällt aufs Wochenende)", "(hafta sonuna denk geliyor)"),
             ["Welcome_BackToLearning"] = L("Zurück zum Lernen", "Öğrenmeye geri dön"),
+            // Nach dem Abschlussquiz gibt es nichts mehr zu lernen - "Zurück zum Lernen" wäre
+            // dort schlicht falsch. Der Knopf führt zurück auf den Geschafft-Bildschirm.
+            ["Welcome_BackToResult"] = L("Zurück zum Ergebnis", "Sonuca geri dön"),
 
             // --- Stundenplan ---
             // Die Wochentage stehen hier und werden NICHT aus der Kultur des Betriebssystems

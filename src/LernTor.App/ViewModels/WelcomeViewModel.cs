@@ -118,9 +118,11 @@ public sealed partial class WelcomeViewModel : ObservableObject
         bool isPlannerPeek = false,
         DateOnly? today = null,
         Timetable? timetable = null,
-        DateTime? now = null)
+        DateTime? now = null,
+        bool dayIsDone = false)
     {
         IsPlannerPeek = isPlannerPeek;
+        IsDayDone = dayIsDone;
         Calendar = SchoolCalendar.Today(today ?? DateOnly.FromDateTime(DateTime.Today));
         FillTimetable(timetable, now ?? DateTime.Now);
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
@@ -152,6 +154,19 @@ public sealed partial class WelcomeViewModel : ObservableObject
     /// Knopfes: er führt dann zurück in die Etappe, statt den Tag zu beginnen.
     /// </summary>
     public bool IsPlannerPeek { get; }
+
+    /// <summary>
+    /// Ob der Lerntag bereits geschafft ist - der Zwischenstopp kommt dann vom
+    /// Freigeschaltet-Bildschirm. Ändert nur die Beschriftung des großen Knopfes: "Zurück zum
+    /// Lernen" wäre dort falsch, es gibt nichts mehr zu lernen.
+    /// </summary>
+    public bool IsDayDone { get; }
+
+    /// <summary>Rück-Knopf während des Lerntags ("Zurück zum Lernen").</summary>
+    public bool ShowBackToLearning => IsPlannerPeek && !IsDayDone;
+
+    /// <summary>Rück-Knopf nach dem Abschlussquiz ("Zurück zum Ergebnis").</summary>
+    public bool ShowBackToResult => IsPlannerPeek && IsDayDone;
 
     // ---------------- Schulkalender (Berlin) ----------------
 

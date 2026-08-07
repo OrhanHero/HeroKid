@@ -362,7 +362,10 @@ public sealed partial class MainViewModel : ObservableObject
             SwitchLanguage, dueReviews, weeklyGoal,
             homework, exams, OnAddExamRequested, OnDeleteExamRequested,
             OnAddHomeworkRequested, OnDeleteHomeworkRequested,
-            plannerPeek, today, timetable);
+            plannerPeek, today, timetable,
+            // Nur für die Beschriftung des Rück-Knopfes: vom Geschafft-Bildschirm aus geht es
+            // nicht "zurück zum Lernen", sondern zurück zum Ergebnis.
+            dayIsDone: Progress.CurrentStage == LearningStage.Freigeschaltet);
     }
 
     /// <summary>
@@ -592,11 +595,18 @@ public sealed partial class MainViewModel : ObservableObject
     /// Ob der Planer-Knopf gerade sichtbar ist. Nicht ohne Profil (Profilauswahl,
     /// Ferien-Bildschirm), nicht auf der Startseite selbst - dort steht der Planer ja schon -
     /// und nicht, während er offen ist.
+    ///
+    /// <para><b>Auf dem Geschafft-Bildschirm ausdrücklich schon.</b> Er war lange
+    /// ausgenommen, weil dort der Tag zu Ende ist - aber genau dann will ein Kind nachsehen, was
+    /// morgen ansteht: Stundenplan, Hausaufgaben, Klausurtermine. Ohne den Knopf blieb nur der
+    /// Weg über "PC jetzt benutzen", und damit beendet sich LernTor - der Plan war weg. Der
+    /// Planer schaltet nichts frei und überspringt nichts, er zeigt nur an; nach dem
+    /// Freischalten gibt es ohnehin nichts mehr zu umgehen.</para>
     /// </summary>
     public bool CanOpenPlanner =>
         CurrentProfile is not null
         && !IsPlannerOpen
-        && Progress.CurrentStage is not (LearningStage.Willkommen or LearningStage.Freigeschaltet);
+        && Progress.CurrentStage is not LearningStage.Willkommen;
 
     partial void OnCurrentViewModelChanged(object? value)
     {

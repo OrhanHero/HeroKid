@@ -285,7 +285,14 @@
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_BackToLearning]}"
                             Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
                             HorizontalAlignment="Center" Margin="0,8,0,0"
-                            Visibility="{Binding IsPlannerPeek, Converter={StaticResource BoolToVis}}"
+                            Visibility="{Binding ShowBackToLearning, Converter={StaticResource BoolToVis}}"
+                            Command="{Binding ContinueCommand}" />
+                    <!-- Nach dem Abschlussquiz: derselbe Weg zurueck, nur ehrlich beschriftet -
+                         gelernt wird dann nichts mehr, der Knopf fuehrt auf den Geschafft-Bildschirm. -->
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_BackToResult]}"
+                            Style="{StaticResource RoundedButton}" FontSize="26" Padding="40,18"
+                            HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Visibility="{Binding ShowBackToResult, Converter={StaticResource BoolToVis}}"
                             Command="{Binding ContinueCommand}" />
                 </StackPanel>
             </ScrollViewer>

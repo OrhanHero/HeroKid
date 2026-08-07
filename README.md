@@ -367,6 +367,12 @@ Zwei Dinge daran sind wichtig:
   sie weiter, wäre der Planer der bequemste Weg, eine Mindestverweildauer abzusitzen: aufmachen,
   warten, zurück. Freigeschaltet oder übersprungen wird durch den Planer nichts.
 
+**Auch nach dem Abschlussquiz.** Auf dem "Geschafft!"-Bildschirm steht derselbe Knopf - dort heißt
+er nur "Zurück zum Ergebnis" statt "Zurück zum Lernen", weil es nichts mehr zu lernen gibt. Genau
+in diesem Moment will ein Kind wissen, was morgen ansteht: Stundenplan, Hausaufgaben, Klausurtermine.
+Ohne den Knopf führte von dort nur noch "PC jetzt benutzen" weiter - und damit beendet sich LernTor,
+der Plan war weg.
+
 ## Eltern-Features
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
