@@ -12,9 +12,9 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Epochenueberblick, ArmutUndReichtumMigration, JudenChristenMuslime },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { MittelalterLebenswelten, EntdeckungenUndKolonialismus, ReformationK7, AbsolutismusK7, FranzoesischeRevolutionK7, IndustrialisierungK7 },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg, FeindbilderUndPropaganda }
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Epochenueberblick, ArmutUndReichtumMigration, JudenChristenMuslime, Weltwunder },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MittelalterLebenswelten, EntdeckungenUndKolonialismus, ReformationK7, AbsolutismusK7, FranzoesischeRevolutionK7, IndustrialisierungK7, Weltwunder },
+            [GradeLevel.Klasse9] = new List<TopicFactory> { DemokratieUndDiktatur, KalterKrieg, KonflikteUndKonfliktloesungen, EuropaInDerWelt, VoelkermordeUndMassengewalt, WeltNachDemKaltenKrieg, FeindbilderUndPropaganda, Weltwunder }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] EpochenueberblickListe =
@@ -70,6 +70,70 @@ public sealed class GeschichteGenerator : ExerciseGeneratorBase
             Topic = "Epochenüberblick: Mittelalter, Frühe Neuzeit, Revolutionen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Reihenfolge: Mittelalter (Christentum, Ständeordnung) → Frühe Neuzeit (Renaissance, Reformation, Absolutismus) → Zeitalter der Revolutionen (Aufklärung, Französische Revolution, Industrialisierung)."
+        };
+    }
+
+    /// <summary>
+    /// Die sieben Weltwunder - antike Liste und die private Abstimmung von 2007.
+    ///
+    /// <para>Für alle drei Klassenstufen: die Liste ist mit zwölf dieselbe wie mit fünfzehn, und
+    /// die interessantere Frage - wer bestimmt eigentlich, was ein Weltwunder ist - trägt in
+    /// beiden Stufen. Für unsere Kinder besonders: ZWEI der sieben antiken Wunder standen in der
+    /// heutigen Türkei (Ephesos und Halikarnassos/Bodrum).</para>
+    /// </summary>
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WeltwunderListe =
+    {
+        ("Wie viele Weltwunder der Antike zählt die überlieferte Liste?", new[] { "Sieben", "Zwölf", "Drei" }, "Sieben",
+            "Griechische Reisende der Antike stellten eine Liste von sieben besonders beeindruckenden Bauwerken zusammen. Die Sieben galt als vollkommene Zahl."),
+        ("Welches der sieben antiken Weltwunder steht heute noch weitgehend erhalten?", new[] { "Die Große Pyramide von Gizeh in Ägypten", "Der Koloss von Rhodos in Griechenland", "Der Leuchtturm von Alexandria in Ägypten" }, "Die Große Pyramide von Gizeh in Ägypten",
+            "Von den sieben antiken Weltwundern ist nur die Große Pyramide von Gizeh übrig. Alle anderen wurden durch Erdbeben, Brände oder Zerstörung vernichtet."),
+        ("Welches antike Weltwunder stand in Ephesos in der heutigen Türkei?", new[] { "Der Tempel der Artemis", "Die Hängenden Gärten von Babylon", "Die Zeusstatue des Phidias" }, "Der Tempel der Artemis",
+            "Der Artemis-Tempel bei Ephesos, nahe dem heutigen Selçuk, war ein riesiger Tempel für die Göttin Artemis. Er wurde mehrfach zerstört und wieder aufgebaut."),
+        ("In welchem heutigen Land stand das Mausoleum von Halikarnassos?", new[] { "In der Türkei, im heutigen Bodrum", "In Griechenland, auf der Insel Rhodos", "In Ägypten, nahe der Stadt Kairo" }, "In der Türkei, im heutigen Bodrum",
+            "Halikarnassos ist das heutige Bodrum an der türkischen Ägäisküste. Damit standen zwei der sieben antiken Weltwunder in der heutigen Türkei."),
+        ("Woher stammt das Wort \"Mausoleum\" für ein prunkvolles Grabmal?", new[] { "Vom Grabmal des Herrschers Maussollos in Halikarnassos", "Vom griechischen Wort für einen sehr hohen Turm", "Vom Namen eines ägyptischen Pharaos der Frühzeit" }, "Vom Grabmal des Herrschers Maussollos in Halikarnassos",
+            "Das Grabmal wurde für den Herrscher Maussollos errichtet. Seither heißt jedes große, prunkvolle Grabgebäude \"Mausoleum\"."),
+        ("Welches der sieben antiken Weltwunder ist archäologisch nicht sicher nachgewiesen?", new[] { "Die Hängenden Gärten von Babylon", "Die Große Pyramide von Gizeh", "Der Tempel der Artemis in Ephesos" }, "Die Hängenden Gärten von Babylon",
+            "Für die Hängenden Gärten gibt es bis heute keinen sicheren archäologischen Fund. Ob sie wirklich in Babylon standen, ist unter Fachleuten umstritten."),
+        ("Was war der Koloss von Rhodos?", new[] { "Eine etwa 33 Meter hohe Bronzestatue des Sonnengottes Helios", "Ein unterirdisches Grabmal für mehrere Königsfamilien", "Ein weitläufiger Tempel für die Göttin Athene" }, "Eine etwa 33 Meter hohe Bronzestatue des Sonnengottes Helios",
+            "Der Koloss war eine riesige Bronzestatue am Hafen von Rhodos. Ein Erdbeben ließ sie nach nur rund 60 Jahren einstürzen."),
+        ("Stand der Koloss von Rhodos mit gespreizten Beinen über der Hafeneinfahrt?", new[] { "Nein, das ist eine spätere Legende ohne historische Grundlage", "Ja, Schiffe fuhren zwischen seinen Beinen hindurch", "Ja, so beschreiben es alle antiken Quellen übereinstimmend" }, "Nein, das ist eine spätere Legende ohne historische Grundlage",
+            "Das Bild stammt aus dem Mittelalter und der Neuzeit. Antike Quellen berichten davon nichts - technisch wäre es damals auch kaum möglich gewesen."),
+        ("Wofür diente der Pharos von Alexandria?", new[] { "Als Leuchtturm, der Schiffen den Weg in den Hafen wies", "Als Grabmal für die ägyptischen Königinnen", "Als Wasserspeicher für die gesamte Hafenstadt" }, "Als Leuchtturm, der Schiffen den Weg in den Hafen wies",
+            "Der Pharos war einer der höchsten Bauten der Antike. Sein Name lebt bis heute weiter: auf Französisch heißt ein Leuchtturm \"phare\", auf Italienisch und Spanisch \"faro\"."),
+        ("Was zerstörte den Leuchtturm von Alexandria endgültig?", new[] { "Mehrere schwere Erdbeben über die Jahrhunderte", "Ein einzelner Blitzschlag in einer Sturmnacht", "Ein Beschluss der Stadt, ihn abzureißen" }, "Mehrere schwere Erdbeben über die Jahrhunderte",
+            "Erdbeben beschädigten den Pharos immer wieder, bis er im späten Mittelalter vollständig einstürzte. Seine Reste liegen heute im Hafenbecken."),
+        ("Wo lagen alle sieben antiken Weltwunder?", new[] { "Rund um das östliche Mittelmeer, in der den Griechen bekannten Welt", "Gleichmäßig über alle fünf Kontinente verteilt", "Ausschließlich auf dem Gebiet des heutigen Italien" }, "Rund um das östliche Mittelmeer, in der den Griechen bekannten Welt",
+            "Die Liste stammt von griechischen Reisenden. Sie enthält deshalb nur Bauwerke aus der Welt, die diese Reisenden selbst kannten - nichts aus China, Amerika oder Afrika südlich der Sahara."),
+        ("Warum stehen auf der antiken Liste keine Bauwerke aus China oder Amerika?", new[] { "Weil die griechischen Verfasser diese Weltgegenden gar nicht kannten", "Weil es dort damals nachweislich keine großen Bauwerke gab", "Weil die Verfasser sie bewusst als weniger wertvoll einstuften" }, "Weil die griechischen Verfasser diese Weltgegenden gar nicht kannten",
+            "Die Chinesische Mauer und die Bauten der Maya existierten längst. Eine Liste zeigt immer auch, wie weit der Horizont derer reichte, die sie aufgeschrieben haben."),
+        ("Wer wählte 2007 die \"neuen sieben Weltwunder\" aus?", new[] { "Millionen Menschen bei einer Abstimmung einer privaten Schweizer Stiftung", "Die Weltkulturorganisation UNESCO nach wissenschaftlicher Prüfung", "Eine gemeinsame Kommission aller Staaten der Vereinten Nationen" }, "Millionen Menschen bei einer Abstimmung einer privaten Schweizer Stiftung",
+            "Die Abstimmung von 2007 wurde von der privaten Stiftung New7Wonders veranstaltet. Die UNESCO stellte ausdrücklich klar, dass sie damit nichts zu tun hat."),
+        ("Welches Bauwerk gehört zu den neuen sieben Weltwundern von 2007?", new[] { "Machu Picchu in Peru", "Der Leuchtturm von Alexandria in Ägypten", "Der Tempel der Artemis in Ephesos" }, "Machu Picchu in Peru",
+            "Zur Liste von 2007 gehören Chichén Itzá, die Christusstatue in Rio, das Kolosseum, die Chinesische Mauer, Machu Picchu, Petra und der Taj Mahal."),
+        ("Welche Rolle spielen die Pyramiden von Gizeh in der Liste von 2007?", new[] { "Sie bekamen einen Ehrenplatz und standen nicht zur Abstimmung", "Sie wurden bei der Abstimmung nicht gewählt und fielen heraus", "Sie erhielten mit Abstand die meisten Stimmen von allen" }, "Sie bekamen einen Ehrenplatz und standen nicht zur Abstimmung",
+            "Ägypten protestierte dagegen, das einzige erhaltene antike Weltwunder zur Abstimmung zu stellen. Die Pyramiden bekamen deshalb einen Ehrenstatus."),
+        ("Was ist der Unterschied zwischen den \"neuen sieben Weltwundern\" und dem UNESCO-Welterbe?", new[] { "Das Welterbe umfasst über tausend Stätten und wird fachlich geprüft, die Sieben kamen aus einer Abstimmung", "Beides ist dasselbe, nur mit zwei verschiedenen Namen", "Das UNESCO-Welterbe umfasst genau sieben besonders geschützte Bauwerke" }, "Das Welterbe umfasst über tausend Stätten und wird fachlich geprüft, die Sieben kamen aus einer Abstimmung",
+            "Die UNESCO-Welterbeliste wird nach festen fachlichen Kriterien geführt und umfasst weit über tausend Stätten weltweit - darunter auch Ephesos und Bodrum."),
+        ("Welches der neuen sieben Weltwunder liegt in Jordanien?", new[] { "Die Felsenstadt Petra", "Die Ruinenstadt Machu Picchu", "Die Tempelstadt Chichén Itzá" }, "Die Felsenstadt Petra",
+            "Petra wurde von den Nabatäern direkt in rote Felswände gehauen. Die Stadt war ein wichtiger Knotenpunkt alter Handelswege."),
+        ("Wofür wurde der Taj Mahal in Indien erbaut?", new[] { "Als Grabmal, das ein Herrscher für seine verstorbene Frau errichten ließ", "Als Sitz der Regierung des damaligen indischen Reiches", "Als Festung zum Schutz der Stadt vor Angriffen" }, "Als Grabmal, das ein Herrscher für seine verstorbene Frau errichten ließ",
+            "Der Mogulherrscher Shah Jahan ließ den Taj Mahal im 17. Jahrhundert als Grabmal für seine Frau Mumtaz Mahal errichten."),
+        ("Was sagt eine Weltwunder-Liste immer auch über ihre Verfasser aus?", new[] { "Welchen Teil der Welt sie kannten und was sie für bedeutend hielten", "Nichts - solche Listen sind rein sachlich und ohne Standpunkt", "Ausschließlich, wie alt die aufgeführten Bauwerke jeweils sind" }, "Welchen Teil der Welt sie kannten und was sie für bedeutend hielten",
+            "Die antike Liste zeigt den Horizont griechischer Reisender, die Liste von 2007 zeigt, wer Zugang zu Internet und Telefon hatte. Wer auswählt, entscheidet mit."),
+        ("Warum ist es wichtig zu wissen, WER eine solche Rangliste erstellt hat?", new[] { "Weil das Ergebnis davon abhängt, wer auswählt und nach welchen Maßstäben", "Weil Ranglisten grundsätzlich immer erfunden und wertlos sind", "Weil nur staatliche Stellen überhaupt Ranglisten erstellen dürfen" }, "Weil das Ergebnis davon abhängt, wer auswählt und nach welchen Maßstäben",
+            "Ob eine Fachkommission prüft oder ob per Telefon abgestimmt wird, ändert das Ergebnis. Diese Frage lohnt sich bei jeder Bestenliste, auch im Internet.")
+    };
+
+    private static QuizQuestion Weltwunder(Random r)
+    {
+        var f = WeltwunderListe[r.Next(WeltwunderListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Geschichte, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Die sieben Weltwunder - antike Liste und die Abstimmung von 2007", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Antik: Pyramide von Gizeh (als einzige erhalten), Hängende Gärten, Zeusstatue, Artemis-Tempel in Ephesos, Mausoleum von Halikarnassos (heute Bodrum), Koloss von Rhodos, Leuchtturm von Alexandria. Zwei davon stehen in der heutigen Türkei."
         };
     }
 

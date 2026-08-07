@@ -633,6 +633,80 @@ public static class ReadingContentProvider
         },
         new()
         {
+            Title = "Die sieben Weltwunder der Antike – kurz erklärt",
+            Author = "Allgemeinwissen",
+            TextDe = "Vor über zweitausend Jahren stellten griechische Reisende eine Liste der sieben " +
+                     "beeindruckendsten Bauwerke zusammen, die sie kannten: die Große Pyramide von Gizeh, " +
+                     "die Hängenden Gärten von Babylon, die Zeusstatue von Olympia, den Tempel der Artemis " +
+                     "in Ephesos, das Mausoleum von Halikarnassos, den Koloss von Rhodos und den Leuchtturm " +
+                     "von Alexandria.\n\n" +
+                     "Zwei davon standen in der heutigen Türkei: Ephesos liegt beim heutigen Selçuk, " +
+                     "Halikarnassos ist das heutige Bodrum. Vom Grabmal des Herrschers Maussollos stammt " +
+                     "übrigens unser Wort \u0022Mausoleum\u0022.\n\n" +
+                     "Heute steht nur noch eines davon: die Große Pyramide von Gizeh. Alle anderen wurden " +
+                     "durch Erdbeben, Brände oder Zerstörung vernichtet. Und alle sieben lagen rund um das " +
+                     "östliche Mittelmeer - denn weiter reichte die Welt nicht, die diese Reisenden kannten.",
+            TextEn = "More than two thousand years ago, Greek travellers put together a list of the seven " +
+                     "most impressive buildings they knew: the Great Pyramid of Giza, the Hanging Gardens of " +
+                     "Babylon, the Statue of Zeus at Olympia, the Temple of Artemis at Ephesus, the Mausoleum " +
+                     "at Halicarnassus, the Colossus of Rhodes, and the Lighthouse of Alexandria.\n\n" +
+                     "Two of them stood in what is now Turkey: Ephesus lies near today's Selçuk, and " +
+                     "Halicarnassus is today's Bodrum. Our word \u0022mausoleum\u0022 comes from the tomb of " +
+                     "the ruler Maussollos there.\n\n" +
+                     "Only one of them still stands today: the Great Pyramid of Giza. All the others were " +
+                     "destroyed by earthquakes, fire, or deliberate destruction. And all seven lay around the " +
+                     "eastern Mediterranean - because the world those travellers knew reached no further.",
+            TextTr = "İki bin yıldan fazla bir süre önce Yunan gezginler, bildikleri en etkileyici yedi yapıyı " +
+                     "bir listede topladılar: Gize Büyük Piramidi, Babil'in Asma Bahçeleri, Olimpiya'daki Zeus " +
+                     "Heykeli, Efes'teki Artemis Tapınağı, Halikarnas Mozolesi, Rodos Heykeli ve İskenderiye " +
+                     "Feneri.\n\n" +
+                     "Bunlardan ikisi bugünkü Türkiye'de bulunuyordu: Efes bugünkü Selçuk yakınlarındadır, " +
+                     "Halikarnas ise bugünkü Bodrum'dur. \u0022Mozole\u0022 sözcüğü de oradaki hükümdar " +
+                     "Maussollos'un mezarından gelir.\n\n" +
+                     "Bugün bunlardan yalnızca biri ayakta: Gize Büyük Piramidi. Diğerlerinin hepsi " +
+                     "depremler, yangınlar ya da yıkımlar sonucu yok oldu. Ve yedisi de Doğu Akdeniz " +
+                     "çevresindeydi - çünkü o gezginlerin bildiği dünya daha uzağa uzanmıyordu."
+        },
+        new()
+        {
+            Title = "Die neuen sieben Weltwunder – kurz erklärt",
+            Author = "Allgemeinwissen",
+            TextDe = "Im Jahr 2007 wurden \u0022neue sieben Weltwunder\u0022 bekannt gegeben: Chichén Itzá in " +
+                     "Mexiko, die Christusstatue in Rio de Janeiro, das Kolosseum in Rom, die Chinesische " +
+                     "Mauer, Machu Picchu in Peru, die Felsenstadt Petra in Jordanien und der Taj Mahal in " +
+                     "Indien. Die Pyramiden von Gizeh bekamen einen Ehrenplatz und standen gar nicht erst " +
+                     "zur Wahl.\n\n" +
+                     "Ausgewählt wurden sie nicht von Fachleuten, sondern per Abstimmung im Internet und am " +
+                     "Telefon. Veranstalterin war eine private Stiftung aus der Schweiz. Die UNESCO, die " +
+                     "das Welterbe der Menschheit betreut, stellte ausdrücklich klar, dass sie mit dieser " +
+                     "Wahl nichts zu tun hat.\n\n" +
+                     "Das ist der Unterschied: Auf der UNESCO-Welterbeliste stehen über tausend Stätten, " +
+                     "nach festen fachlichen Maßstäben geprüft. Eine Liste sagt eben immer auch etwas über " +
+                     "die aus, die sie aufgestellt haben - das lohnt sich bei jeder Bestenliste zu fragen.",
+            TextEn = "In 2007, \u0022new seven wonders of the world\u0022 were announced: Chichén Itzá in " +
+                     "Mexico, the Christ the Redeemer statue in Rio de Janeiro, the Colosseum in Rome, the " +
+                     "Great Wall of China, Machu Picchu in Peru, the rock city of Petra in Jordan, and the " +
+                     "Taj Mahal in India. The Pyramids of Giza were given honorary status and were not part " +
+                     "of the vote.\n\n" +
+                     "They were chosen not by experts but by a public vote over the internet and by phone, " +
+                     "organised by a private foundation in Switzerland. UNESCO, which looks after the World " +
+                     "Heritage of humankind, stated clearly that it had nothing to do with this vote.\n\n" +
+                     "That is the difference: the UNESCO World Heritage list contains more than a thousand " +
+                     "sites, assessed against fixed expert criteria. A list always says something about the " +
+                     "people who made it - a question worth asking about any ranking.",
+            TextTr = "2007 yılında \u0022yeni yedi dünya harikası\u0022 açıklandı: Meksika'daki Chichén Itzá, " +
+                     "Rio de Janeiro'daki İsa Heykeli, Roma'daki Kolezyum, Çin Seddi, Peru'daki Machu Picchu, " +
+                     "Ürdün'deki kaya kenti Petra ve Hindistan'daki Tac Mahal. Gize Piramitleri onursal bir " +
+                     "yer aldı ve hiç oylamaya girmedi.\n\n" +
+                     "Bunlar uzmanlar tarafından değil, internet ve telefon üzerinden yapılan bir oylamayla " +
+                     "seçildi. Düzenleyen, İsviçre'den özel bir vakıftı. İnsanlığın dünya mirasıyla ilgilenen " +
+                     "UNESCO, bu seçimle hiçbir ilgisi olmadığını açıkça belirtti.\n\n" +
+                     "Fark şurada: UNESCO Dünya Mirası listesinde, belirli uzmanlık ölçütlerine göre " +
+                     "incelenmiş binden fazla yer bulunur. Bir liste her zaman onu hazırlayanlar hakkında da " +
+                     "bir şey söyler - bu soruyu her \u0022en iyiler\u0022 listesinde sormaya değer."
+        },
+        new()
+        {
             Title = "Die Menschenrechte – kurz erklärt",
             Author = "Allgemeinwissen",
             TextDe = "Die Allgemeine Erklärung der Menschenrechte wurde 1948 von den Vereinten Nationen " +
