@@ -1,6 +1,7 @@
 # Weiterer Plan für LernTor
 
-Stand: 07.08.2026. Reine Planung — nichts hiervon ist umgesetzt.
+Stand: 12.08.2026. Bis auf **Phase 1.0** (drei Datenverlust-Fehler, alle behoben) ist nichts
+hiervon umgesetzt.
 
 Dieser Plan ordnet nach **Risiko für die Familie**, nicht nach technischer Eleganz. Die App wird
 täglich von zwei Kindern benutzt; was sie am ehesten kaputtmacht oder ihnen Arbeit vernichtet,
@@ -10,14 +11,15 @@ steht oben.
 
 | Größe | Wert |
 |---|---|
-| Code | 345 `.cs`-Dateien, ~59.300 Zeilen, 30 XAML-Ansichten *(gemessen 07.08.2026)* |
+| Code | 352 `.cs`-Dateien, ~60.300 Zeilen, 30 XAML-Ansichten *(gemessen 12.08.2026)* |
 | Fächer | 17 mit eigenem Generator, **4.671 Frage-Tupel** in 337 Themen *(gezählt, nicht geschätzt)* |
 | Etappen | 20 (`LearningStage`), davon 17 Fach-Etappen |
-| Tests | **613 Testmethoden** (+223 `InlineData`-Fälle) in 71 Dateien, plus 17 statische Prüfungen |
+| Tests | **630 Testmethoden** (+236 `InlineData`-Fälle) in 77 Dateien, plus 21 statische Prüfungen |
 | Bereiche | Lesen, Tippen, Schreiben, News, 15 Schulfächer, KI-Bereich, Erste Hilfe, Führerschein (3 Unterbereiche), Abschlussquiz |
 | Verteilung | ZIP-Artefakt aus GitHub Actions, kein Installer |
 | Kalender | Ferien bis 14.08.2027, Feiertage bis 26.12.2027 |
 | Stundenplan | pro Profil, eigenes Zeitraster je Schule (seit 07.08.2026) |
+| Seit 07.08. | Weltwunder (21 Fragen + 2 Lesetexte + 7 KI-Bilder an den Erklärungen), sichtbarer Hinweis wenn die Kiosk-Sperre aus ist, Planer auch auf dem Geschafft-Bildschirm |
 
 **Der wichtigste Satz über den Stand:** Kein Mensch hat die App je von Anfang bis Ende
 durchgespielt. Alles, was bisher gefunden wurde — das falsche STOP-Schild, das doppelte „STOP",
@@ -25,6 +27,11 @@ die unbrauchbaren vektorisierten Zeichen, zuletzt das „TR" statt der türkisch
 dem Hinsehen, nicht aus Tests. 601 Testmethoden und 16 statische Prüfungen haben **keinen
 einzigen** davon gefunden. Das ist kein Vorwurf an die Tests; es ist der Grund, warum Phase 0
 alles andere sperrt.
+
+Von diesen vier ist seither genau **einer** in eine statische Prüfung übersetzt worden
+(`flaggen-emoji`, nach dem „TR" statt der Flagge). Die anderen drei würden auch heute, mit 630
+Tests und 21 Prüfungen, nur beim Hinsehen auffallen — sie waren alle Fehler daran, wie etwas
+aussieht, und das prüft keine Zusicherung.
 
 **Das ausführliche, nach Rollen geordnete Testprotokoll steht in [`TESTPLAN.md`](TESTPLAN.md)** —
 fünf Rollen (die beiden Kinder, Elternteil, Kind-das-rauswill, Notfall), weil sich Fehler an der
@@ -289,14 +296,27 @@ vergessen, wenn neue Fragen dazukommen.
 
 ### 3.1 Schuljahreswechsel
 
-**Warum:** `GradeLevel` wird einmal beim Anlegen gesetzt. Am 24.08.2026 beginnt für beide Kinder
-ein neues Schuljahr; im Sommer 2027 werden sie Klasse 7 und Klasse 10. Es gibt keinen Weg dorthin
-außer „Profil neu anlegen" — was den Fortschritt kostet.
+**Warum:** `GradeLevel` wird **ausschließlich** in `StudentProfileRepository.CreateAsync` gesetzt.
+Es gibt keinen Weg, die Klassenstufe eines bestehenden Profils zu ändern, außer „Profil neu
+anlegen" — und das kostet Sterne, gemeisterte Fragen samt Wiederholungsplan, die gesamte
+Fehler-Kartei, das Aktivitätsprotokoll, den Stundenplan, Hausaufgaben und Klausurtermine.
 
-**Umfang:** Klassenstufe im Eltern-Bereich änderbar machen (`UpdateSettingsAsync` kann es fast
-schon), plus ein Hinweis im Eltern-Bereich, wenn der Schulstart aus dem Kalender vorbei ist.
+**Klarstellung (12.08.2026):** Die eingetragenen Stufen — Klasse 6 und Klasse 9 — sind bereits die
+für das am 24.08.2026 beginnende Schuljahr. Der Wechsel auf Klasse 7 und Klasse 10 steht also erst
+im Sommer 2027 an, nicht in diesem Monat. *(Eine frühere Fassung dieses Plans ließ das offen; die
+ursprüngliche Datierung war richtig.)*
 
-**Fällig:** vor August 2027, besser gleich.
+**Nicht so, wie es hier mal stand:** „`UpdateSettingsAsync` kann es fast schon" ist falsch — die
+Methode hat zwanzig Parameter, die Klassenstufe ist keiner davon. Und sie ist ohnehin genau der
+Voll-Überschreiber, der Fehler 1.0.1 verursacht hat. Der Weg ist eine eigene Methode nach dem
+Muster von `SetPinnedReadingTextAsync`, die genau diese eine Spalte schreibt.
+
+**Umfang:** `SetGradeLevelAsync` (eine Spalte), ein Auswahlfeld im Eltern-Bereich, plus ein Hinweis
+dort, sobald der Schulstart aus dem Kalender vorbei ist. Inhaltlich ist alles bereit: `GradeLevel`
+kennt 6 bis 10, und Klasse 8/10 greifen über die Doppeljahrgangs-Regel automatisch auf die
+7er- bzw. 9er-Pools zu. Es fehlt nur der Weg dorthin.
+
+**Fällig:** vor August 2027. Klein genug, um es vorher nebenbei mitzunehmen.
 
 ### 3.2 Kalender verlängern
 
@@ -479,7 +499,7 @@ sich bisher jedes Mal gelohnt hat:
 ```
 Phase 0  App durchspielen (TESTPLAN.md)    ← sperrt alles andere
    │
-   ├─ Phase 1.0 Drei verifizierte Fehler     ← Datenverlust, sofort
+   ├─ Phase 1.0 Drei verifizierte Fehler     ← ✅ erledigt 07.08.2026
    │
    ├─ Phase 1  Sicherung/Wiederherstellung  ← höchstes Risiko
    │
@@ -493,7 +513,7 @@ Phase 0  App durchspielen (TESTPLAN.md)    ← sperrt alles andere
 ## Prüfkommandos
 
 ```bash
-python3 scripts/preflight.py                  # 17 statische Prüfungen
+python3 scripts/preflight.py                  # 21 statische Prüfungen
 python3 scripts/check-answer-length-bias.py   # Gate 60 % je Generator
 dotnet test tests/LernTor.Tests/LernTor.Tests.csproj
 ```
