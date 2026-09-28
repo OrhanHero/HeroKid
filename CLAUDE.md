@@ -113,6 +113,22 @@ roughly a third of the target. `MainViewModel` calls this twice per day at most:
 attempt (target 20) and, only if that attempt's score is below the profile's configured threshold,
 once more for a retry weighted toward weak subjects (target 15, via `ComposeRetryExercises`).
 
+### Subjects of the day follow the timetable (`TimetableSubjectPlanner`, since 2026/27)
+
+Each child only practises the school subjects on their **next school day's** timetable (Friday and
+weekends → Monday, holidays → first school day after), plus `AlwaysIncluded` (Türkisch), plus
+subjects with an upcoming exam (`ExamEntry.LearningWeight > 1`). "NaWi" rotates Bio → Chemie →
+Physik by counting NaWi weekdays since a fixed Monday, so the same date always yields the same
+subject. The result is passed as the optional `scheduledSchoolSubjects` argument of
+`SubjectAvailability.IsDisabled`/`EffectiveDisabled`, which is how stage skipping, the stage
+counter and the final quiz all pick it up without knowing about timetables. `null` means "no
+constraint" (no timetable, switch off, no school day in sight) and must keep the old behaviour.
+`MainViewModel.RefreshScheduledSubjectsAsync` computes it from `Progress.SessionDate`, not the
+clock. Per-profile switch: `StudentProfile.TimetableSubjectsEnabled` (stored inverted). The
+family's timetables live in `docs/STUNDENPLAENE-2026-27.md` and, verbatim, in
+`TimetableSubjectPlannerTests`; `scripts/pool-reichweite.py` reads that doc to compute how many
+weeks each question pool lasts.
+
 ### Stage navigation (`LernTor.Core.Services.LearningStageSubjects`)
 
 `LearningStage` (an ordered enum: Willkommen → News → one entry per subject → Abschlussquiz →
@@ -296,6 +312,15 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   no failing test, no message. Prefer a method that writes exactly the one column you mean
   (`SetPinnedReadingTextAsync` is the pattern); if you must call the full overwriter, pass
   everything. `scripts/preflight.py` now checks it (`voll-ueberschreiber`).
+- **Hand-maintained lists of tables go stale — twice.** `DatabaseMaintenanceRepository.ResetAllDataAsync`
+  listed its tables by hand; after the first fix ("new tables belong in this list without
+  exception") six more tables were added elsewhere and silently survived a factory reset.
+  `StudentProfileRepository.DeleteAsync` only removed three of ~17 profile-owned tables. Both now
+  derive their table lists from the EF model (`AllTableNames()`, `ProfileOwnedTables()`) and
+  `BackupRestoreTests`/`ProfileSettingsPersistenceTests` check every table. Don't reintroduce a
+  hand-written list of `DbSet`s for anything that must cover "all data".
+- **Don't delete `.github/workflows/build.yml`.** It was removed on 17.08.2026 (`00bf7a3`) and for
+  six weeks nothing pushed was ever compiled. It is the only place code is built at all.
 - **`StudentProgress` had three completion flags but `ProgressEntity` only stored one.**
   `HasCompletedTyping`/`HasCompletedWriting` were read by `ProgressGateService` and set by
   `MainViewModel`, but never persisted — a restart mid-session made the child redo the typing

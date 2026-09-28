@@ -13,6 +13,24 @@ mit eigenen Themen - kein Fach wiederholt für Klasse-7-Profile mehr den Klasse-
 Ausnahme ist der KI-Bereich, der bewusst nur Klasse 6 und 9 hat und für Klasse 7 auf Klasse 6
 zurückfällt (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
 
+**Seit dem Schuljahr 2026/27** wählt LernTor die Schulfächer des Tages nach dem Stundenplan des
+Kindes aus: geübt wird, was am nächsten Schultag dran ist, plus Türkisch (siehe
+„📚 Fächer nach Stundenplan“ unten).
+
+### Dokumentation
+
+| Dokument | Inhalt |
+|---|---|
+| [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md) | **Was als Nächstes zu tun ist**, und was am 28.09.2026 erledigt wurde |
+| [docs/WIEDERHERSTELLUNG.md](docs/WIEDERHERSTELLUNG.md) | Notfall: Sicherung einspielen, App startet nicht, Kiosk lösen |
+| [docs/STUNDENPLAENE-2026-27.md](docs/STUNDENPLAENE-2026-27.md) | Stundenpläne der Kinder zum Einfügen |
+| [docs/TESTPLAN.md](docs/TESTPLAN.md) | Testprotokoll nach Rollen |
+| [docs/PLAN.md](docs/PLAN.md) | Plan nach Risiko, mit Begründungen |
+| [docs/BUILD.md](docs/BUILD.md) | Bauen, Installieren, Datenbankschema |
+| [docs/CURRICULUM.md](docs/CURRICULUM.md), [docs/FAECHER-SYSTEM.md](docs/FAECHER-SYSTEM.md) | Themen je Fach und Stufe, Verdrahtung neuer Fächer |
+| [docs/TIPPTRAINER.md](docs/TIPPTRAINER.md), [docs/FUEHRERSCHEIN.md](docs/FUEHRERSCHEIN.md) | Tipptrainer, Führerschein-Bereich |
+| [docs/PILOT-CHECKLISTE.md](docs/PILOT-CHECKLISTE.md) | Installation und Bypass-Härtetest am echten PC |
+
 ## Profile
 
 Mehrere Kinder am selben PC wählen beim Start ihr eigenes Profil aus einem Kachel-Dashboard: jede
@@ -642,6 +660,9 @@ Kinder sollen so viel Zeit erhalten, wie sie zum Durcharbeiten von Lesen/Fächer
 benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäumnis.
 
 ## Bekannte Grenzen / nächste Schritte
+
+Die aktuelle Arbeitsliste steht in [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md). Dieser
+Abschnitt beschreibt dauerhafte Grenzen und Entwurfsentscheidungen.
 
 - **KI-Funktionen: komplett lokal, keine Cloud-Anbindung.** LernTor nutzt an keiner Stelle einen
   Cloud-KI-Dienst - das lokal geladene Sprachmodell ist die einzige KI-Anbindung, für zwei Features:

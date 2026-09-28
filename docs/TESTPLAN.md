@@ -140,3 +140,21 @@ kann — deshalb steht die Sicherung ganz oben in der Vorbereitung.**
 
 Die Liste konkreter Beobachtungen aus einem echten Durchlauf ist mehr wert als jedes weitere
 statische Audit — und mehr wert als jedes Modul, das noch dazukommen könnte.
+
+---
+
+## Neu seit 28.09.2026
+
+Acht Punkte für die Funktionen aus Pull Request #1. Sie laufen alle durch die CI, gesehen hat
+sie aber noch niemand. **Vorher eine Sicherung auf USB.**
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| N.1 | Elternteil | Stundenplan beider Kinder aus `STUNDENPLAENE-2026-27.md` einfügen, Zeitraster anpassen, speichern | Keine Warnung beim Einlesen; die Startseite zeigt den richtigen Tag mit den richtigen Uhrzeiten | |
+| N.2 | Kind | Startseite ansehen | Unter dem Stundenplan steht „Heute übst du für <Tag>: …“ mit den Fächern des nächsten Schultags plus Türkisch | |
+| N.3 | Kind | Tag durchspielen | Es kommen **nur** diese Fächer; der Zähler „Fächer x/y“ geht bis zum Ende auf; das Abschlussquiz fragt nur diese Fächer | |
+| N.4 | Emirhan | An zwei NaWi-Tagen hintereinander (Mo für Di, Di für Mi) | Zwei **verschiedene** Fächer aus Bio/Chemie/Physik | |
+| N.5 | Elternteil | Schalter „Fächer des Tages nach dem Stundenplan auswählen“ aus, Eltern-Bereich schließen | Ab der nächsten Etappe kommen wieder alle Fächer | |
+| N.6 | Elternteil | „🩻 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
+| N.7 | Elternteil | Klassenstufe eines Kindes testweise ändern und zurückstellen | Rückfrage, dann „✅ Gespeichert“; Sterne und Stundenplan sind danach noch da | |
+| N.8 | Notfall | Eine automatische Sicherung aus `…\LernTor\sicherungen\` über „Sicherung wiederherstellen…“ einspielen | App beendet sich; nach dem Neustart ist alles da, was vor der Sicherung da war | |
