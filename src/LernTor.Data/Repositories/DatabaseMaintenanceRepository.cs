@@ -28,29 +28,79 @@ public sealed class DatabaseMaintenanceRepository
     /// Fortschritte, Aktivitätsprotokolle und Einstellungen" verspricht. Belohnungen, eingelöste
     /// Belohnungen, Tipptrainer-Fortschritt, eigene Lesetexte, Vokabeln, Fehler-Kartei,
     /// gemeisterte Aufgaben und das Nachrichten-Archiv blieben stehen - nach dem Zurücksetzen
-    /// tauchten also die Sterne und Fehler des gelöschten Kindes beim neuen wieder auf. Neue
-    /// Tabellen gehören ausnahmslos in diese Liste.</para>
+    /// tauchten also die Sterne und Fehler des gelöschten Kindes beim neuen wieder auf.</para>
+    ///
+    /// <para><b>Deshalb keine Liste mehr, sondern das Modell selbst.</b> Die Liste wurde nach
+    /// dieser Lektion noch einmal vergessen: Führerschein-Fortschritt, Theorie-Antworten,
+    /// Theorie-Prüfungen, Kurs-Fortschritt und beide Stundenplan-Tabellen kamen später dazu und
+    /// überlebten das Zurücksetzen (gefunden am 28.09.2026). Gelöscht wird jetzt jede Tabelle,
+    /// die EF kennt - eine neue Tabelle ist automatisch dabei.</para>
     /// </summary>
     public async Task ResetAllDataAsync(CancellationToken cancellationToken = default)
     {
-        await _db.Progress.ExecuteDeleteAsync(cancellationToken);
-        await _db.ActivityLog.ExecuteDeleteAsync(cancellationToken);
-        await _db.QuizAttempts.ExecuteDeleteAsync(cancellationToken);
-        await _db.Settings.ExecuteDeleteAsync(cancellationToken);
-        await _db.CustomQuestions.ExecuteDeleteAsync(cancellationToken);
-        await _db.ReviewQuestions.ExecuteDeleteAsync(cancellationToken);
-        await _db.MasteredPrompts.ExecuteDeleteAsync(cancellationToken);
-        await _db.ArchivedArticles.ExecuteDeleteAsync(cancellationToken);
-        await _db.RewardRedemptions.ExecuteDeleteAsync(cancellationToken);
-        await _db.Rewards.ExecuteDeleteAsync(cancellationToken);
-        await _db.TypingLessonProgress.ExecuteDeleteAsync(cancellationToken);
-        await _db.CustomReadingTexts.ExecuteDeleteAsync(cancellationToken);
-        await _db.VocabularyEntries.ExecuteDeleteAsync(cancellationToken);
-        await _db.HomeworkTasks.ExecuteDeleteAsync(cancellationToken);
-        await _db.Exams.ExecuteDeleteAsync(cancellationToken);
+        var profilTabelle = _db.Model.FindEntityType(typeof(Entities.StudentProfileEntity))?.GetTableName();
 
         // Profile zuletzt: alles andere haengt per ProfileId daran.
-        await _db.Profiles.ExecuteDeleteAsync(cancellationToken);
+        var tabellen = AllTableNames()
+            .OrderBy(tabelle => tabelle == profilTabelle ? 1 : 0)
+            .ToList();
+
+        foreach (var tabelle in tabellen)
+        {
+            // Tabellennamen stammen aus dem EF-Modell, nicht aus einer Eingabe - kein
+            // Injektionsweg. Bewusst verkettet statt interpoliert (EF1002).
+            var sql = "DELETE FROM \"" + tabelle + "\"";
+            await _db.Database.ExecuteSqlRawAsync(sql, cancellationToken);
+        }
+    }
+
+    /// <summary>Die Namen aller Tabellen, die das EF-Modell kennt - je Tabelle einmal.</summary>
+    public IReadOnlyList<string> AllTableNames() =>
+        _db.Model.GetEntityTypes()
+            .Select(typ => typ.GetTableName())
+            .OfType<string>()
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToList();
+
+    /// <summary>
+    /// Prüft die Datenbankdatei mit SQLites <c>PRAGMA integrity_check</c>. Eine beschädigte
+    /// Datei zeigt sich sonst erst als scheinbar zufälliger Absturz irgendwo im Tagesablauf;
+    /// hier bekommen die Eltern auf Knopfdruck eine Antwort im Klartext.
+    /// </summary>
+    public async Task<DatabaseIntegrityResult> CheckIntegrityAsync(CancellationToken cancellationToken = default)
+    {
+        var connection = _db.Database.GetDbConnection();
+        var wasOpen = connection.State == System.Data.ConnectionState.Open;
+
+        if (!wasOpen)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = "PRAGMA integrity_check";
+
+            var meldungen = new List<string>();
+            using (var reader = await command.ExecuteReaderAsync(cancellationToken))
+            {
+                while (await reader.ReadAsync(cancellationToken))
+                {
+                    meldungen.Add(reader.GetString(0));
+                }
+            }
+
+            return new DatabaseIntegrityResult(meldungen);
+        }
+        finally
+        {
+            if (!wasOpen)
+            {
+                await connection.CloseAsync();
+            }
+        }
     }
 
     /// <summary>
@@ -121,7 +171,15 @@ public sealed class DatabaseMaintenanceRepository
     /// Tabellen/Spalten beim nächsten Start (additive Updates, siehe docs/BUILD.md).
     /// </summary>
     /// <exception cref="InvalidDataException">Die Datei ist keine SQLite-Datenbank.</exception>
-    public static void ImportBackup(string sourcePath)
+    public static void ImportBackup(string sourcePath) =>
+        ImportBackup(sourcePath, LernTorDbContext.GetDefaultDbPath());
+
+    /// <summary>
+    /// Wie <see cref="ImportBackup(string)"/>, aber mit ausdrücklichem Ziel - damit der ganze Weg
+    /// (Pool schließen, Datei ersetzen, Schema nachziehen) gegen eine Temp-Datei prüfbar ist, statt
+    /// nur an der echten lerntor.db der Familie.
+    /// </summary>
+    public static void ImportBackup(string sourcePath, string targetPath)
     {
         if (!IsSqliteDatabase(sourcePath))
         {
@@ -130,7 +188,7 @@ public sealed class DatabaseMaintenanceRepository
         }
 
         SqliteConnection.ClearAllPools();
-        File.Copy(sourcePath, LernTorDbContext.GetDefaultDbPath(), overwrite: true);
+        File.Copy(sourcePath, targetPath, overwrite: true);
     }
 
     private static bool IsSqliteDatabase(string path)
@@ -142,4 +200,11 @@ public sealed class DatabaseMaintenanceRepository
         return stream.Read(actualHeader, 0, actualHeader.Length) == expectedHeader.Length &&
                actualHeader.AsSpan().SequenceEqual(expectedHeader);
     }
+}
+
+/// <summary>Ergebnis von <c>PRAGMA integrity_check</c>: eine einzige Zeile "ok" heißt gesund,
+/// alles andere sind SQLites eigene Fehlermeldungen.</summary>
+public sealed record DatabaseIntegrityResult(IReadOnlyList<string> Messages)
+{
+    public bool IsOk => Messages.Count == 1 && string.Equals(Messages[0], "ok", StringComparison.OrdinalIgnoreCase);
 }

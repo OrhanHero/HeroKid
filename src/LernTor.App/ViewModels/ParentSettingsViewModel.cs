@@ -1904,6 +1904,44 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     // --- Automatische Sicherungen (AutoBackupService) ---
 
     /// <summary>
+    /// Ergebnis des Knopfes "Datenbank prüfen" im Klartext. Leer, solange nicht geprüft wurde.
+    /// </summary>
+    [ObservableProperty]
+    private string databaseIntegrityStatus = string.Empty;
+
+    /// <summary>
+    /// Prüft die lerntor.db mit SQLites eigener Integritätsprüfung. Bei einem Befund steht die
+    /// konkrete Empfehlung gleich daneben: eine automatische Sicherung einspielen (siehe
+    /// docs/WIEDERHERSTELLUNG.md) - eine beschädigte Datei repariert sich nicht von selbst.
+    /// </summary>
+    [RelayCommand]
+    private async Task CheckDatabaseIntegrityAsync()
+    {
+        DatabaseIntegrityStatus = "Prüfe …";
+
+        try
+        {
+            var ergebnis = await _maintenanceRepo.CheckIntegrityAsync();
+            if (ergebnis.IsOk)
+            {
+                DatabaseIntegrityStatus = $"✅ Datenbank in Ordnung (geprüft {DateTime.Now:dd.MM.yyyy HH:mm}).";
+                return;
+            }
+
+            LernTor.Core.Logging.AppLog.Warn("Parent", "Integritätsprüfung: " + string.Join(" | ", ergebnis.Messages.Take(10)));
+            DatabaseIntegrityStatus =
+                "⚠️ Die Datenbank ist beschädigt. Bitte eine automatische Sicherung einspielen " +
+                "(„Sicherung wiederherstellen…“, die Dateien liegen im Ordner der automatischen Sicherungen).\n" +
+                "SQLite meldet: " + string.Join("; ", ergebnis.Messages.Take(5));
+        }
+        catch (Exception ex)
+        {
+            LernTor.Core.Logging.AppLog.Error("Parent", "Integritätsprüfung fehlgeschlagen", ex);
+            DatabaseIntegrityStatus = $"⚠️ Prüfung nicht möglich: {ex.Message}";
+        }
+    }
+
+    /// <summary>
     /// Einzeiler über die automatischen Sicherungen. Sie laufen still im Hintergrund, und genau
     /// deshalb muss man sie irgendwo sehen können: ein Schutzmechanismus, von dem niemand weiß,
     /// ob er greift, beruhigt zu Unrecht.
