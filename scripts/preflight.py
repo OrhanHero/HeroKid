@@ -23,6 +23,8 @@ Es ersetzt KEINEN Compiler - es prüft nur bekannte, statisch erkennbare Fallen:
  12. Lambda in einem struct-Member, die auf ein eigenes Feld/Property zugreift (CS1673)
  13. Zugesagte Schnittstelle ohne Umsetzung im selben Klassenrumpf (CS0535)
  14. [RelayCommand]/[ObservableProperty] ohne den passenden CommunityToolkit-using (CS0246)
+ 15. [ObservableProperty]-Feld mit Großbuchstaben am Anfang (Property hieße wie das Feld)
+ 16. Fest eingetragene Fach-/Etappenzahlen in Tests, die beim nächsten Fach veralten
 
 Nutzung:  python3 scripts/preflight.py            (alles prüfen)
           python3 scripts/preflight.py --quick    (ohne die langsameren Repo-weiten Scans)
@@ -896,6 +898,47 @@ def check_config_files() -> None:
             report("yaml", path, str(exc))
 
 
+def check_observable_field_case() -> None:
+    """[ObservableProperty] auf einem Feld, das mit einem Grossbuchstaben beginnt.
+
+    Das Toolkit bildet den Property-Namen, indem es den ersten Buchstaben gross schreibt -
+    aus "Name" wird wieder "Name". Feld und Property hiessen gleich; der Generator meldet das
+    als Fehler, und die Bindung im XAML findet am Ende nichts.
+    """
+    muster = re.compile(
+        r"\[ObservableProperty\]\s*(?:\[[^\]]*\]\s*)*private\s+[\w<>\[\],.?\s]+?\s([A-Z]\w*)\s*[;=]")
+    for path in sorted((SRC / "LernTor.App").rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+        for m in muster.finditer(text):
+            zeile = text.count("\n", 0, m.start()) + 1
+            report("observable-grossbuchstabe", path,
+                   f"Zeile {zeile}: Feld '{m.group(1)}' beginnt gross - das Toolkit braucht "
+                   f"'{m.group(1)[0].lower() + m.group(1)[1:]}'")
+
+
+# Ausdruecke, deren Groesse mit jedem neuen Fach oder jeder neuen Etappe waechst.
+WACHSENDE_MENGEN = (
+    r"GetValues<Subject>", r"GetValues<LearningStage>", r"SchoolSubjects\.All",
+    r"LearningStageSubjects\.Map", r"SequentialOrder",
+)
+
+
+def check_hardcoded_subject_counts() -> None:
+    """Assert.Equal(17, ...) gegen eine Menge, die mit jedem neuen Fach waechst.
+
+    So ein Test ist beim naechsten Fach falsch, ohne dass am Code etwas kaputt ist - und
+    kostet eine CI-Runde, bis jemand die Zahl nachzieht (so geschehen beim Erste-Hilfe-Fach).
+    Die Erwartung gehoert aus einer zweiten Quelle abgeleitet, nicht abgeschrieben.
+    """
+    muster = re.compile(r"Assert\.Equal\(\s*\d+\s*,[^;]*?(" + "|".join(WACHSENDE_MENGEN) + r")")
+    for path in sorted(TESTS.rglob("*.cs")):
+        text = path.read_text(encoding="utf-8")
+        for m in muster.finditer(text):
+            zeile = text.count("\n", 0, m.start()) + 1
+            report("feste-fachzahl", path,
+                   f"Zeile {zeile}: feste Zahl gegen {m.group(1)} - veraltet beim naechsten Fach")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--quick", action="store_true",
@@ -921,6 +964,8 @@ def main() -> int:
         ("Flaggen-Emoji (WPF)", check_flag_emoji),
         ("Voll-Ueberschreiber", check_full_overwrite_calls),
         ("Themen-Klassenstufe", check_topic_grade_stamp),
+        ("ObservableProperty-Feldname", check_observable_field_case),
+        ("Feste Fachzahlen in Tests", check_hardcoded_subject_counts),
     ]
     if not args.quick:
         checks += [

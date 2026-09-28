@@ -345,6 +345,16 @@ public sealed partial class MainViewModel : ObservableObject
             stage = _gate.GetNextStage(stage);
         }
 
+        // Zweite Meinung des Gates, bewusst NICHT sperrend: eine harte Sperre an dieser Stelle
+        // liesse ein Kind haengen, sobald Gate und Navigation sich einmal uneinig sind - und
+        // der PC bliebe zu. Stattdessen landet jede Abweichung im Fehlerprotokoll, wo sie im
+        // Eltern-Bereich sichtbar ist. Vorher rief nur die Testsuite CanEnterStage auf.
+        if (CurrentProfile is not null && !_gate.CanEnterStage(Progress, stage, EffectiveDisabledSubjects()))
+        {
+            Core.Logging.AppLog.Warn("Etappen",
+                $"Navigation von {Progress.CurrentStage} nach {stage}, obwohl das Gate eine Etappe dazwischen als offen sieht.");
+        }
+
         Progress.CurrentStage = stage;
         await PersistProgressAsync();
 
