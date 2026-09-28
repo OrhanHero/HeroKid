@@ -139,3 +139,9 @@ Passwort fest (mind. 4 Zeichen, wird als PBKDF2-Hash gespeichert, nie im Klartex
 - [README.md](../README.md) als Einstieg und Gesamtüberblick
 - [TIPPTRAINER.md](TIPPTRAINER.md) für den Typing-Flow und die behobenen WPF-Binding-Fallen
 - [FAECHER-SYSTEM.md](FAECHER-SYSTEM.md) für Stage-Reihenfolge und Fachzuordnung
+
+## 7. Sicherung, Wiederherstellung, Notfall
+
+Wo die Daten liegen, wie man eine Sicherung einspielt und was zu tun ist, wenn LernTor nicht
+mehr startet, steht in [`WIEDERHERSTELLUNG.md`](WIEDERHERSTELLUNG.md). Sie ist für den Fall
+geschrieben, dass niemand da ist, der es aus dem Code lesen kann.
