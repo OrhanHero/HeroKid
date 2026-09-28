@@ -171,4 +171,28 @@ public sealed class SchoolCalendarTests
         Assert.All(SchoolCalendar.All,
             eintrag => Assert.False(string.IsNullOrWhiteSpace(eintrag.Name)));
     }
+
+    [Fact]
+    public void Das_Schuljahr_2026_27_beginnt_am_Montag_nach_den_Sommerferien()
+    {
+        // Sommerferien enden Samstag, 22.08.2026 - erster Schultag ist Montag, 24.08.
+        Assert.Equal(SchoolCalendar.SchoolYearStart2026, SchoolCalendar.SchoolYearStart(new DateOnly(2026, 9, 28)));
+        Assert.Equal(new DateOnly(2026, 8, 24), SchoolCalendar.SchoolYearStart(new DateOnly(2026, 8, 24)));
+    }
+
+    [Fact]
+    public void Vor_dem_ersten_bekannten_Schuljahresbeginn_gibt_es_keinen()
+    {
+        Assert.Null(SchoolCalendar.SchoolYearStart(new DateOnly(2026, 8, 10)));
+        Assert.Null(SchoolCalendar.SchoolYearStart(new DateOnly(2026, 8, 23)));
+    }
+
+    [Fact]
+    public void Der_Hinweis_auf_die_Klassenstufe_gilt_nur_in_den_ersten_vier_Wochen()
+    {
+        Assert.True(SchoolCalendar.IsEarlySchoolYear(new DateOnly(2026, 8, 24)));
+        Assert.True(SchoolCalendar.IsEarlySchoolYear(new DateOnly(2026, 9, 20)));
+        Assert.False(SchoolCalendar.IsEarlySchoolYear(new DateOnly(2026, 9, 21)));
+        Assert.False(SchoolCalendar.IsEarlySchoolYear(new DateOnly(2026, 8, 20)));
+    }
 }

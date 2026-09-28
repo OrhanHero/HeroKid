@@ -105,6 +105,25 @@
                             Command="{Binding DeleteSelectedProfileCommand}" />
                 </StackPanel>
 
+                <!-- Klassenstufe des gewaehlten Profils aendern (Schuljahreswechsel), ohne das Profil
+                     neu anzulegen. Speichert sofort und nur diese zwei Spalten (SetGradeLevelAsync). -->
+                <TextBlock Text="🎓 Neues Schuljahr begonnen - stimmt die Klassenstufe noch?"
+                           Style="{StaticResource BodyText}" FontWeight="SemiBold" Margin="0,0,0,6"
+                           Foreground="{StaticResource ErrorBrush}"
+                           Visibility="{Binding ShowGradeCheckHint, Converter={StaticResource BoolToVis}}" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock Text="Klassenstufe:" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox ItemsSource="{Binding AvailableGradeLevels}" SelectedItem="{Binding EditorGradeLevel}"
+                              Width="120" Padding="6" Margin="0,0,16,0" />
+                    <TextBlock Text="Klasse:" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox Text="{Binding EditorClassLabel, UpdateSourceTrigger=PropertyChanged}" Width="80"
+                             Padding="6" Margin="0,0,16,0" />
+                    <Button Content="Klassenstufe übernehmen" Style="{StaticResource RoundedButton}"
+                            FontSize="14" Padding="14,8" Command="{Binding SaveGradeLevelCommand}" />
+                </StackPanel>
+                <TextBlock Text="{Binding GradeLevelStatus, Mode=OneWay}" Style="{StaticResource BodyText}"
+                           FontSize="13" TextWrapping="Wrap" Margin="0,0,0,12" />
+
                 <!-- Schwierigkeitsstufen (pro oben gewähltem Profil) - vorkonfigurierte Presets statt
                      freier Eingabe, damit Eltern keinen ungültigen Wert setzen können und kein neuer
                      Build nötig ist, um die Hürden zu verändern. -->

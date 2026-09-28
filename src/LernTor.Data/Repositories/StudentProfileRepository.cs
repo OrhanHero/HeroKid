@@ -88,11 +88,66 @@ public sealed class StudentProfileRepository
             return;
         }
 
-        _db.Progress.RemoveRange(_db.Progress.Where(p => p.ProfileId == profileId));
-        _db.ActivityLog.RemoveRange(_db.ActivityLog.Where(a => a.ProfileId == profileId));
-        _db.QuizAttempts.RemoveRange(_db.QuizAttempts.Where(q => q.ProfileId == profileId));
-        _db.Profiles.Remove(entity);
+        // Jede Tabelle mit einer ProfileId-Spalte - aus dem EF-Modell, nicht aus einer Liste.
+        // Hier standen lange nur Fortschritt, Protokoll und Quiz-Historie; Stundenplan,
+        // Fehler-Kartei, gemeisterte Aufgaben, Vokabeln, Hausaufgaben, Klausuren, Tipptrainer-
+        // und Fuehrerschein-Stand des geloeschten Kindes blieben verwaist in der Datenbank
+        // liegen (gefunden am 28.09.2026) - entgegen dem, was die Rueckfrage verspricht.
+        foreach (var (tabelle, spalte) in ProfileOwnedTables())
+        {
+            // Namen aus dem EF-Modell, Wert als Parameter - kein Injektionsweg.
+            var sql = "DELETE FROM \"" + tabelle + "\" WHERE \"" + spalte + "\" = {0}";
+            await _db.Database.ExecuteSqlRawAsync(sql, new object[] { profileId }, cancellationToken);
+        }
 
+        _db.Profiles.Remove(entity);
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>Alle Tabellen, deren Zeilen einem Profil gehören, samt Name der ProfileId-Spalte.</summary>
+    public IReadOnlyList<(string Tabelle, string Spalte)> ProfileOwnedTables()
+    {
+        var ergebnis = new List<(string Tabelle, string Spalte)>();
+
+        foreach (var typ in _db.Model.GetEntityTypes())
+        {
+            var tabelle = typ.GetTableName();
+            var eigenschaft = typ.FindProperty("ProfileId");
+            if (tabelle is null || eigenschaft is null)
+            {
+                continue;
+            }
+
+            var spalte = eigenschaft.GetColumnName() ?? "ProfileId";
+            if (!ergebnis.Any(eintrag => eintrag.Tabelle == tabelle))
+            {
+                ergebnis.Add((tabelle, spalte));
+            }
+        }
+
+        return ergebnis;
+    }
+
+    /// <summary>
+    /// Setzt Klassenstufe und Klassenbezeichnung eines Profils - und schreibt NUR diese beiden
+    /// Spalten (Muster wie <see cref="SetPinnedReadingTextAsync"/>). Fuer den Schuljahreswechsel:
+    /// vorher ging das nur ueber "Profil neu anlegen", und das kostete Sterne, gemeisterte Fragen,
+    /// Fehler-Kartei, Stundenplan, Hausaufgaben und Klausurtermine.
+    ///
+    /// <para>Der Lernstand bleibt dabei stehen: gemeisterte Fragen und die Fehler-Kartei haengen
+    /// am Fragetext, nicht an der Stufe, und der neue Pool bringt ohnehin andere Fragen.</para>
+    /// </summary>
+    public async Task SetGradeLevelAsync(
+        string profileId, GradeLevel gradeLevel, string? classLabel, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        entity.GradeLevel = (int)gradeLevel;
+        entity.ClassLabel = string.IsNullOrWhiteSpace(classLabel) ? null : classLabel.Trim();
         await _db.SaveChangesAsync(cancellationToken);
     }
 

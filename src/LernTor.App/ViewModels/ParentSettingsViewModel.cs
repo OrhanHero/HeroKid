@@ -676,6 +676,9 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         DrivingAreaEnabled = value?.DrivingAreaEnabled ?? true;
         ErsteHilfeEnabled = value?.ErsteHilfeEnabled ?? true;
         TimetableSubjectsEnabled = value?.TimetableSubjectsEnabled ?? true;
+        EditorGradeLevel = value?.GradeLevel ?? GradeLevel.Klasse6;
+        EditorClassLabel = value?.ClassLabel ?? string.Empty;
+        GradeLevelStatus = string.Empty;
         DrivingChallengeSignCount = value?.DrivingChallengeSignCount ?? StudentProfile.DailySignChallengeDefaultCount;
         ApplySignCategoriesToEditor(value?.DisabledSignCategories);
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
@@ -900,6 +903,73 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private bool timetableSubjectsEnabled = true;
 
     partial void OnTimetableSubjectsEnabledChanged(bool value) => MarkDirty();
+
+    // ---------------- Klassenstufe (Schuljahreswechsel) ----------------
+
+    /// <summary>Klassenstufe im Editor - wird erst mit "Klassenstufe übernehmen" gespeichert.</summary>
+    [ObservableProperty]
+    private GradeLevel editorGradeLevel = GradeLevel.Klasse6;
+
+    /// <summary>Klassenbezeichnung ("10a") im Editor - rein informativ, geübt wird nach Stufe.</summary>
+    [ObservableProperty]
+    private string editorClassLabel = string.Empty;
+
+    [ObservableProperty]
+    private string gradeLevelStatus = string.Empty;
+
+    /// <summary>
+    /// In den ersten vier Wochen eines Schuljahres steht ein Hinweis beim Profil: sonst übt ein
+    /// Kind, das in die nächste Klasse gekommen ist, still mit dem Stoff des Vorjahres weiter.
+    /// </summary>
+    public bool ShowGradeCheckHint => SchoolCalendar.IsEarlySchoolYear(DateOnly.FromDateTime(DateTime.Today));
+
+    /// <summary>
+    /// Speichert Klassenstufe und Klasse des gewählten Profils sofort und nur diese beiden
+    /// Spalten (<c>SetGradeLevelAsync</c>). Sterne, gemeisterte Fragen, Fehler-Kartei und
+    /// Stundenplan bleiben erhalten - das war der Grund, es nicht über "Profil neu anlegen"
+    /// zu machen.
+    /// </summary>
+    [RelayCommand]
+    private async Task SaveGradeLevelAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        var stufe = EditorGradeLevel;
+        var klasse = string.IsNullOrWhiteSpace(EditorClassLabel) ? null : EditorClassLabel.Trim();
+
+        if (stufe == SelectedProfile.GradeLevel && klasse == SelectedProfile.ClassLabel)
+        {
+            GradeLevelStatus = "Unverändert.";
+            return;
+        }
+
+        if (stufe != SelectedProfile.GradeLevel)
+        {
+            var bestaetigt = System.Windows.MessageBox.Show(
+                $"{SelectedProfile.Name} übt ab dem nächsten Start mit den Aufgaben für {(int)stufe}. Klasse " +
+                $"statt {(int)SelectedProfile.GradeLevel}. Klasse.\n\n" +
+                "Sterne, gemeisterte Aufgaben, Fehler-Kartei und Stundenplan bleiben erhalten. " +
+                "Den Stundenplan für das neue Schuljahr bitte trotzdem neu eintragen. Fortfahren?",
+                "Klassenstufe ändern",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question,
+                System.Windows.MessageBoxResult.No);
+
+            if (bestaetigt != System.Windows.MessageBoxResult.Yes)
+            {
+                EditorGradeLevel = SelectedProfile.GradeLevel;
+                return;
+            }
+        }
+
+        await _profileRepo.SetGradeLevelAsync(SelectedProfile.Id, stufe, klasse);
+        SelectedProfile.GradeLevel = stufe;
+        SelectedProfile.ClassLabel = klasse;
+        GradeLevelStatus = $"✅ Gespeichert: {(int)stufe}. Klasse{(klasse is null ? string.Empty : $" ({klasse})")}.";
+    }
 
     // ---------------- Schulkalender Berlin (nur Anzeige) ----------------
 

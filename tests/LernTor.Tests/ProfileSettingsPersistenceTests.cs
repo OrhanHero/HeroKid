@@ -188,6 +188,57 @@ public sealed class ProfileSettingsPersistenceTests : IDisposable
         Assert.Equal(9, danach.ExercisesPerSubject);
     }
 
+    [Fact]
+    public async Task Die_Klassenstufe_laesst_sich_wechseln_ohne_etwas_anderes_anzufassen()
+    {
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+
+        var profil = await repo.CreateAsync("Batuhan", 14, "9a", GradeLevel.Klasse9, "🦁");
+        await repo.AddStarsAsync(profil.Id, 42);
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
+
+        await repo.SetGradeLevelAsync(profil.Id, GradeLevel.Klasse10, " 10a ");
+
+        var danach = (await repo.GetAllAsync()).Single();
+        Assert.Equal(GradeLevel.Klasse10, danach.GradeLevel);
+        Assert.Equal("10a", danach.ClassLabel);
+        Assert.Equal(42, danach.TotalStars);
+        Assert.False(danach.TimetableSubjectsEnabled);
+        Assert.Equal("Batuhan", danach.Name);
+    }
+
+    [Fact]
+    public async Task Ein_geloeschtes_Profil_hinterlaesst_keine_Zeilen_und_laesst_das_andere_in_Ruhe()
+    {
+        // Frueher raeumte DeleteAsync nur Fortschritt, Protokoll und Quiz-Historie ab.
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+        var weg = await repo.CreateAsync("Weg", 11, "6c", GradeLevel.Klasse6, "🧒");
+        var bleibt = await repo.CreateAsync("Bleibt", 14, "9a", GradeLevel.Klasse9, "🧒");
+
+        var stundenplan = new TimetableRepository(db);
+        foreach (var id in new[] { weg.Id, bleibt.Id })
+        {
+            await stundenplan.ReplaceAsync(id, Timetable.DefaultPeriods, new[] { new TimetableLesson(DayOfWeek.Monday, 1, "Ma") });
+            var fortschritt = await new ProgressRepository(db).LoadOrCreateTodayAsync(id);
+            fortschritt.HasCompletedReading = true;
+            await new ProgressRepository(db).SaveAsync(fortschritt);
+        }
+
+        await repo.DeleteAsync(weg.Id);
+
+        Assert.Contains(repo.ProfileOwnedTables(), eintrag => eintrag.Tabelle == "TimetableLessons");
+        Assert.Contains(repo.ProfileOwnedTables(), eintrag => eintrag.Tabelle == "TimetablePeriods");
+        Assert.Empty((await stundenplan.GetForProfileAsync(weg.Id)).Lessons);
+        Assert.Empty(await db.TimetablePeriods.Where(p => p.ProfileId == weg.Id).ToListAsync());
+        Assert.Empty(await db.Progress.Where(p => p.ProfileId == weg.Id).ToListAsync());
+
+        Assert.Single((await stundenplan.GetForProfileAsync(bleibt.Id)).Lessons);
+        Assert.Single(await db.Progress.Where(p => p.ProfileId == bleibt.Id).ToListAsync());
+        Assert.Equal("Bleibt", Assert.Single(await repo.GetAllAsync()).Name);
+    }
+
     public void Dispose()
     {
         try
