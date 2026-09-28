@@ -625,8 +625,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     /// Die Werte werden beim Aufruf eingesammelt (Argumente werden vor dem ersten await
     /// ausgewertet), das Ergebnis ist also unabhängig davon, was danach in den Feldern steht.
     /// </summary>
-    private Task SaveProfileEditorAsync(StudentProfile profile) =>
-        _profileRepo.UpdateSettingsAsync(
+    private async Task SaveProfileEditorAsync(StudentProfile profile)
+    {
+        // Vor dem ersten await eingesammelt - siehe oben: danach koennen die Felder schon das
+        // naechste Profil zeigen.
+        var timetableSubjectsEnabled = TimetableSubjectsEnabled;
+
+        await _profileRepo.UpdateSettingsAsync(
             profile.Id,
             TypingMinAccuracyPercent / 100.0,
             QuizFirstAttemptThresholdPercent / 100.0,
@@ -648,6 +653,11 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             DrivingChallengeSignCount,
             CollectDisabledSignCategories());
 
+        // Eigene Ein-Spalten-Methode statt eines 21. Parameters am Voll-Ueberschreiber.
+        await _profileRepo.SetTimetableSubjectsEnabledAsync(profile.Id, timetableSubjectsEnabled);
+        profile.TimetableSubjectsEnabled = timetableSubjectsEnabled;
+    }
+
     private void ApplyProfileToEditor(StudentProfile? value)
     {
         TypingMinAccuracyPercent = PercentFromFraction(value?.TypingMinAccuracy, 25);
@@ -665,6 +675,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         WeeklyGoalDays = value?.WeeklyGoalDays ?? 0;
         DrivingAreaEnabled = value?.DrivingAreaEnabled ?? true;
         ErsteHilfeEnabled = value?.ErsteHilfeEnabled ?? true;
+        TimetableSubjectsEnabled = value?.TimetableSubjectsEnabled ?? true;
         DrivingChallengeSignCount = value?.DrivingChallengeSignCount ?? StudentProfile.DailySignChallengeDefaultCount;
         ApplySignCategoriesToEditor(value?.DisabledSignCategories);
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
@@ -882,6 +893,13 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     partial void OnDrivingAreaEnabledChanged(bool value) => MarkDirty();
 
     partial void OnErsteHilfeEnabledChanged(bool value) => MarkDirty();
+
+    /// <summary>Faecher des Tages nach dem Stundenplan dieses Kindes auswaehlen (naechster
+    /// Schultag plus Tuerkisch, siehe TimetableSubjectPlanner).</summary>
+    [ObservableProperty]
+    private bool timetableSubjectsEnabled = true;
+
+    partial void OnTimetableSubjectsEnabledChanged(bool value) => MarkDirty();
 
     // ---------------- Schulkalender Berlin (nur Anzeige) ----------------
 

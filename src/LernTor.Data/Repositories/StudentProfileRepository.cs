@@ -144,6 +144,27 @@ public sealed class StudentProfileRepository
         await _db.SaveChangesAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Schaltet die Fächerauswahl nach Stundenplan für ein Profil an oder aus - und schreibt
+    /// dabei genau diese eine Spalte. Bewusst NICHT als weiterer Parameter von
+    /// <see cref="UpdateSettingsAsync"/>: der Voll-Überschreiber mit seinen Positionsparametern
+    /// hat schon einmal still Einstellungen zurückgesetzt (siehe
+    /// <see cref="SetPinnedReadingTextAsync"/>).
+    /// </summary>
+    public async Task SetTimetableSubjectsEnabledAsync(
+        string profileId, bool enabled, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        // Invertiert - siehe StudentProfileEntity.TimetableSubjectsDisabled.
+        entity.TimetableSubjectsDisabled = !enabled;
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task UpdateSettingsAsync(
         string profileId,
         double typingMinAccuracy,
@@ -231,6 +252,7 @@ public sealed class StudentProfileRepository
         CustomTypingFinalText = entity.CustomTypingFinalText,
         DrivingAreaEnabled = !entity.DrivingAreaDisabled,
         ErsteHilfeEnabled = !entity.ErsteHilfeDisabled,
+        TimetableSubjectsEnabled = !entity.TimetableSubjectsDisabled,
         DrivingChallengeSignCount = entity.DrivingChallengeSignCount > 0
             ? entity.DrivingChallengeSignCount
             : StudentProfile.DailySignChallengeDefaultCount,

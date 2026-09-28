@@ -442,7 +442,19 @@ der Plan war weg.
   ausdrücklich). Das **Fach bleibt freier Text**, kein `Subject`-Enum: auf einem echten Plan
   stehen NaWi, GeWi, Sport, WPU Spanisch oder Klassenrat, und die kennt LernTor als Lernbereich
   nicht - angezeigt wird deshalb genau das, was auf dem Plan der Schule steht; die Zuordnung zu
-  einem LernTor-Fach entscheidet nur über das Symbol davor.
+  einem LernTor-Fach entscheidet über das Symbol davor **und über die Fächer des Tages** (siehe
+  nächster Punkt).
+- **📚 Fächer nach Stundenplan** (seit 2026/27, pro Kind abschaltbar im Eltern-Bereich): geübt
+  werden nur die Schulfächer, die **am nächsten Schultag** auf dem Plan stehen – Vorbereitung
+  statt Nachbereitung; freitags und am Wochenende die vom Montag, in den Ferien die vom ersten
+  Schultag danach. **Türkisch ist immer dabei**, auch ohne Türkischstunde. **NaWi** wechselt
+  reihum zwischen Biologie, Chemie und Physik (gezählt über die NaWi-Tage des Wochenplans, also
+  nie zweimal hintereinander dasselbe). **Klausurfächer** sind in der Woche vor dem Termin immer
+  dabei. Das Abschlussquiz fragt nur die geübten Fächer ab. Lesen, Tippen, News, KI-Bereich,
+  Führerschein und Erste Hilfe bleiben unberührt. Unter dem Stundenplan steht für das Kind,
+  warum: „Heute übst du für Dienstag: Mathematik · Musik · Türkisch". Ohne eingetragenen Plan
+  bleibt alles wie vorher (`TimetableSubjectPlanner`). Die Pläne 2026/27 zum Einfügen stehen in
+  [`docs/STUNDENPLAENE-2026-27.md`](docs/STUNDENPLAENE-2026-27.md).
   **Bewusst kein PDF-Importeur**: die Pläne der beiden Schulen sehen völlig verschieden aus - der
   eine ein eingescannter Untis-Ausdruck, dessen Textebene aus OCR stammt und sichtbare Lesefehler
   enthält, der andere eine Word-Tabelle mit umbrochenen Zellen. Ein Importeur müsste bei jedem

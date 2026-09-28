@@ -56,6 +56,13 @@ public sealed class StudentProfileEntity
     /// </summary>
     public bool ErsteHilfeDisabled { get; set; }
 
+    /// <summary>
+    /// Faecherauswahl nach Stundenplan, aus demselben Grund invertiert wie
+    /// <see cref="DrivingAreaDisabled"/>: 0 = "nicht abgeschaltet" = an. So bekommen die beiden
+    /// vorhandenen Profile die Auswahl nach Stundenplan ohne weiteres Zutun.
+    /// </summary>
+    public bool TimetableSubjectsDisabled { get; set; }
+
     /// <summary>Zeichen in der taeglichen Challenge; 0 = Alt-Zeile ohne Wert -> Standard.</summary>
     public int DrivingChallengeSignCount { get; set; }
 

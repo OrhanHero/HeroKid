@@ -10,8 +10,9 @@ namespace LernTor.Core.Models;
 /// LernTor als Lernbereich gar nicht kennt und auch nicht kennen soll. Ein Enum würde all das
 /// entweder verschlucken oder auf ein falsches Fach abbilden. Angezeigt wird deshalb immer
 /// genau das, was auf dem Plan der Schule steht; die Zuordnung zu einem LernTor-Fach
-/// (<see cref="TimetableSubjectMap"/>) dient nur dem Symbol davor und darf danebenliegen, ohne
-/// dass etwas kaputtgeht.</para>
+/// (<see cref="TimetableSubjectMap"/>) gibt das Symbol davor und entscheidet seit 2026/27 mit,
+/// welche Fächer geübt werden (<see cref="TimetableSubjectPlanner"/>). Was sie nicht kennt,
+/// wird angezeigt, aber nicht geübt.</para>
 /// </summary>
 /// <param name="Day">Wochentag - in der Praxis Montag bis Freitag.</param>
 /// <param name="Period">Stunde, 1-basiert wie auf dem Plan.</param>
@@ -197,7 +198,7 @@ public static class TimetableToday
     private const int MaxLookaheadDays = 45;
 
     public static TimetableDay Resolve(Timetable plan, DateTime now) =>
-        Resolve(plan, now, IstSchulfrei);
+        Resolve(plan, now, SchoolCalendar.IsSchoolFree);
 
     /// <summary>Überladung mit eigener Schulfrei-Auskunft - für Tests, die nicht vom Berliner
     /// Ferienkalender abhängen sollen.</summary>
@@ -239,12 +240,6 @@ public static class TimetableToday
 
         return new TimetableDay(heute, true, Array.Empty<TimetableLesson>(), null, null);
     }
-
-    /// <summary>Wochenende, Feiertag oder Ferien - an all dem findet kein Unterricht statt.</summary>
-    private static bool IstSchulfrei(DateOnly tag) =>
-        tag.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday ||
-        SchoolCalendar.CurrentVacation(tag) is not null ||
-        SchoolCalendar.HolidayOn(tag) is not null;
 
     /// <summary>
     /// Ist der Schultag schon herum? Nur dann, wenn wir das auch WISSEN: steht zu keiner Stunde

@@ -119,6 +119,13 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
+                        <!-- Warum heute genau diese Faecher: Auswahl nach Stundenplan
+                             (TimetableSubjectPlanner) - naechster Schultag plus Tuerkisch. -->
+                        <TextBlock Text="{Binding PracticeFocus, Mode=OneWay}"
+                                   Style="{StaticResource BodyText}" FontSize="13" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" Margin="0,10,0,0"
+                                   Visibility="{Binding ShowPracticeFocus, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </Border>
 

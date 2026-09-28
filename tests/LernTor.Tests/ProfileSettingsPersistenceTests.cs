@@ -133,6 +133,61 @@ public sealed class ProfileSettingsPersistenceTests : IDisposable
         Assert.False(stand.HasCompletedWriting);
     }
 
+    [Fact]
+    public async Task Faecher_nach_Stundenplan_sind_fuer_neue_Profile_an_und_lassen_sich_abschalten()
+    {
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+
+        var profil = await repo.CreateAsync("Testkind", 11, "6c", GradeLevel.Klasse6, "🧒");
+        Assert.True((await repo.GetAllAsync()).Single().TimetableSubjectsEnabled);
+
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
+        Assert.False((await repo.GetAllAsync()).Single().TimetableSubjectsEnabled);
+
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, true);
+        Assert.True((await repo.GetAllAsync()).Single().TimetableSubjectsEnabled);
+    }
+
+    [Fact]
+    public async Task Der_Stundenplan_Schalter_laesst_alle_anderen_Einstellungen_in_Ruhe()
+    {
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+
+        var profil = await repo.CreateAsync("Testkind", 14, "9a", GradeLevel.Klasse9, "🧒");
+        await repo.UpdateSettingsAsync(
+            profil.Id,
+            typingMinAccuracy: 0.8,
+            quizFirstAttemptThreshold: 0.7,
+            quizRetryThreshold: 0.4,
+            readingMinutes: 7,
+            newsSecondsPerArticle: 20,
+            exerciseSecondsPerQuestion: 8,
+            exercisesPerSubject: 9,
+            quizQuestionCount: 25,
+            quizRetryQuestionCount: 18,
+            customTypingSentenceText: null,
+            customTypingFinalText: null,
+            weeklyGoalDays: 4,
+            pinnedReadingTextKey: "lesetext-42",
+            newsArticleCount: 6,
+            newsFilterStrictness: NewsFilterStrictness.Streng,
+            drivingAreaEnabled: false,
+            ersteHilfeEnabled: false,
+            drivingChallengeSignCount: 3);
+
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
+
+        var danach = (await repo.GetAllAsync()).Single(p => p.Id == profil.Id);
+        Assert.False(danach.TimetableSubjectsEnabled);
+        Assert.Equal("lesetext-42", danach.PinnedReadingTextKey);
+        Assert.Equal(NewsFilterStrictness.Streng, danach.NewsFilterStrictness);
+        Assert.False(danach.DrivingAreaEnabled);
+        Assert.False(danach.ErsteHilfeEnabled);
+        Assert.Equal(9, danach.ExercisesPerSubject);
+    }
+
     public void Dispose()
     {
         try

@@ -219,7 +219,52 @@ public sealed partial class MainViewModel : ObservableObject
         CurrentProfile = profile;
         ActiveProfileName = profile.Name;
         Progress = await _progressRepo.LoadOrCreateTodayAsync(profile.Id);
+        await RefreshScheduledSubjectsAsync();
         await NavigateToStageAsync(Progress.CurrentStage);
+    }
+
+    /// <summary>Die Schulfaecher, die heute laut Stundenplan dran sind - <c>null</c>, wenn der
+    /// Stundenplan nichts vorgibt (kein Plan, Schalter aus). Siehe TimetableSubjectPlanner.</summary>
+    private IReadOnlySet<Subject>? _scheduledSubjects;
+
+    /// <summary>Der Schultag, fuer den heute geuebt wird - nur fuer die Zeile auf der Startseite.</summary>
+    private DateOnly? _scheduledForDay;
+
+    /// <summary>
+    /// Berechnet die Faecherauswahl nach Stundenplan fuer das aktive Profil neu. Beim Profilstart
+    /// und nach dem Eltern-Bereich (dort kann sich der Plan oder der Schalter geaendert haben).
+    ///
+    /// <para>Rein aus Datum und Plan abgeleitet - ein Neustart der App am selben Tag ergibt
+    /// dieselben Faecher, auch das NaWi-Teilfach. Etappen, die heute ausfallen, ueberspringt
+    /// <see cref="NavigateToStageAsync"/> wie jeden anderen abgeschalteten Bereich.</para>
+    /// </summary>
+    private async Task RefreshScheduledSubjectsAsync()
+    {
+        _scheduledSubjects = null;
+        _scheduledForDay = null;
+
+        if (CurrentProfile is null || !CurrentProfile.TimetableSubjectsEnabled)
+        {
+            return;
+        }
+
+        var heute = DateOnly.FromDateTime(DateTime.Today);
+        var plan = await _timetableRepo.GetForProfileAsync(CurrentProfile.Id);
+        var zielTag = TimetableSubjectPlanner.TargetDay(plan, heute);
+        if (zielTag is null)
+        {
+            return;
+        }
+
+        // Klausurfaecher bleiben dabei, solange ihr Lerngewicht erhoeht ist (eine Woche vorher).
+        var klausurGewichte = await _examRepo.GetLearningWeightsAsync(CurrentProfile.Id, heute);
+        var klausurFaecher = klausurGewichte
+            .Where(eintrag => eintrag.Value > 1.0)
+            .Select(eintrag => eintrag.Key)
+            .ToList();
+
+        _scheduledForDay = zielTag;
+        _scheduledSubjects = TimetableSubjectPlanner.SubjectsOn(plan, zielTag.Value, klausurFaecher);
     }
 
     /// <summary>
@@ -270,6 +315,8 @@ public sealed partial class MainViewModel : ObservableObject
             CurrentProfile = refreshed;
             ActiveProfileName = refreshed.Name;
         }
+
+        await RefreshScheduledSubjectsAsync();
     }
 
     private async Task PersistProgressAsync()
@@ -365,7 +412,11 @@ public sealed partial class MainViewModel : ObservableObject
             plannerPeek, today, timetable,
             // Nur für die Beschriftung des Rück-Knopfes: vom Geschafft-Bildschirm aus geht es
             // nicht "zurück zum Lernen", sondern zurück zum Ergebnis.
-            dayIsDone: Progress.CurrentStage == LearningStage.Freigeschaltet);
+            dayIsDone: Progress.CurrentStage == LearningStage.Freigeschaltet,
+            practiceDay: _scheduledForDay,
+            practiceSubjects: _scheduledSubjects is null
+                ? null
+                : _scheduledSubjects.Where(fach => !IsSubjectDisabled(fach)).ToHashSet());
     }
 
     /// <summary>
@@ -545,7 +596,8 @@ public sealed partial class MainViewModel : ObservableObject
             subject,
             Settings.DisabledSubjects,
             CurrentProfile?.DrivingAreaEnabled ?? true,
-            CurrentProfile?.ErsteHilfeEnabled ?? true);
+            CurrentProfile?.ErsteHilfeEnabled ?? true,
+            _scheduledSubjects);
 
     /// <summary>
     /// Dieselbe Auskunft wie <see cref="IsSubjectDisabled"/>, nur als Menge - fuer alles, was
@@ -562,7 +614,8 @@ public sealed partial class MainViewModel : ObservableObject
         SubjectAvailability.EffectiveDisabled(
             Settings.DisabledSubjects,
             CurrentProfile?.DrivingAreaEnabled ?? true,
-            CurrentProfile?.ErsteHilfeEnabled ?? true);
+            CurrentProfile?.ErsteHilfeEnabled ?? true,
+            _scheduledSubjects);
 
     private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
         LearningStageSubjects.TryGetSubject(stage, out subject);

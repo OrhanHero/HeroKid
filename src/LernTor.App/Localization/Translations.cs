@@ -179,6 +179,8 @@ public static class Translations
             // Mit Datum, sobald der nächste Schultag mehr als eine Woche weg ist: mitten in den
             // Sommerferien ist "Montag" keine brauchbare Auskunft, weil jeder an übermorgen denkt.
             ["Timetable_NextSchoolDayDated"] = L("Nächster Schultag · {0}, {1}", "Sonraki okul günü · {0}, {1}"),
+            // {0} = Wochentag, fuer den geuebt wird; {1} = die Faecher, mit " · " verbunden.
+            ["Timetable_PracticeFocus"] = L("Heute übst du für {0}: {1}", "Bugün {0} için çalışıyorsun: {1}"),
             ["Timetable_Now"] = L("jetzt", "şimdi"),
             ["Timetable_Next"] = L("gleich", "birazdan"),
             ["Weekday_Monday"] = L("Montag", "Pazartesi"),

@@ -139,6 +139,16 @@ public static class SchoolCalendar
         All.FirstOrDefault(eintrag =>
             eintrag.Kind == CalendarEntryKind.Feiertag && eintrag.Contains(day));
 
+    /// <summary>
+    /// Wochenende, Feiertag oder Ferien - an all dem findet kein Unterricht statt. Eine Regel
+    /// für den Stundenplan auf der Startseite (<see cref="Models.TimetableToday"/>) und die
+    /// Fächerauswahl (<see cref="TimetableSubjectPlanner"/>), damit beide denselben Tag meinen.
+    /// </summary>
+    public static bool IsSchoolFree(DateOnly day) =>
+        day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday ||
+        CurrentVacation(day) is not null ||
+        HolidayOn(day) is not null;
+
     /// <summary>Die nächsten Einträge ab diesem Tag - laufende zuerst, dann kommende.</summary>
     public static IReadOnlyList<SchoolCalendarEntry> Upcoming(DateOnly day, int count) =>
         All.Where(eintrag => eintrag.End >= day).Take(count).ToList();

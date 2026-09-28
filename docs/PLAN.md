@@ -1,7 +1,9 @@
 # Weiterer Plan für LernTor
 
-Stand: 12.08.2026. Bis auf **Phase 1.0** (drei Datenverlust-Fehler, alle behoben) ist nichts
-hiervon umgesetzt.
+Stand: 28.09.2026. Erledigt: **Phase 0** (die App wurde laut Familie einmal komplett
+durchgespielt), **Phase 1.0** (drei Datenverlust-Fehler) und der Stundenplan-Teil von **2.0**:
+Fächer nach Stundenplan, siehe dort. Damit ist auch **2.2** im Kern erledigt. Alles andere ist
+offen.
 
 Dieser Plan ordnet nach **Risiko für die Familie**, nicht nach technischer Eleganz. Die App wird
 täglich von zwei Kindern benutzt; was sie am ehesten kaputtmacht oder ihnen Arbeit vernichtet,
@@ -200,6 +202,17 @@ kann.
 
 ### 2.0 Zeitbudget statt Etappenzahl — **die wichtigste Änderung, und zugleich eine Warnung**
 
+> **Teilweise umgesetzt am 28.09.2026: Fächer nach Stundenplan.** Mit den Plänen 2026/27
+> ([`STUNDENPLAENE-2026-27.md`](STUNDENPLAENE-2026-27.md)) hat die Familie die offenen Fragen
+> entschieden: geübt werden die Fächer des **nächsten** Schultags (Vorbereitung), Türkisch ist
+> immer dabei, NaWi wechselt reihum zwischen Bio, Chemie und Physik, Klausurfächer gehen in der
+> Woche davor vor. Das steckt in `TimetableSubjectPlanner` (Core), wirkt über
+> `SubjectAvailability`, lässt sich pro Kind abschalten und macht ohne eingetragenen Plan nichts.
+> Die Tageslänge hängt damit am Stundenplan statt an der Zahl der Module: ein neues Fach
+> verlängert nur die Tage, an denen es in der Schule dran ist. **Offen bleibt das eigentliche
+> Zeitbudget** in Minuten samt Rotationsgarantie. Ob es nach ein paar Wochen mit der neuen
+> Auswahl noch gebraucht wird, lässt sich erst dann sagen.
+
 > Status: **nur Planung.** Umgesetzt wird das frühestens, wenn die neuen Stundenpläne für das
 > Schuljahr 2026/27 da sind (ab 24.08.2026) — die Fächerauswahl soll sich am Stundenplan
 > orientieren, und den gibt es vorher nicht.
@@ -284,6 +297,8 @@ gegen die Tagesrate hält und eine Tabelle ausgibt. Ergebnis sagt, wo Fragen feh
 3. Gewichtung nach Schwäche — die Daten dafür liegen bereits in `AdaptiveTopicWeighting`
 
 Weg 2 ist der richtige: er hält den Tag kurz und prüft trotzdem das Geübte.
+**Seit 28.09.2026 automatisch erfüllt**, sobald ein Stundenplan eingetragen ist: das Abschlussquiz
+nimmt nur Fächer, die an dem Tag nicht ausfallen, und das sind die des nächsten Schultags.
 
 ### 2.3 Antwortlängen-Bias im Blick behalten
 

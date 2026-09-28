@@ -119,12 +119,15 @@ public sealed partial class WelcomeViewModel : ObservableObject
         DateOnly? today = null,
         Timetable? timetable = null,
         DateTime? now = null,
-        bool dayIsDone = false)
+        bool dayIsDone = false,
+        DateOnly? practiceDay = null,
+        IReadOnlySet<Subject>? practiceSubjects = null)
     {
         IsPlannerPeek = isPlannerPeek;
         IsDayDone = dayIsDone;
         Calendar = SchoolCalendar.Today(today ?? DateOnly.FromDateTime(DateTime.Today));
         FillTimetable(timetable, now ?? DateTime.Now);
+        PracticeFocus = PracticeFocusText(practiceDay, practiceSubjects);
         foreach (var item in homework ?? Enumerable.Empty<HomeworkItemViewModel>())
         {
             Homework.Add(item);
@@ -263,6 +266,30 @@ public sealed partial class WelcomeViewModel : ObservableObject
     /// Wochenende und in den Ferien ist der heutige Plan nicht die Antwort auf die Frage, die
     /// ein Kind hat.</summary>
     public string TimetableHeadline { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// "Heute übst du für Dienstag: Mathematik · Musik · Türkisch" - unter dem Stundenplan.
+    /// Ohne diese Zeile fühlt sich die Auswahl nach Stundenplan wie Willkür an: das Kind sähe
+    /// nur, dass heute Physik fehlt, nicht warum.
+    /// </summary>
+    public string PracticeFocus { get; }
+
+    public bool ShowPracticeFocus => PracticeFocus.Length > 0;
+
+    private static string PracticeFocusText(DateOnly? tag, IReadOnlySet<Subject>? faecher)
+    {
+        if (tag is null || faecher is null || faecher.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var l = Localization.LocalizationService.Instance;
+        var namen = faecher
+            .OrderBy(fach => (int)fach)
+            .Select(fach => l[$"Stage_{fach}"]);
+
+        return string.Format(l["Timetable_PracticeFocus"], Wochentagsname(tag.Value.DayOfWeek), string.Join(" · ", namen));
+    }
 
     private void FillTimetable(Timetable? plan, DateTime now)
     {
