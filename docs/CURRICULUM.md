@@ -87,8 +87,18 @@ Spalten (Klasse 6 / 7 / 9), decken über diese Regel aber alle fünf wählbaren 
 | Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Medya ve İletişim – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
 | Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | | Türkiye'nin Coğrafyası (Geografie der Türkei) |
 | Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | | Alltag, Konsum und türkische Kultur – Wortschatz |
-| | | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
-| | | Schule, Ausbildung und Berufswelt – Wortschatz |
+| Çoğul Eki -ler/-lar (Plural) *(neu 28.09.2026)* | | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
+| Hâl Ekleri -e/-de/-den (Wohin, wo, woher) *(neu)* | | Schule, Ausbildung und Berufswelt – Wortschatz |
+| Soru Eki mi/mı/mu/mü (Fragepartikel) *(neu)* | | Söz Sanatları (Stilmittel) *(neu 28.09.2026)* |
+| Sayılar, Günler ve Aylar (Zahlen und Zeit) – Wortschatz *(neu)* | | Ses Olayları (Lautveränderungen) *(neu)* |
+| Kısa Metin Anlama (Leseverstehen) *(neu)* | | Sözcükte Anlam: Gerçek, Mecaz, Terim *(neu)* |
+| | | Cümle Türleri (Satzarten) *(neu)* |
+| | | Türk Edebiyatından Yazarlar ve Eserler *(neu)* |
+
+Die Erweiterung vom 28.09.2026 (+100 Fragen je Stufe) folgt aus `scripts/pool-reichweite.py`:
+Türkisch ist bei der Fächerauswahl nach Stundenplan jeden Tag dabei und war mit 160 bzw. 200
+Fragen nach 5–7 Wochen einmal durch; jetzt reicht es für Klasse 6 knapp 9, für Klasse 9 zehn
+Wochen.
 
 ## Physik (`PhysikGenerator.cs`)
 

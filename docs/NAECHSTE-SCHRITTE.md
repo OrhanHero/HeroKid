@@ -30,16 +30,17 @@ Stundenplan reichen:
 
 | Kind | Fach | Fragen | reicht für |
 |---|---|---:|---:|
-| Emirhan | Türkisch (Kl. 6) | 160 | **~5 Wochen** |
-| Batuhan | Türkisch (Kl. 9) | 200 | **~7 Wochen** |
+| Emirhan | Türkisch (Kl. 6) | ~~160~~ 260 | ~~5~~ **~8,7 Wochen** |
+| Batuhan | Türkisch (Kl. 9) | ~~200~~ 300 | ~~7~~ **10 Wochen** |
 | Emirhan | Englisch (Kl. 6) | 140 | ~8 Wochen |
 
 Türkisch ist jeden Tag dabei und deshalb als erstes durch. Danach kommen nur noch fällige
 Wiederholungen (7/30/90 Tage) und die Fehler-Kartei. Das ist nicht falsch, fühlt sich aber
 nach „immer dasselbe“ an.
 
-- [ ] **Türkisch Klasse 6 und Klasse 9 um je ~100 Fragen erweitern** (fünf neue Themen à 20),
-  mit dem Skill `fach-pool`. Ziel: mindestens 10 Wochen Reichweite.
+- [x] **Türkisch Klasse 6 und Klasse 9 um je 100 Fragen erweitert** (28.09.2026, je fünf
+  Themen à 20; Längen-Bias 35 %). Reichweite jetzt: Emirhan ~8,7 Wochen (260 Fragen),
+  Batuhan 10 Wochen (300 Fragen). Ein Test hält die Poolgröße fest.
 - [ ] Englisch Klasse 6 um ~40 Fragen (zwei Themen).
 - [ ] Danach `pool-reichweite.py` erneut laufen lassen.
 
@@ -115,3 +116,4 @@ Schritt einzeln durch die CI auf `windows-latest` gebaut und getestet.
 | 3.3 | Über Nacht stehen gelassene Sitzung beginnt morgens neu (Grenze 4 Uhr) | `SessionDayRollover` |
 | 4.1 (Teil) | `CanEnterStage` war toter Code, prüft jetzt jede Navigation mit (nicht sperrend, ins Log) | `MainViewModel` |
 | 4.3 | Zwei neue Vorab-Prüfungen: `observable-grossbuchstabe`, `feste-fachzahl` | `scripts/preflight.py` |
+| 2.1 (Folge) | **Türkisch-Pool +100 Fragen je Stufe** (Kl. 6: Çoğul eki, Hâl ekleri, Soru eki, Sayılar/Zaman, Kısa metin; Kl. 9: Söz sanatları, Ses olayları, Sözcükte anlam, Cümle türleri, Türk edebiyatı) | `TurkishGenerator` |

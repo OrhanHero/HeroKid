@@ -7,6 +7,12 @@ namespace LernTor.ContentGen.Generators;
 /// Türkisch-Aufgabengenerator für bilinguale/herkunftssprachliche Lerner: Zeitformen, Wortschatz,
 /// Ekler (Suffixe) für Klasse 6, birleşik zamanlar, Deyimler/Atasözleri, Noktalama und Metin
 /// türleri für Klasse 7, sowie Satzglieder, Fiilimsi und Rechtschreibung für Klasse 9.
+///
+/// <para><b>Erweitert am 28.09.2026</b> um je fünf Themen für Klasse 6 (Çoğul eki, Hâl ekleri,
+/// Soru eki, Sayılar/Günler/Aylar, Kısa metin anlama) und Klasse 9 (Söz sanatları, Ses
+/// olayları, Sözcükte anlam, Cümle türleri, Türk edebiyatı). Grund: Türkisch ist bei der
+/// Fächerauswahl nach Stundenplan jeden Tag dabei, und die alten Pools waren nach 5-7 Wochen
+/// einmal durch (scripts/pool-reichweite.py).</para>
 /// </summary>
 public sealed class TurkishGenerator : ExerciseGeneratorBase
 {
@@ -24,7 +30,12 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
                 DogaVeCevre,
                 AileVeGunlukYasam,
                 OkulVeToplum,
-                TurkiyeKulturu
+                TurkiyeKulturu,
+                CogulEki,
+                HalEkleri,
+                SoruEki,
+                SayilarVeZaman,
+                KisaMetinAnlama
             },
             [GradeLevel.Klasse7] = new List<TopicFactory>
             {
@@ -46,7 +57,12 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
                 TurkiyeCografyasi,
                 AlltagUndKonsum,
                 GesellschaftUndOeffentlichesLeben,
-                SchuleUndBerufswelt
+                SchuleUndBerufswelt,
+                SozSanatlari,
+                SesOlaylari,
+                SozcukteAnlam,
+                CumleTurleri,
+                TurkEdebiyati
             }
         };
 
@@ -1006,6 +1022,370 @@ public sealed class TurkishGenerator : ExerciseGeneratorBase
             Options = optionen, CorrectAnswers = new[] { d.Almanca },
             Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
             HelpHint = "Medya ve iletişim kelimeleri: gazete, haber, manşet, muhabir, kaynak, paylaşmak, indirmek/yüklemek."
+        };
+    }
+
+    // ================= Klasse 6: Erweiterung 28.09.2026 =================
+    // Türkisch ist durch die Fächerauswahl nach Stundenplan JEDEN Tag dabei - der alte Pool
+    // (160 Fragen) war rechnerisch nach gut fünf Wochen einmal durch (scripts/pool-reichweite.py).
+
+    private static readonly (string Kelime, string Cogul)[] CogulEkiBeispiele =
+    {
+        ("kitap", "kitaplar"), ("ağaç", "ağaçlar"), ("ev", "evler"), ("göz", "gözler"),
+        ("çocuk", "çocuklar"), ("öğretmen", "öğretmenler"), ("kuş", "kuşlar"), ("çiçek", "çiçekler"),
+        ("masa", "masalar"), ("kalem", "kalemler"), ("okul", "okullar"), ("köprü", "köprüler"),
+        ("arkadaş", "arkadaşlar"), ("gün", "günler"), ("yol", "yollar"), ("şehir", "şehirler"),
+        ("bulut", "bulutlar"), ("kedi", "kediler"), ("top", "toplar"), ("soru", "sorular")
+    };
+
+    private static QuizQuestion CogulEki(Random r)
+    {
+        var v = CogulEkiBeispiele[r.Next(CogulEkiBeispiele.Length)];
+        var kalin = v.Cogul.EndsWith("lar", StringComparison.Ordinal);
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Çoğul Eki -ler/-lar (Plural)", Type = QuestionType.OpenText,
+            Prompt = $"\"{v.Kelime}\" kelimesinin çoğul hâlini yaz. (Beispiel: kapı -> kapılar)",
+            CorrectAnswers = new[] { v.Cogul },
+            Explanation = kalin
+                ? $"\"{v.Kelime}\" kelimesinin son ünlüsü kalındır (a, ı, o, u) - bu yüzden -lar gelir: {v.Cogul}."
+                : $"\"{v.Kelime}\" kelimesinin son ünlüsü incedir (e, i, ö, ü) - bu yüzden -ler gelir: {v.Cogul}.",
+            HelpHint = "Büyük ünlü uyumu: son ünlü a, ı, o, u ise -lar; e, i, ö, ü ise -ler (okul-lar, ev-ler)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] HalEkleriListe =
+    {
+        ("Boşluğa hangisi gelmeli? \"Her sabah okul___ gidiyorum.\"", new[] { "okula", "okulda", "okuldan" }, "okula", "Nereye? sorusunun cevabı yönelme hâli (-e/-a) ile verilir: okula gidiyorum."),
+        ("Boşluğa hangisi gelmeli? \"Kitabım çanta___ duruyor.\"", new[] { "çantada", "çantaya", "çantadan" }, "çantada", "Nerede? sorusunun cevabı bulunma hâli (-de/-da) ile verilir: çantada duruyor."),
+        ("Boşluğa hangisi gelmeli? \"Babam iş___ yeni döndü.\"", new[] { "işten", "işte", "işe" }, "işten", "Nereden? sorusunun cevabı ayrılma hâli (-den/-dan, -ten/-tan) ile verilir: işten döndü."),
+        ("Boşluğa hangisi gelmeli? \"Bu akşam sinema___ gidelim mi?\"", new[] { "sinemaya", "sinemada", "sinemadan" }, "sinemaya", "Nereye gidiyoruz? Yönelme hâli: sinema + y + a = sinemaya (ünlüyle biten kelimede araya -y- girer)."),
+        ("Boşluğa hangisi gelmeli? \"Kediler bahçe___ oynuyor.\"", new[] { "bahçede", "bahçeye", "bahçeden" }, "bahçede", "Nerede oynuyorlar? Bulunma hâli: bahçede."),
+        ("Boşluğa hangisi gelmeli? \"Tren Berlin___ saat üçte kalktı.\"", new[] { "Berlin'den", "Berlin'de", "Berlin'e" }, "Berlin'den", "Tren nereden kalktı? Ayrılma hâli: Berlin'den. Özel isimlere gelen ek kesme işaretiyle ayrılır."),
+        ("Boşluğa hangisi gelmeli? \"Yazın dedemler___ kalacağız.\"", new[] { "dedemlerde", "dedemlere", "dedemlerden" }, "dedemlerde", "Nerede kalacağız? Bulunma hâli: dedemlerde."),
+        ("Boşluğa hangisi gelmeli? \"Sıcak ekmek fırın___ yeni çıktı.\"", new[] { "fırından", "fırında", "fırına" }, "fırından", "Ekmek nereden çıktı? Ayrılma hâli: fırından."),
+        ("Boşluğa hangisi gelmeli? \"Dün akşam park___ uzun süre oturduk.\"", new[] { "parkta", "parka", "parktan" }, "parkta", "Nerede oturduk? Bulunma hâli. \"park\" sert ünsüzle (k) bittiği için -da değil -ta gelir: parkta."),
+        ("Boşluğa hangisi gelmeli? \"Mektubu arkadaşım___ gönderdim.\"", new[] { "arkadaşıma", "arkadaşımda", "arkadaşımdan" }, "arkadaşıma", "Kime gönderdim? Yönelme hâli: arkadaşıma."),
+        ("Boşluğa hangisi gelmeli? \"Ali okul___ eve yürüyerek dönüyor.\"", new[] { "okuldan", "okulda", "okula" }, "okuldan", "Ali nereden dönüyor? Ayrılma hâli: okuldan eve."),
+        ("Boşluğa hangisi gelmeli? \"Toplantı saat beş___ başlıyor.\"", new[] { "beşte", "beşe", "beşten" }, "beşte", "Ne zaman? Saat bildirirken bulunma hâli kullanılır: saat beşte. \"beş\" ş ile bittiği için -de değil -te gelir."),
+        ("Boşluğa hangisi gelmeli? \"Kitapları raf___ koy, lütfen.\"", new[] { "rafa", "rafta", "raftan" }, "rafa", "Nereye koyuyoruz? Yönelme hâli: rafa."),
+        ("Boşluğa hangisi gelmeli? \"Kuşlar ağaç___ uçup gitti.\"", new[] { "ağaçtan", "ağaçta", "ağaca" }, "ağaçtan", "Kuşlar nereden uçup gitti? Ayrılma hâli: ağaçtan."),
+        ("Boşluğa hangisi gelmeli? \"Deniz___ yüzmeyi çok seviyorum.\"", new[] { "Denizde", "Denize", "Denizden" }, "Denizde", "Nerede yüzüyorum? Bulunma hâli: denizde."),
+        ("Boşluğa hangisi gelmeli? \"Okul çıkışı kütüphane___ uğradım.\"", new[] { "kütüphaneye", "kütüphanede", "kütüphaneden" }, "kütüphaneye", "\"uğramak\" fiili yönelme hâli ister: kütüphaneye uğradım."),
+        ("Boşluğa hangisi gelmeli? \"Bu soruyu öğretmen___ sor.\"", new[] { "öğretmene", "öğretmende", "öğretmenden" }, "öğretmene", "Kime soruyorsun? Yönelme hâli: öğretmene sor."),
+        ("Boşluğa hangisi gelmeli? \"Kardeşim bu yıl ilkokul___ başladı.\"", new[] { "ilkokula", "ilkokulda", "ilkokuldan" }, "ilkokula", "\"başlamak\" fiili yönelme hâli ister: ilkokula başladı."),
+        ("Boşluğa hangisi gelmeli? \"Sabahları duş___ sonra kahvaltı yaparım.\"", new[] { "duştan", "duşta", "duşa" }, "duştan", "\"sonra\" kelimesi ayrılma hâli ister: duştan sonra, dersten sonra."),
+        ("Boşluğa hangisi gelmeli? \"Hafta sonu Hamburg___ gideceğiz.\"", new[] { "Hamburg'a", "Hamburg'da", "Hamburg'dan" }, "Hamburg'a", "Nereye gideceğiz? Yönelme hâli: Hamburg'a. Şehir adına gelen ek kesme işaretiyle ayrılır.")
+    };
+
+    private static QuizQuestion HalEkleri(Random r)
+    {
+        var f = HalEkleriListe[r.Next(HalEkleriListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Hâl Ekleri -e/-de/-den (Wohin, wo, woher)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nereye? -> -e/-a (okula). Nerede? -> -de/-da (okulda). Nereden? -> -den/-dan (okuldan). Sert ünsüzden sonra -te/-ta, -ten/-tan."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SoruEkiListe =
+    {
+        ("Boşluğa hangisi gelmeli? \"Yarın okula gelecek ___?\"", new[] { "misin", "mısın", "musun" }, "misin", "Son ünlü \"e\" (gelecek) - soru eki \"mi\" olur, kişi eki eklenir: gelecek misin?"),
+        ("Boşluğa hangisi gelmeli? \"Bu kitap senin ___?\"", new[] { "mi", "mı", "mu" }, "mi", "Son ünlü \"i\" (senin) - soru eki \"mi\" olur ve ayrı yazılır."),
+        ("Boşluğa hangisi gelmeli? \"Kapı açık ___?\"", new[] { "mı", "mi", "mu" }, "mı", "Son ünlü \"ı\" (açık) - soru eki \"mı\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Çay soğuk ___?\"", new[] { "mu", "mü", "mı" }, "mu", "Son ünlü \"u\" (soğuk) - soru eki \"mu\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Hava güzel ___?\"", new[] { "mi", "mı", "mü" }, "mi", "Son ünlü \"e\" (güzel) - soru eki \"mi\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Ödevini bitirdin ___?\"", new[] { "mi", "mı", "mu" }, "mi", "Son ünlü \"i\" (bitirdin) - soru eki \"mi\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Siz de futbol oynuyor ___?\"", new[] { "musunuz", "misiniz", "mısınız" }, "musunuz", "Son ünlü \"o\" (oynuyor) - soru eki \"mu\" olur, \"siz\" için -sunuz eklenir: oynuyor musunuz?"),
+        ("Boşluğa hangisi gelmeli? \"Bu ekmek taze ___?\"", new[] { "mi", "mı", "mu" }, "mi", "Son ünlü \"e\" (taze) - soru eki \"mi\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Kuşlar göçtü ___?\"", new[] { "mü", "mu", "mi" }, "mü", "Son ünlü \"ü\" (göçtü) - soru eki \"mü\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Köpeğin büyük ___?\"", new[] { "mü", "mu", "mı" }, "mü", "Son ünlü \"ü\" (büyük) - soru eki \"mü\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Onlar tatile gitti ___?\"", new[] { "mi", "mı", "mü" }, "mi", "Son ünlü \"i\" (gitti) - soru eki \"mi\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Sınav zor ___?\"", new[] { "mu", "mı", "mü" }, "mu", "Son ünlü \"o\" (zor) - soru eki \"mu\" olur. o ve u'dan sonra hep \"mu\" gelir."),
+        ("Boşluğa hangisi gelmeli? \"Sen Türkçe biliyor ___?\"", new[] { "musun", "misin", "mısın" }, "musun", "Son ünlü \"o\" (biliyor) - soru eki \"mu\" olur, \"sen\" için -sun eklenir: biliyor musun?"),
+        ("Boşluğa hangisi gelmeli? \"Pencere kapalı ___?\"", new[] { "mı", "mi", "mu" }, "mı", "Son ünlü \"ı\" (kapalı) - soru eki \"mı\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Bu şarkıyı duydun ___?\"", new[] { "mu", "mü", "mi" }, "mu", "Son ünlü \"u\" (duydun) - soru eki \"mu\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Yemek hazır ___?\"", new[] { "mı", "mi", "mu" }, "mı", "Son ünlü \"ı\" (hazır) - soru eki \"mı\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Ben haklı ___?\"", new[] { "mıyım", "miyim", "muyum" }, "mıyım", "Son ünlü \"ı\" (haklı) - soru eki \"mı\" olur, \"ben\" için -yım eklenir: haklı mıyım?"),
+        ("Boşluğa hangisi gelmeli? \"Bugün hava sıcak ___?\"", new[] { "mı", "mi", "mu" }, "mı", "Son ünlü \"a\" (sıcak) - soru eki \"mı\" olur. a ve ı'dan sonra hep \"mı\" gelir."),
+        ("Boşluğa hangisi gelmeli? \"Çocuklar uyudu ___?\"", new[] { "mu", "mü", "mı" }, "mu", "Son ünlü \"u\" (uyudu) - soru eki \"mu\" olur."),
+        ("Boşluğa hangisi gelmeli? \"Bu yol doğru ___?\"", new[] { "mu", "mı", "mi" }, "mu", "Son ünlü \"u\" (doğru) - soru eki \"mu\" olur.")
+    };
+
+    private static QuizQuestion SoruEki(Random r)
+    {
+        var f = SoruEkiListe[r.Next(SoruEkiListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Soru Eki mi/mı/mu/mü (Fragepartikel)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Soru eki her zaman AYRI yazılır ve son ünlüye uyar: e/i -> mi, a/ı -> mı, o/u -> mu, ö/ü -> mü."
+        };
+    }
+
+    private static readonly (string TurkceKelime, string Almanca, string[] Yanlislar)[] SayilarZamanListe =
+    {
+        ("pazartesi", "Montag", new[] { "Dienstag", "Mittwoch", "Sonntag" }),
+        ("salı", "Dienstag", new[] { "Montag", "Donnerstag", "Freitag" }),
+        ("çarşamba", "Mittwoch", new[] { "Dienstag", "Donnerstag", "Samstag" }),
+        ("perşembe", "Donnerstag", new[] { "Mittwoch", "Freitag", "Dienstag" }),
+        ("cuma", "Freitag", new[] { "Samstag", "Donnerstag", "Montag" }),
+        ("cumartesi", "Samstag", new[] { "Freitag", "Sonntag", "Montag" }),
+        ("pazar", "Sonntag", new[] { "Samstag", "Montag", "Freitag" }),
+        ("ocak", "Januar", new[] { "Februar", "Juni", "Dezember" }),
+        ("şubat", "Februar", new[] { "Januar", "März", "Oktober" }),
+        ("nisan", "April", new[] { "August", "Mai", "März" }),
+        ("ağustos", "August", new[] { "April", "Juli", "Oktober" }),
+        ("ekim", "Oktober", new[] { "November", "September", "August" }),
+        ("aralık", "Dezember", new[] { "November", "Januar", "Oktober" }),
+        ("kırk beş", "45", new[] { "54", "35", "40" }),
+        ("yetmiş iki", "72", new[] { "27", "62", "82" }),
+        ("doksan", "90", new[] { "80", "19", "70" }),
+        ("yüz on", "110", new[] { "101", "111", "210" }),
+        ("iki bin yirmi altı", "2026", new[] { "2016", "2062", "2006" }),
+        ("saat üç buçuk", "halb vier (3:30)", new[] { "halb drei (2:30)", "Viertel nach drei (3:15)", "Viertel vor drei (2:45)" }),
+        ("sabah", "Morgen", new[] { "Abend", "Mittag", "Nacht" })
+    };
+
+    private static QuizQuestion SayilarVeZaman(Random r)
+    {
+        var d = SayilarZamanListe[r.Next(SayilarZamanListe.Length)];
+        var optionen = new[] { d.Almanca }.Concat(d.Yanlislar).OrderBy(_ => r.Next()).ToArray();
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Sayılar, Günler ve Aylar (Zahlen und Zeit) – Wortschatz", Type = QuestionType.MultipleChoice,
+            Prompt = $"\"{d.TurkceKelime}\" Almanca hangisidir?",
+            Options = optionen, CorrectAnswers = new[] { d.Almanca },
+            Explanation = $"\"{d.TurkceKelime}\" Almanca \"{d.Almanca}\" demektir.",
+            HelpHint = "Sayılar: on (10), yirmi (20), otuz (30), kırk (40), elli (50), altmış (60), yetmiş (70), seksen (80), doksan (90), yüz (100). \"buçuk\" = halb (üç buçuk = 3:30)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KisaMetinListe =
+    {
+        ("Metin: \"Elif her cumartesi babaannesini ziyaret eder. Babaannesi ona börek yapar ve birlikte çay içerler.\" Soru: Elif babaannesini ne zaman ziyaret eder?", new[] { "Her cumartesi", "Her pazar", "Her cuma akşamı" }, "Her cumartesi", "Metnin ilk cümlesi: \"Elif her cumartesi babaannesini ziyaret eder.\""),
+        ("Metin: \"Mert sabah otobüsü kaçırdı. Bu yüzden okula yürüyerek gitti ve derse beş dakika geç kaldı.\" Soru: Mert neden derse geç kaldı?", new[] { "Otobüsü kaçırdığı için", "Ödevini unuttuğu için", "Yağmur yağdığı için" }, "Otobüsü kaçırdığı için", "\"Bu yüzden\" sözü sebebi gösterir: otobüsü kaçırdığı için yürümek zorunda kaldı."),
+        ("Metin: \"Zeynep'in sınıfında 24 öğrenci var. Bugün üç öğrenci hasta olduğu için okula gelmedi.\" Soru: Bugün sınıfta kaç öğrenci var?", new[] { "21", "24", "27" }, "21", "24 öğrenciden 3'ü gelmedi: 24 - 3 = 21."),
+        ("Metin: \"Kaan Berlin'de doğdu. Annesi İzmirli, babası ise Trabzonlu. Yazları hep Türkiye'ye giderler.\" Soru: Kaan nerede doğdu?", new[] { "Berlin'de", "İzmir'de", "Trabzon'da" }, "Berlin'de", "İlk cümle: \"Kaan Berlin'de doğdu.\" İzmir ve Trabzon anne ile babanın memleketi."),
+        ("Metin: \"Ayşe kütüphaneden üç kitap aldı. İkisini bir haftada okudu, üçüncüsünü henüz bitirmedi.\" Soru: Ayşe kaç kitabı okuyup bitirdi?", new[] { "İki", "Üç", "Bir" }, "İki", "Üç kitaptan ikisini okudu, üçüncüsü henüz bitmedi."),
+        ("Metin: \"Parkta bir köpek kayboldu. Çocuklar onu bulup tasmasındaki numarayı aradılar. Sahibi çok sevindi.\" Soru: Çocuklar köpeğin sahibine nasıl ulaştı?", new[] { "Tasmadaki numarayı arayarak", "Mahallede kapı kapı dolaşarak", "Veterinere götürüp sorarak" }, "Tasmadaki numarayı arayarak", "Metinde: \"tasmasındaki numarayı aradılar.\""),
+        ("Metin: \"Deniz, matematik sınavından önce üç gün boyunca her akşam bir saat çalıştı. Sınavdan iyi not aldı.\" Soru: Metne göre Deniz iyi notu neye borçlu?", new[] { "Düzenli çalışmasına", "Öğretmenin yardımına", "Soruların kolaylığına" }, "Düzenli çalışmasına", "Metin yalnızca Deniz'in üç gün boyunca her akşam çalıştığını anlatıyor - öğretmenden veya kolay sorulardan söz etmiyor."),
+        ("Metin: \"Hava tahminine göre yarın Berlin'de yağmur yağacak ve sıcaklık on derece olacak.\" Soru: Yarın dışarı çıkarken ne almak mantıklıdır?", new[] { "Şemsiye", "Güneş kremi", "Mayo" }, "Şemsiye", "Yağmur yağacağı için şemsiye almak mantıklıdır."),
+        ("Metin: \"Emre futbol takımında kaleci. Geçen maçta iki penaltı kurtardı ve takımı 1-0 kazandı.\" Soru: Emre takımda hangi görevi yapıyor?", new[] { "Kaleci", "Forvet", "Hakem" }, "Kaleci", "İlk cümle: \"Emre futbol takımında kaleci.\""),
+        ("Metin: \"Selin'in doğum günü 14 Mart'ta. Bu yıl arkadaşlarını bowling oynamaya davet etti.\" Soru: Selin doğum gününde ne yapacak?", new[] { "Bowling oynayacak", "Sinemaya gidecek", "Yüzmeye gidecek" }, "Bowling oynayacak", "Metinde: \"arkadaşlarını bowling oynamaya davet etti.\""),
+        ("Metin: \"Burak telefonla çok oyun oynuyordu. Annesiyle konuştuktan sonra günde en fazla bir saat oynamaya karar verdi.\" Soru: Burak ne karar verdi?", new[] { "Oyun süresini sınırlamaya", "Yeni bir oyun almaya", "Telefonu tamamen bırakmaya" }, "Oyun süresini sınırlamaya", "\"Günde en fazla bir saat\" oynamak, oyun süresini sınırlamak demektir - tamamen bırakmak değil."),
+        ("Metin: \"Leyla ile Can kardeştir. Leyla on iki, Can ise dokuz yaşındadır.\" Soru: Can, Leyla'dan kaç yaş küçüktür?", new[] { "Üç", "İki", "Dört" }, "Üç", "12 - 9 = 3. Can üç yaş küçüktür."),
+        ("Metin: \"Okulun bahçesine yeni ağaçlar dikildi. Her sınıf bir ağaçtan sorumlu ve onu sulamak zorunda.\" Soru: Sınıfların görevi nedir?", new[] { "Bir ağacı sulamak", "Bahçeyi süpürmek", "Çiçek satmak" }, "Bir ağacı sulamak", "Metinde: \"Her sınıf bir ağaçtan sorumlu ve onu sulamak zorunda.\""),
+        ("Metin: \"Murat Türkçe ve Almanca konuşuyor. Okulda İngilizce de öğreniyor.\" Soru: Murat toplam kaç dil konuşuyor ya da öğreniyor?", new[] { "Üç", "İki", "Dört" }, "Üç", "Türkçe, Almanca ve İngilizce - toplam üç dil."),
+        ("Metin: \"Market sabah sekizde açılıyor ve akşam sekizde kapanıyor. Pazar günleri ise kapalı.\" Soru: Pazar günü markete gidilirse ne olur?", new[] { "Market kapalıdır", "Market geç açılır", "Market erken kapanır" }, "Market kapalıdır", "Son cümle: \"Pazar günleri ise kapalı.\""),
+        ("Metin: \"Nehir'in kedisi Pamuk bembeyazdır. Adını da bu yüzden Pamuk koymuşlar.\" Soru: Kediye neden Pamuk adı verilmiş?", new[] { "Rengi beyaz olduğu için", "Çok yumuşak olduğu için", "Çok küçük olduğu için" }, "Rengi beyaz olduğu için", "\"Bu yüzden\" önceki cümleye bağlanır: kedi bembeyaz olduğu için adı Pamuk."),
+        ("Metin: \"Sınıf gezisinde müzeye gittik. Rehber bize eski Mısır'dan kalma bir mumya gösterdi.\" Soru: Rehber ne gösterdi?", new[] { "Bir mumya", "Bir dinozor iskeleti", "Eski bir tablo" }, "Bir mumya", "Metinde: \"eski Mısır'dan kalma bir mumya gösterdi.\""),
+        ("Metin: \"Yusuf bisikletiyle okula giderken kask takar. Babası ona bunun çok önemli olduğunu söyledi.\" Soru: Yusuf'un kask takmasının asıl sebebi nedir?", new[] { "Güvenliği için", "Moda olduğu için", "Hava soğuk olduğu için" }, "Güvenliği için", "Kask, düşme ve kazalarda başı korur - babasının \"çok önemli\" demesinin sebebi budur."),
+        ("Metin: \"Bugün pazartesi. Ödevin teslim tarihi yarından sonraki gün.\" Soru: Ödev hangi gün teslim edilecek?", new[] { "Çarşamba", "Salı", "Perşembe" }, "Çarşamba", "Pazartesi -> yarın salı -> yarından sonraki gün çarşamba."),
+        ("Metin: \"Ece'nin annesi hemşire, babası ise otobüs şoförü. Ece büyüyünce doktor olmak istiyor.\" Soru: Ece'nin annesinin mesleği nedir?", new[] { "Hemşire", "Doktor", "Şoför" }, "Hemşire", "Metinde: \"Ece'nin annesi hemşire\". Doktor olmak isteyen Ece'nin kendisi.")
+    };
+
+    private static QuizQuestion KisaMetinAnlama(Random r)
+    {
+        var f = KisaMetinListe[r.Next(KisaMetinListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Kısa Metin Anlama (Leseverstehen)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Önce soruyu oku, sonra cevabı metinde ara. Cevap çoğu zaman metindeki bir cümlede açıkça yazılıdır."
+        };
+    }
+
+    // ================= Klasse 9: Erweiterung 28.09.2026 =================
+    // Wie bei Klasse 6: Türkisch ist täglich dabei, der alte Pool (200 Fragen) reichte
+    // rechnerisch knapp sieben Wochen. Neu: Söz sanatları, Ses olayları, Sözcükte anlam,
+    // Cümle türleri, Türk edebiyatından yazarlar.
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SozSanatlariListe =
+    {
+        ("\"Kız, ay gibi güzeldi.\" cümlesinde hangi söz sanatı vardır?", new[] { "Benzetme", "Kişileştirme", "Abartma" }, "Benzetme", "Kızın güzelliği \"gibi\" edatıyla aya benzetiliyor - benzetme (teşbih)."),
+        ("\"Rüzgâr pencereye vurup ağlıyordu.\" cümlesinde hangi söz sanatı vardır?", new[] { "Kişileştirme", "Benzetme", "Abartma" }, "Kişileştirme", "Ağlamak insana özgüdür; rüzgâra insan özelliği verilmiş - kişileştirme (teşhis)."),
+        ("\"Öyle çok ağladı ki gözyaşları sel oldu.\" cümlesinde hangi söz sanatı vardır?", new[] { "Abartma", "Tezat", "Konuşturma" }, "Abartma", "Gözyaşlarının sel olması gerçekte mümkün değildir; durum olduğundan çok büyük anlatılıyor - abartma (mübalağa)."),
+        ("\"Ağaç bana 'Beni kesme!' dedi.\" cümlesinde hangi söz sanatı vardır?", new[] { "Konuşturma", "Benzetme", "Abartma" }, "Konuşturma", "İnsan dışındaki bir varlık (ağaç) konuşturuluyor - konuşturma (intak)."),
+        ("\"Gülerken ağlıyordu içim.\" cümlesinde hangi söz sanatı vardır?", new[] { "Tezat", "Benzetme", "Konuşturma" }, "Tezat", "Gülmek ve ağlamak karşıt kavramlardır ve bir arada kullanılmış - tezat (karşıtlık)."),
+        ("\"Onun kalbi taş gibi sertti.\" cümlesinde hangi söz sanatı vardır?", new[] { "Benzetme", "Tezat", "Konuşturma" }, "Benzetme", "Kalp \"gibi\" ile taşa benzetiliyor - benzetme."),
+        ("\"Güneş, sabah bize gülümsedi.\" cümlesinde hangi söz sanatı vardır?", new[] { "Kişileştirme", "Tezat", "Abartma" }, "Kişileştirme", "Gülümsemek insana özgüdür; güneşe insan özelliği verilmiş - kişileştirme."),
+        ("\"Bin kere söyledim sana!\" cümlesinde hangi söz sanatı vardır?", new[] { "Abartma", "Benzetme", "Tezat" }, "Abartma", "Gerçekten bin kere söylenmemiştir; sayı bilerek büyütülmüş - abartma."),
+        ("\"Zengin fakir, herkes oradaydı.\" cümlesinde hangi söz sanatı vardır?", new[] { "Tezat", "Abartma", "Benzetme" }, "Tezat", "Zengin ve fakir karşıt kavramlardır - tezat."),
+        ("\"Aslan gibi güçlü bir adamdı.\" cümlesinde hangi söz sanatı vardır?", new[] { "Benzetme", "Kişileştirme", "Tezat" }, "Benzetme", "Adam \"gibi\" edatıyla aslana benzetiliyor - benzetme."),
+        ("\"Şehir sabah uykusundan uyandı.\" cümlesinde hangi söz sanatı vardır?", new[] { "Kişileştirme", "Benzetme", "Tezat" }, "Kişileştirme", "Uyumak ve uyanmak canlılara özgüdür; şehre insan özelliği verilmiş - kişileştirme."),
+        ("\"Kedi bana dönüp 'Bana mama ver' dedi.\" cümlesinde hangi söz sanatı vardır?", new[] { "Konuşturma", "Tezat", "Abartma" }, "Konuşturma", "Hayvan insan gibi konuşturuluyor - konuşturma."),
+        ("\"Açlıktan ölüyorum!\" cümlesinde hangi söz sanatı vardır?", new[] { "Abartma", "Tezat", "Benzetme" }, "Abartma", "Konuşan kişi gerçekte ölmek üzere değildir; açlığını büyüterek anlatıyor - abartma."),
+        ("\"Gece gündüz, yaz kış demeden çalıştı.\" cümlesinde hangi söz sanatı vardır?", new[] { "Tezat", "Konuşturma", "Kişileştirme" }, "Tezat", "Gece-gündüz ve yaz-kış karşıt kavram çiftleridir - tezat."),
+        ("\"Dağlar başını eğmiş, bizi selamlıyordu.\" cümlesinde hangi söz sanatı vardır?", new[] { "Kişileştirme", "Tezat", "Benzetme" }, "Kişileştirme", "Selamlamak insana özgü bir davranıştır; dağlara insan özelliği verilmiş - kişileştirme."),
+        ("\"Gözlerin yıldız gibi parlıyor.\" cümlesinde hangi söz sanatı vardır?", new[] { "Benzetme", "Abartma", "Konuşturma" }, "Benzetme", "Gözler \"gibi\" edatıyla yıldızlara benzetiliyor - benzetme."),
+        ("\"Kalem, 'Beni kullanmayı unutma' diye seslendi.\" cümlesinde hangi söz sanatı vardır?", new[] { "Konuşturma", "Benzetme", "Tezat" }, "Konuşturma", "Cansız bir varlık (kalem) konuşturuluyor - konuşturma."),
+        ("\"Dünyanın yükünü omuzlarımda taşıyorum.\" cümlesinde hangi söz sanatı vardır?", new[] { "Abartma", "Tezat", "Konuşturma" }, "Abartma", "Kimse dünyanın yükünü taşıyamaz; sorumluluk olduğundan çok büyük anlatılıyor - abartma."),
+        ("\"Hem sevinçli hem hüzünlüydü o gün.\" cümlesinde hangi söz sanatı vardır?", new[] { "Tezat", "Benzetme", "Abartma" }, "Tezat", "Sevinç ve hüzün karşıt duygulardır ve bir arada kullanılmış - tezat."),
+        ("\"Bulutlar pamuk gibi yumuşacıktı.\" cümlesinde hangi söz sanatı vardır?", new[] { "Benzetme", "Kişileştirme", "Tezat" }, "Benzetme", "Bulutlar \"gibi\" edatıyla pamuğa benzetiliyor - benzetme.")
+    };
+
+    private static QuizQuestion SozSanatlari(Random r)
+    {
+        var f = SozSanatlariListe[r.Next(SozSanatlariListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Söz Sanatları (Stilmittel)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Benzetme: \"gibi\" ile karşılaştırma. Kişileştirme: insana ait özellik başka varlığa verilir. Konuşturma: insan dışı varlık konuşur. Abartma: olduğundan büyük anlatma. Tezat: karşıt kavramlar bir arada."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SesOlaylariListe =
+    {
+        ("\"kitap + ı -> kitabı\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz yumuşaması", "Ünlü düşmesi", "Kaynaştırma" }, "Ünsüz yumuşaması", "Sert ünsüz \"p\", ünlüyle başlayan ek alınca yumuşayıp \"b\" olur: kitap -> kitabı."),
+        ("\"ağız + ı -> ağzı\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü düşmesi", "Ünlü daralması", "Ünsüz benzeşmesi" }, "Ünlü düşmesi", "İkinci hecedeki dar ünlü \"ı\", ünlüyle başlayan ek alınca düşer: ağız -> ağzı."),
+        ("\"sokak + da -> sokakta\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz benzeşmesi", "Ünsüz yumuşaması", "Ünlü düşmesi" }, "Ünsüz benzeşmesi", "Sert ünsüzle (k) biten kelimeye gelen ekin \"d\"si sertleşip \"t\" olur: sokakta."),
+        ("\"başla + yor -> başlıyor\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü daralması", "Kaynaştırma", "Ünlü düşmesi" }, "Ünlü daralması", "Geniş ünlü \"a\", -yor eki gelince daralıp \"ı\" olur: başla- -> başlıyor."),
+        ("\"kapı + ı -> kapıyı\" örneğinde hangi ses olayı vardır?", new[] { "Kaynaştırma", "Ünsüz benzeşmesi", "Ünlü daralması" }, "Kaynaştırma", "İki ünlü yan yana gelmesin diye araya kaynaştırma ünsüzü \"y\" girer: kapı-y-ı."),
+        ("\"renk + i -> rengi\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz yumuşaması", "Ünsüz benzeşmesi", "Ünlü daralması" }, "Ünsüz yumuşaması", "\"nk\" ile biten kelimede \"k\", ünlüyle başlayan ek gelince \"g\" olur: renk -> rengi."),
+        ("\"burun + u -> burnu\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü düşmesi", "Ünsüz yumuşaması", "Kaynaştırma" }, "Ünlü düşmesi", "İkinci hecedeki \"u\" düşer: burun -> burnu."),
+        ("\"kitap + da -> kitapta\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz benzeşmesi", "Ünlü daralması", "Kaynaştırma" }, "Ünsüz benzeşmesi", "Sert \"p\"den sonra ekin \"d\"si \"t\" olur: kitapta. (Fıstıkçı Şahap kuralı: f, s, t, k, ç, ş, h, p)"),
+        ("\"ara + yor -> arıyor\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü daralması", "Ünsüz yumuşaması", "Ünlü düşmesi" }, "Ünlü daralması", "Geniş \"a\", -yor ekinden önce daralıp \"ı\" olur: arıyor."),
+        ("\"araba + a -> arabaya\" örneğinde hangi ses olayı vardır?", new[] { "Kaynaştırma", "Ünlü düşmesi", "Ünsüz yumuşaması" }, "Kaynaştırma", "İki ünlü arasına \"y\" girer: araba-y-a."),
+        ("\"ağaç + ı -> ağacı\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz yumuşaması", "Kaynaştırma", "Ünlü daralması" }, "Ünsüz yumuşaması", "Sert \"ç\" yumuşayıp \"c\" olur: ağaç -> ağacı."),
+        ("\"omuz + u -> omzu\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü düşmesi", "Ünsüz benzeşmesi", "Kaynaştırma" }, "Ünlü düşmesi", "İkinci hecedeki \"u\" düşer: omuz -> omzu."),
+        ("\"git + di -> gitti\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz benzeşmesi", "Ünsüz yumuşaması", "Ünlü düşmesi" }, "Ünsüz benzeşmesi", "Sert \"t\"den sonra ekin \"d\"si \"t\" olur: gitti."),
+        ("\"bekle + yor -> bekliyor\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü daralması", "Ünsüz benzeşmesi", "Kaynaştırma" }, "Ünlü daralması", "Geniş \"e\", -yor ekinden önce daralıp \"i\" olur: bekliyor."),
+        ("\"kedi + i -> kediyi\" örneğinde hangi ses olayı vardır?", new[] { "Kaynaştırma", "Ünlü daralması", "Ünsüz benzeşmesi" }, "Kaynaştırma", "İki ünlü arasına \"y\" girer: kedi-y-i."),
+        ("\"dolap + ı -> dolabı\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz yumuşaması", "Ünlü düşmesi", "Ünlü daralması" }, "Ünsüz yumuşaması", "Sert \"p\" yumuşayıp \"b\" olur: dolap -> dolabı."),
+        ("\"oğul + u -> oğlu\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü düşmesi", "Kaynaştırma", "Ünsüz yumuşaması" }, "Ünlü düşmesi", "İkinci hecedeki \"u\" düşer: oğul -> oğlu."),
+        ("\"süt + cü -> sütçü\" örneğinde hangi ses olayı vardır?", new[] { "Ünsüz benzeşmesi", "Kaynaştırma", "Ünlü daralması" }, "Ünsüz benzeşmesi", "Sert \"t\"den sonra ekin \"c\"si \"ç\" olur: sütçü."),
+        ("\"ye + yor -> yiyor\" örneğinde hangi ses olayı vardır?", new[] { "Ünlü daralması", "Ünlü düşmesi", "Ünsüz yumuşaması" }, "Ünlü daralması", "\"e\", -yor ekinden önce daralıp \"i\" olur: yiyor."),
+        ("\"su + u -> suyu\" örneğinde hangi ses olayı vardır?", new[] { "Kaynaştırma", "Ünsüz benzeşmesi", "Ünlü düşmesi" }, "Kaynaştırma", "İki ünlü arasına \"y\" girer: su-y-u.")
+    };
+
+    private static QuizQuestion SesOlaylari(Random r)
+    {
+        var f = SesOlaylariListe[r.Next(SesOlaylariListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Ses Olayları (Lautveränderungen)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Yumuşama: p,ç,t,k -> b,c,d,ğ/g. Benzeşme: sert ünsüzden sonra d->t, c->ç. Ünlü düşmesi: ağız->ağzı. Daralma: a/e -> ı/i (-yor önünde). Kaynaştırma: iki ünlü arasına y, n, s, ş."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SozcukteAnlamListe =
+    {
+        ("\"Çok soğuk bir insandı, kimseyle konuşmazdı.\" cümlesinde \"soğuk\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "Burada \"soğuk\" sıcaklık değil, \"ilgisiz, mesafeli\" demektir - mecaz anlam."),
+        ("\"Bu kış hava çok soğuk.\" cümlesinde \"soğuk\" hangi anlamda kullanılmıştır?", new[] { "Gerçek anlam", "Mecaz anlam", "Terim anlam" }, "Gerçek anlam", "Havanın düşük sıcaklığı anlatılıyor - kelimenin ilk ve temel anlamı, gerçek anlam."),
+        ("\"Üçgenin iç açıları toplamı 180 derecedir.\" cümlesinde \"açı\" hangi anlamda kullanılmıştır?", new[] { "Terim anlam", "Gerçek anlam", "Mecaz anlam" }, "Terim anlam", "\"Açı\" burada matematiğe özgü bir kavramdır - terim anlam."),
+        ("\"Olaya farklı bir açıdan bakmalısın.\" cümlesinde \"açı\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Terim anlam", "Gerçek anlam" }, "Mecaz anlam", "Burada \"açı\" geometrik değil, \"bakış tarzı\" demektir - mecaz anlam."),
+        ("\"Tatlı bir sesi vardı.\" cümlesinde \"tatlı\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "Sesin tadı olmaz; \"tatlı\" burada \"hoşa giden\" demektir - mecaz anlam."),
+        ("\"Annem tatlı olarak baklava yaptı.\" cümlesinde \"tatlı\" hangi anlamda kullanılmıştır?", new[] { "Gerçek anlam", "Mecaz anlam", "Terim anlam" }, "Gerçek anlam", "Şekerli yiyecek anlatılıyor - gerçek anlam."),
+        ("\"Hücre, canlıların en küçük yapı birimidir.\" cümlesinde \"hücre\" hangi anlamda kullanılmıştır?", new[] { "Terim anlam", "Mecaz anlam", "Gerçek anlam" }, "Terim anlam", "\"Hücre\" burada biyolojiye özgü bir kavramdır - terim anlam."),
+        ("\"Taş kalpli biriydi, kimseye acımazdı.\" cümlesinde \"taş\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "\"Taş kalpli\" duygusuz, acımasız demektir - mecaz anlam."),
+        ("\"Yola düşen taşı kenara çektik.\" cümlesinde \"taş\" hangi anlamda kullanılmıştır?", new[] { "Gerçek anlam", "Terim anlam", "Mecaz anlam" }, "Gerçek anlam", "Gerçek bir taş parçası anlatılıyor - gerçek anlam."),
+        ("\"Cümlenin yüklemini bul.\" cümlesinde \"yüklem\" hangi anlamda kullanılmıştır?", new[] { "Terim anlam", "Gerçek anlam", "Mecaz anlam" }, "Terim anlam", "\"Yüklem\" dil bilgisine özgü bir kavramdır - terim anlam."),
+        ("\"Bu işin başına artık sen geçeceksin.\" cümlesinde \"baş\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "\"İşin başına geçmek\" yönetmek demektir, vücudun bir bölümü değil - mecaz anlam."),
+        ("\"Başım çok ağrıyor.\" cümlesinde \"baş\" hangi anlamda kullanılmıştır?", new[] { "Gerçek anlam", "Mecaz anlam", "Terim anlam" }, "Gerçek anlam", "Vücudun bir bölümü olan baş anlatılıyor - gerçek anlam."),
+        ("\"Bu problemi çözmek için bir denklem kur.\" cümlesinde \"denklem\" hangi anlamda kullanılmıştır?", new[] { "Terim anlam", "Mecaz anlam", "Gerçek anlam" }, "Terim anlam", "\"Denklem\" matematiğe özgü bir kavramdır - terim anlam."),
+        ("\"Arkadaşına çok ağır sözler söyledi.\" cümlesinde \"ağır\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "Sözlerin ağırlığı ölçülmez; \"ağır\" burada \"kırıcı\" demektir - mecaz anlam."),
+        ("\"Bu çanta çok ağır, taşıyamıyorum.\" cümlesinde \"ağır\" hangi anlamda kullanılmıştır?", new[] { "Gerçek anlam", "Terim anlam", "Mecaz anlam" }, "Gerçek anlam", "Çantanın ağırlığı anlatılıyor - gerçek anlam."),
+        ("\"Mıknatısın iki kutbu vardır.\" cümlesinde \"kutup\" hangi anlamda kullanılmıştır?", new[] { "Terim anlam", "Gerçek anlam", "Mecaz anlam" }, "Terim anlam", "\"Kutup\" burada fiziğe özgü bir kavramdır - terim anlam."),
+        ("\"Kardeşimin çok keskin bir zekâsı var.\" cümlesinde \"keskin\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "Zekâ kesmez; \"keskin\" burada \"hızlı kavrayan\" demektir - mecaz anlam."),
+        ("\"Bıçak çok keskin, dikkat et.\" cümlesinde \"keskin\" hangi anlamda kullanılmıştır?", new[] { "Gerçek anlam", "Mecaz anlam", "Terim anlam" }, "Gerçek anlam", "Bıçağın iyi kesmesi anlatılıyor - gerçek anlam."),
+        ("\"Bir sayının karesini hesapla.\" cümlesinde \"kare\" hangi anlamda kullanılmıştır?", new[] { "Terim anlam", "Mecaz anlam", "Gerçek anlam" }, "Terim anlam", "\"Bir sayının karesi\" matematiğe özgü bir kavramdır - terim anlam."),
+        ("\"Bizi çok sıcak bir şekilde karşıladılar.\" cümlesinde \"sıcak\" hangi anlamda kullanılmıştır?", new[] { "Mecaz anlam", "Gerçek anlam", "Terim anlam" }, "Mecaz anlam", "\"Sıcak karşılama\" samimi, içten karşılama demektir - mecaz anlam.")
+    };
+
+    private static QuizQuestion SozcukteAnlam(Random r)
+    {
+        var f = SozcukteAnlamListe[r.Next(SozcukteAnlamListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Sözcükte Anlam: Gerçek, Mecaz, Terim (Wortbedeutung)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Gerçek anlam: kelimenin ilk, temel anlamı. Mecaz anlam: gerçek anlamından uzaklaşmış yeni anlam (soğuk insan). Terim anlam: bir bilim, sanat ya da meslek dalına özgü anlam (açı, hücre)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] CumleTurleriListe =
+    {
+        ("\"Hava bugün çok güzel.\" cümlesi yüklemine göre hangi türdür?", new[] { "İsim cümlesi", "Fiil cümlesi", "Soru cümlesi" }, "İsim cümlesi", "Yüklem \"güzel\" bir isimdir (sıfat) - isim cümlesi."),
+        ("\"Çocuklar parkta oynadı.\" cümlesi yüklemine göre hangi türdür?", new[] { "Fiil cümlesi", "İsim cümlesi", "Soru cümlesi" }, "Fiil cümlesi", "Yüklem \"oynadı\" çekimli bir fiildir - fiil cümlesi."),
+        ("\"Kardeşim öğretmendir.\" cümlesi yüklemine göre hangi türdür?", new[] { "İsim cümlesi", "Fiil cümlesi", "Bağlı cümle" }, "İsim cümlesi", "Yüklem \"öğretmendir\" isim soylu bir kelimedir - isim cümlesi."),
+        ("\"Yarın erken kalkacağım.\" cümlesi yüklemine göre hangi türdür?", new[] { "Fiil cümlesi", "İsim cümlesi", "Sıralı cümle" }, "Fiil cümlesi", "Yüklem \"kalkacağım\" çekimli bir fiildir - fiil cümlesi."),
+        ("\"Bu kitap çok ilginç.\" cümlesi yüklemine göre hangi türdür?", new[] { "İsim cümlesi", "Fiil cümlesi", "Soru cümlesi" }, "İsim cümlesi", "Yüklem \"ilginç\" bir isimdir (sıfat) - isim cümlesi."),
+        ("\"Annem mutfakta yemek pişiriyor.\" cümlesi yüklemine göre hangi türdür?", new[] { "Fiil cümlesi", "İsim cümlesi", "Bağlı cümle" }, "Fiil cümlesi", "Yüklem \"pişiriyor\" çekimli bir fiildir - fiil cümlesi."),
+        ("\"Güneş doğdu, kuşlar ötmeye başladı.\" cümlesi yapısına göre hangi türdür?", new[] { "Sıralı cümle", "Basit cümle", "Birleşik cümle" }, "Sıralı cümle", "Virgülle ayrılmış iki bağımsız yargı var - sıralı cümle."),
+        ("\"Eve geldim ama kimse yoktu.\" cümlesi yapısına göre hangi türdür?", new[] { "Bağlı cümle", "Sıralı cümle", "Basit cümle" }, "Bağlı cümle", "İki yargı \"ama\" bağlacıyla bağlanmış - bağlı cümle."),
+        ("\"Öğretmen sınıfa girince herkes sustu.\" cümlesi yapısına göre hangi türdür?", new[] { "Birleşik cümle", "Sıralı cümle", "Bağlı cümle" }, "Birleşik cümle", "\"girince\" bir fiilimsidir ve yan cümle kurar; asıl yargı \"herkes sustu\" - birleşik cümle."),
+        ("\"Dün akşam arkadaşımla sinemaya gittim.\" cümlesi yapısına göre hangi türdür?", new[] { "Basit cümle", "Birleşik cümle", "Sıralı cümle" }, "Basit cümle", "Tek bir yargı (gittim) var, fiilimsi yok - basit cümle."),
+        ("\"Ders çalıştım, sonra dışarı çıktım.\" cümlesi yapısına göre hangi türdür?", new[] { "Sıralı cümle", "Birleşik cümle", "Basit cümle" }, "Sıralı cümle", "İki bağımsız yargı virgülle sıralanmış - sıralı cümle."),
+        ("\"Yağmur yağdığı için maç ertelendi.\" cümlesi yapısına göre hangi türdür?", new[] { "Birleşik cümle", "Bağlı cümle", "Sıralı cümle" }, "Birleşik cümle", "\"yağdığı için\" yan cümledir (fiilimsi), asıl yargı \"maç ertelendi\" - birleşik cümle."),
+        ("\"Hem ders çalıştı hem de odasını topladı.\" cümlesi yapısına göre hangi türdür?", new[] { "Bağlı cümle", "Basit cümle", "Birleşik cümle" }, "Bağlı cümle", "İki yargı \"hem... hem de\" bağlacıyla bağlanmış - bağlı cümle."),
+        ("\"Kedi süt içti.\" cümlesi yapısına göre hangi türdür?", new[] { "Basit cümle", "Sıralı cümle", "Bağlı cümle" }, "Basit cümle", "Tek yüklem, tek yargı - basit cümle."),
+        ("\"Kapıyı açtım ve içeri girdim.\" cümlesi yapısına göre hangi türdür?", new[] { "Bağlı cümle", "Birleşik cümle", "Basit cümle" }, "Bağlı cümle", "İki yargı \"ve\" bağlacıyla bağlanmış - bağlı cümle."),
+        ("\"Okula gelmeden önce kahvaltı yaptım.\" cümlesi yapısına göre hangi türdür?", new[] { "Birleşik cümle", "Sıralı cümle", "Basit cümle" }, "Birleşik cümle", "\"gelmeden önce\" fiilimsiyle kurulmuş bir yan cümledir - birleşik cümle."),
+        ("\"Bu filmi hiç izlemedim.\" cümlesi anlamına göre hangi türdür?", new[] { "Olumsuz cümle", "Olumlu cümle", "Soru cümlesi" }, "Olumsuz cümle", "Yüklem \"izlemedim\" olumsuzluk eki (-me) taşıyor - olumsuz cümle."),
+        ("\"Yarın bize gelecek misin?\" cümlesi anlamına göre hangi türdür?", new[] { "Soru cümlesi", "Olumlu cümle", "Olumsuz cümle" }, "Soru cümlesi", "Soru eki \"mi\" ile bilgi isteniyor - soru cümlesi."),
+        ("\"Bu soruyu bilmeyen yoktur.\" cümlesi anlamına göre hangi türdür?", new[] { "Olumlu cümle", "Olumsuz cümle", "Soru cümlesi" }, "Olumlu cümle", "Yapıca olumsuz görünür (yoktur), ama anlamca herkesin bildiğini söyler - anlamca olumlu cümle."),
+        ("\"Toplantıya hiç kimse gelmedi.\" cümlesi anlamına göre hangi türdür?", new[] { "Olumsuz cümle", "Soru cümlesi", "Olumlu cümle" }, "Olumsuz cümle", "Gelmenin gerçekleşmediği söyleniyor - olumsuz cümle.")
+    };
+
+    private static QuizQuestion CumleTurleri(Random r)
+    {
+        var f = CumleTurleriListe[r.Next(CumleTurleriListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Cümle Türleri (Satzarten)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Yüklemine göre: isim / fiil cümlesi. Yapısına göre: basit (tek yargı), birleşik (fiilimsili yan cümle), sıralı (virgülle), bağlı (ve, ama, hem... hem). Anlamına göre: olumlu, olumsuz, soru."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TurkEdebiyatiListe =
+    {
+        ("\"İnce Memed\" romanının yazarı kimdir?", new[] { "Yaşar Kemal", "Orhan Pamuk", "Aziz Nesin" }, "Yaşar Kemal", "\"İnce Memed\", Çukurova'da geçen bir eşkıya romanıdır ve Yaşar Kemal'in en tanınmış eseridir."),
+        ("2006'da Nobel Edebiyat Ödülü'nü kazanan Türk yazar kimdir?", new[] { "Orhan Pamuk", "Yaşar Kemal", "Nazım Hikmet" }, "Orhan Pamuk", "Orhan Pamuk, 2006'da Nobel Edebiyat Ödülü'nü alan ilk Türk yazardır."),
+        ("İstiklal Marşı'nın şairi kimdir?", new[] { "Mehmet Akif Ersoy", "Nazım Hikmet Ran", "Yunus Emre" }, "Mehmet Akif Ersoy", "İstiklal Marşı'nı Mehmet Akif Ersoy yazdı; 1921'de milli marş olarak kabul edildi."),
+        ("Sabahattin Ali'nin \"Kürk Mantolu Madonna\" romanı büyük ölçüde hangi şehirde geçer?", new[] { "Berlin", "Paris", "Viyana" }, "Berlin", "Romanın kahramanı Raif Efendi gençliğinde Berlin'de yaşar; aşk hikâyesi orada geçer."),
+        ("\"Kürk Mantolu Madonna\" kimin eseridir?", new[] { "Sabahattin Ali", "Sait Faik", "Reşat Nuri Güntekin" }, "Sabahattin Ali", "\"Kürk Mantolu Madonna\" (1943) Sabahattin Ali'nin romanıdır ve bugün de çok okunur."),
+        ("\"Çalıkuşu\" romanının yazarı kimdir?", new[] { "Reşat Nuri Güntekin", "Halide Edib Adıvar", "Sabahattin Ali" }, "Reşat Nuri Güntekin", "\"Çalıkuşu\", öğretmen Feride'nin Anadolu'daki hayatını anlatan Reşat Nuri Güntekin romanıdır."),
+        ("Mizah öyküleriyle tanınan, \"Zübük\" romanının yazarı kimdir?", new[] { "Aziz Nesin", "Orhan Veli", "Yaşar Kemal" }, "Aziz Nesin", "Aziz Nesin, Türk edebiyatının en tanınmış mizah yazarıdır; \"Zübük\" onun eseridir."),
+        ("Yunus Emre en çok hangi tür şiirleriyle tanınır?", new[] { "Tasavvufi halk şiiri", "Serbest vezinli şiir", "Mizahi hiciv şiiri" }, "Tasavvufi halk şiiri", "Yunus Emre (13.-14. yüzyıl) sevgi ve hoşgörüyü anlatan tasavvufi şiirleriyle tanınır; sade bir Türkçe kullanmıştır."),
+        ("\"Kaşağı\" öyküsünün yazarı kimdir?", new[] { "Ömer Seyfettin", "Sait Faik", "Aziz Nesin" }, "Ömer Seyfettin", "\"Kaşağı\", yalan ve vicdan azabını anlatan bir Ömer Seyfettin öyküsüdür."),
+        ("Nasreddin Hoca hangi türle özdeşleşmiştir?", new[] { "Fıkra", "Roman", "Destan" }, "Fıkra", "Nasreddin Hoca, güldürürken düşündüren kısa fıkralarıyla bilinir."),
+        ("\"Memleketimden İnsan Manzaraları\" kimin eseridir?", new[] { "Nazım Hikmet", "Orhan Veli", "Cahit Sıtkı" }, "Nazım Hikmet", "\"Memleketimden İnsan Manzaraları\", Nazım Hikmet'in uzun destansı şiiridir."),
+        ("Garip akımının öncülerinden olan şair kimdir?", new[] { "Orhan Veli Kanık", "Mehmet Akif Ersoy", "Karacaoğlan" }, "Orhan Veli Kanık", "Orhan Veli, Garip akımıyla şiire günlük dili ve sıradan insanı getirdi."),
+        ("\"Uzun ince bir yoldayım\" dizesiyle tanınan halk ozanı kimdir?", new[] { "Âşık Veysel", "Karacaoğlan", "Yunus Emre" }, "Âşık Veysel", "Âşık Veysel (1894-1973), sazı ve sade diliyle tanınan bir halk ozanıdır."),
+        ("\"Dede Korkut Hikâyeleri\" hangi türe örnektir?", new[] { "Destansı halk hikâyesi", "Modern psikolojik roman", "Tiyatro oyunu" }, "Destansı halk hikâyesi", "Dede Korkut Hikâyeleri, Oğuz Türklerinin hayatını anlatan destansı halk hikâyeleridir."),
+        ("\"Otuz Beş Yaş\" şiirinin şairi kimdir?", new[] { "Cahit Sıtkı Tarancı", "Nazım Hikmet", "Orhan Veli Kanık" }, "Cahit Sıtkı Tarancı", "\"Yaş otuz beş, yolun yarısı eder\" dizesiyle başlayan şiir Cahit Sıtkı Tarancı'nındır."),
+        ("\"Ateşten Gömlek\" romanının yazarı kimdir?", new[] { "Halide Edib Adıvar", "Reşat Nuri Güntekin", "Ömer Seyfettin" }, "Halide Edib Adıvar", "\"Ateşten Gömlek\", Kurtuluş Savaşı'nı anlatan bir Halide Edib Adıvar romanıdır."),
+        ("Öyküleriyle tanınan ve \"Semaver\"i yazan yazar kimdir?", new[] { "Sait Faik", "Ömer Seyfettin", "Sabahattin Ali" }, "Sait Faik", "Sait Faik Abasıyanık, İstanbul'daki sıradan insanları anlatan öyküleriyle tanınır; \"Semaver\" onun ilk kitabıdır."),
+        ("Almanya'da yaşayan, Almanca yazan ve Türkiye kökenli olan yazar hangisidir?", new[] { "Emine Sevgi Özdamar", "Halide Edib Adıvar", "Reşat Nuri Güntekin" }, "Emine Sevgi Özdamar", "Emine Sevgi Özdamar, eserlerini Almanca yazar ve Almanya'da önemli edebiyat ödülleri almıştır."),
+        ("17. yüzyılın ünlü halk şairi, koşmalarıyla tanınan kimdir?", new[] { "Karacaoğlan", "Nazım Hikmet", "Orhan Pamuk" }, "Karacaoğlan", "Karacaoğlan, 17. yüzyıl halk edebiyatının en ünlü âşıklarından biridir; doğa ve sevgi konulu koşmalar yazmıştır."),
+        ("\"Kar\" ve \"Benim Adım Kırmızı\" romanlarının yazarı kimdir?", new[] { "Orhan Pamuk", "Yaşar Kemal", "Elif Şafak" }, "Orhan Pamuk", "Her iki roman da Orhan Pamuk'a aittir.")
+    };
+
+    private static QuizQuestion TurkEdebiyati(Random r)
+    {
+        var f = TurkEdebiyatiListe[r.Next(TurkEdebiyatiListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Tuerkisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Türk Edebiyatından Yazarlar ve Eserler (Literatur)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Halk edebiyatı: Yunus Emre, Karacaoğlan, Âşık Veysel, Nasreddin Hoca. Roman: Yaşar Kemal, Orhan Pamuk, Sabahattin Ali, Reşat Nuri, Halide Edib. Öykü: Ömer Seyfettin, Sait Faik. Şiir: Nazım Hikmet, Orhan Veli, Mehmet Akif."
         };
     }
 }
