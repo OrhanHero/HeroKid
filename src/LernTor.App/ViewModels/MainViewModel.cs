@@ -248,7 +248,9 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
-        var heute = DateOnly.FromDateTime(DateTime.Today);
+        // Der Sitzungstag, nicht die Uhr: eine Sitzung ueber Mitternacht behaelt ihre Faecher,
+        // auch wenn der Eltern-Bereich um 0:10 geschlossen wird.
+        var heute = Progress.SessionDate;
         var plan = await _timetableRepo.GetForProfileAsync(CurrentProfile.Id);
         var zielTag = TimetableSubjectPlanner.TargetDay(plan, heute);
         if (zielTag is null)
@@ -326,6 +328,16 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task NavigateToStageAsync(LearningStage stage)
     {
+        // Ueber Nacht stehen gelassen: morgens beginnt ein neuer Lerntag, statt dass das Kind den
+        // Rest von gestern beendet und damit den heutigen Tag spart (SessionDayRollover).
+        if (CurrentProfile is not null && SessionDayRollover.ShouldStartNewDay(Progress.SessionDate, DateTime.Now))
+        {
+            Core.Logging.AppLog.Info("Sitzung", $"Neuer Tag - Sitzung vom {Progress.SessionDate:dd.MM.yyyy} wird nicht fortgesetzt.");
+            Progress = await _progressRepo.LoadOrCreateTodayAsync(CurrentProfile.Id);
+            await RefreshScheduledSubjectsAsync();
+            stage = Progress.CurrentStage;
+        }
+
         // Automatisch deaktivierte Fachbereiche überspringen.
         while (TryGetSubjectForStage(stage, out var disabledSubject) && IsSubjectDisabled(disabledSubject))
         {
