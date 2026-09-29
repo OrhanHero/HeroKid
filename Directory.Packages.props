@@ -32,7 +32,7 @@
          CI-Schritt "Prüfen, dass die KI-Bibliotheken lose neben der EXE liegen" achten. -->
     <PackageVersion Include="LLamaSharp" Version="0.27.0" />
     <PackageVersion Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
-    <PackageVersion Include="TaskScheduler" Version="2.11.0" />
+    <PackageVersion Include="TaskScheduler" Version="2.12.2" />
     <PackageVersion Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
     <PackageVersion Include="UglyToad.PdfPig.Core" Version="1.7.0-custom-5" />
     <PackageVersion Include="UglyToad.PdfPig.Fonts" Version="1.7.0-custom-5" />
