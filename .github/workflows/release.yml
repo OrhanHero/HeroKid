@@ -1,0 +1,103 @@
+name: Release
+
+# Ein Git-Tag "v<Version>" (z. B. v2.0.1) baut die App so wie der Build-Workflow, prüft sie und
+# legt sie als ZIP an ein GitHub-Release. Das ist der feste Ort, an dem eine installierbare
+# Version liegt - Voraussetzung für ein späteres Auto-Update, schaltet aber selbst nichts ein:
+# die App fragt nirgends nach neuen Versionen.
+#
+# Auslösen:
+#   git tag v2.0.1 && git push origin v2.0.1
+#
+# Die Versionsnummer kommt aus dem Tag und überschreibt <Version> aus Directory.Build.props;
+# sie erscheint danach in der Systeminfo im Eltern-Bereich.
+on:
+  push:
+    tags: [ "v*" ]
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 10 SDK einrichten
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Version aus dem Tag lesen
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+([-.][0-9A-Za-z.-]+)?$') {
+            Write-Error "Tag '${{ github.ref_name }}' ist keine Version wie v2.0.1."
+            exit 1
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Bauen und Unit-Tests
+        run: |
+          dotnet build LernTor.sln --configuration Release -p:Version=${{ steps.version.outputs.version }}
+          dotnet test tests/LernTor.Tests/LernTor.Tests.csproj --configuration Release --no-build
+
+      - name: UI-Smoke-Tests
+        run: dotnet test tests/LernTor.UiTests/LernTor.UiTests.csproj --configuration Release --no-build
+
+      - name: Self-contained Windows-Build veröffentlichen
+        # Dieselben Flags wie im Build-Workflow und in docs/BUILD.md - insbesondere OHNE
+        # IncludeNativeLibrariesForSelfExtract (sonst findet LLamaSharp llama.dll nicht).
+        run: >
+          dotnet publish src/LernTor.App/LernTor.App.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishReadyToRun=true
+          -p:Version=${{ steps.version.outputs.version }}
+          --output publish/win-x64
+
+      - name: Prüfen, dass die KI-Bibliotheken lose neben der EXE liegen
+        # Gleiche Prüfung wie im Build-Workflow (dort ausführlich begründet).
+        shell: pwsh
+        run: |
+          $found = Get-ChildItem publish/win-x64 -Recurse -Filter *.dll -ErrorAction SilentlyContinue |
+                     Where-Object { $_.Name -match '^(llama|ggml|mtmd|llava)' }
+          if (-not ($found | Where-Object { $_.Name -eq 'llama.dll' })) { Write-Error "llama.dll fehlt im Publish-Ordner."; exit 1 }
+          if (-not ($found | Where-Object { $_.Name -like 'ggml*' })) { Write-Error "Keine ggml-Bibliothek gefunden."; exit 1 }
+          Write-Host "OK - $($found.Count) native KI-Bibliotheken liegen lose im Artefakt."
+
+      - name: ZIP packen
+        shell: pwsh
+        run: |
+          $zip = "LernTor-${{ steps.version.outputs.version }}-win-x64.zip"
+          Compress-Archive -Path publish/win-x64/* -DestinationPath $zip
+          Get-FileHash $zip -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $zip" } | Out-File -Encoding ascii "$zip.sha256"
+          Write-Host "Erstellt: $zip"
+
+      - name: GitHub-Release anlegen
+        # gh ist auf den GitHub-Runnern vorinstalliert - keine Fremd-Action nötig.
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $zip = "LernTor-$version-win-x64.zip"
+          $notes = @"
+          LernTor $version für Windows 10/11 (x64), self-contained - keine .NET-Installation nötig.
+
+          Update: das komplette ZIP über die alte Installation entpacken (docs/BUILD.md, Abschnitt 3).
+          Vorher im Eltern-Bereich eine Sicherung auf USB ziehen (docs/WIEDERHERSTELLUNG.md).
+
+          Prüfsumme (SHA-256): siehe $zip.sha256
+          "@
+          gh release create "${{ github.ref_name }}" $zip "$zip.sha256" --title "LernTor $version" --notes $notes

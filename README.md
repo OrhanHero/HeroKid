@@ -13,6 +13,25 @@ mit eigenen Themen - kein Fach wiederholt für Klasse-7-Profile mehr den Klasse-
 Ausnahme ist der KI-Bereich, der bewusst nur Klasse 6 und 9 hat und für Klasse 7 auf Klasse 6
 zurückfällt (siehe [docs/CURRICULUM.md](docs/CURRICULUM.md)).
 
+**Seit dem Schuljahr 2026/27** wählt LernTor die Schulfächer des Tages nach dem Stundenplan des
+Kindes aus: geübt wird, was am nächsten Schultag dran ist, plus Türkisch (siehe
+„📚 Fächer nach Stundenplan“ unten).
+
+### Dokumentation
+
+| Dokument | Inhalt |
+|---|---|
+| [docs/NAECHSTES-LEVEL.md](docs/NAECHSTES-LEVEL.md) | **Plan vom 29.09.2026**: .NET 10, Abzeichen, Meisterschaft je Thema, größere Pools |
+| [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md) | **Was als Nächstes zu tun ist**, und was am 28.09.2026 erledigt wurde |
+| [docs/WIEDERHERSTELLUNG.md](docs/WIEDERHERSTELLUNG.md) | Notfall: Sicherung einspielen, App startet nicht, Kiosk lösen |
+| [docs/STUNDENPLAENE-2026-27.md](docs/STUNDENPLAENE-2026-27.md) | Stundenpläne der Kinder zum Einfügen |
+| [docs/TESTPLAN.md](docs/TESTPLAN.md) | Testprotokoll nach Rollen |
+| [docs/PLAN.md](docs/PLAN.md) | Plan nach Risiko, mit Begründungen |
+| [docs/BUILD.md](docs/BUILD.md) | Bauen, Installieren, Datenbankschema |
+| [docs/CURRICULUM.md](docs/CURRICULUM.md), [docs/FAECHER-SYSTEM.md](docs/FAECHER-SYSTEM.md) | Themen je Fach und Stufe, Verdrahtung neuer Fächer |
+| [docs/TIPPTRAINER.md](docs/TIPPTRAINER.md), [docs/FUEHRERSCHEIN.md](docs/FUEHRERSCHEIN.md) | Tipptrainer, Führerschein-Bereich |
+| [docs/PILOT-CHECKLISTE.md](docs/PILOT-CHECKLISTE.md) | Installation und Bypass-Härtetest am echten PC |
+
 ## Profile
 
 Mehrere Kinder am selben PC wählen beim Start ihr eigenes Profil aus einem Kachel-Dashboard: jede
@@ -194,7 +213,8 @@ ein Absturz oder Neustart verliert also keinen Fortschritt.
 
 ## Architektur & Technologie-Entscheidung
 
-**.NET 8 + WPF**, kein WinUI 3, kein Electron. Begründung: Die sicherheitskritischste Anforderung
+**.NET 10 (LTS) + WPF**, kein WinUI 3, kein Electron. (Bis 29.09.2026 .NET 8; umgestellt, weil
+dessen Support am 10.11.2026 endet - .NET 10 wird bis November 2028 unterstützt.) Begründung: Die sicherheitskritischste Anforderung
 (Kiosk-Sperre: Task-Manager deaktivieren, Windows-Taste/Alt+Tab abfangen) ist mit klassischen
 Win32-APIs (P/Invoke) am zuverlässigsten umsetzbar, und WPF hat dafür die geringste Reibung bei
 gleichzeitig moderner, gut stylebarer UI. Details siehe Projekt-Chatverlauf/Architektur-Entscheidung.
@@ -263,8 +283,23 @@ deshalb bewusst nicht umgesetzt.
   Rückfrage; Abbuchung + Protokolleintrag passieren in einem Schritt). Eingelöste Belohnungen
   erscheinen je Profil im Eltern-Bereich - eingelöst wird in der echten Welt von den Eltern.
   Die Historie bleibt als Schnappschuss erhalten, auch wenn die Belohnung später gelöscht wird.
+- **🏆 Mein Fortschritt – Meisterschaft je Thema** (seit 2.0, Vorbild Khan Academy,
+  `TopicMasteryCalculator`): jedes geübte Thema steht auf einer von vier Stufen – 🌱 angefangen
+  (unter 5 Antworten), 📘 vertraut, ✅ sicher (zuletzt ab 70 % richtig), 🏆 gemeistert (zuletzt ab
+  90 % **und** zwei Fragen daraus haben nach Tagen eine Wiederholung bestanden – Behalten, nicht nur
+  frisch Können). Gezählt werden die letzten 10 Antworten, damit Fortschritt sichtbar wird; Stufen
+  können auch wieder sinken. Erreichbar über „🏆 Mein Fortschritt“ auf der Startseite, auch aus dem
+  Planer heraus. Bewusst kein Rot für schwache Themen. Eltern sehen dieselbe Auswertung je Fach im
+  Bericht.
+- **🏅 Abzeichen** (seit 2.0, Vorbild ANTON/Duolingo, `AchievementCatalog`): 25 Abzeichen für echte
+  Leistungen – 100/500/1000 richtige Aufgaben, 10/50/100 Lerntage (gesamt, keine Serie),
+  korrigierte Fehler aus der Fehler-Kartei, sichere und gemeisterte Themen, „Dreisprachig“,
+  „Allrounder“, fehlerfreies Abschlussquiz, Tipptrainer, alle Verkehrszeichen. **Nichts verfällt:**
+  ein Abzeichen wird einmal gespeichert und nie entzogen. Neue erscheinen nach dem bestandenen
+  Abschlussquiz als goldene Zeile, alle zusammen in „Mein Fortschritt“ (offene blass mit dem Weg
+  dorthin; Abzeichen abgeschalteter Bereiche werden ausgeblendet).
 - Bewusst KEINE Tages-Streaks: ein verpasster Tag soll kein schlechtes Gewissen erzeugen - Sterne
-  können nur wachsen, nie verfallen (einlösen ja, verfallen nein).
+  können nur wachsen, nie verfallen (einlösen ja, verfallen nein). Dasselbe gilt für die Abzeichen.
 
 ## 🚗 Führerschein Klasse B
 
@@ -376,7 +411,10 @@ der Plan war weg.
 ## Eltern-Features
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
-- Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
+- Erststart: Admin-Passwort selbst festlegen (PBKDF2-SHA256 mit 600.000 Durchläufen, kein Klartext
+  gespeichert; ältere Passwörter werden beim nächsten Anmelden still auf diese Stärke umgestellt).
+- **ℹ️ Systeminfo** (seit 2.0): App-Version samt Git-Stand, .NET, Windows, Datenbankgröße, letzte
+  automatische Sicherung – mit Kopieren-Knopf, für jede Rückfrage bei einem Problem.
 - Fachbereiche einzeln deaktivieren, Klassenstufe (6/7/8/9/10) einstellen.
 - **🏖️ Ferien-/Pausenmodus** (global, ein Datum): bis **einschließlich** dieses Tages startet
   LernTor ohne Kiosk-Sperre **und ohne Lernpflicht**. Das Kind sieht statt der Lernstrecke einen
@@ -442,7 +480,19 @@ der Plan war weg.
   ausdrücklich). Das **Fach bleibt freier Text**, kein `Subject`-Enum: auf einem echten Plan
   stehen NaWi, GeWi, Sport, WPU Spanisch oder Klassenrat, und die kennt LernTor als Lernbereich
   nicht - angezeigt wird deshalb genau das, was auf dem Plan der Schule steht; die Zuordnung zu
-  einem LernTor-Fach entscheidet nur über das Symbol davor.
+  einem LernTor-Fach entscheidet über das Symbol davor **und über die Fächer des Tages** (siehe
+  nächster Punkt).
+- **📚 Fächer nach Stundenplan** (seit 2026/27, pro Kind abschaltbar im Eltern-Bereich): geübt
+  werden nur die Schulfächer, die **am nächsten Schultag** auf dem Plan stehen – Vorbereitung
+  statt Nachbereitung; freitags und am Wochenende die vom Montag, in den Ferien die vom ersten
+  Schultag danach. **Türkisch ist immer dabei**, auch ohne Türkischstunde. **NaWi** wechselt
+  reihum zwischen Biologie, Chemie und Physik (gezählt über die NaWi-Tage des Wochenplans, also
+  nie zweimal hintereinander dasselbe). **Klausurfächer** sind in der Woche vor dem Termin immer
+  dabei. Das Abschlussquiz fragt nur die geübten Fächer ab. Lesen, Tippen, News, KI-Bereich,
+  Führerschein und Erste Hilfe bleiben unberührt. Unter dem Stundenplan steht für das Kind,
+  warum: „Heute übst du für Dienstag: Mathematik · Musik · Türkisch". Ohne eingetragenen Plan
+  bleibt alles wie vorher (`TimetableSubjectPlanner`). Die Pläne 2026/27 zum Einfügen stehen in
+  [`docs/STUNDENPLAENE-2026-27.md`](docs/STUNDENPLAENE-2026-27.md).
   **Bewusst kein PDF-Importeur**: die Pläne der beiden Schulen sehen völlig verschieden aus - der
   eine ein eingescannter Untis-Ausdruck, dessen Textebene aus OCR stammt und sichtbare Lesefehler
   enthält, der andere eine Word-Tabelle mit umbrochenen Zellen. Ein Importeur müsste bei jedem
@@ -630,6 +680,9 @@ Kinder sollen so viel Zeit erhalten, wie sie zum Durcharbeiten von Lesen/Fächer
 benötigen. Das ist eine bewusste Design-Entscheidung, kein technisches Versäumnis.
 
 ## Bekannte Grenzen / nächste Schritte
+
+Die aktuelle Arbeitsliste steht in [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md). Dieser
+Abschnitt beschreibt dauerhafte Grenzen und Entwurfsentscheidungen.
 
 - **KI-Funktionen: komplett lokal, keine Cloud-Anbindung.** LernTor nutzt an keiner Stelle einen
   Cloud-KI-Dienst - das lokal geladene Sprachmodell ist die einzige KI-Anbindung, für zwei Features:

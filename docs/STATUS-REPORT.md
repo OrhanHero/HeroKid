@@ -1,4 +1,27 @@
-# LernTor – Status-Quo-Bericht (Stand: 2026-07-30, zweite Fassung)
+# LernTor – Status-Quo-Bericht
+
+## Stand 28.09.2026 (aktuell)
+
+| Größe | Wert |
+|---|---|
+| Betrieb | Die App läuft bei der Familie und wurde einmal komplett durchgespielt |
+| Code | 357 `.cs`-Dateien, ~61.700 Zeilen, 30 XAML-Ansichten |
+| Tests | 666 Testmethoden (+243 `InlineData`-Fälle) in 79 Dateien, 23 Vorab-Prüfungen |
+| CI | `windows-latest` wieder aktiv (war vom 17.08. bis 28.09. gelöscht) |
+| Fächerauswahl | **nach Stundenplan**: nächster Schultag + Türkisch, NaWi reihum, Klausurfächer gehen vor |
+| Datensicherheit | Sicherung/Wiederherstellung im Ganzen getestet, Knopf „Datenbank prüfen“, Notfall-Anleitung |
+| Offen | Türkisch-Pool zu klein für tägliche Übung (5–7 Wochen), Kalender 2027/28, Zeitbudget (nur falls nötig) |
+
+Was als Nächstes zu tun ist: [`NAECHSTE-SCHRITTE.md`](NAECHSTE-SCHRITTE.md). Notfall:
+[`WIEDERHERSTELLUNG.md`](WIEDERHERSTELLUNG.md).
+
+---
+
+## Historischer Bericht (Stand 2026-07-30, zweite Fassung)
+
+Die Tabellen unten sind der Stand vom 30.07.2026 und werden nicht mehr fortgeschrieben. Die
+Fächer- und Themenzahlen sind seitdem gewachsen (u. a. Erste Hilfe, Klasse-7-Pools, Weltwunder).
+Aktuelle Poolgrößen liefert `python3 scripts/pool-reichweite.py`.
 
 > **Hinweis**: Dieser Bericht basiert auf Code-Analyse. Die App läuft nur unter Windows (WPF + Win32 P/Invoke). Build-Verifikation erfolgt via GitHub Actions (`.github/workflows/build.yml` auf `windows-latest`).
 

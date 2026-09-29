@@ -14,13 +14,18 @@ Klasse 6 and 9. Full behavioral spec lives in `README.md`; curriculum topic mapp
 `docs/FAECHER-SYSTEM.md`; typing trainer details in `docs/TIPPTRAINER.md`; the driving-licence area
 (traffic signs, own vector rendering, licensing constraints) in `docs/FUEHRERSCHEIN.md`.
 
-**Environment constraint**: this repo is often developed from a Linux sandbox with no .NET SDK
-and no Windows, so nothing here can actually be compiled or run locally in that environment.
-`LernTor.App` and `LernTor.Security` require Windows (WPF, Win32 P/Invoke) and won't build on
-Linux/macOS even with the SDK installed. **The GitHub Actions workflow
-(`.github/workflows/build.yml`, runs on `windows-latest`) is the real build/test verification** —
-after pushing, check the workflow run rather than assuming local compilation succeeded. Several
-real bugs in this codebase's history were only caught this way (see "Hard-won gotchas" below).
+**Environment constraint**: this repo is often developed from a Linux sandbox without Windows.
+**The whole solution DOES build there** (discovered 29.09.2026 — it was long assumed impossible):
+`apt-get install -y dotnet-sdk-10.0` (plain Ubuntu 24.04 archive; the Microsoft download host is
+blocked by the proxy, nuget.org is not), then `dotnet build LernTor.sln -c Release` — including
+the WPF app and XAML markup compilation, because `Directory.Build.props` sets
+`EnableWindowsTargeting`. `dotnet test tests/LernTor.Tests/...` runs the ~900 unit tests in
+seconds. **Always build and run the unit tests locally before pushing.** What Linux cannot do is
+*run* WPF: `XamlParseException`-class runtime bugs (see "Hard-won gotchas") and the UI tests only
+surface on the GitHub Actions workflow (`.github/workflows/build.yml`), whose `windows-latest` job
+remains the real verification — after pushing, check that run (matching `head_sha`) rather than
+assuming a green local build is enough. A second `linux-schnell` job gives build+unit-test
+feedback in ~2 minutes.
 
 ## Commands
 
@@ -62,14 +67,20 @@ Seven projects, dependency graph flows one direction (`Core` has no dependencies
 everything):
 
 ```
-LernTor.Core         net8.0, no deps       — models, enums, ProgressGateService, ScoringService
+LernTor.Core         net10.0, no deps       — models, enums, ProgressGateService, ScoringService
 LernTor.ContentGen    → Core               — rule-based per-subject question generators + QuizComposer
 LernTor.News          → Core               — RSS ingestion, simplification, comprehension questions
 LernTor.Data          → Core               — EF Core/SQLite repositories
-LernTor.Security      → Core (net8.0-windows) — kiosk keyboard hook, task-manager policy, autostart, admin auth
-LernTor.App           → all of the above (net8.0-windows, WPF) — the actual UI
+LernTor.Security      → Core (net10.0-windows) — kiosk keyboard hook, task-manager policy, autostart, admin auth
+LernTor.App           → all of the above (net10.0-windows, WPF) — the actual UI
 LernTor.Installer                          — Inno Setup script + PowerShell autostart helper (not a .csproj)
 ```
+
+Build configuration is centralised: **package versions live only in `Directory.Packages.props`**
+(Central Package Management — a `<PackageReference>` with a `Version=` attribute is a build
+error), shared properties (Nullable, ImplicitUsings, `EnableWindowsTargeting`, NuGet audit) in
+`Directory.Build.props`, the SDK floor in `global.json`. Dependabot proposes monthly updates,
+grouped so the .NET family and LLamaSharp + its backend always move together.
 
 ### Content generators (`LernTor.ContentGen/Generators`)
 
@@ -112,6 +123,37 @@ enabled and doesn't include subjects the child never practiced. News questions g
 roughly a third of the target. `MainViewModel` calls this twice per day at most: once for the first
 attempt (target 20) and, only if that attempt's score is below the profile's configured threshold,
 once more for a retry weighted toward weak subjects (target 15, via `ComposeRetryExercises`).
+
+### Subjects of the day follow the timetable (`TimetableSubjectPlanner`, since 2026/27)
+
+Each child only practises the school subjects on their **next school day's** timetable (Friday and
+weekends → Monday, holidays → first school day after), plus `AlwaysIncluded` (Türkisch), plus
+subjects with an upcoming exam (`ExamEntry.LearningWeight > 1`). "NaWi" rotates Bio → Chemie →
+Physik by counting NaWi weekdays since a fixed Monday, so the same date always yields the same
+subject. The result is passed as the optional `scheduledSchoolSubjects` argument of
+`SubjectAvailability.IsDisabled`/`EffectiveDisabled`, which is how stage skipping, the stage
+counter and the final quiz all pick it up without knowing about timetables. `null` means "no
+constraint" (no timetable, switch off, no school day in sight) and must keep the old behaviour.
+`MainViewModel.RefreshScheduledSubjectsAsync` computes it from `Progress.SessionDate`, not the
+clock. Per-profile switch: `StudentProfile.TimetableSubjectsEnabled` (stored inverted). The
+family's timetables live in `docs/STUNDENPLAENE-2026-27.md` and, verbatim, in
+`TimetableSubjectPlannerTests`; `scripts/pool-reichweite.py` reads that doc to compute how many
+weeks each question pool lasts.
+
+### Mastery and badges (since 2.0, 29.09.2026)
+
+`TopicMasteryCalculator` (Core) derives one of four levels per (subject, topic) from the whole
+activity log plus `MasteredPromptRepository.GetReviewPassedPromptsAsync` (ReviewStage ≥ 2):
+Angefangen (<5 answers), Vertraut, Sicher (last 10 answers ≥70 %), Gemeistert (≥90 % **and** ≥2
+prompts of the topic passed a spaced review). The "🔁 " Fehler-Kartei prefix is stripped from
+topics; News/Tippen/Führerschein don't count. `AchievementCatalog` (Core) holds 25 badges with
+DE/TR texts and pure predicates over `AchievementFacts`; `AchievementRepository.UnlockAsync`
+stores newly earned ones in `UnlockedAchievements` and **never removes any**. Badge ids are
+persisted — never rename one, append new ones. Both surface in `ProgressOverviewViewModel`
+("🏆 Mein Fortschritt", opened from the Welcome screen, also in planner-peek mode) and, for new
+badges, as one line on the result screen; mastery per subject is also in the parent report.
+`ReviewForecast` computes the Fehler-Kartei count on the Welcome screen from today's subjects and
+the same per-subject cap the exercise builder uses.
 
 ### Stage navigation (`LernTor.Core.Services.LearningStageSubjects`)
 
@@ -161,8 +203,8 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
 
 ## Hard-won gotchas (don't reintroduce these)
 
-- **`net8.0-windows` + `UseWPF=true` does NOT get the same implicit global usings as plain
-  `net8.0`.** Plain SDK projects (Core/ContentGen/News/Data) get `System.Net.Http` for free; the
+- **`net10.0-windows` + `UseWPF=true` does NOT get the same implicit global usings as plain
+  `net10.0`** (same on net8). Plain SDK projects (Core/ContentGen/News/Data) get `System.Net.Http` for free; the
   WPF project does not — add `using System.Net.Http;` explicitly wherever `HttpClient` is used in
   `LernTor.App`. This only surfaced as a CI compile error, not locally.
 - **`pack://application:,,,/Path` only resolves an embedded `Resource` when the EXECUTING
@@ -294,8 +336,34 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   count, **loosened a parental news filter set to "Streng" back to "Normal"**, re-enabled areas the
   parents had switched off, and restored every deselected traffic-sign category. No compile error,
   no failing test, no message. Prefer a method that writes exactly the one column you mean
-  (`SetPinnedReadingTextAsync` is the pattern); if you must call the full overwriter, pass
-  everything. `scripts/preflight.py` now checks it (`voll-ueberschreiber`).
+  (`SetPinnedReadingTextAsync` is the pattern). **Since 29.09.2026 the full overwriter takes a
+  `ProfileSettings` record (Core) whose properties are all `required`** — a forgotten field is a
+  compile error (CS9035). To change a few values, start from the stored state:
+  `ProfileSettings.From(profile) with { WeeklyGoalDays = 4 }`. A new profile setting goes into
+  `ProfileSettings` (as `required`), `From()` and the repository; `ProfileSettingsTests` checks via
+  reflection that `From()` copies every property, `scripts/preflight.py` (`voll-ueberschreiber`)
+  that none lacks `required`.
+- **Hand-maintained lists of tables go stale — twice.** `DatabaseMaintenanceRepository.ResetAllDataAsync`
+  listed its tables by hand; after the first fix ("new tables belong in this list without
+  exception") six more tables were added elsewhere and silently survived a factory reset.
+  `StudentProfileRepository.DeleteAsync` only removed three of ~17 profile-owned tables. Both now
+  derive their table lists from the EF model (`AllTableNames()`, `ProfileOwnedTables()`) and
+  `BackupRestoreTests`/`ProfileSettingsPersistenceTests` check every table. Don't reintroduce a
+  hand-written list of `DbSet`s for anything that must cover "all data".
+- **Don't delete `.github/workflows/build.yml`.** It was removed on 17.08.2026 (`00bf7a3`) and for
+  six weeks nothing pushed was ever compiled. It is the only place code is built at all.
+- **The parameterless XAML load test never instantiates item templates.** `XamlLoadTests` creates
+  each view without a DataContext, so every `ItemsControl` is empty and nothing inside its
+  `DataTemplate` (styles, `DataTrigger`s on enums, converters) is ever loaded — a runtime error
+  there stays invisible. For any view with non-trivial item templates, add a `[WpfFact]` that sets
+  a ViewModel with sample data, measures/arranges and asserts a rendered text (pattern:
+  `Fortschritt_rendert_alle_Stufen_mit_Daten`).
+- **An exception in an `async void` handler or `async () => …` lambda ends up in the global
+  crash handler, which restarts the app in kiosk mode.** Wrap navigation callbacks that await
+  (e.g. `ReturnToWelcome`, `OnOpenProgressRequested`) in try/catch and log. On the result screen
+  this matters doubly: it carries the button that unlocks the PC, so badge unlocking there is
+  wrapped and can never prevent the screen from appearing. The result screen's content also sits in
+  a `ScrollViewer` since 2.0 so the unlock button can't be pushed below the fold on 1366×768.
 - **`StudentProgress` had three completion flags but `ProgressEntity` only stored one.**
   `HasCompletedTyping`/`HasCompletedWriting` were read by `ProgressGateService` and set by
   `MainViewModel`, but never persisted — a restart mid-session made the child redo the typing

@@ -1,23 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace>LernTor.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <!-- Repositories nehmen einen ILogger entgegen; die Tests reichen NullLogger durch.
          Kommt zwar ohnehin transitiv über EF Core, steht hier aber ausdrücklich, damit ein
-         Paket-Update von EF Core die Tests nicht überraschend zerlegt.
-         Version 10.0.5 statt 8.0.2: LLamaSharp 0.27.0 (über LernTor.ContentGen) verlangt bereits
-         >= 10.0.5 - 8.0.2 war ein Downgrade und ließ die Wiederherstellung mit NU1605 scheitern. -->
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
-    <PackageReference Include="xunit" Version="2.9.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+         Paket-Update von EF Core die Tests nicht überraschend zerlegt. Die Version steht zentral in
+         Directory.Packages.props (früher lag sie hier auf 8.0.2, während LLamaSharp schon
+         >= 10.0.5 verlangte - NU1605). -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

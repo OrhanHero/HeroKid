@@ -41,24 +41,25 @@ public sealed class ProfileSettingsPersistenceTests : IDisposable
 
         await repo.UpdateSettingsAsync(
             profil.Id,
-            typingMinAccuracy: 0.8,
-            quizFirstAttemptThreshold: 0.7,
-            quizRetryThreshold: 0.4,
-            readingMinutes: 7,
-            newsSecondsPerArticle: 20,
-            exerciseSecondsPerQuestion: 8,
-            exercisesPerSubject: 9,
-            quizQuestionCount: 25,
-            quizRetryQuestionCount: 18,
-            customTypingSentenceText: null,
-            customTypingFinalText: null,
-            weeklyGoalDays: 4,
-            pinnedReadingTextKey: null,
-            newsArticleCount: 6,
-            newsFilterStrictness: NewsFilterStrictness.Streng,
-            drivingAreaEnabled: false,
-            ersteHilfeEnabled: false,
-            drivingChallengeSignCount: 3);
+            ProfileSettings.From(profil) with
+            {
+                TypingMinAccuracy = 0.8,
+                QuizFirstAttemptThreshold = 0.7,
+                QuizRetryThreshold = 0.4,
+                ReadingMinutes = 7,
+                NewsSecondsPerArticle = 20,
+                ExerciseSecondsPerQuestion = 8,
+                ExercisesPerSubject = 9,
+                QuizQuestionCount = 25,
+                QuizRetryQuestionCount = 18,
+                WeeklyGoalDays = 4,
+                PinnedReadingTextKey = null,
+                NewsArticleCount = 6,
+                NewsFilterStrictness = NewsFilterStrictness.Streng,
+                DrivingAreaEnabled = false,
+                ErsteHilfeEnabled = false,
+                DrivingChallengeSignCount = 3,
+            });
 
         await repo.SetPinnedReadingTextAsync(profil.Id, "lesetext-42");
 
@@ -131,6 +132,113 @@ public sealed class ProfileSettingsPersistenceTests : IDisposable
         Assert.False(stand.HasCompletedReading);
         Assert.False(stand.HasCompletedTyping);
         Assert.False(stand.HasCompletedWriting);
+    }
+
+    [Fact]
+    public async Task Faecher_nach_Stundenplan_sind_fuer_neue_Profile_an_und_lassen_sich_abschalten()
+    {
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+
+        var profil = await repo.CreateAsync("Testkind", 11, "6c", GradeLevel.Klasse6, "🧒");
+        Assert.True((await repo.GetAllAsync()).Single().TimetableSubjectsEnabled);
+
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
+        Assert.False((await repo.GetAllAsync()).Single().TimetableSubjectsEnabled);
+
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, true);
+        Assert.True((await repo.GetAllAsync()).Single().TimetableSubjectsEnabled);
+    }
+
+    [Fact]
+    public async Task Der_Stundenplan_Schalter_laesst_alle_anderen_Einstellungen_in_Ruhe()
+    {
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+
+        var profil = await repo.CreateAsync("Testkind", 14, "9a", GradeLevel.Klasse9, "🧒");
+        await repo.UpdateSettingsAsync(
+            profil.Id,
+            ProfileSettings.From(profil) with
+            {
+                TypingMinAccuracy = 0.8,
+                QuizFirstAttemptThreshold = 0.7,
+                QuizRetryThreshold = 0.4,
+                ReadingMinutes = 7,
+                NewsSecondsPerArticle = 20,
+                ExerciseSecondsPerQuestion = 8,
+                ExercisesPerSubject = 9,
+                QuizQuestionCount = 25,
+                QuizRetryQuestionCount = 18,
+                WeeklyGoalDays = 4,
+                PinnedReadingTextKey = "lesetext-42",
+                NewsArticleCount = 6,
+                NewsFilterStrictness = NewsFilterStrictness.Streng,
+                DrivingAreaEnabled = false,
+                ErsteHilfeEnabled = false,
+                DrivingChallengeSignCount = 3,
+            });
+
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
+
+        var danach = (await repo.GetAllAsync()).Single(p => p.Id == profil.Id);
+        Assert.False(danach.TimetableSubjectsEnabled);
+        Assert.Equal("lesetext-42", danach.PinnedReadingTextKey);
+        Assert.Equal(NewsFilterStrictness.Streng, danach.NewsFilterStrictness);
+        Assert.False(danach.DrivingAreaEnabled);
+        Assert.False(danach.ErsteHilfeEnabled);
+        Assert.Equal(9, danach.ExercisesPerSubject);
+    }
+
+    [Fact]
+    public async Task Die_Klassenstufe_laesst_sich_wechseln_ohne_etwas_anderes_anzufassen()
+    {
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+
+        var profil = await repo.CreateAsync("Batuhan", 14, "9a", GradeLevel.Klasse9, "🦁");
+        await repo.AddStarsAsync(profil.Id, 42);
+        await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
+
+        await repo.SetGradeLevelAsync(profil.Id, GradeLevel.Klasse10, " 10a ");
+
+        var danach = (await repo.GetAllAsync()).Single();
+        Assert.Equal(GradeLevel.Klasse10, danach.GradeLevel);
+        Assert.Equal("10a", danach.ClassLabel);
+        Assert.Equal(42, danach.TotalStars);
+        Assert.False(danach.TimetableSubjectsEnabled);
+        Assert.Equal("Batuhan", danach.Name);
+    }
+
+    [Fact]
+    public async Task Ein_geloeschtes_Profil_hinterlaesst_keine_Zeilen_und_laesst_das_andere_in_Ruhe()
+    {
+        // Frueher raeumte DeleteAsync nur Fortschritt, Protokoll und Quiz-Historie ab.
+        using var db = CreateContext();
+        var repo = new StudentProfileRepository(db);
+        var weg = await repo.CreateAsync("Weg", 11, "6c", GradeLevel.Klasse6, "🧒");
+        var bleibt = await repo.CreateAsync("Bleibt", 14, "9a", GradeLevel.Klasse9, "🧒");
+
+        var stundenplan = new TimetableRepository(db);
+        foreach (var id in new[] { weg.Id, bleibt.Id })
+        {
+            await stundenplan.ReplaceAsync(id, Timetable.DefaultPeriods, new[] { new TimetableLesson(DayOfWeek.Monday, 1, "Ma") });
+            var fortschritt = await new ProgressRepository(db).LoadOrCreateTodayAsync(id);
+            fortschritt.HasCompletedReading = true;
+            await new ProgressRepository(db).SaveAsync(fortschritt);
+        }
+
+        await repo.DeleteAsync(weg.Id);
+
+        Assert.Contains(repo.ProfileOwnedTables(), eintrag => eintrag.Tabelle == "TimetableLessons");
+        Assert.Contains(repo.ProfileOwnedTables(), eintrag => eintrag.Tabelle == "TimetablePeriods");
+        Assert.Empty((await stundenplan.GetForProfileAsync(weg.Id)).Lessons);
+        Assert.Empty(await db.TimetablePeriods.Where(p => p.ProfileId == weg.Id).ToListAsync());
+        Assert.Empty(await db.Progress.Where(p => p.ProfileId == weg.Id).ToListAsync());
+
+        Assert.Single((await stundenplan.GetForProfileAsync(bleibt.Id)).Lessons);
+        Assert.Single(await db.Progress.Where(p => p.ProfileId == bleibt.Id).ToListAsync());
+        Assert.Equal("Bleibt", Assert.Single(await repo.GetAllAsync()).Name);
     }
 
     public void Dispose()

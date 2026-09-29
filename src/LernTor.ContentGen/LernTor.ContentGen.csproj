@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LernTor.ContentGen</RootNamespace>
   </PropertyGroup>
 
@@ -13,21 +11,21 @@
 
   <ItemGroup>
     <!-- Für TeacherImport: PDF-/Word-Textextraktion (reine .NET-Bibliotheken, keine Windows-Abhängigkeit).
-         Aktualisiert auf 1.7.0 (neueste verfügbare Version auf nuget.org) mit expliziten Sub-Paketen
+         Version 1.7.0 mit expliziten Sub-Paketen (Versionen in Directory.Packages.props),
          um NU1603-Warnungen durch fehlende Abhängigkeiten (Core, Tokens, Fonts, Tokenization)
          bei der alten 0.1.9-alpha zu vermeiden. -->
-    <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
-    <PackageReference Include="UglyToad.PdfPig.Core" Version="1.7.0-custom-5" />
-    <PackageReference Include="UglyToad.PdfPig.Tokens" Version="1.7.0-custom-5" />
-    <PackageReference Include="UglyToad.PdfPig.Fonts" Version="1.7.0-custom-5" />
-    <PackageReference Include="UglyToad.PdfPig.Tokenization" Version="1.7.0-custom-5" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
+    <PackageReference Include="UglyToad.PdfPig" />
+    <PackageReference Include="UglyToad.PdfPig.Core" />
+    <PackageReference Include="UglyToad.PdfPig.Tokens" />
+    <PackageReference Include="UglyToad.PdfPig.Fonts" />
+    <PackageReference Include="UglyToad.PdfPig.Tokenization" />
+    <PackageReference Include="DocumentFormat.OpenXml" />
     <!-- Einzige KI-Anbindung in LernTor, komplett lokal (kein Cloud-Konto, keine Kosten, Daten
-         verlassen nie den PC): LLamaSharp lädt eine GGUF-Modelldatei direkt im App-Prozess. Version
-         gegen die echte nuget.org-Versionshistorie geprüft. LLamaSharp.Backend.Cpu liefert die nativen
+         verlassen nie den PC): LLamaSharp lädt eine GGUF-Modelldatei direkt im App-Prozess.
+         LLamaSharp.Backend.Cpu liefert die nativen
          llama.cpp-Binaries (kein GPU-Backend, um keine CUDA-Abhängigkeit ins Kiosk-Setup zu bringen). -->
-    <PackageReference Include="LLamaSharp" Version="0.27.0" />
-    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
+    <PackageReference Include="LLamaSharp" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" />
   </ItemGroup>
 
 </Project>

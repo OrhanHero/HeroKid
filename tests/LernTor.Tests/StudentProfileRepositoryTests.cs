@@ -47,9 +47,12 @@ public sealed class StudentProfileRepositoryTests : IDisposable
             var repo = new StudentProfileRepository(db);
             var profile = await repo.CreateAsync("Test", 12, "7a", GradeLevel.Klasse7, "🧒");
 
-            await repo.UpdateSettingsAsync(profile.Id, 0.5, 0.75, 0.5,
-                readingMinutes: 8, newsSecondsPerArticle: 20, exerciseSecondsPerQuestion: 10,
-                exercisesPerSubject: 8, quizQuestionCount: 25, quizRetryQuestionCount: 20);
+            await repo.UpdateSettingsAsync(profile.Id, ProfileSettings.From(profile) with
+            {
+                TypingMinAccuracy = 0.5, QuizFirstAttemptThreshold = 0.75, QuizRetryThreshold = 0.5,
+                ReadingMinutes = 8, NewsSecondsPerArticle = 20, ExerciseSecondsPerQuestion = 10,
+                ExercisesPerSubject = 8, QuizQuestionCount = 25, QuizRetryQuestionCount = 20,
+            });
         }
 
         using (var db = CreateContext())
@@ -108,11 +111,13 @@ public sealed class StudentProfileRepositoryTests : IDisposable
             var repo = new StudentProfileRepository(db);
             var profile = await repo.CreateAsync("Emirhan", 11, "6a", GradeLevel.Klasse6, "🧒");
 
-            await repo.UpdateSettingsAsync(profile.Id, 0.9, 0.5, 0.25,
-                readingMinutes: 2, newsSecondsPerArticle: 10, exerciseSecondsPerQuestion: 5,
-                exercisesPerSubject: 5, quizQuestionCount: 20, quizRetryQuestionCount: 15,
-                customTypingSentenceText: null, customTypingFinalText: null,
-                weeklyGoalDays: 3, pinnedReadingTextKey: "fest:Wandrers Nachtlied");
+            await repo.UpdateSettingsAsync(profile.Id, ProfileSettings.From(profile) with
+            {
+                TypingMinAccuracy = 0.9, QuizFirstAttemptThreshold = 0.5, QuizRetryThreshold = 0.25,
+                ReadingMinutes = 2, NewsSecondsPerArticle = 10, ExerciseSecondsPerQuestion = 5,
+                ExercisesPerSubject = 5, QuizQuestionCount = 20, QuizRetryQuestionCount = 15,
+                WeeklyGoalDays = 3, PinnedReadingTextKey = "fest:Wandrers Nachtlied",
+            });
         }
 
         using (var db = CreateContext())
@@ -133,12 +138,13 @@ public sealed class StudentProfileRepositoryTests : IDisposable
             var repo = new StudentProfileRepository(db);
             var profile = await repo.CreateAsync("Batuhan", 15, "9a", GradeLevel.Klasse9, "🚀");
 
-            await repo.UpdateSettingsAsync(profile.Id, 0.5, 0.5, 0.25,
-                readingMinutes: 5, newsSecondsPerArticle: 10, exerciseSecondsPerQuestion: 5,
-                exercisesPerSubject: 6, quizQuestionCount: 20, quizRetryQuestionCount: 15,
-                customTypingSentenceText: null, customTypingFinalText: null,
-                weeklyGoalDays: 0, pinnedReadingTextKey: null, newsArticleCount: 12,
-                newsFilterStrictness: NewsFilterStrictness.Streng);
+            await repo.UpdateSettingsAsync(profile.Id, ProfileSettings.From(profile) with
+            {
+                TypingMinAccuracy = 0.5, QuizFirstAttemptThreshold = 0.5, QuizRetryThreshold = 0.25,
+                ReadingMinutes = 5, NewsSecondsPerArticle = 10, ExerciseSecondsPerQuestion = 5,
+                ExercisesPerSubject = 6, QuizQuestionCount = 20, QuizRetryQuestionCount = 15,
+                NewsArticleCount = 12, NewsFilterStrictness = NewsFilterStrictness.Streng,
+            });
         }
 
         using (var db = CreateContext())

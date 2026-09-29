@@ -153,6 +153,38 @@ public sealed class ReviewQuestionRepositoryTests : IDisposable
         Assert.Equal(0, await repo.GetDueCountAsync("profil-ohne-fehler"));
     }
 
+    [Fact]
+    public async Task Faellige_Anzahl_je_Fach_trennt_die_Faecher()
+    {
+        using var db = CreateContext();
+        var repo = new ReviewQuestionRepository(db);
+
+        await repo.RecordOutcomeAsync("p1", MathQuestion("m1"), wasCorrect: false);
+        await repo.RecordOutcomeAsync("p1", MathQuestion("m2"), wasCorrect: false);
+        var englisch = new QuizQuestion
+        {
+            Id = "e1",
+            Subject = Subject.Englisch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Question Words",
+            Prompt = "___ is your birthday?",
+            Type = QuestionType.MultipleChoice,
+            Options = new[] { "When", "Who", "Why" },
+            CorrectAnswers = new[] { "When" },
+            Explanation = "When fragt nach einem Zeitpunkt."
+        };
+        await repo.RecordOutcomeAsync("p1", englisch, wasCorrect: false);
+
+        Assert.Empty(await repo.GetDueCountsBySubjectAsync("p1"));
+
+        Backdate(db, days: 1);
+
+        var jeFach = await repo.GetDueCountsBySubjectAsync("p1");
+        Assert.Equal(2, jeFach[Subject.Mathematik]);
+        Assert.Equal(1, jeFach[Subject.Englisch]);
+        Assert.Equal(3, await repo.GetDueCountAsync("p1"));
+    }
+
     /// <summary>Setzt LastAnsweredAt aller Einträge um <paramref name="days"/> Tage zurück -
     /// simuliert den Folgetag, ohne echte Wartezeit.</summary>
     private static void Backdate(LernTorDbContext db, int days)

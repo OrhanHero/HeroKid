@@ -3,7 +3,7 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Musik nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen/Form/Gattungen/Wirkung/Kultur) und Klasse 9 (vertieft, Harmonielehre bis gesellschaftlicher Kontext).</summary>
+/// <summary>Musik nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen/Form/Gattungen/Wirkung/Kultur, seit 29.09.2026 auch Notenwerte/Takt und Stimme/Gesang) und Klasse 9 (vertieft, Harmonielehre bis gesellschaftlicher Kontext).</summary>
 public sealed class MusikGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Musik;
@@ -11,7 +11,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { GrundlagenDerMusik, FormUndGestaltung, GattungenUndGenres, WirkungUndFunktion, MusikImKulturellenKontext },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { GrundlagenDerMusik, FormUndGestaltung, GattungenUndGenres, WirkungUndFunktion, MusikImKulturellenKontext, NotenwerteUndTakt, StimmeUndGesang },
             [GradeLevel.Klasse7] = new List<TopicFactory> { MusiklehreUndMedien, MusikepochenUndStile, InstrumenteUndKlangfarbe, MusizierenUndZusammenspiel },
             [GradeLevel.Klasse9] = new List<TopicFactory> { HarmonielehreUndPartiturlesen, KompositionUndSatzweisen, MedienUndDigitaleProduktion, GattungenDerMusikgeschichte, FilmmusikUndProgrammmusik, MusikImGesellschaftlichenKontext }
         };
@@ -854,6 +854,83 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             Topic = "Musizieren: Rhythmus, Notation und Zusammenspiel", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "4/4 heißt vier Viertel pro Takt. Ganze Note = vier Viertel, Punkt verlängert um die Hälfte. forte laut, piano leise, crescendo lauter werdend. Allegro schnell, Adagio langsam."
+        };
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Klasse 6, Ausbau 29.09.2026: zwei Themen à 20 Fragen. Musik Klasse 6 reichte bei der
+    // Übung nach Stundenplan nur gut acht Wochen (scripts/pool-reichweite.py).
+    // ---------------------------------------------------------------------------------------
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] NotenwerteUndTaktListe =
+    {
+        ("Wie viele Viertelnoten dauern so lang wie eine ganze Note?", new[] { "4", "2", "8" }, "4", "Eine ganze Note dauert so lang wie vier Viertelnoten – im 4/4-Takt füllt sie einen ganzen Takt."),
+        ("Wie viele Achtelnoten dauern so lang wie eine Viertelnote?", new[] { "2", "4", "3" }, "2", "Eine Viertelnote wird in zwei Achtelnoten geteilt."),
+        ("Was bedeutet die Taktangabe 3/4?", new[] { "Drei Viertelschläge pro Takt", "Drei Takte mit je vier Noten", "Vier Schläge, jeder drei Viertel lang" }, "Drei Viertelschläge pro Takt", "Die obere Zahl nennt die Anzahl der Schläge, die untere den Notenwert eines Schlags: 3/4 heißt drei Viertel pro Takt."),
+        ("Welcher Takt passt zu einem Walzer?", new[] { "3/4-Takt", "4/4-Takt", "2/4-Takt" }, "3/4-Takt", "Der Walzer hat einen Dreierrhythmus: EINS-zwei-drei, EINS-zwei-drei."),
+        ("Was verlängert eine Note um die Hälfte ihres Wertes?", new[] { "Ein Punkt hinter der Note", "Ein Strich über der Note", "Ein Kreuz vor der Note" }, "Ein Punkt hinter der Note", "Der Punkt hinter einer Note verlängert sie um die Hälfte ihres Wertes. Ein Kreuz verändert dagegen die Tonhöhe."),
+        ("Wie lange dauert eine punktierte halbe Note?", new[] { "Drei Viertel", "Zwei Viertel", "Vier Viertel" }, "Drei Viertel", "Eine Halbe dauert zwei Viertel, der Punkt addiert die Hälfte davon (ein Viertel): zusammen drei Viertel."),
+        ("Was zeigt eine Pause in den Noten an?", new[] { "Eine Zeit, in der man nicht spielt", "Das Ende des ganzen Musikstücks", "Eine Stelle, an der man lauter wird" }, "Eine Zeit, in der man nicht spielt", "Pausen haben feste Längen wie Noten – man zählt sie im Takt mit, spielt aber nicht."),
+        ("Wie viele Schläge hat ein 4/4-Takt?", new[] { "4", "3", "2" }, "4", "Der 4/4-Takt hat vier Viertelschläge. Er ist der häufigste Takt in Pop, Rock und Rap."),
+        ("Was ist ein Auftakt?", new[] { "Ein unvollständiger Takt am Anfang eines Stücks", "Der erste, besonders laut gespielte Ton eines Liedes", "Das Zeichen, mit dem der Dirigent beginnt" }, "Ein unvollständiger Takt am Anfang eines Stücks", "Beim Auftakt beginnt das Lied vor der ersten betonten Zählzeit, z. B. bei „Alle meine Entchen“ nicht, bei „Happy Birthday“ schon."),
+        ("Welche dieser Noten dauert am längsten?", new[] { "Die ganze Note", "Die halbe Note", "Die Viertelnote" }, "Die ganze Note", "Von lang nach kurz: ganze Note, halbe Note, Viertelnote, Achtelnote, Sechzehntelnote."),
+        ("Welche Note hat einen Hals mit einem Fähnchen?", new[] { "Die Achtelnote", "Die Viertelnote", "Die ganze Note" }, "Die Achtelnote", "Das Fähnchen (oder der Balken bei mehreren) kennzeichnet Achtelnoten; Sechzehntel haben zwei Fähnchen."),
+        ("Wozu dient ein Taktstrich?", new[] { "Er trennt die Takte voneinander", "Er zeigt das Ende des Liedes an", "Er sagt, dass man lauter spielt" }, "Er trennt die Takte voneinander", "Taktstriche teilen die Musik in gleich lange Abschnitte. Das Ende eines Stücks zeigt ein Schlussstrich (doppelter Strich)."),
+        ("Was ist ein Metronom?", new[] { "Ein Gerät, das gleichmäßig den Takt schlägt", "Ein Schlaginstrument aus dem Sinfonieorchester", "Ein Zeichen für eine sehr leise Stelle" }, "Ein Gerät, das gleichmäßig den Takt schlägt", "Das Metronom tickt in einem einstellbaren Tempo, z. B. 60 Schläge pro Minute – so übt man, im Takt zu bleiben."),
+        ("Was bedeutet „Tempo“ in der Musik?", new[] { "Die Geschwindigkeit eines Stücks", "Die Lautstärke eines Stücks", "Die Tonhöhe eines Stücks" }, "Die Geschwindigkeit eines Stücks", "Das Tempo sagt, wie schnell ein Stück gespielt wird. Die Lautstärke heißt Dynamik."),
+        ("Was bedeutet die Tempoangabe „Allegro“?", new[] { "Schnell und fröhlich", "Langsam, ruhig und getragen", "Sehr leise" }, "Schnell und fröhlich", "Allegro ist italienisch für „heiter“ und steht für ein schnelles Tempo."),
+        ("Was bedeutet die Tempoangabe „Adagio“?", new[] { "Langsam", "Schnell", "Laut" }, "Langsam", "Adagio bedeutet langsam und ruhig. Das Gegenteil ist zum Beispiel Allegro (schnell)."),
+        ("Wie viele Sechzehntelnoten ergeben zusammen eine Viertelnote?", new[] { "4", "2", "16" }, "4", "Eine Viertel = zwei Achtel = vier Sechzehntel."),
+        ("Was ist ein Rhythmus?", new[] { "Eine Abfolge von kurzen und langen Tönen", "Eine Reihe von Tönen, die immer höher werden", "Das Zusammenklingen mehrerer Töne" }, "Eine Abfolge von kurzen und langen Tönen", "Der Rhythmus ordnet Töne nach ihrer Dauer. Viele Lieder erkennt man schon am Klatschen des Rhythmus."),
+        ("Was ist eine Synkope?", new[] { "Eine Betonung auf einer eigentlich unbetonten Zählzeit", "Eine besonders lange Pause am Ende eines Stücks", "Ein Trommelinstrument aus Lateinamerika" }, "Eine Betonung auf einer eigentlich unbetonten Zählzeit", "Synkopen verschieben die Betonung weg vom Grundschlag – sie machen Pop, Jazz und Reggaeton „groovig“."),
+        ("Welcher Notenschlüssel steht meist vor den Noten für hohe Stimmen?", new[] { "Der Violinschlüssel", "Der Bassschlüssel", "Das Wiederholungszeichen" }, "Der Violinschlüssel", "Der Violin- oder G-Schlüssel legt fest, wo das g' liegt. Tiefe Instrumente und Stimmen nutzen den Bassschlüssel.")
+    };
+
+    private static QuizQuestion NotenwerteUndTakt(Random r)
+    {
+        var f = NotenwerteUndTaktListe[r.Next(NotenwerteUndTaktListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Notenwerte, Pausen und Takt", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ganze = 2 Halbe = 4 Viertel = 8 Achtel. Ein Punkt verlängert um die Hälfte. Taktangabe: oben die Zahl der Schläge, unten ihr Notenwert."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] StimmeUndGesangListe =
+    {
+        ("Welche Stimmlage ist die höchste Frauenstimme?", new[] { "Sopran", "Alt", "Tenor" }, "Sopran", "Im Chor singen Frauen Sopran (hoch) oder Alt (tief), Männer Tenor (hoch) oder Bass (tief)."),
+        ("Welche Stimmlage ist die tiefste Männerstimme?", new[] { "Bass", "Tenor", "Alt" }, "Bass", "Der Bass ist die tiefste Stimme im Chor, der Tenor die höhere Männerstimme."),
+        ("Wie heißt die tiefere Frauenstimme im Chor?", new[] { "Alt", "Sopran", "Bariton" }, "Alt", "Die Frauenstimmen im Chor sind Sopran (hoch) und Alt (tiefer)."),
+        ("Wofür steht die Abkürzung SATB bei Chornoten?", new[] { "Sopran, Alt, Tenor, Bass", "Solo, Alle, Takt, Begleitung", "Stimme, Atem, Ton, Bühne" }, "Sopran, Alt, Tenor, Bass", "SATB zählt die vier Chorstimmen von hoch nach tief auf."),
+        ("Was passiert beim Stimmbruch?", new[] { "Die Stimmlippen wachsen und die Stimme wird tiefer", "Die Stimme geht für immer verloren", "Man kann plötzlich keine hohen Töne mehr hören" }, "Die Stimmlippen wachsen und die Stimme wird tiefer", "In der Pubertät wächst der Kehlkopf, die Stimmlippen werden länger – bei Jungen sinkt die Stimme um etwa eine Oktave."),
+        ("Wo entsteht der Ton beim Singen?", new[] { "An den Stimmlippen im Kehlkopf", "Im Brustkorb, wenn er sich weitet", "In der Nase" }, "An den Stimmlippen im Kehlkopf", "Die ausgeatmete Luft bringt die Stimmlippen im Kehlkopf zum Schwingen; Mund und Rachen formen den Klang."),
+        ("Warum ist richtiges Atmen beim Singen wichtig?", new[] { "Mit genug Luft klingen lange Töne gleichmäßig", "Weil man sonst den Text vergisst", "Damit das Lied schneller wird" }, "Mit genug Luft klingen lange Töne gleichmäßig", "Tiefes Atmen in den Bauch (Zwerchfellatmung) gibt genug Luft für lange, ruhige Töne."),
+        ("Was ist das Falsett?", new[] { "Eine hohe Kopfstimme, oft bei Männern", "Ein Ton, der absichtlich zu tief oder zu hoch gesungen wird", "Eine tiefe Brummstimme" }, "Eine hohe Kopfstimme, oft bei Männern", "Im Falsett singen vor allem Männer mit einer leichten, sehr hohen Stimme – bekannt aus vielen Popsongs."),
+        ("Was ist ein Refrain?", new[] { "Der Teil eines Liedes, der sich wiederholt", "Die allererste Strophe, mit der jedes Lied beginnt", "Der Name des Komponisten" }, "Der Teil eines Liedes, der sich wiederholt", "Der Refrain kommt mit gleichem Text und gleicher Melodie mehrmals vor – meist ist er der Teil, den alle mitsingen."),
+        ("Was ist eine Strophe?", new[] { "Ein Liedabschnitt mit neuem Text, aber gleicher Melodie", "Ein Abschnitt, in dem nur Instrumente spielen", "Ein anderer Name für den Refrain" }, "Ein Liedabschnitt mit neuem Text, aber gleicher Melodie", "Strophen haben dieselbe Melodie, erzählen aber mit neuem Text weiter; dazwischen steht oft der Refrain."),
+        ("Was macht eine Chorleiterin während des Singens?", new[] { "Sie gibt Tempo, Einsätze und Lautstärke vor", "Sie singt die schwierigsten Soli selbst", "Sie schreibt während des Konzerts die Noten" }, "Sie gibt Tempo, Einsätze und Lautstärke vor", "Mit den Händen zeigt die Chorleitung, wann eine Stimme einsetzt, wie schnell und wie laut gesungen wird."),
+        ("Was bedeutet es, einstimmig zu singen?", new[] { "Alle singen dieselbe Melodie", "Jeder singt eine andere Melodie", "Nur eine Person singt" }, "Alle singen dieselbe Melodie", "Einstimmig heißt: alle singen dieselbe Melodie, auch wenn es viele Sängerinnen und Sänger sind."),
+        ("Wie nennt man es, wenn ein Chor verschiedene Melodien gleichzeitig singt?", new[] { "Mehrstimmigkeit", "Einstimmigkeit", "Wechselgesang" }, "Mehrstimmigkeit", "Mehrstimmig singt jede Stimmgruppe ihre eigene Melodie; zusammen ergeben sie Harmonien."),
+        ("Was bedeutet „Stimmumfang“?", new[] { "Der Bereich vom tiefsten bis zum höchsten Ton, den man singen kann", "Wie laut eine Stimme höchstens werden kann", "Wie viele Lieder man auswendig kennt" }, "Der Bereich vom tiefsten bis zum höchsten Ton, den man singen kann", "Der Stimmumfang ist bei jedem Menschen anders und entscheidet mit, ob jemand Sopran, Alt, Tenor oder Bass singt."),
+        ("Warum wärmt man die Stimme vor dem Singen auf?", new[] { "Damit sie geschmeidig wird und geschont bleibt", "Damit man den Text besser auswendig kann", "Damit der Raum wärmer wird" }, "Damit sie geschmeidig wird und geschont bleibt", "Einsingen mit Summen, Lippenflattern und Tonleitern lockert die Stimme – wie Aufwärmen vor dem Sport."),
+        ("Was ist Beatboxing?", new[] { "Rhythmen und Klänge nur mit dem Mund erzeugen", "Eine spezielle Kiste zum sicheren Aufbewahren von Noten", "Ein Trommelkurs für Anfänger" }, "Rhythmen und Klänge nur mit dem Mund erzeugen", "Beim Beatboxing ahmt man mit Mund, Lippen und Stimme Schlagzeug und andere Klänge nach."),
+        ("Was bedeutet es, eine Melodie „vom Blatt“ zu singen?", new[] { "Sie direkt aus den Noten singen, ohne vorher zu üben", "Sie von einem Zettel ablesen, auf dem nur der Text steht", "Sie besonders leise singen" }, "Sie direkt aus den Noten singen, ohne vorher zu üben", "Vom Blatt singen heißt, eine unbekannte Melodie gleich richtig aus den Noten zu singen – das übt man mit Notenlesen."),
+        ("Welche Stimmlage liegt zwischen Tenor und Bass?", new[] { "Bariton", "Sopran", "Alt" }, "Bariton", "Der Bariton ist die mittlere Männerstimme zwischen dem hohen Tenor und dem tiefen Bass."),
+        ("Was ist ein Duett?", new[] { "Ein Stück für zwei Stimmen oder Instrumente", "Ein Stück für einen großen Chor mit vielen Stimmen", "Ein Tanz aus Frankreich" }, "Ein Stück für zwei Stimmen oder Instrumente", "Duo oder Duett: zwei; Trio: drei; Quartett: vier Mitwirkende."),
+        ("Was hilft am meisten, beim Singen im Chor den Ton zu treffen?", new[] { "Genau zuhören und sich am Ton der anderen orientieren", "Möglichst laut singen, damit man sich selbst hört", "Die Augen schließen und schneller singen" }, "Genau zuhören und sich am Ton der anderen orientieren", "Wer auf die anderen hört, kann seine Tonhöhe anpassen. Lautes Singen übertönt nur, statt zu helfen.")
+    };
+
+    private static QuizQuestion StimmeUndGesang(Random r)
+    {
+        var f = StimmeUndGesangListe[r.Next(StimmeUndGesangListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Stimme, Gesang und Chor", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Chorstimmen von hoch nach tief: Sopran, Alt, Tenor, (Bariton,) Bass. Der Ton entsteht an den Stimmlippen im Kehlkopf; Strophe = neuer Text, Refrain = Wiederholung."
         };
     }
 }

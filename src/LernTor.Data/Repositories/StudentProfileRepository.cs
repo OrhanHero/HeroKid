@@ -88,11 +88,66 @@ public sealed class StudentProfileRepository
             return;
         }
 
-        _db.Progress.RemoveRange(_db.Progress.Where(p => p.ProfileId == profileId));
-        _db.ActivityLog.RemoveRange(_db.ActivityLog.Where(a => a.ProfileId == profileId));
-        _db.QuizAttempts.RemoveRange(_db.QuizAttempts.Where(q => q.ProfileId == profileId));
-        _db.Profiles.Remove(entity);
+        // Jede Tabelle mit einer ProfileId-Spalte - aus dem EF-Modell, nicht aus einer Liste.
+        // Hier standen lange nur Fortschritt, Protokoll und Quiz-Historie; Stundenplan,
+        // Fehler-Kartei, gemeisterte Aufgaben, Vokabeln, Hausaufgaben, Klausuren, Tipptrainer-
+        // und Fuehrerschein-Stand des geloeschten Kindes blieben verwaist in der Datenbank
+        // liegen (gefunden am 28.09.2026) - entgegen dem, was die Rueckfrage verspricht.
+        foreach (var (tabelle, spalte) in ProfileOwnedTables())
+        {
+            // Namen aus dem EF-Modell, Wert als Parameter - kein Injektionsweg.
+            var sql = "DELETE FROM \"" + tabelle + "\" WHERE \"" + spalte + "\" = {0}";
+            await _db.Database.ExecuteSqlRawAsync(sql, new object[] { profileId }, cancellationToken);
+        }
 
+        _db.Profiles.Remove(entity);
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>Alle Tabellen, deren Zeilen einem Profil gehören, samt Name der ProfileId-Spalte.</summary>
+    public IReadOnlyList<(string Tabelle, string Spalte)> ProfileOwnedTables()
+    {
+        var ergebnis = new List<(string Tabelle, string Spalte)>();
+
+        foreach (var typ in _db.Model.GetEntityTypes())
+        {
+            var tabelle = typ.GetTableName();
+            var eigenschaft = typ.FindProperty("ProfileId");
+            if (tabelle is null || eigenschaft is null)
+            {
+                continue;
+            }
+
+            var spalte = eigenschaft.GetColumnName() ?? "ProfileId";
+            if (!ergebnis.Any(eintrag => eintrag.Tabelle == tabelle))
+            {
+                ergebnis.Add((tabelle, spalte));
+            }
+        }
+
+        return ergebnis;
+    }
+
+    /// <summary>
+    /// Setzt Klassenstufe und Klassenbezeichnung eines Profils - und schreibt NUR diese beiden
+    /// Spalten (Muster wie <see cref="SetPinnedReadingTextAsync"/>). Fuer den Schuljahreswechsel:
+    /// vorher ging das nur ueber "Profil neu anlegen", und das kostete Sterne, gemeisterte Fragen,
+    /// Fehler-Kartei, Stundenplan, Hausaufgaben und Klausurtermine.
+    ///
+    /// <para>Der Lernstand bleibt dabei stehen: gemeisterte Fragen und die Fehler-Kartei haengen
+    /// am Fragetext, nicht an der Stufe, und der neue Pool bringt ohnehin andere Fragen.</para>
+    /// </summary>
+    public async Task SetGradeLevelAsync(
+        string profileId, GradeLevel gradeLevel, string? classLabel, CancellationToken cancellationToken = default)
+    {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        entity.GradeLevel = (int)gradeLevel;
+        entity.ClassLabel = string.IsNullOrWhiteSpace(classLabel) ? null : classLabel.Trim();
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -144,29 +199,39 @@ public sealed class StudentProfileRepository
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateSettingsAsync(
-        string profileId,
-        double typingMinAccuracy,
-        double quizFirstAttemptThreshold,
-        double quizRetryThreshold,
-        int readingMinutes,
-        int newsSecondsPerArticle,
-        int exerciseSecondsPerQuestion,
-        int exercisesPerSubject,
-        int quizQuestionCount,
-        int quizRetryQuestionCount,
-        string? customTypingSentenceText = null,
-        string? customTypingFinalText = null,
-        int weeklyGoalDays = 0,
-        string? pinnedReadingTextKey = null,
-        int newsArticleCount = 0,
-        NewsFilterStrictness newsFilterStrictness = NewsFilterStrictness.Normal,
-        bool drivingAreaEnabled = true,
-        bool ersteHilfeEnabled = true,
-        int drivingChallengeSignCount = 0,
-        IReadOnlySet<TrafficSignCategory>? disabledSignCategories = null,
-        CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Schaltet die Fächerauswahl nach Stundenplan für ein Profil an oder aus - und schreibt
+    /// dabei genau diese eine Spalte. Bewusst NICHT als weiterer Parameter von
+    /// <see cref="UpdateSettingsAsync"/>: der Voll-Überschreiber mit seinen Positionsparametern
+    /// hat schon einmal still Einstellungen zurückgesetzt (siehe
+    /// <see cref="SetPinnedReadingTextAsync"/>).
+    /// </summary>
+    public async Task SetTimetableSubjectsEnabledAsync(
+        string profileId, bool enabled, CancellationToken cancellationToken = default)
     {
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        // Invertiert - siehe StudentProfileEntity.TimetableSubjectsDisabled.
+        entity.TimetableSubjectsDisabled = !enabled;
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Schreibt ALLE Einstellungen eines Profils (siehe <see cref="ProfileSettings"/>). Nimmt ein
+    /// Objekt mit lauter <c>required</c>-Eigenschaften statt der früheren zwanzig
+    /// Positionsparameter - ein vergessenes Feld ist damit ein Compilerfehler statt einer still
+    /// zurückgesetzten Einstellung. Wer nur ein Feld ändern will, nimmt eine der
+    /// Ein-Spalten-Methoden oder <c>ProfileSettings.From(profil) with { … }</c>.
+    /// </summary>
+    public async Task UpdateSettingsAsync(
+        string profileId, ProfileSettings settings, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
         var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
         if (entity is null)
         {
@@ -175,27 +240,27 @@ public sealed class StudentProfileRepository
 
         // Bereinigt speichern (Zeilenumbrüche raus, auf Maximallänge gekürzt), damit ein zu langer
         // oder zu kurzer Text gar nicht erst in die DB kommt.
-        entity.CustomTypingSentenceText = TypingTextOverrides.Sanitize(customTypingSentenceText);
-        entity.CustomTypingFinalText = TypingTextOverrides.Sanitize(customTypingFinalText);
-        entity.WeeklyGoalDays = weeklyGoalDays;
-        entity.PinnedReadingTextKey = pinnedReadingTextKey;
-        entity.TypingMinAccuracy = typingMinAccuracy;
-        entity.QuizFirstAttemptThreshold = quizFirstAttemptThreshold;
-        entity.QuizRetryThreshold = quizRetryThreshold;
-        entity.ReadingMinutes = readingMinutes;
-        entity.NewsSecondsPerArticle = newsSecondsPerArticle;
-        entity.NewsArticleCount = newsArticleCount;
-        entity.NewsFilterStrictness = newsFilterStrictness.ToString();
-        entity.ExerciseSecondsPerQuestion = exerciseSecondsPerQuestion;
-        entity.ExercisesPerSubject = exercisesPerSubject;
-        entity.QuizQuestionCount = quizQuestionCount;
-        entity.QuizRetryQuestionCount = quizRetryQuestionCount;
+        entity.CustomTypingSentenceText = TypingTextOverrides.Sanitize(settings.CustomTypingSentenceText);
+        entity.CustomTypingFinalText = TypingTextOverrides.Sanitize(settings.CustomTypingFinalText);
+        entity.WeeklyGoalDays = settings.WeeklyGoalDays;
+        entity.PinnedReadingTextKey = settings.PinnedReadingTextKey;
+        entity.TypingMinAccuracy = settings.TypingMinAccuracy;
+        entity.QuizFirstAttemptThreshold = settings.QuizFirstAttemptThreshold;
+        entity.QuizRetryThreshold = settings.QuizRetryThreshold;
+        entity.ReadingMinutes = settings.ReadingMinutes;
+        entity.NewsSecondsPerArticle = settings.NewsSecondsPerArticle;
+        entity.NewsArticleCount = settings.NewsArticleCount;
+        entity.NewsFilterStrictness = settings.NewsFilterStrictness.ToString();
+        entity.ExerciseSecondsPerQuestion = settings.ExerciseSecondsPerQuestion;
+        entity.ExercisesPerSubject = settings.ExercisesPerSubject;
+        entity.QuizQuestionCount = settings.QuizQuestionCount;
+        entity.QuizRetryQuestionCount = settings.QuizRetryQuestionCount;
         // Invertiert - siehe StudentProfileEntity.DrivingAreaDisabled.
-        entity.DrivingAreaDisabled = !drivingAreaEnabled;
-        entity.ErsteHilfeDisabled = !ersteHilfeEnabled;
-        entity.DrivingChallengeSignCount = drivingChallengeSignCount;
+        entity.DrivingAreaDisabled = !settings.DrivingAreaEnabled;
+        entity.ErsteHilfeDisabled = !settings.ErsteHilfeEnabled;
+        entity.DrivingChallengeSignCount = settings.DrivingChallengeSignCount;
         entity.DisabledSignCategoriesJson = JsonSerializer.Serialize(
-            disabledSignCategories ?? new HashSet<TrafficSignCategory>(), JsonOptions.Default);
+            settings.DisabledSignCategories, JsonOptions.Default);
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -231,6 +296,7 @@ public sealed class StudentProfileRepository
         CustomTypingFinalText = entity.CustomTypingFinalText,
         DrivingAreaEnabled = !entity.DrivingAreaDisabled,
         ErsteHilfeEnabled = !entity.ErsteHilfeDisabled,
+        TimetableSubjectsEnabled = !entity.TimetableSubjectsDisabled,
         DrivingChallengeSignCount = entity.DrivingChallengeSignCount > 0
             ? entity.DrivingChallengeSignCount
             : StudentProfile.DailySignChallengeDefaultCount,

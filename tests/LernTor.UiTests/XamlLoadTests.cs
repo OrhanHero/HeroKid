@@ -40,6 +40,7 @@ public sealed class XamlLoadTests
     public static TheoryData<Type> AllParameterlessViews => new()
     {
         typeof(LernTor.App.Views.WelcomeView),
+        typeof(LernTor.App.Views.ProgressOverviewView),
         typeof(LernTor.App.Views.ProfileSelectionView),
         typeof(LernTor.App.Views.PauseModeView),
         typeof(LernTor.App.Views.ReadingView),
@@ -79,6 +80,90 @@ public sealed class XamlLoadTests
         element.Arrange(new Rect(0, 0, 1920, 1080));
 
         Assert.True(element.IsMeasureValid);
+    }
+
+    /// <summary>
+    /// "Mein Fortschritt" MIT Daten: der parameterlose Ladetest oben instanziiert die
+    /// Item-Templates nie (ohne DataContext gibt es keine Einträge) - die Stufen-Etiketten mit
+    /// ihren DataTriggern auf ein Enum würden dort also gar nicht geladen. Hier wird für jede
+    /// Stufe ein Thema gerendert.
+    /// </summary>
+    [WpfFact]
+    public void Fortschritt_rendert_alle_Stufen_mit_Daten()
+    {
+        EnsureAppResourcesLoaded();
+
+        var themen = new[]
+        {
+            new LernTor.Core.Services.TopicMasteryStatus(LernTor.Core.Enums.Subject.Mathematik, "Bruchrechnen", 12, 10, 10, 2, LernTor.Core.Services.MasteryLevel.Gemeistert),
+            new LernTor.Core.Services.TopicMasteryStatus(LernTor.Core.Enums.Subject.Mathematik, "Prozentrechnung", 8, 8, 6, 0, LernTor.Core.Services.MasteryLevel.Sicher),
+            new LernTor.Core.Services.TopicMasteryStatus(LernTor.Core.Enums.Subject.Englisch, "Question Words", 6, 6, 3, 0, LernTor.Core.Services.MasteryLevel.Vertraut),
+            new LernTor.Core.Services.TopicMasteryStatus(LernTor.Core.Enums.Subject.Musik, "Stimme, Gesang und Chor", 2, 2, 1, 0, LernTor.Core.Services.MasteryLevel.Angefangen),
+        };
+        // Abzeichen in allen drei Zustaenden: heute neu, frueher verdient, noch offen.
+        var heute = DateOnly.FromDateTime(DateTime.Today);
+        var abzeichen = LernTor.App.ViewModels.AchievementRowViewModel.BuildList(
+            new Dictionary<string, DateTimeOffset>
+            {
+                ["richtig-10"] = DateTimeOffset.Now,
+                ["lerntage-10"] = DateTimeOffset.Now.AddDays(-20),
+            },
+            _ => true,
+            heute);
+
+        var view = new LernTor.App.Views.ProgressOverviewView
+        {
+            DataContext = new LernTor.App.ViewModels.ProgressOverviewViewModel("Test", themen, () => { }, abzeichen)
+        };
+
+        view.Measure(new Size(1920, 1080));
+        view.Arrange(new Rect(0, 0, 1920, 1080));
+        view.UpdateLayout();
+
+        var texte = new List<string>();
+        SammleTexte(view, texte);
+        Assert.Contains("Bruchrechnen", texte);
+        Assert.Contains("Stimme, Gesang und Chor", texte);
+        Assert.Contains("👣", texte);
+    }
+
+    /// <summary>Geschafft-Bildschirm mit neuen Abzeichen: die zusaetzliche Zeile darf das
+    /// Laden nicht stoeren - an diesem Bildschirm haengt der Knopf, der den PC freigibt.</summary>
+    [WpfFact]
+    public void Geschafft_Bildschirm_rendert_mit_neuen_Abzeichen()
+    {
+        EnsureAppResourcesLoaded();
+
+        var neu = LernTor.Core.Services.AchievementCatalog.All.Take(2).ToList();
+        var view = new LernTor.App.Views.ResultView
+        {
+            DataContext = new LernTor.App.ViewModels.ResultViewModel(
+                passed: true, result: null, earnedStarsToday: 7, totalStars: 40,
+                todayAnsweredCount: 30, todayCorrectPercent: 80, currentStreak: 0,
+                onRetryRequested: () => { }, onUnlockConfirmed: () => { },
+                newAchievements: neu)
+        };
+
+        view.Measure(new Size(1366, 768));
+        view.Arrange(new Rect(0, 0, 1366, 768));
+        view.UpdateLayout();
+
+        var texte = new List<string>();
+        SammleTexte(view, texte);
+        Assert.Contains(texte, text => text.Contains(neu[0].Emoji, StringComparison.Ordinal));
+    }
+
+    private static void SammleTexte(DependencyObject knoten, List<string> texte)
+    {
+        if (knoten is System.Windows.Controls.TextBlock block)
+        {
+            texte.Add(block.Text);
+        }
+
+        for (var i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(knoten); i++)
+        {
+            SammleTexte(System.Windows.Media.VisualTreeHelper.GetChild(knoten, i), texte);
+        }
     }
 
     // MainWindow und ParentSettingsWindow brauchen ViewModels aus dem DI-Container und sind hier

@@ -118,14 +118,34 @@ public sealed class ReviewQuestionRepository
     /// aber ohne Fachfilter und ohne Obergrenze - gedacht für die Anzeige auf dem
     /// Willkommensbildschirm, damit die Kinder sehen, dass ihre Fehler nicht verschwinden.
     /// </summary>
-    public async Task<int> GetDueCountAsync(string profileId, CancellationToken cancellationToken = default)
+    public async Task<int> GetDueCountAsync(string profileId, CancellationToken cancellationToken = default) =>
+        (await GetDueCountsBySubjectAsync(profileId, cancellationToken)).Values.Sum();
+
+    /// <summary>
+    /// Fällige Wiederholungsfragen je Fach - dieselbe Fälligkeitsregel wie
+    /// <see cref="GetDueQuestionsAsync"/>. Die Startseite rechnet daraus mit
+    /// <c>ReviewForecast.CountForToday</c> nur die Fächer zusammen, die heute wirklich geübt
+    /// werden. Einträge mit einem Fachnamen, den es nicht (mehr) gibt, werden übergangen statt
+    /// die Startseite mit einer Ausnahme zu blockieren.
+    /// </summary>
+    public async Task<IReadOnlyDictionary<Subject, int>> GetDueCountsBySubjectAsync(
+        string profileId, CancellationToken cancellationToken = default)
     {
         var entities = await _db.ReviewQuestions
             .Where(r => r.ProfileId == profileId)
             .ToListAsync(cancellationToken);
 
         var today = DateTime.Today;
-        return entities.Count(r => r.LastAnsweredAt.LocalDateTime.Date < today);
+        var result = new Dictionary<Subject, int>();
+        foreach (var entity in entities.Where(r => r.LastAnsweredAt.LocalDateTime.Date < today))
+        {
+            if (Enum.TryParse<Subject>(entity.Subject, out var subject))
+            {
+                result[subject] = result.GetValueOrDefault(subject) + 1;
+            }
+        }
+
+        return result;
     }
 
     private static QuizQuestion ToQuestion(ReviewQuestionEntity entity) => new()

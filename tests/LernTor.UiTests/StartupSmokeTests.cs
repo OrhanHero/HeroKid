@@ -101,9 +101,12 @@ public sealed class StartupSmokeTests
 
     /// <summary>
     /// Findet die gebaute LernTor.exe relativ zum Test-Ausgabeverzeichnis
-    /// (tests/LernTor.UiTests/bin/&lt;Konfiguration&gt;/net8.0-windows/ →
-    /// src/LernTor.App/bin/&lt;Konfiguration&gt;/net8.0-windows/LernTor.exe) - dieselbe
-    /// Konfiguration, mit der auch die Tests gebaut wurden.
+    /// (tests/LernTor.UiTests/bin/&lt;Konfiguration&gt;/&lt;TFM&gt;/ →
+    /// src/LernTor.App/bin/&lt;Konfiguration&gt;/&lt;TFM&gt;/LernTor.exe) - dieselbe
+    /// Konfiguration und dasselbe Zielframework, mit denen auch die Tests gebaut wurden.
+    /// Der TFM-Ordner wird aus dem eigenen Ausgabeverzeichnis gelesen statt fest eingetragen:
+    /// beim Wechsel von net8.0-windows auf net10.0-windows hätte ein fester Name den Test
+    /// sonst still ins Leere zeigen lassen.
     /// </summary>
     private static string FindAppExe()
     {
@@ -111,10 +114,13 @@ public sealed class StartupSmokeTests
             ? "Release"
             : "Debug";
 
+        var targetFrameworkFolder = Path.GetFileName(
+            Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory));
+
         var exePath = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
             "..", "..", "..", "..", "..",
-            "src", "LernTor.App", "bin", configuration, "net8.0-windows", "LernTor.exe"));
+            "src", "LernTor.App", "bin", configuration, targetFrameworkFolder, "LernTor.exe"));
 
         Assert.True(File.Exists(exePath),
             $"LernTor.exe nicht gefunden unter {exePath} - wurde die Solution in derselben Konfiguration ({configuration}) gebaut?");

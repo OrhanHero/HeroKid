@@ -30,9 +30,41 @@ public static class Translations
             ["Welcome_Streak"] = L("🔥 {0} Tage in Folge - stark!", "🔥 {0} gündür üst üste - süper!"),
             // Fehler-Kartei: zeigt den Kindern, dass Fehler wiederkommen, statt zu verschwinden.
             // Formulierung bewusst ohne Plural-Nomen hinter der Zahl, damit "1" und "7" beide passen.
+            // Seit 29.09.2026 "heute": gezählt wird nur, was heute wirklich drankommt
+            // (ReviewForecast) - vorher alle offenen Einträge, auch in Fächern ohne Stunde.
             ["Welcome_DueReviews"] = L(
-                "🔁 Von früher noch offen: {0} - beim zweiten Mal sitzt es meistens.",
-                "🔁 Önceden kalan: {0} - ikinci seferde genelde oturur."),
+                "🔁 Aus deiner Fehler-Kartei heute dran: {0} - beim zweiten Mal sitzt es meistens.",
+                "🔁 Hata kutundan bugün sıra gelen: {0} - ikinci seferde genelde oturur."),
+            // "Mein Fortschritt": Meisterschaft je Thema (TopicMasteryCalculator, Vorbild Khan Academy).
+            ["Welcome_OpenProgress"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
+            ["Progress_Title"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
+            ["Progress_Summary"] = L(
+                "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",
+                "🏆 {0} ustalaştın · ✅ {1} emin · 📘 {2} tanıdık · 🌱 {3} başladın"),
+            ["Progress_HowTo"] = L(
+                "Gezählt werden deine letzten 10 Antworten je Thema. Gemeistert ist ein Thema, wenn davon mindestens 9 richtig sind und du zwei Fragen daraus nach ein paar Tagen noch einmal richtig hattest.",
+                "Her konuda son 10 cevabın sayılır. En az 9'u doğruysa ve birkaç gün sonra iki soruyu tekrar doğru cevapladıysan o konuda ustalaşmışsın demektir."),
+            ["Progress_Empty"] = L(
+                "Sobald du ein paar Aufgaben gelöst hast, siehst du hier, wie gut du jedes Thema schon kannst.",
+                "Birkaç görev çözdükten sonra burada her konuyu ne kadar iyi bildiğini göreceksin."),
+            ["Progress_SubjectSummary"] = L("{0} von {1} Themen sicher", "{1} konudan {0} tanesinde eminsin"),
+            ["Progress_TopicDetail"] = L("zuletzt {0} von {1} richtig", "son {1} sorudan {0} doğru"),
+            ["Progress_Level_Angefangen"] = L("🌱 Angefangen", "🌱 Başladın"),
+            ["Progress_Level_Vertraut"] = L("📘 Vertraut", "📘 Tanıdık"),
+            ["Progress_Level_Sicher"] = L("✅ Sicher", "✅ Emin"),
+            ["Progress_Level_Gemeistert"] = L("🏆 Gemeistert", "🏆 Ustalaştın"),
+            ["Progress_Back"] = L("⬅ Zurück", "⬅ Geri"),
+            // Abzeichen (AchievementCatalog) - die Namen selbst stehen zweisprachig im Katalog.
+            ["Badges_Headline"] = L("🏅 Abzeichen: {0} von {1}", "🏅 Rozetler: {1} rozetten {0} tanesi"),
+            ["Badges_UnlockedOn"] = L("am {0}", "{0} tarihinde"),
+            ["Result_NewBadge"] = L("🏅 Neues Abzeichen: {0}", "🏅 Yeni rozet: {0}"),
+            ["Result_NewBadges"] = L("🏅 Neue Abzeichen: {0}", "🏅 Yeni rozetler: {0}"),
+            ["Parent_Report_Mastery"] = L(
+                "🏆 Meisterschaft je Fach (alle Themen seit Beginn)",
+                "🏆 Derslere göre ustalık (başlangıçtan beri tüm konular)"),
+            ["Parent_Report_MasteryRow"] = L(
+                "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",
+                "🏆 {0} ustalaşılmış · ✅ {1} emin · 📘 {2} tanıdık · 🌱 {3} başlanmış"),
             ["Welcome_Homework"] = L(
                 "📒 Hausaufgaben: {0} noch offen",
                 "📒 Ev ödevleri: {0} tane açık"),
@@ -179,6 +211,8 @@ public static class Translations
             // Mit Datum, sobald der nächste Schultag mehr als eine Woche weg ist: mitten in den
             // Sommerferien ist "Montag" keine brauchbare Auskunft, weil jeder an übermorgen denkt.
             ["Timetable_NextSchoolDayDated"] = L("Nächster Schultag · {0}, {1}", "Sonraki okul günü · {0}, {1}"),
+            // {0} = Wochentag, fuer den geuebt wird; {1} = die Faecher, mit " · " verbunden.
+            ["Timetable_PracticeFocus"] = L("Heute übst du für {0}: {1}", "Bugün {0} için çalışıyorsun: {1}"),
             ["Timetable_Now"] = L("jetzt", "şimdi"),
             ["Timetable_Next"] = L("gleich", "birazdan"),
             ["Weekday_Monday"] = L("Montag", "Pazartesi"),

@@ -139,6 +139,55 @@ public static class SchoolCalendar
         All.FirstOrDefault(eintrag =>
             eintrag.Kind == CalendarEntryKind.Feiertag && eintrag.Contains(day));
 
+    /// <summary>
+    /// Erster Schultag des laufenden Schuljahres: der erste Werktag nach den letzten
+    /// Sommerferien, die bis <paramref name="day"/> zu Ende gegangen sind. <c>null</c>, wenn der
+    /// Kalender dafür keine Sommerferien kennt.
+    /// </summary>
+    public static DateOnly? SchoolYearStart(DateOnly day)
+    {
+        var sommer = All
+            .Where(eintrag => eintrag.Kind == CalendarEntryKind.Ferien
+                              && eintrag.Name.StartsWith("Sommerferien", StringComparison.OrdinalIgnoreCase)
+                              && eintrag.End < day)
+            .OrderByDescending(eintrag => eintrag.End)
+            .FirstOrDefault();
+
+        if (sommer is null)
+        {
+            return null;
+        }
+
+        var start = sommer.End.AddDays(1);
+        while (start.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+        {
+            start = start.AddDays(1);
+        }
+
+        return start <= day ? start : null;
+    }
+
+    /// <summary>
+    /// Liegt <paramref name="day"/> in den ersten <paramref name="days"/> Tagen eines neuen
+    /// Schuljahres? Dann erinnert der Eltern-Bereich daran, die Klassenstufe der Kinder zu
+    /// prüfen - sonst übt ein Zehntklässler still weiter mit dem Stoff der Neunten.
+    /// </summary>
+    public static bool IsEarlySchoolYear(DateOnly day, int days = 28)
+    {
+        var start = SchoolYearStart(day);
+        return start is not null && day.DayNumber - start.Value.DayNumber < days;
+    }
+
+    /// <summary>
+    /// Wochenende, Feiertag oder Ferien - an all dem findet kein Unterricht statt. Eine Regel
+    /// für den Stundenplan auf der Startseite (<see cref="Models.TimetableToday"/>) und die
+    /// Fächerauswahl (<see cref="TimetableSubjectPlanner"/>), damit beide denselben Tag meinen.
+    /// </summary>
+    public static bool IsSchoolFree(DateOnly day) =>
+        day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday ||
+        CurrentVacation(day) is not null ||
+        HolidayOn(day) is not null;
+
     /// <summary>Die nächsten Einträge ab diesem Tag - laufende zuerst, dann kommende.</summary>
     public static IReadOnlyList<SchoolCalendarEntry> Upcoming(DateOnly day, int count) =>
         All.Where(eintrag => eintrag.End >= day).Take(count).ToList();

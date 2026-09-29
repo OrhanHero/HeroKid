@@ -99,4 +99,21 @@ public sealed class MasteredPromptRepository
             .Select(m => m.Prompt)
             .ToHashSet();
     }
+
+    /// <summary>
+    /// Fragetexte, die mindestens eine Wiederholung nach Abstand bestanden haben
+    /// (<c>ReviewStage</c> ab 2: Stufe 1 bekommt eine Frage beim ersten richtigen Beantworten,
+    /// jede bestandene Auffrischung nach 7/30/90 Tagen zählt eine Stufe hoch). Für die Stufe
+    /// „gemeistert“ in <see cref="TopicMasteryCalculator"/>: sie verlangt, dass etwas nach Tagen
+    /// noch sitzt, nicht nur, dass es heute frisch ist.
+    /// </summary>
+    public async Task<IReadOnlySet<string>> GetReviewPassedPromptsAsync(string profileId, CancellationToken cancellationToken = default)
+    {
+        var prompts = await _db.MasteredPrompts
+            .Where(m => m.ProfileId == profileId && m.ReviewStage >= 2)
+            .Select(m => m.Prompt)
+            .ToListAsync(cancellationToken);
+
+        return prompts.ToHashSet(StringComparer.Ordinal);
+    }
 }

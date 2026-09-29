@@ -98,4 +98,26 @@ public class GermanTurkishScienceGeneratorTests
 
         Assert.Contains(freshPrompt, result.Select(q => q.Prompt));
     }
+
+    [Theory]
+    [InlineData(GradeLevel.Klasse6, 230)]
+    [InlineData(GradeLevel.Klasse9, 270)]
+    public void Tuerkisch_hat_genug_Fragen_fuer_taegliche_Uebung(GradeLevel stufe, int mindestens)
+    {
+        // Tuerkisch ist bei der Faecherauswahl nach Stundenplan JEDEN Tag dabei (6 Aufgaben,
+        // 5 Tage die Woche). Mit 160/200 Fragen war der Pool nach 5-7 Wochen einmal durch;
+        // die Erweiterung vom 28.09.2026 darf nicht still wieder schrumpfen.
+        var gesehen = new HashSet<string>();
+        var zufall = new Random(11);
+
+        for (var runde = 0; runde < 40; runde++)
+        {
+            foreach (var frage in new TurkishGenerator().Generate(stufe, 30, zufall, gesehen))
+            {
+                gesehen.Add(frage.Prompt);
+            }
+        }
+
+        Assert.True(gesehen.Count >= mindestens, $"{stufe}: nur {gesehen.Count} verschiedene Fragen, erwartet mindestens {mindestens}.");
+    }
 }

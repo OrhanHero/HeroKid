@@ -1,0 +1,51 @@
+<Project>
+
+  <!-- Zentrale Paketverwaltung: jede Paketversion steht GENAU EINMAL, hier.
+       Die .csproj-Dateien nennen nur noch den Paketnamen.
+
+       Anlass: Versionen, die in mehreren Projekten einzeln gepflegt werden, laufen auseinander.
+       Das ist hier schon passiert - LernTor.Tests referenzierte
+       Microsoft.Extensions.Logging.Abstractions 8.0.2, während LLamaSharp über LernTor.ContentGen
+       bereits >= 10.0.5 verlangte, und die Wiederherstellung scheiterte mit NU1605.
+
+       Updates schlägt Dependabot monatlich vor (.github/dependabot.yml). -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!-- .NET-10-Familie: immer gemeinsam auf denselben Patchstand heben. -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    <PackageVersion Include="System.ServiceModel.Syndication" Version="10.0.12" />
+    <PackageVersion Include="System.Speech" Version="10.0.12" />
+  </ItemGroup>
+
+  <!-- App und Inhalte -->
+  <ItemGroup>
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
+    <!-- LLamaSharp und sein Backend nur GEMEINSAM ändern - und nach jedem Update auf den
+         CI-Schritt "Prüfen, dass die KI-Bibliotheken lose neben der EXE liegen" achten. -->
+    <PackageVersion Include="LLamaSharp" Version="0.27.0" />
+    <PackageVersion Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
+    <PackageVersion Include="TaskScheduler" Version="2.11.0" />
+    <PackageVersion Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
+    <PackageVersion Include="UglyToad.PdfPig.Core" Version="1.7.0-custom-5" />
+    <PackageVersion Include="UglyToad.PdfPig.Fonts" Version="1.7.0-custom-5" />
+    <PackageVersion Include="UglyToad.PdfPig.Tokenization" Version="1.7.0-custom-5" />
+    <PackageVersion Include="UglyToad.PdfPig.Tokens" Version="1.7.0-custom-5" />
+  </ItemGroup>
+
+  <!-- Tests -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="Xunit.StaFact" Version="1.1.11" />
+  </ItemGroup>
+
+</Project>

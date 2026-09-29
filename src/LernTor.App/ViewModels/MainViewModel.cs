@@ -36,6 +36,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly VocabularyRepository _vocabularyRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly MasteredPromptRepository _masteredPromptRepo;
+    private readonly AchievementRepository _achievementRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
     private readonly HomeworkTaskRepository _homeworkRepo;
     private readonly ExamEntryRepository _examRepo;
@@ -101,8 +102,10 @@ public sealed partial class MainViewModel : ObservableObject
         KioskLockService kioskLock,
         IHomeworkHelpChatService homeworkChat,
         TextToSpeechService tts,
-        TypingExerciseService typingService)
+        TypingExerciseService typingService,
+        AchievementRepository achievementRepo)
     {
+        _achievementRepo = achievementRepo;
         _weatherService = weatherService;
         _gate = gate;
         _scoring = scoring;
@@ -219,7 +222,54 @@ public sealed partial class MainViewModel : ObservableObject
         CurrentProfile = profile;
         ActiveProfileName = profile.Name;
         Progress = await _progressRepo.LoadOrCreateTodayAsync(profile.Id);
+        await RefreshScheduledSubjectsAsync();
         await NavigateToStageAsync(Progress.CurrentStage);
+    }
+
+    /// <summary>Die Schulfaecher, die heute laut Stundenplan dran sind - <c>null</c>, wenn der
+    /// Stundenplan nichts vorgibt (kein Plan, Schalter aus). Siehe TimetableSubjectPlanner.</summary>
+    private IReadOnlySet<Subject>? _scheduledSubjects;
+
+    /// <summary>Der Schultag, fuer den heute geuebt wird - nur fuer die Zeile auf der Startseite.</summary>
+    private DateOnly? _scheduledForDay;
+
+    /// <summary>
+    /// Berechnet die Faecherauswahl nach Stundenplan fuer das aktive Profil neu. Beim Profilstart
+    /// und nach dem Eltern-Bereich (dort kann sich der Plan oder der Schalter geaendert haben).
+    ///
+    /// <para>Rein aus Datum und Plan abgeleitet - ein Neustart der App am selben Tag ergibt
+    /// dieselben Faecher, auch das NaWi-Teilfach. Etappen, die heute ausfallen, ueberspringt
+    /// <see cref="NavigateToStageAsync"/> wie jeden anderen abgeschalteten Bereich.</para>
+    /// </summary>
+    private async Task RefreshScheduledSubjectsAsync()
+    {
+        _scheduledSubjects = null;
+        _scheduledForDay = null;
+
+        if (CurrentProfile is null || !CurrentProfile.TimetableSubjectsEnabled)
+        {
+            return;
+        }
+
+        // Der Sitzungstag, nicht die Uhr: eine Sitzung ueber Mitternacht behaelt ihre Faecher,
+        // auch wenn der Eltern-Bereich um 0:10 geschlossen wird.
+        var heute = Progress.SessionDate;
+        var plan = await _timetableRepo.GetForProfileAsync(CurrentProfile.Id);
+        var zielTag = TimetableSubjectPlanner.TargetDay(plan, heute);
+        if (zielTag is null)
+        {
+            return;
+        }
+
+        // Klausurfaecher bleiben dabei, solange ihr Lerngewicht erhoeht ist (eine Woche vorher).
+        var klausurGewichte = await _examRepo.GetLearningWeightsAsync(CurrentProfile.Id, heute);
+        var klausurFaecher = klausurGewichte
+            .Where(eintrag => eintrag.Value > 1.0)
+            .Select(eintrag => eintrag.Key)
+            .ToList();
+
+        _scheduledForDay = zielTag;
+        _scheduledSubjects = TimetableSubjectPlanner.SubjectsOn(plan, zielTag.Value, klausurFaecher);
     }
 
     /// <summary>
@@ -270,6 +320,8 @@ public sealed partial class MainViewModel : ObservableObject
             CurrentProfile = refreshed;
             ActiveProfileName = refreshed.Name;
         }
+
+        await RefreshScheduledSubjectsAsync();
     }
 
     private async Task PersistProgressAsync()
@@ -279,11 +331,31 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task NavigateToStageAsync(LearningStage stage)
     {
+        // Ueber Nacht stehen gelassen: morgens beginnt ein neuer Lerntag, statt dass das Kind den
+        // Rest von gestern beendet und damit den heutigen Tag spart (SessionDayRollover).
+        if (CurrentProfile is not null && SessionDayRollover.ShouldStartNewDay(Progress.SessionDate, DateTime.Now))
+        {
+            Core.Logging.AppLog.Info("Sitzung", $"Neuer Tag - Sitzung vom {Progress.SessionDate:dd.MM.yyyy} wird nicht fortgesetzt.");
+            Progress = await _progressRepo.LoadOrCreateTodayAsync(CurrentProfile.Id);
+            await RefreshScheduledSubjectsAsync();
+            stage = Progress.CurrentStage;
+        }
+
         // Automatisch deaktivierte Fachbereiche überspringen.
         while (TryGetSubjectForStage(stage, out var disabledSubject) && IsSubjectDisabled(disabledSubject))
         {
             Progress.CompletedExerciseSubjects.Add(disabledSubject);
             stage = _gate.GetNextStage(stage);
+        }
+
+        // Zweite Meinung des Gates, bewusst NICHT sperrend: eine harte Sperre an dieser Stelle
+        // liesse ein Kind haengen, sobald Gate und Navigation sich einmal uneinig sind - und
+        // der PC bliebe zu. Stattdessen landet jede Abweichung im Fehlerprotokoll, wo sie im
+        // Eltern-Bereich sichtbar ist. Vorher rief nur die Testsuite CanEnterStage auf.
+        if (CurrentProfile is not null && !_gate.CanEnterStage(Progress, stage, EffectiveDisabledSubjects()))
+        {
+            Core.Logging.AppLog.Warn("Etappen",
+                $"Navigation von {Progress.CurrentStage} nach {stage}, obwohl das Gate eine Etappe dazwischen als offen sieht.");
         }
 
         Progress.CurrentStage = stage;
@@ -327,7 +399,11 @@ public sealed partial class MainViewModel : ObservableObject
 
         // Fehler-Kartei sichtbar machen: die Kinder sollen wissen, dass falsch beantwortete
         // Fragen wiederkommen, bevor sie in die Fächer gehen - nicht erst, wenn sie dort auftauchen.
-        var dueReviews = await _reviewRepo.GetDueCountAsync(CurrentProfile!.Id);
+        // Gezählt wird nur, was HEUTE wirklich drankommt (Fächer des Tages, höchstens drei je
+        // Fach) - siehe ReviewForecast.
+        var dueReviews = ReviewForecast.CountForToday(
+            await _reviewRepo.GetDueCountsBySubjectAsync(CurrentProfile!.Id),
+            fach => !IsSubjectDisabled(fach));
 
         // Wochenziel (0 = aus): reine Anzeige, siehe WeeklyGoalCalculator.
         var weeklyGoal = WeeklyGoalCalculator.Evaluate(
@@ -365,7 +441,104 @@ public sealed partial class MainViewModel : ObservableObject
             plannerPeek, today, timetable,
             // Nur für die Beschriftung des Rück-Knopfes: vom Geschafft-Bildschirm aus geht es
             // nicht "zurück zum Lernen", sondern zurück zum Ergebnis.
-            dayIsDone: Progress.CurrentStage == LearningStage.Freigeschaltet);
+            dayIsDone: Progress.CurrentStage == LearningStage.Freigeschaltet,
+            practiceDay: _scheduledForDay,
+            practiceSubjects: _scheduledSubjects is null
+                ? null
+                : _scheduledSubjects.Where(fach => !IsSubjectDisabled(fach)).ToHashSet(),
+            onOpenProgress: () => OnOpenProgressRequested(plannerPeek));
+    }
+
+    /// <summary>
+    /// "Mein Fortschritt" (Meisterschaft je Thema, siehe <see cref="TopicMasteryCalculator"/>).
+    /// Zurück geht es auf die Startseite in derselben Rolle, aus der das Kind kam: im
+    /// Planer-Zwischenstopp bleibt die angehaltene Etappe (<c>_stashedViewModel</c>) dabei
+    /// unangetastet, und der große Knopf dort führt wie vorher zurück in die Etappe.
+    /// </summary>
+    private async void OnOpenProgressRequested(bool plannerPeek)
+    {
+        try
+        {
+            var profileId = CurrentProfile!.Id;
+            var (themen, fakten) = await LoadMasteryAndAchievementFactsAsync();
+
+            // Auch hier freischalten, nicht nur auf dem Geschafft-Bildschirm: wer mitten am Tag
+            // nachschaut, soll ein eben verdientes Abzeichen schon sehen.
+            await _achievementRepo.UnlockAsync(profileId, fakten);
+            var abzeichen = AchievementRowViewModel.BuildList(
+                await _achievementRepo.GetUnlockedAsync(profileId),
+                IsAreaAvailable,
+                DateOnly.FromDateTime(DateTime.Today));
+
+            CurrentViewModel = new ProgressOverviewViewModel(
+                CurrentProfile!.Name,
+                themen,
+                onBack: () => ReturnToWelcome(plannerPeek),
+                achievements: abzeichen);
+        }
+        catch (Exception ex)
+        {
+            // Eine Anzeige darf den Lerntag nie blockieren: lieber auf der Startseite bleiben.
+            Core.Logging.AppLog.Error("Fortschritt", "Ansicht konnte nicht aufgebaut werden", ex);
+        }
+    }
+
+    /// <summary>
+    /// Meisterschaft je Thema und alle Fakten für die Abzeichen in einem Zug - beide brauchen
+    /// dieselben Antworten, und die sollen nur einmal geladen werden.
+    /// </summary>
+    private async Task<(IReadOnlyList<TopicMasteryStatus> Themen, AchievementFacts Fakten)> LoadMasteryAndAchievementFactsAsync()
+    {
+        var profileId = CurrentProfile!.Id;
+        var antworten = await _activityLogRepo.GetAllAnswersAsync(profileId);
+        var themen = TopicMasteryCalculator.Calculate(
+            antworten, await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+
+        var quizze = await _activityLogRepo.GetQuizHistoryAsync(profileId, take: int.MaxValue);
+        var tippen = await _typingProgressRepo.GetProgressAsync(profileId);
+        var zeichen = IsAreaAvailable(Subject.Fuehrerschein) ? DrivingSignPool() : Array.Empty<TrafficSign>();
+        var gekonnt = await _signProgressRepo.GetMasteredNumbersAsync(profileId);
+        var pruefungen = await _theoryRepo.GetRecentExamsAsync(profileId, int.MaxValue);
+
+        var fakten = AchievementCatalog.FromAnswers(antworten, themen) with
+        {
+            PassedFinalQuizzes = quizze.Count(q => q.Passed),
+            PerfectFinalQuizzes = quizze.Count(q => q.Passed && q.TotalQuestions > 0 && q.CorrectCount >= q.TotalQuestions),
+            TypingLessonsCompleted = tippen.Values.Count(lektion => lektion.IsCompleted),
+            TrafficSignsAvailable = zeichen.Count,
+            TrafficSignsMastered = zeichen.Count(schild => gekonnt.Contains(schild.Number)),
+            TheoryExamsPassed = pruefungen.Count(lauf => lauf.ToResult().Passed),
+        };
+
+        return (themen, fakten);
+    }
+
+    /// <summary>
+    /// Ob ein Bereich für dieses Kind grundsätzlich an ist - die Schalter der Eltern, aber
+    /// bewusst OHNE die Tagesauswahl nach Stundenplan: ein Abzeichen für Physik bleibt ein Ziel,
+    /// auch an einem Tag ohne Physik.
+    /// </summary>
+    private bool IsAreaAvailable(Subject area) =>
+        !SubjectAvailability.IsDisabled(
+            area,
+            Settings.DisabledSubjects,
+            CurrentProfile?.DrivingAreaEnabled ?? true,
+            CurrentProfile?.ErsteHilfeEnabled ?? true);
+
+    /// <summary>Zurück auf die Startseite in derselben Rolle (Tagesbeginn oder
+    /// Planer-Zwischenstopp). Eigene Methode mit try/catch statt eines async-Lambdas: eine
+    /// Ausnahme in einem async-void-Lambda landete im globalen Absturz-Handler, und der startet
+    /// die App im Kiosk-Betrieb neu.</summary>
+    private async void ReturnToWelcome(bool plannerPeek)
+    {
+        try
+        {
+            CurrentViewModel = await BuildWelcomeViewModelAsync(plannerPeek);
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Fortschritt", "Rückweg zur Startseite fehlgeschlagen", ex);
+        }
     }
 
     /// <summary>
@@ -545,7 +718,8 @@ public sealed partial class MainViewModel : ObservableObject
             subject,
             Settings.DisabledSubjects,
             CurrentProfile?.DrivingAreaEnabled ?? true,
-            CurrentProfile?.ErsteHilfeEnabled ?? true);
+            CurrentProfile?.ErsteHilfeEnabled ?? true,
+            _scheduledSubjects);
 
     /// <summary>
     /// Dieselbe Auskunft wie <see cref="IsSubjectDisabled"/>, nur als Menge - fuer alles, was
@@ -562,7 +736,8 @@ public sealed partial class MainViewModel : ObservableObject
         SubjectAvailability.EffectiveDisabled(
             Settings.DisabledSubjects,
             CurrentProfile?.DrivingAreaEnabled ?? true,
-            CurrentProfile?.ErsteHilfeEnabled ?? true);
+            CurrentProfile?.ErsteHilfeEnabled ?? true,
+            _scheduledSubjects);
 
     private static bool TryGetSubjectForStage(LearningStage stage, out Subject subject) =>
         LearningStageSubjects.TryGetSubject(stage, out subject);
@@ -1337,7 +1512,8 @@ public sealed partial class MainViewModel : ObservableObject
         // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST
         // (mit 🔁-Thema markiert), bis sie zweimal in Folge richtig beantwortet wurden. Zufällige
         // Dubletten aus dem Generator werden über den Aufgabentext aussortiert.
-        var review = await _reviewRepo.GetDueQuestionsAsync(CurrentProfile!.Id, subject, maxCount: 3);
+        var review = await _reviewRepo.GetDueQuestionsAsync(
+            CurrentProfile!.Id, subject, maxCount: ReviewForecast.PerSubjectCap);
         var reviewPrompts = review.Select(r => r.Prompt).ToHashSet();
 
         // Vokabeln (nur Englisch/Türkisch, nur wenn Eltern welche hinterlegt haben): sie ersetzen
@@ -1553,12 +1729,29 @@ public sealed partial class MainViewModel : ObservableObject
                 DateOnly.FromDateTime(DateTime.Today));
         }
 
+        // Abzeichen: nur nach dem bestandenen Quiz, und NIE so, dass ein Fehler hier den
+        // Geschafft-Bildschirm verhindert - an ihm hängt der Knopf, der den PC freigibt.
+        IReadOnlyList<Achievement> neueAbzeichen = Array.Empty<Achievement>();
+        if (passed && CurrentProfile is not null)
+        {
+            try
+            {
+                var (_, fakten) = await LoadMasteryAndAchievementFactsAsync();
+                neueAbzeichen = await _achievementRepo.UnlockAsync(CurrentProfile.Id, fakten);
+            }
+            catch (Exception ex)
+            {
+                Core.Logging.AppLog.Error("Abzeichen", "Freischalten auf dem Geschafft-Bildschirm fehlgeschlagen", ex);
+            }
+        }
+
         return new ResultViewModel(
             passed, result, Progress.EarnedStarsToday, CurrentProfile?.TotalStars ?? 0,
             todayAnswered, todayCorrectPercent, streak,
             OnRetryWeakSubjectsRequested, OnUnlockConfirmed,
             _rewardRepo, CurrentProfile?.Id,
-            subjectProgress);
+            subjectProgress,
+            neueAbzeichen);
     }
 
     private async void OnRetryWeakSubjectsRequested()

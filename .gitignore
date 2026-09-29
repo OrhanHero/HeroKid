@@ -18,3 +18,4 @@ Thumbs.db
 .claude/settings.json
 .github/.claude/settings.json
 __pycache__/
+.nuget/

@@ -87,8 +87,18 @@ Spalten (Klasse 6 / 7 / 9), decken über diese Regel aber alle fünf wählbaren 
 | Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Medya ve İletişim – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
 | Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | | Türkiye'nin Coğrafyası (Geografie der Türkei) |
 | Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | | Alltag, Konsum und türkische Kultur – Wortschatz |
-| | | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
-| | | Schule, Ausbildung und Berufswelt – Wortschatz |
+| Çoğul Eki -ler/-lar (Plural) *(neu 28.09.2026)* | | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
+| Hâl Ekleri -e/-de/-den (Wohin, wo, woher) *(neu)* | | Schule, Ausbildung und Berufswelt – Wortschatz |
+| Soru Eki mi/mı/mu/mü (Fragepartikel) *(neu)* | | Söz Sanatları (Stilmittel) *(neu 28.09.2026)* |
+| Sayılar, Günler ve Aylar (Zahlen und Zeit) – Wortschatz *(neu)* | | Ses Olayları (Lautveränderungen) *(neu)* |
+| Kısa Metin Anlama (Leseverstehen) *(neu)* | | Sözcükte Anlam: Gerçek, Mecaz, Terim *(neu)* |
+| | | Cümle Türleri (Satzarten) *(neu)* |
+| | | Türk Edebiyatından Yazarlar ve Eserler *(neu)* |
+
+Die Erweiterung vom 28.09.2026 (+100 Fragen je Stufe) folgt aus `scripts/pool-reichweite.py`:
+Türkisch ist bei der Fächerauswahl nach Stundenplan jeden Tag dabei und war mit 160 bzw. 200
+Fragen nach 5–7 Wochen einmal durch; jetzt reicht es für Klasse 6 knapp 9, für Klasse 9 zehn
+Wochen.
 
 ## Physik (`PhysikGenerator.cs`)
 
@@ -155,8 +165,10 @@ Rahmenlehrplan" weiter unten).
 | Gesellschaft: Schule und Zusammenleben | Freizeit und Reisen (Wortschatz) | Gesellschaft, Medien und Vielfalt |
 | Kultur und historischer Hintergrund | Großbritannien (Landeskunde) | Umwelt und Nachhaltigkeit |
 | Natur und Umwelt | | Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) |
-| | | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
-| | | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
+| **Simple Past: regelmäßige und unregelmäßige Verben** *(neu 29.09.2026)* | | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
+| **Possessivbegleiter und Objektpronomen** *(neu)* | | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
+| **Präpositionen in, on, at** *(neu)* | | **Second Conditional** *(neu 29.09.2026)* |
+| | | **Relative Clauses** *(neu)* |
 
 ## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
 
@@ -235,7 +247,8 @@ Rahmenlehrplan" weiter unten).
 | Gattungen und Genres | Instrumentenkunde und Klangfarbe | Medien und digitale Produktion |
 | Wirkung und Funktion | Musizieren: Rhythmus, Notation und Zusammenspiel | Gattungen und Genres der Musikgeschichte |
 | Musik im kulturellen Kontext |  | Filmmusik und Programmmusik |
-|  |  | Musik im kulturellen und gesellschaftlichen Kontext |
+| **Notenwerte, Pausen und Takt** *(neu 29.09.2026)* |  | Musik im kulturellen und gesellschaftlichen Kontext |
+| **Stimme, Gesang und Chor** *(neu)* |  |  |
 
 ## Geschichte (`GeschichteGenerator.cs`)
 
@@ -376,7 +389,7 @@ Beispielaufgaben inkl. Erklärung/HelpHint, kein reiner Dokumentations-Platzhalt
 **Als direkte Folge der Erweiterung um neue Fächer wurden zwei komplett neue Fach-Generatoren ergänzt**:
 
 - **Kunst** (`KunstGenerator.cs`): 4 Themen für Klasse 6 (Kunstwerke wahrnehmen, Material/Körper/Raum, Medien/Verfahren, Kunst und Lebenswelt) und 6 Themen für Klasse 9 (Intervention/Mahnung, Medienkunst, Architektur/Design, Materialästhetik/Transformation, Inszenierung/Kuration, Kulturelle Identität/Vielfalt) – deckt zentrale Inhaltsbereiche des RLP Kunst ab (Wahrnehmen, Gestalten, Kommunizieren, Kontextualisieren).
-- **Musik** (`MusikGenerator.cs`): 5 Themen für Klasse 6 (Grundlagen, Form/Gestaltung, Gattungen/Genres, Wirkung/Funktion, Kultureller Kontext) und 6 Themen für Klasse 9 (Harmonielehre/Partitur, Komposition/Satzweisen, Medien/Digitale Produktion, Musikgeschichte, Filmmusik/Programmmusik, Gesellschaftlicher Kontext) – deckt die RLP-Themenfelder Grundlagen, Form, Gattungen, Wirkung und kultureller Kontext ab.
+- **Musik** (`MusikGenerator.cs`): 7 Themen für Klasse 6 (Grundlagen, Form/Gestaltung, Gattungen/Genres, Wirkung/Funktion, Kultureller Kontext, seit 29.09.2026 auch Notenwerte/Takt und Stimme/Gesang) und 6 Themen für Klasse 9 (Harmonielehre/Partitur, Komposition/Satzweisen, Medien/Digitale Produktion, Musikgeschichte, Filmmusik/Programmmusik, Gesellschaftlicher Kontext) – deckt die RLP-Themenfelder Grundlagen, Form, Gattungen, Wirkung und kultureller Kontext ab.
 
 **Bewusst nicht übernommene/verbleibende Unterschiede** (kein technischer Mangel, sondern
 Simplifizierungen dieser App gegenüber dem vollständigen RLP):
@@ -447,6 +460,7 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 - [x] Themenfeld 2: Gesellschaft und öffentliches Leben (→ `SchuleUndGesellschaft`)
 - [x] Themenfeld 3: Kultur und historischer Hintergrund (→ `KulturUndTraditionen`)
 - [x] Themenfeld 4: Natur und Umwelt (→ `NaturUndUmwelt`)
+- [x] Sprachliche Mittel: Grammatik (→ `SimplePastFormen`, `PossessivUndObjektpronomen`, `PraepositionenInOnAt`, seit 29.09.2026)
 
 #### Türkisch (`TurkishGenerator.cs`)
 
@@ -541,6 +555,8 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 - [x] Themenfeld 3: Gattungen und Genres (→ `GattungenUndGenres`)
 - [x] Themenfeld 4: Wirkung und Funktion (→ `WirkungUndFunktion`)
 - [x] Themenfeld 5: Musik im kulturellen Kontext (→ `MusikImKulturellenKontext`)
+- [x] Musik gestalten/Notation (→ `NotenwerteUndTakt`, seit 29.09.2026)
+- [x] Stimme und Singen (→ `StimmeUndGesang`, seit 29.09.2026)
 
 #### Sport - *Fach existiert noch nicht in der App*
 
@@ -584,6 +600,7 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 - [x] 3.4 Schule, Ausbildung und Arbeitswelt (Bewerbung) (→ `SchuleUndArbeitswelt`)
 - [x] 3.5 Kultur und historischer Hintergrund (Klasse-9-Niveau) (→ `KulturUndHistorischerHintergrund`)
 - [x] 3.6 Natur, Umwelt und Ökologie (→ `UmweltUndNachhaltigkeit`)
+- [x] Sprachliche Mittel B1: Grammatik (→ `SecondConditional`, `RelativeClauses`, seit 29.09.2026)
 
 #### Türkisch (`TurkishGenerator.cs`)
 
@@ -728,29 +745,30 @@ Ethik/`Freundschaft`).
 
 ### ✅ Vollständig implementierte Fach-Generatoren (15 Fächer)
 
-| Fach | Generator | Klasse 6 Topics | Klasse 9 Topics | Gesamt |
-|------|-----------|----------------|----------------|--------|
-| Mathematik | `MathGenerator.cs` | 12 | 14 | 26 |
-| Deutsch | `GermanGenerator.cs` | 12 | 15 | 27 |
-| Türkisch | `TurkishGenerator.cs` | 8 | 10 | 18 |
-| Englisch | `EnglischGenerator.cs` | 7 | 9 | 16 |
-| Biologie | `BiologieGenerator.cs` | 6 | 8 | 14 |
-| Chemie | `ChemieGenerator.cs` | 9 | 9 | 18 |
-| Physik | `PhysikGenerator.cs` | 10 | 7 | 17 |
-| Geschichte | `GeschichteGenerator.cs` | 3 | 7 | 10 |
-| Gewi | `GewiGenerator.cs` | 9 | 3 | 12 |
-| Politik | `PolitikGenerator.cs` | 7 | 8 | 15 |
-| Geografie | `GeoGenerator.cs` | 7 | 9 | 16 |
-| Ethik | `EthikGenerator.cs` | 6 | 10 | 16 |
-| Kunst | `KunstGenerator.cs` | 4 | 6 | 10 |
-| Musik | `MusikGenerator.cs` | 5 | 6 | 11 |
-| ITG | `ItgGenerator.cs` | 3 | 3 | 6 |
+| Fach | Generator | Klasse 6 | Klasse 7 | Klasse 9 | Gesamt |
+|------|-----------|---------|---------|---------|--------|
+| Mathematik | `MathGenerator.cs` | 12 | 9 | 14 | 35 |
+| Deutsch | `GermanGenerator.cs` | 13 | 6 | 16 | 35 |
+| Türkisch | `TurkishGenerator.cs` | 13 | 6 | 15 | 34 |
+| Englisch | `EnglischGenerator.cs` | 10 | 6 | 11 | 27 |
+| Biologie | `BiologieGenerator.cs` | 6 | 6 | 8 | 20 |
+| Chemie | `ChemieGenerator.cs` | 9 | 6 | 9 | 24 |
+| Physik | `PhysikGenerator.cs` | 10 | 6 | 7 | 23 |
+| Geschichte | `GeschichteGenerator.cs` | 4 | 7 | 8 | 19 |
+| Gewi | `GewiGenerator.cs` | 9 | 6 | 3 | 18 |
+| Politik | `PolitikGenerator.cs` | 7 | 4 | 8 | 19 |
+| Geografie | `GeoGenerator.cs` | 7 | 6 | 9 | 22 |
+| Ethik | `EthikGenerator.cs` | 6 | 6 | 10 | 22 |
+| Kunst | `KunstGenerator.cs` | 4 | 4 | 6 | 14 |
+| Musik | `MusikGenerator.cs` | 7 | 4 | 6 | 17 |
+| ITG | `ItgGenerator.cs` | 3 | 4 | 3 | 10 |
+| KI-Wissen | `KiWissenGenerator.cs` | 4 | – (fällt auf 6 zurück) | 4 | 8 |
 
-**Total: 232 Topics** (je Topic ~20 kuratierte Fragen → ~4.640 Fragen im Pool; Mathematik generiert
-zusätzlich echte Zahlenwerte statt aus einer festen Liste zu ziehen, dort ist die Zahl möglicher
-Aufgaben pro Topic praktisch unbegrenzt). Die Fach-Detailtabellen weiter oben in dieser Datei sowie
-der Haken-Abgleich weiter unten wurden direkt aus `TopicsByGrade` in den Generator-Dateien
-abgeleitet, nicht aus dem Gedächtnis geschätzt.
+**Total: 347 Topics** (Stand 29.09.2026; Klasse 6: 124, Klasse 7: 86, Klasse 9: 137). Je Topic ~20
+kuratierte Fragen; Mathematik generiert echte Zahlenwerte statt aus einer festen Liste zu ziehen,
+dort ist die Zahl möglicher Aufgaben pro Topic praktisch unbegrenzt. Die Tabelle ist mit einem
+kleinen Skript direkt aus `TopicsByGrade` in den Generator-Dateien gezählt, nicht geschätzt.
+Wie lange ein Pool bei der Übung nach Stundenplan reicht, rechnet `scripts/pool-reichweite.py` aus.
 
 ### 📰 News / RSS-Feeds (`LernTor.News/NewsFeedSource.cs`)
 

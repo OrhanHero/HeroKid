@@ -140,3 +140,41 @@ kann — deshalb steht die Sicherung ganz oben in der Vorbereitung.**
 
 Die Liste konkreter Beobachtungen aus einem echten Durchlauf ist mehr wert als jedes weitere
 statische Audit — und mehr wert als jedes Modul, das noch dazukommen könnte.
+
+---
+
+## Neu seit 28.09.2026
+
+Acht Punkte für die Funktionen aus Pull Request #1. Sie laufen alle durch die CI, gesehen hat
+sie aber noch niemand. **Vorher eine Sicherung auf USB.**
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| N.1 | Elternteil | Stundenplan beider Kinder aus `STUNDENPLAENE-2026-27.md` einfügen, Zeitraster anpassen, speichern | Keine Warnung beim Einlesen; die Startseite zeigt den richtigen Tag mit den richtigen Uhrzeiten | |
+| N.2 | Kind | Startseite ansehen | Unter dem Stundenplan steht „Heute übst du für <Tag>: …“ mit den Fächern des nächsten Schultags plus Türkisch | |
+| N.3 | Kind | Tag durchspielen | Es kommen **nur** diese Fächer; der Zähler „Fächer x/y“ geht bis zum Ende auf; das Abschlussquiz fragt nur diese Fächer | |
+| N.4 | Emirhan | An zwei NaWi-Tagen hintereinander (Mo für Di, Di für Mi) | Zwei **verschiedene** Fächer aus Bio/Chemie/Physik | |
+| N.5 | Elternteil | Schalter „Fächer des Tages nach dem Stundenplan auswählen“ aus, Eltern-Bereich schließen | Ab der nächsten Etappe kommen wieder alle Fächer | |
+| N.6 | Elternteil | „🩻 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
+| N.7 | Elternteil | Klassenstufe eines Kindes testweise ändern und zurückstellen | Rückfrage, dann „✅ Gespeichert“; Sterne und Stundenplan sind danach noch da | |
+| N.8 | Notfall | Eine automatische Sicherung aus `…\LernTor\sicherungen\` über „Sicherung wiederherstellen…“ einspielen | App beendet sich; nach dem Neustart ist alles da, was vor der Sicherung da war | |
+
+## Neu seit 29.09.2026 (Version 2.0)
+
+Zehn Punkte für .NET 10 und die neuen Funktionen aus [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
+Alles läuft durch die CI (auch die neuen Ansichten werden dort mit Beispieldaten gerendert),
+**gesehen hat es noch niemand**. **Vorher eine Sicherung auf USB** – das Update legt eine neue
+Tabelle an (die automatische `-schema.db`-Sicherung entsteht trotzdem von selbst).
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| V.1 | Elternteil | Neue Version über die alte entpacken, starten | Startet wie vorher; Profile, Sterne, Stundenpläne sind da | |
+| V.2 | Elternteil | **Eltern-Bereich mit dem bisherigen Passwort öffnen** | Geht beim ersten Mal (dauert kaum merklich länger), beim zweiten Mal ebenso – das Passwort wurde still auf die neue Stärke umgestellt | |
+| V.3 | Elternteil | Eltern-Bereich → Systeminfo | „LernTor 2.0.0 (…)“, „.NET 10.0.…“, Datenbankgröße, letzte Sicherung; „📋 Kopieren“ legt den Text in die Zwischenablage | |
+| V.4 | Kind | Startseite: Zeile „🔁 Aus deiner Fehler-Kartei heute dran: N“ | N stimmt mit den 🔁-Fragen überein, die heute wirklich kommen (höchstens 3 je Fach, nur Fächer des Tages) | |
+| V.5 | Kind | „🏆 Mein Fortschritt“ auf der Startseite | Abzeichen oben, darunter die Fächer mit Themen und Stufe (🌱/📘/✅/🏆); **alles lesbar, nichts abgeschnitten** | |
+| V.6 | Kind | Mitten am Tag Planer öffnen → „🏆 Mein Fortschritt“ → Zurück → „Zurück zum Lernen“ | Man landet in derselben, halb beantworteten Aufgabe; die Mindestzeit ist nicht weitergelaufen | |
+| V.7 | Kind | Abschlussquiz bestehen | Falls ein Abzeichen dazugekommen ist: goldene Zeile „🏅 Neues Abzeichen: …“; der Knopf „PC jetzt benutzen“ ist **ohne Scrollen** sichtbar (auch auf einem kleinen Bildschirm) | |
+| V.8 | Elternteil | Führerschein-Bereich für ein Kind abschalten, „Mein Fortschritt“ ansehen | Die offenen Führerschein-Abzeichen sind verschwunden; schon verdiente bleiben | |
+| V.9 | Elternteil | Bericht → „🏆 Meisterschaft je Fach“ und HTML-Export | Dieselben Zahlen wie beim Kind in „Mein Fortschritt“ | |
+| V.10 | Emirhan / Batuhan | Englisch- bzw. Musikaufgaben der neuen Themen (Simple Past, Pronomen, in/on/at, Notenwerte, Stimme; Second Conditional, Relative Clauses) | Fragen und Erklärungen stimmen – **bitte von jemandem mit gutem Englisch gegenlesen lassen** | |

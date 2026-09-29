@@ -6,11 +6,14 @@ namespace LernTor.Core.Services;
 /// Ordnet dem Fachnamen auf einem Stundenplan - Kürzel wie "Ma" oder ausgeschrieben wie
 /// "Mathe" - ein LernTor-Fach zu, soweit es eines gibt.
 ///
-/// <para><b>Die Zuordnung darf danebenliegen.</b> Sie entscheidet ausschließlich über das
-/// Symbol vor der Zeile. Angezeigt wird immer der Text, den die Eltern eingetragen haben, also
-/// genau das, was auf dem Plan der Schule steht. Deshalb ist "NaWi" hier bewusst KEIN Fach:
-/// Naturwissenschaften umfassen Biologie, Chemie und Physik zugleich, und eines davon
-/// herauszupicken wäre geraten. Solche Fächer bekommen das neutrale Buch-Symbol.</para>
+/// <para><b>Die Zuordnung entscheidet mit, was geübt wird.</b> Sie gibt das Symbol vor der
+/// Zeile, und seit dem Schuljahr 2026/27 wählt <see cref="TimetableSubjectPlanner"/> über sie
+/// die Fächer des Tages aus. Angezeigt wird trotzdem immer der Text, den die Eltern eingetragen
+/// haben, also genau das, was auf dem Plan der Schule steht. "NaWi" ist bei
+/// <see cref="TryMap"/> bewusst KEIN Fach: Naturwissenschaften umfassen Biologie, Chemie und
+/// Physik zugleich, und eines davon als Symbol herauszupicken wäre geraten. Für die
+/// Fächerauswahl liefert <see cref="CombinedSubjects"/> die drei Teilfächer, zwischen denen der
+/// Planer abwechselt.</para>
 ///
 /// <para>Abgeglichen wird über die vollständige, kleingeschriebene Bezeichnung - kein
 /// Anfangsbuchstaben-Raten. "Ge" ist Geschichte, "Geo" ist Geografie, "GeWi" ist
@@ -100,6 +103,30 @@ public static class TimetableSubjectMap
         var schluessel = label.Trim();
         return Bekannt.TryGetValue(schluessel, out var fach) ? fach : null;
     }
+
+    /// <summary>
+    /// Sammelfächer, hinter denen mehrere LernTor-Fächer stehen: "NaWi" (Klasse 5/6) ist
+    /// Biologie, Chemie und Physik zugleich. Für jede andere Bezeichnung eine leere Liste.
+    ///
+    /// <para>"GeWi" steht hier NICHT: dafür gibt es mit <see cref="Subject.Gewi"/> ein eigenes
+    /// Fach samt Klasse-6-Pool.</para>
+    /// </summary>
+    public static IReadOnlyList<Subject> CombinedSubjects(string? label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            return Array.Empty<Subject>();
+        }
+
+        return Sammelfaecher.TryGetValue(label.Trim(), out var faecher) ? faecher : Array.Empty<Subject>();
+    }
+
+    private static readonly IReadOnlyDictionary<string, IReadOnlyList<Subject>> Sammelfaecher =
+        new Dictionary<string, IReadOnlyList<Subject>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["nawi"] = new[] { Subject.Biologie, Subject.Chemie, Subject.Physik },
+            ["naturwissenschaften"] = new[] { Subject.Biologie, Subject.Chemie, Subject.Physik }
+        };
 
     /// <summary>Symbol für die Zeile im Stundenplan. Ohne erkanntes Fach ein neutrales Buch -
     /// nie ein geratenes Symbol.</summary>

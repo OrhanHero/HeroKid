@@ -150,6 +150,16 @@ public sealed class StudentProfile
     public bool ErsteHilfeEnabled { get; set; } = true;
 
     /// <summary>
+    /// Ob die Schulfächer des Tages nach dem Stundenplan ausgewählt werden
+    /// (<see cref="Services.TimetableSubjectPlanner"/>): nur die Fächer des nächsten Schultags
+    /// plus Türkisch. Aus = alle Schulfächer jeden Tag, wie vor 2026/27. Ohne eingetragenen
+    /// Stundenplan wirkt der Schalter ohnehin nicht. In der Datenbank INVERTIERT gespeichert
+    /// (<c>StudentProfileEntity.TimetableSubjectsDisabled</c>), damit vorhandene Profile ihn
+    /// eingeschaltet bekommen.
+    /// </summary>
+    public bool TimetableSubjectsEnabled { get; set; } = true;
+
+    /// <summary>
     /// Zeichen in der täglichen Challenge, von den Eltern als Preset (3/5/8/10) einstellbar.
     /// Wer gar keine Challenge will, schaltet den Bereich über <see cref="DrivingAreaEnabled"/>
     /// ab - eine Challenge mit null Zeichen wäre nur ein leerer Bildschirm.

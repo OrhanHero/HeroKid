@@ -1,4 +1,6 @@
+using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 using LernTor.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -112,5 +114,31 @@ public sealed class ActivityLogRepository
         var entities = await _db.ActivityLog.Where(a => a.ProfileId == profileId).ToListAsync(cancellationToken);
 
         return entities.Where(a => a.Timestamp >= cutoff).Select(a => a.Prompt).ToHashSet();
+    }
+
+    /// <summary>
+    /// Alle Antworten dieses Profils in der schlanken Form, die die Meisterschafts- und
+    /// Abzeichen-Auswertung braucht (<see cref="TopicMasteryCalculator"/>). Ohne Zeitfenster:
+    /// ein Thema, das im Frühjahr gemeistert wurde, ist im Herbst nicht vergessen, nur weil es
+    /// aus einem 30-Tage-Fenster gefallen ist. Unbekannte Fachnamen (etwa aus einer älteren
+    /// Version) werden übergangen statt die Ansicht mit einer Ausnahme zu blockieren.
+    /// </summary>
+    public async Task<IReadOnlyList<MasteryAnswer>> GetAllAnswersAsync(string profileId, CancellationToken cancellationToken = default)
+    {
+        var entities = await _db.ActivityLog
+            .Where(a => a.ProfileId == profileId)
+            .Select(a => new { a.Subject, a.Topic, a.Prompt, a.WasCorrect, a.Timestamp })
+            .ToListAsync(cancellationToken);
+
+        var result = new List<MasteryAnswer>(entities.Count);
+        foreach (var entity in entities)
+        {
+            if (Enum.TryParse<Subject>(entity.Subject, out var subject))
+            {
+                result.Add(new MasteryAnswer(subject, entity.Topic, entity.Prompt, entity.WasCorrect, entity.Timestamp));
+            }
+        }
+
+        return result;
     }
 }

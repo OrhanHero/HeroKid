@@ -5,9 +5,9 @@ using Xunit;
 namespace LernTor.Tests;
 
 /// <summary>
-/// Die Zuordnung Stundenplan-Bezeichnung → LernTor-Fach. Sie entscheidet ausschließlich über das
-/// Symbol vor der Zeile; angezeigt wird immer der eingetragene Text. Geprüft wird deshalb vor
-/// allem, dass sie NICHT rät.
+/// Die Zuordnung Stundenplan-Bezeichnung → LernTor-Fach. Sie entscheidet über das Symbol vor der
+/// Zeile und über die Fächerauswahl nach Stundenplan; angezeigt wird immer der eingetragene Text.
+/// Geprüft wird deshalb vor allem, dass sie NICHT rät.
 /// </summary>
 public sealed class TimetableSubjectMapTests
 {
@@ -54,5 +54,26 @@ public sealed class TimetableSubjectMapTests
         Assert.Equal("🔢", TimetableSubjectMap.IconFor("Mathe"));
         Assert.Equal("📖", TimetableSubjectMap.IconFor("Deutsch"));
         Assert.NotEqual("📓", TimetableSubjectMap.IconFor("Musik"));
+    }
+
+    [Theory]
+    [InlineData("NaWi")]
+    [InlineData("nawi")]
+    [InlineData(" Naturwissenschaften ")]
+    public void NaWi_steht_fuer_Biologie_Chemie_und_Physik(string bezeichnung)
+    {
+        Assert.Equal(
+            new[] { Subject.Biologie, Subject.Chemie, Subject.Physik },
+            TimetableSubjectMap.CombinedSubjects(bezeichnung));
+    }
+
+    [Theory]
+    [InlineData("GeWi")]        // eigenes Fach mit Klasse-6-Pool, kein Sammelfach
+    [InlineData("Ma")]
+    [InlineData("Sport")]
+    [InlineData(null)]
+    public void Andere_Bezeichnungen_sind_keine_Sammelfaecher(string? bezeichnung)
+    {
+        Assert.Empty(TimetableSubjectMap.CombinedSubjects(bezeichnung));
     }
 }

@@ -1,7 +1,14 @@
 # Weiterer Plan für LernTor
 
-Stand: 12.08.2026. Bis auf **Phase 1.0** (drei Datenverlust-Fehler, alle behoben) ist nichts
-hiervon umgesetzt.
+Stand: 28.09.2026. **Die laufende Arbeitsliste steht jetzt in
+[`NAECHSTE-SCHRITTE.md`](NAECHSTE-SCHRITTE.md).** Dieses Dokument bleibt als Begründung stehen.
+
+Erledigt: Phase 0 (die App wurde laut Familie einmal komplett durchgespielt), 1.0, 1.1, 1.2,
+1.3, der Stundenplan-Teil von 2.0, 2.1, 2.2, 3.1, 3.3, 4.2, 4.3 und aus 4.1 der tote Code.
+Offen: das Zeitbudget in Minuten (Rest von 2.0, nur falls nötig), 3.2 (Frühjahr 2027), 4.1
+(Schalter vereinheitlichen; das Einstellungs-Objekt ist seit 29.09.2026 erledigt), 4.4 (README
+aufteilen) und Phase 5. **Der Ausbau vom 29.09.2026 (Version 2.0: .NET 10, Meisterschaft,
+Abzeichen) steht in [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).**
 
 Dieser Plan ordnet nach **Risiko für die Familie**, nicht nach technischer Eleganz. Die App wird
 täglich von zwei Kindern benutzt; was sie am ehesten kaputtmacht oder ihnen Arbeit vernichtet,
@@ -168,7 +175,7 @@ laufenden Programm.
 
 ## Phase 1 — Datensicherheit
 
-### 1.1 Sicherung und Wiederherstellung im Ganzen testen — **höchste Priorität**
+### 1.1 Sicherung und Wiederherstellung im Ganzen testen — ✅ **erledigt 28.09.2026** (`BackupRestoreTests`; dabei gefunden: „Alle Daten zurücksetzen“ ließ 6 Tabellen stehen, „Profil löschen“ ließ fast alles verwaist liegen, beides behoben)
 
 **Warum:** `AutoBackupPolicyTests` prüft elf Dinge — Dateinamen, Aufbewahrung, Fingerabdruck.
 **Kein einziger Test schreibt eine Sicherung und liest sie zurück.** Genau der Pfad, der die Daten
@@ -183,12 +190,12 @@ mit einer Sicherung aus einem **älteren Schema**, damit der `SqliteSchemaUpdate
 **Risiko, wenn man es lässt:** Zwei Kinder verlieren ihren gesamten Lernstand, und zwar in dem
 Moment, in dem man ihn retten wollte.
 
-### 1.2 `PRAGMA integrity_check` im Eltern-Bereich
+### 1.2 `PRAGMA integrity_check` im Eltern-Bereich — ✅ **erledigt 28.09.2026**
 
 Ein Knopf „Datenbank prüfen" mit Klartextergebnis. Eine beschädigte SQLite-Datei zeigt sich sonst
 erst als scheinbar zufälliger Absturz.
 
-### 1.3 Wiederherstellung dokumentieren
+### 1.3 Wiederherstellung dokumentieren — ✅ **erledigt 28.09.2026** ([`WIEDERHERSTELLUNG.md`](WIEDERHERSTELLUNG.md))
 
 Eine halbe Seite in `docs/BUILD.md`: Wo liegen die Sicherungen, wie spielt man sie ein, was tun,
 wenn die App gar nicht mehr startet. Für den Fall, dass niemand hier ist, der es aus dem Code lesen
@@ -199,6 +206,17 @@ kann.
 ## Phase 2 — Inhaltliche Tragfähigkeit
 
 ### 2.0 Zeitbudget statt Etappenzahl — **die wichtigste Änderung, und zugleich eine Warnung**
+
+> **Teilweise umgesetzt am 28.09.2026: Fächer nach Stundenplan.** Mit den Plänen 2026/27
+> ([`STUNDENPLAENE-2026-27.md`](STUNDENPLAENE-2026-27.md)) hat die Familie die offenen Fragen
+> entschieden: geübt werden die Fächer des **nächsten** Schultags (Vorbereitung), Türkisch ist
+> immer dabei, NaWi wechselt reihum zwischen Bio, Chemie und Physik, Klausurfächer gehen in der
+> Woche davor vor. Das steckt in `TimetableSubjectPlanner` (Core), wirkt über
+> `SubjectAvailability`, lässt sich pro Kind abschalten und macht ohne eingetragenen Plan nichts.
+> Die Tageslänge hängt damit am Stundenplan statt an der Zahl der Module: ein neues Fach
+> verlängert nur die Tage, an denen es in der Schule dran ist. **Offen bleibt das eigentliche
+> Zeitbudget** in Minuten samt Rotationsgarantie. Ob es nach ein paar Wochen mit der neuen
+> Auswahl noch gebraucht wird, lässt sich erst dann sagen.
 
 > Status: **nur Planung.** Umgesetzt wird das frühestens, wenn die neuen Stundenpläne für das
 > Schuljahr 2026/27 da sind (ab 24.08.2026) — die Fächerauswahl soll sich am Stundenplan
@@ -263,7 +281,7 @@ hat. `ProgressGateService.SequentialOrder`, `LearningStage`, `SessionSteps` und 
 Fortschrittsspeicher gehen heute davon aus, dass die Etappenliste **fest** ist. Vor dem ersten
 Handgriff gehört Phase 1 (Sicherung/Wiederherstellung) nachweislich abgeschlossen.
 
-### 2.1 Pool-Erschöpfung ausrechnen statt schätzen
+### 2.1 Pool-Erschöpfung ausrechnen statt schätzen — ✅ **erledigt 28.09.2026** (`scripts/pool-reichweite.py`; Befund: Türkisch nach 5–7 Wochen durch)
 
 **Warum:** Drei Mechanismen halten Fragen zurück — richtig beantwortete (`MasteredPrompt`), kürzlich
 gesehene (`ActivityLog`), plus die Fehler-Kartei. Bei 6 Aufgaben/Tag ist rechnerisch bestimmbar,
@@ -284,6 +302,8 @@ gegen die Tagesrate hält und eine Tabelle ausgibt. Ergebnis sagt, wo Fragen feh
 3. Gewichtung nach Schwäche — die Daten dafür liegen bereits in `AdaptiveTopicWeighting`
 
 Weg 2 ist der richtige: er hält den Tag kurz und prüft trotzdem das Geübte.
+**Seit 28.09.2026 automatisch erfüllt**, sobald ein Stundenplan eingetragen ist: das Abschlussquiz
+nimmt nur Fächer, die an dem Tag nicht ausfallen, und das sind die des nächsten Schultags.
 
 ### 2.3 Antwortlängen-Bias im Blick behalten
 
@@ -294,7 +314,7 @@ vergessen, wenn neue Fragen dazukommen.
 
 ## Phase 3 — Zeitliche Tragfähigkeit
 
-### 3.1 Schuljahreswechsel
+### 3.1 Schuljahreswechsel — ✅ **erledigt 28.09.2026** (`SetGradeLevelAsync`, Auswahl im Eltern-Bereich, Hinweis in den ersten vier Schulwochen)
 
 **Warum:** `GradeLevel` wird **ausschließlich** in `StudentProfileRepository.CreateAsync` gesetzt.
 Es gibt keinen Weg, die Klassenstufe eines bestehenden Profils zu ändern, außer „Profil neu
@@ -323,7 +343,7 @@ kennt 6 bis 10, und Klasse 8/10 greifen über die Doppeljahrgangs-Regel automati
 Ferien enden am 14.08.2027, Feiertage am 26.12.2027. Der Eltern-Bereich sagt das an — es muss nur
 jemand hinsehen. **Fällig: Frühjahr 2027.**
 
-### 3.3 Mitternacht während einer Sitzung
+### 3.3 Mitternacht während einer Sitzung — ✅ **erledigt 28.09.2026** (`SessionDayRollover`: bis 4 Uhr gehört die Sitzung zum Vortag, danach beginnt ein neuer Tag)
 
 **Warum:** Der Tagesfortschritt hängt an `DateTime.Today`. Was passiert, wenn ein Kind um 23:58
 anfängt? Ungeprüft.
@@ -346,7 +366,7 @@ Zugriffspunkt. Migration der zwei vorhandenen Spalten.
 
 **Nebeneffekt:** Der Preflight-Check für Fach-Verdrahtung wird einfacher.
 
-### 4.2 CI-Push-Problem
+### 4.2 CI-Push-Problem — ✅ **erledigt 28.09.2026** (Workflow war am 17.08. gelöscht worden, wiederhergestellt; Pushes lösen wieder Läufe aus)
 
 **Warum:** Seit dem 06.08.2026 lösen Pushes auf dieses Repo **keine Workflow-Läufe** aus. Workflow
 aktiv, Trigger passend, Kontingent frei — GitHub verschluckt das Ereignis. Behelf: manuell per
@@ -356,7 +376,7 @@ aktiv, Trigger passend, Kontingent frei — GitHub verschluckt das Ereignis. Beh
 (`schedule` alle 6 h auf `master`) als Netz. In CLAUDE.md steht bereits, dass `head_sha` zu
 vergleichen ist statt der Farbe des letzten Laufs.
 
-### 4.3 Preflight weiter schärfen
+### 4.3 Preflight weiter schärfen — ✅ **erledigt 28.09.2026** (`observable-grossbuchstabe`, `feste-fachzahl`; offen bleibt der dritte Kandidat, von Hand gepflegte Generatorlisten in Tests)
 
 Kandidaten, jeder aus einem echten Fehler dieser Codebasis geboren:
 - Fest verdrahtete Zählungen in Tests, die bei neuen Fächern veralten (`Assert.Equal(17, …)`)

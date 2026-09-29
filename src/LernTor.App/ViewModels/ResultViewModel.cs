@@ -96,6 +96,30 @@ public sealed partial class ResultViewModel : ObservableObject
 
     public bool HasStarsToShow => EarnedStarsToday > 0;
 
+    /// <summary>Heute neu freigeschaltete Abzeichen (siehe <see cref="AchievementCatalog"/>).
+    /// Nur nach dem bestandenen Quiz gefüllt.</summary>
+    public IReadOnlyList<Achievement> NewAchievements { get; }
+
+    public bool HasNewAchievements => NewAchievements.Count > 0;
+
+    /// <summary>„🏅 Neues Abzeichen: 💯 Hundert richtig“ - eine Zeile, auch bei mehreren.</summary>
+    public string NewAchievementsSummary
+    {
+        get
+        {
+            if (NewAchievements.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var l = LocalizationService.Instance;
+            var tuerkisch = l.CurrentLanguage == AppLanguage.Tuerkisch;
+            var namen = NewAchievements.Select(a => $"{a.Emoji} {(tuerkisch ? a.TitleTr : a.TitleDe)}");
+            var vorlage = NewAchievements.Count == 1 ? l["Result_NewBadge"] : l["Result_NewBadges"];
+            return string.Format(vorlage, string.Join(" · ", namen));
+        }
+    }
+
     // --- 🎁 Belohnungen (von den Eltern gepflegt, mit Sternen einlösbar) ---
 
     public ObservableCollection<RewardItemViewModel> Rewards { get; } = new();
@@ -124,8 +148,10 @@ public sealed partial class ResultViewModel : ObservableObject
         Action onUnlockConfirmed,
         RewardRepository? rewardRepo = null,
         string? profileId = null,
-        IReadOnlyList<SubjectProgress>? subjectProgress = null)
+        IReadOnlyList<SubjectProgress>? subjectProgress = null,
+        IReadOnlyList<Achievement>? newAchievements = null)
     {
+        NewAchievements = newAchievements ?? Array.Empty<Achievement>();
         Passed = passed;
         Result = result;
         EarnedStarsToday = earnedStarsToday;

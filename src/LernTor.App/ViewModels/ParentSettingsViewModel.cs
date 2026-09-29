@@ -40,6 +40,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly TheoryProgressRepository _theoryRepo;
     private readonly CourseProgressRepository _courseRepo;
     private readonly TimetableRepository _timetableRepo;
+    private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly AutoBackupService _autoBackup;
     private readonly QuizComposer _quizComposer;
 
@@ -380,8 +381,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CourseProgressRepository courseRepo,
         TimetableRepository timetableRepo,
         AutoBackupService autoBackup,
-        QuizComposer quizComposer)
+        QuizComposer quizComposer,
+        MasteredPromptRepository masteredPromptRepo)
     {
+        _masteredPromptRepo = masteredPromptRepo;
         _rewardRepo = rewardRepo;
         _signProgressRepo = signProgressRepo;
         _theoryRepo = theoryRepo;
@@ -521,8 +524,30 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             return;
         }
 
-        if (AdminAuthService.Verify(password, _settings.AdminPasswordHash, _settings.AdminPasswordSalt))
+        // Im Hintergrund: 600.000 PBKDF2-Durchläufe dauern spürbar, und das Fenster soll dabei
+        // nicht einfrieren.
+        var gespeicherterHash = _settings.AdminPasswordHash;
+        var gespeichertesSalt = _settings.AdminPasswordSalt;
+        if (await Task.Run(() => AdminAuthService.Verify(password, gespeicherterHash, gespeichertesSalt)))
         {
+            // Ältere, schwächer gespeicherte Passwörter (vor 29.09.2026) jetzt unbemerkt mit der
+            // aktuellen Stärke neu speichern - das Klartext-Passwort ist gerade bekannt. Scheitert
+            // das, bleibt das alte gültig; anmelden kann man sich trotzdem.
+            if (AdminAuthService.NeedsRehash(gespeichertesSalt))
+            {
+                try
+                {
+                    var (neuerHash, neuesSalt) = await Task.Run(() => AdminAuthService.HashPassword(password));
+                    _settings.AdminPasswordHash = neuerHash;
+                    _settings.AdminPasswordSalt = neuesSalt;
+                    await _settingsRepo.SaveAsync(_settings);
+                }
+                catch (Exception ex)
+                {
+                    Core.Logging.AppLog.Error("Eltern-Bereich", "Passwort konnte nicht neu gespeichert werden", ex);
+                }
+            }
+
             await AuthenticateAsync();
         }
         else
@@ -557,6 +582,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         await ReloadCustomQuestionsAsync();
         await LoadProfileComparisonAsync();
+        RefreshSystemInfo();
     }
 
     private async Task ReloadCustomQuestionsAsync()
@@ -625,28 +651,43 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     /// Die Werte werden beim Aufruf eingesammelt (Argumente werden vor dem ersten await
     /// ausgewertet), das Ergebnis ist also unabhängig davon, was danach in den Feldern steht.
     /// </summary>
-    private Task SaveProfileEditorAsync(StudentProfile profile) =>
-        _profileRepo.UpdateSettingsAsync(
-            profile.Id,
-            TypingMinAccuracyPercent / 100.0,
-            QuizFirstAttemptThresholdPercent / 100.0,
-            QuizRetryThresholdPercent / 100.0,
-            ReadingMinutes,
-            NewsSecondsPerArticle,
-            ExerciseSecondsPerQuestion,
-            ExercisesPerSubject,
-            QuizQuestionCount,
-            QuizRetryQuestionCount,
-            TypingTextOverrides.Sanitize(CustomTypingSentenceText),
-            TypingTextOverrides.Sanitize(CustomTypingFinalText),
-            WeeklyGoalDays,
-            profile.PinnedReadingTextKey,
-            NewsArticleCount,
-            NewsFilterStrictness,
-            DrivingAreaEnabled,
-            ErsteHilfeEnabled,
-            DrivingChallengeSignCount,
-            CollectDisabledSignCategories());
+    private async Task SaveProfileEditorAsync(StudentProfile profile)
+    {
+        // Vor dem ersten await eingesammelt - siehe oben: danach koennen die Felder schon das
+        // naechste Profil zeigen.
+        var timetableSubjectsEnabled = TimetableSubjectsEnabled;
+
+        // Jede Eigenschaft ist "required": ein vergessenes Feld ist ein Compilerfehler, kein still
+        // zurueckgesetzter Jugendschutzfilter mehr (siehe ProfileSettings).
+        var einstellungen = new ProfileSettings
+        {
+            TypingMinAccuracy = TypingMinAccuracyPercent / 100.0,
+            QuizFirstAttemptThreshold = QuizFirstAttemptThresholdPercent / 100.0,
+            QuizRetryThreshold = QuizRetryThresholdPercent / 100.0,
+            ReadingMinutes = ReadingMinutes,
+            NewsSecondsPerArticle = NewsSecondsPerArticle,
+            NewsArticleCount = NewsArticleCount,
+            NewsFilterStrictness = NewsFilterStrictness,
+            ExerciseSecondsPerQuestion = ExerciseSecondsPerQuestion,
+            ExercisesPerSubject = ExercisesPerSubject,
+            QuizQuestionCount = QuizQuestionCount,
+            QuizRetryQuestionCount = QuizRetryQuestionCount,
+            CustomTypingSentenceText = TypingTextOverrides.Sanitize(CustomTypingSentenceText),
+            CustomTypingFinalText = TypingTextOverrides.Sanitize(CustomTypingFinalText),
+            WeeklyGoalDays = WeeklyGoalDays,
+            PinnedReadingTextKey = profile.PinnedReadingTextKey,
+            DrivingAreaEnabled = DrivingAreaEnabled,
+            ErsteHilfeEnabled = ErsteHilfeEnabled,
+            DrivingChallengeSignCount = DrivingChallengeSignCount,
+            DisabledSignCategories = CollectDisabledSignCategories(),
+        };
+
+        await _profileRepo.UpdateSettingsAsync(profile.Id, einstellungen);
+
+        // Eigene Ein-Spalten-Methode statt eines 21. Parameters am Voll-Ueberschreiber.
+        await _profileRepo.SetTimetableSubjectsEnabledAsync(profile.Id, timetableSubjectsEnabled);
+        profile.TimetableSubjectsEnabled = timetableSubjectsEnabled;
+    }
 
     private void ApplyProfileToEditor(StudentProfile? value)
     {
@@ -665,6 +706,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         WeeklyGoalDays = value?.WeeklyGoalDays ?? 0;
         DrivingAreaEnabled = value?.DrivingAreaEnabled ?? true;
         ErsteHilfeEnabled = value?.ErsteHilfeEnabled ?? true;
+        TimetableSubjectsEnabled = value?.TimetableSubjectsEnabled ?? true;
+        EditorGradeLevel = value?.GradeLevel ?? GradeLevel.Klasse6;
+        EditorClassLabel = value?.ClassLabel ?? string.Empty;
+        GradeLevelStatus = string.Empty;
         DrivingChallengeSignCount = value?.DrivingChallengeSignCount ?? StudentProfile.DailySignChallengeDefaultCount;
         ApplySignCategoriesToEditor(value?.DisabledSignCategories);
         CustomTypingSentenceText = value?.CustomTypingSentenceText ?? string.Empty;
@@ -882,6 +927,80 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     partial void OnDrivingAreaEnabledChanged(bool value) => MarkDirty();
 
     partial void OnErsteHilfeEnabledChanged(bool value) => MarkDirty();
+
+    /// <summary>Faecher des Tages nach dem Stundenplan dieses Kindes auswaehlen (naechster
+    /// Schultag plus Tuerkisch, siehe TimetableSubjectPlanner).</summary>
+    [ObservableProperty]
+    private bool timetableSubjectsEnabled = true;
+
+    partial void OnTimetableSubjectsEnabledChanged(bool value) => MarkDirty();
+
+    // ---------------- Klassenstufe (Schuljahreswechsel) ----------------
+
+    /// <summary>Klassenstufe im Editor - wird erst mit "Klassenstufe übernehmen" gespeichert.</summary>
+    [ObservableProperty]
+    private GradeLevel editorGradeLevel = GradeLevel.Klasse6;
+
+    /// <summary>Klassenbezeichnung ("10a") im Editor - rein informativ, geübt wird nach Stufe.</summary>
+    [ObservableProperty]
+    private string editorClassLabel = string.Empty;
+
+    [ObservableProperty]
+    private string gradeLevelStatus = string.Empty;
+
+    /// <summary>
+    /// In den ersten vier Wochen eines Schuljahres steht ein Hinweis beim Profil: sonst übt ein
+    /// Kind, das in die nächste Klasse gekommen ist, still mit dem Stoff des Vorjahres weiter.
+    /// </summary>
+    public bool ShowGradeCheckHint => SchoolCalendar.IsEarlySchoolYear(DateOnly.FromDateTime(DateTime.Today));
+
+    /// <summary>
+    /// Speichert Klassenstufe und Klasse des gewählten Profils sofort und nur diese beiden
+    /// Spalten (<c>SetGradeLevelAsync</c>). Sterne, gemeisterte Fragen, Fehler-Kartei und
+    /// Stundenplan bleiben erhalten - das war der Grund, es nicht über "Profil neu anlegen"
+    /// zu machen.
+    /// </summary>
+    [RelayCommand]
+    private async Task SaveGradeLevelAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        var stufe = EditorGradeLevel;
+        var klasse = string.IsNullOrWhiteSpace(EditorClassLabel) ? null : EditorClassLabel.Trim();
+
+        if (stufe == SelectedProfile.GradeLevel && klasse == SelectedProfile.ClassLabel)
+        {
+            GradeLevelStatus = "Unverändert.";
+            return;
+        }
+
+        if (stufe != SelectedProfile.GradeLevel)
+        {
+            var bestaetigt = System.Windows.MessageBox.Show(
+                $"{SelectedProfile.Name} übt ab dem nächsten Start mit den Aufgaben für {(int)stufe}. Klasse " +
+                $"statt {(int)SelectedProfile.GradeLevel}. Klasse.\n\n" +
+                "Sterne, gemeisterte Aufgaben, Fehler-Kartei und Stundenplan bleiben erhalten. " +
+                "Den Stundenplan für das neue Schuljahr bitte trotzdem neu eintragen. Fortfahren?",
+                "Klassenstufe ändern",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question,
+                System.Windows.MessageBoxResult.No);
+
+            if (bestaetigt != System.Windows.MessageBoxResult.Yes)
+            {
+                EditorGradeLevel = SelectedProfile.GradeLevel;
+                return;
+            }
+        }
+
+        await _profileRepo.SetGradeLevelAsync(SelectedProfile.Id, stufe, klasse);
+        SelectedProfile.GradeLevel = stufe;
+        SelectedProfile.ClassLabel = klasse;
+        GradeLevelStatus = $"✅ Gespeichert: {(int)stufe}. Klasse{(klasse is null ? string.Empty : $" ({klasse})")}.";
+    }
 
     // ---------------- Schulkalender Berlin (nur Anzeige) ----------------
 
@@ -1117,6 +1236,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         RecentActivity.Clear();
         QuizHistory.Clear();
         RewardRedemptions.Clear();
+        MasteryReportRows.Clear();
+        OnPropertyChanged(nameof(HasMasteryReportData));
         _reportActivity = Array.Empty<ActivityLogEntity>();
 
         if (SelectedProfile is null)
@@ -1141,9 +1262,36 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             RewardRedemptions.Add(redemption);
         }
 
+        await LoadMasteryReportAsync(SelectedProfile.Id);
+
         // 30 Tage einmal laden - die 7/30-Tage-Umschaltung filtert danach nur noch in-memory.
         _reportActivity = await _activityLogRepo.GetActivitySinceAsync(SelectedProfile.Id, TimeSpan.FromDays(30));
         RebuildReport();
+    }
+
+    private async Task LoadMasteryReportAsync(string profileId)
+    {
+        var loc = LocalizationService.Instance;
+        var themen = TopicMasteryCalculator.Calculate(
+            await _activityLogRepo.GetAllAnswersAsync(profileId),
+            await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+
+        foreach (var fach in themen.GroupBy(thema => thema.Subject))
+        {
+            var zaehlung = TopicMasteryCalculator.CountByLevel(fach);
+            var sicherOderBesser = zaehlung[MasteryLevel.Gemeistert] + zaehlung[MasteryLevel.Sicher];
+            MasteryReportRows.Add(new ReportExportRow(
+                loc[$"Stage_{fach.Key}"],
+                string.Format(
+                    loc["Parent_Report_MasteryRow"],
+                    zaehlung[MasteryLevel.Gemeistert],
+                    zaehlung[MasteryLevel.Sicher],
+                    zaehlung[MasteryLevel.Vertraut],
+                    zaehlung[MasteryLevel.Angefangen]),
+                Rate: (double)sicherOderBesser / fach.Count()));
+        }
+
+        OnPropertyChanged(nameof(HasMasteryReportData));
     }
 
     // --- Geschwister-Vergleich (optional, Standard aus) ---
@@ -1244,6 +1392,17 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool hasTopicReportData;
+
+    /// <summary>
+    /// Meisterschaft je Fach (siehe <see cref="TopicMasteryCalculator"/>): wie viele Themen
+    /// gemeistert, sicher, vertraut oder angefangen sind. Anders als der übrige Bericht über
+    /// ALLE Antworten seit Beginn - ein im Frühjahr gemeistertes Thema ist nicht vergessen, nur
+    /// weil es aus dem 30-Tage-Fenster gefallen ist. Dieselbe Regel wie in „Mein Fortschritt“
+    /// beim Kind, damit Eltern und Kind dieselben Zahlen sehen.
+    /// </summary>
+    public ObservableCollection<ReportExportRow> MasteryReportRows { get; } = new();
+
+    public bool HasMasteryReportData => MasteryReportRows.Count > 0;
 
     [ObservableProperty]
     private int reportDays = 7;
@@ -1439,6 +1598,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             new(loc["Parent_Report_WeakTopics"], TopicReportRows
                 .Select(row => new ReportExportRow(row.Label, row.RateDisplay, row.Rate))
                 .ToList()),
+            new(loc["Parent_Report_Mastery"], MasteryReportRows.ToList()),
             new("⏱ Lernzeit je Fach", SubjectTimeRows
                 .Select(row => new ReportExportRow(
                     row.SubjectLabel,
@@ -1883,7 +2043,99 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         }
     }
 
+    // --- Systeminfo ---
+
+    /// <summary>
+    /// App-Version, .NET, Windows, Datenbankgröße, letzte automatische Sicherung - die ersten
+    /// Fragen bei jedem Problem (siehe <see cref="SystemInfoReport"/>). Wird beim Öffnen des
+    /// Bereichs frisch gesammelt; der Knopf daneben kopiert sie in die Zwischenablage.
+    /// </summary>
+    [ObservableProperty]
+    private string systemInfoText = string.Empty;
+
+    private void RefreshSystemInfo()
+    {
+        try
+        {
+            var dbPfad = LernTorDbContext.GetDefaultDbPath();
+            var db = new FileInfo(dbPfad);
+            // AutoBackupFile ist ein struct - deshalb kein "?." auf FirstOrDefault().
+            var sicherungen = _autoBackup.List();
+            DateTimeOffset? letzteSicherung = sicherungen.Count > 0 ? sicherungen[0].CreatedAt : null;
+            var info = new SystemInfoSnapshot(
+                typeof(ParentSettingsViewModel).Assembly
+                    .GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+                    .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
+                    .FirstOrDefault()?.InformationalVersion,
+                Environment.Version.ToString(),
+                System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                db.Exists ? db.Length : null,
+                letzteSicherung,
+                Profiles.Count,
+                Path.GetDirectoryName(dbPfad) ?? dbPfad);
+
+            SystemInfoText = string.Join(Environment.NewLine, SystemInfoReport.Lines(info));
+        }
+        catch (Exception ex)
+        {
+            // Eine Anzeige darf den Eltern-Bereich nie blockieren.
+            SystemInfoText = $"Systeminfo nicht verfügbar: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void CopySystemInfo()
+    {
+        try
+        {
+            System.Windows.Clipboard.SetText(SystemInfoText);
+        }
+        catch (Exception ex)
+        {
+            // Die Zwischenablage kann kurz von einem anderen Programm belegt sein.
+            LernTor.Core.Logging.AppLog.Warn("Parent", $"Systeminfo kopieren fehlgeschlagen - {ex.Message}");
+        }
+    }
+
     // --- Automatische Sicherungen (AutoBackupService) ---
+
+    /// <summary>
+    /// Ergebnis des Knopfes "Datenbank prüfen" im Klartext. Leer, solange nicht geprüft wurde.
+    /// </summary>
+    [ObservableProperty]
+    private string databaseIntegrityStatus = string.Empty;
+
+    /// <summary>
+    /// Prüft die lerntor.db mit SQLites eigener Integritätsprüfung. Bei einem Befund steht die
+    /// konkrete Empfehlung gleich daneben: eine automatische Sicherung einspielen (siehe
+    /// docs/WIEDERHERSTELLUNG.md) - eine beschädigte Datei repariert sich nicht von selbst.
+    /// </summary>
+    [RelayCommand]
+    private async Task CheckDatabaseIntegrityAsync()
+    {
+        DatabaseIntegrityStatus = "Prüfe …";
+
+        try
+        {
+            var ergebnis = await _maintenanceRepo.CheckIntegrityAsync();
+            if (ergebnis.IsOk)
+            {
+                DatabaseIntegrityStatus = $"✅ Datenbank in Ordnung (geprüft {DateTime.Now:dd.MM.yyyy HH:mm}).";
+                return;
+            }
+
+            LernTor.Core.Logging.AppLog.Warn("Parent", "Integritätsprüfung: " + string.Join(" | ", ergebnis.Messages.Take(10)));
+            DatabaseIntegrityStatus =
+                "⚠️ Die Datenbank ist beschädigt. Bitte eine automatische Sicherung einspielen " +
+                "(„Sicherung wiederherstellen…“, die Dateien liegen im Ordner der automatischen Sicherungen).\n" +
+                "SQLite meldet: " + string.Join("; ", ergebnis.Messages.Take(5));
+        }
+        catch (Exception ex)
+        {
+            LernTor.Core.Logging.AppLog.Error("Parent", "Integritätsprüfung fehlgeschlagen", ex);
+            DatabaseIntegrityStatus = $"⚠️ Prüfung nicht möglich: {ex.Message}";
+        }
+    }
 
     /// <summary>
     /// Einzeiler über die automatischen Sicherungen. Sie laufen still im Hintergrund, und genau
