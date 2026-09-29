@@ -748,48 +748,43 @@ def check_flag_emoji() -> None:
 
 
 def check_full_overwrite_calls() -> None:
-    """Voll-Ueberschreiber, die mit zu wenigen Argumenten gerufen werden.
+    """Der Voll-Ueberschreiber darf keine stillen Vorgabewerte mehr bekommen.
 
-    UpdateSettingsAsync schreibt ALLE Einstellungen eines Profils und hat zwanzig
-    Positionsparameter, zehn davon optional. Der Aufruf zum Anheften eines Lesetextes uebergab
-    vierzehn - die restlichen sechs fielen still auf die Vorgabewerte zurueck und loeschten damit
-    die Artikelzahl, lockerten den Jugendschutzfilter von "Streng" auf "Normal" und schalteten
-    abgeschaltete Bereiche wieder ein. Kein Compilerfehler, kein fehlgeschlagener Test.
+    UpdateSettingsAsync schrieb ALLE Einstellungen eines Profils und hatte zwanzig
+    Positionsparameter, zehn davon optional. Ein Aufruf mit vierzehn Argumenten setzte am
+    07.08.2026 still sechs Einstellungen zurueck (Jugendschutzfilter gelockert, abgeschaltete
+    Bereiche wieder an). Seit 29.09.2026 nimmt die Methode ein ProfileSettings-Objekt, dessen
+    Eigenschaften alle "required" sind - ein vergessenes Feld ist dann ein Compilerfehler.
 
-    Wer nur ein Feld aendern will, schreibt sich eine eigene Methode dafuer (siehe
-    SetPinnedReadingTextAsync); wer den Voll-Ueberschreiber ruft, uebergibt alles.
+    Diese Pruefung haelt beide Haelften fest: UpdateSettingsAsync nimmt genau (profileId,
+    ProfileSettings[, CancellationToken]), und jede Eigenschaft von ProfileSettings ist required.
+    Eine neue Eigenschaft ohne required waere wieder ein stiller Vorgabewert.
     """
     definition = SRC / "LernTor.Data" / "Repositories" / "StudentProfileRepository.cs"
+    einstellungen = SRC / "LernTor.Core" / "Models" / "ProfileSettings.cs"
     if not definition.exists():
         return
 
     treffer = re.search(
         r"public\s+async\s+Task\s+UpdateSettingsAsync\s*\((.*?)\)\s*\{",
         definition.read_text(encoding="utf-8"), re.S)
-    if not treffer:
+    if treffer:
+        parameter = [t.strip() for t in argumente_zerlegen(treffer.group(1)) if t.strip()]
+        ohne_token = [p for p in parameter if "CancellationToken" not in p]
+        if len(ohne_token) != 2 or "ProfileSettings" not in ohne_token[1]:
+            report("voll-ueberschreiber", definition,
+                   "UpdateSettingsAsync soll genau (profileId, ProfileSettings) nehmen - "
+                   "Einzelparameter mit Vorgabewerten setzen fehlende Felder still zurueck")
+
+    if not einstellungen.exists():
+        report("voll-ueberschreiber", einstellungen, "ProfileSettings.cs fehlt")
         return
 
-    # CancellationToken zaehlt nicht mit - den laesst jeder Aufrufer weg.
-    parameter = [t.strip() for t in argumente_zerlegen(treffer.group(1)) if t.strip()]
-    erwartet = len([p for p in parameter if "CancellationToken" not in p])
-
-    for path in sorted((SRC / "LernTor.App").rglob("*.cs")):
-        text = path.read_text(encoding="utf-8")
-        for aufruf in re.finditer(r"UpdateSettingsAsync\s*\(", text):
-            start = aufruf.end()
-            tiefe, i = 1, start
-            while i < len(text) and tiefe > 0:
-                if text[i] == "(":
-                    tiefe += 1
-                elif text[i] == ")":
-                    tiefe -= 1
-                i += 1
-            anzahl = len([a for a in argumente_zerlegen(text[start:i - 1]) if a.strip()])
-            if anzahl < erwartet:
-                zeile = text[:aufruf.start()].count("\n") + 1
-                report("voll-ueberschreiber", path,
-                       f"Zeile {zeile}: UpdateSettingsAsync mit {anzahl} statt {erwartet} "
-                       f"Argumenten - die fehlenden werden still auf Vorgabewerte zurueckgesetzt")
+    for nummer, zeile in enumerate(einstellungen.read_text(encoding="utf-8").splitlines(), start=1):
+        if re.match(r"\s*public\s+(?!static|sealed|record)[^(]*\{\s*get;\s*init;\s*\}", zeile) \
+                and " required " not in f" {zeile.strip()} ":
+            report("voll-ueberschreiber", einstellungen,
+                   f"Zeile {nummer}: Eigenschaft ohne 'required' - sie haette einen stillen Vorgabewert")
 
 
 def argumente_zerlegen(text: str) -> list[str]:

@@ -321,8 +321,13 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   count, **loosened a parental news filter set to "Streng" back to "Normal"**, re-enabled areas the
   parents had switched off, and restored every deselected traffic-sign category. No compile error,
   no failing test, no message. Prefer a method that writes exactly the one column you mean
-  (`SetPinnedReadingTextAsync` is the pattern); if you must call the full overwriter, pass
-  everything. `scripts/preflight.py` now checks it (`voll-ueberschreiber`).
+  (`SetPinnedReadingTextAsync` is the pattern). **Since 29.09.2026 the full overwriter takes a
+  `ProfileSettings` record (Core) whose properties are all `required`** — a forgotten field is a
+  compile error (CS9035). To change a few values, start from the stored state:
+  `ProfileSettings.From(profile) with { WeeklyGoalDays = 4 }`. A new profile setting goes into
+  `ProfileSettings` (as `required`), `From()` and the repository; `ProfileSettingsTests` checks via
+  reflection that `From()` copies every property, `scripts/preflight.py` (`voll-ueberschreiber`)
+  that none lacks `required`.
 - **Hand-maintained lists of tables go stale — twice.** `DatabaseMaintenanceRepository.ResetAllDataAsync`
   listed its tables by hand; after the first fix ("new tables belong in this list without
   exception") six more tables were added elsewhere and silently survived a factory reset.

@@ -656,27 +656,32 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         // naechste Profil zeigen.
         var timetableSubjectsEnabled = TimetableSubjectsEnabled;
 
-        await _profileRepo.UpdateSettingsAsync(
-            profile.Id,
-            TypingMinAccuracyPercent / 100.0,
-            QuizFirstAttemptThresholdPercent / 100.0,
-            QuizRetryThresholdPercent / 100.0,
-            ReadingMinutes,
-            NewsSecondsPerArticle,
-            ExerciseSecondsPerQuestion,
-            ExercisesPerSubject,
-            QuizQuestionCount,
-            QuizRetryQuestionCount,
-            TypingTextOverrides.Sanitize(CustomTypingSentenceText),
-            TypingTextOverrides.Sanitize(CustomTypingFinalText),
-            WeeklyGoalDays,
-            profile.PinnedReadingTextKey,
-            NewsArticleCount,
-            NewsFilterStrictness,
-            DrivingAreaEnabled,
-            ErsteHilfeEnabled,
-            DrivingChallengeSignCount,
-            CollectDisabledSignCategories());
+        // Jede Eigenschaft ist "required": ein vergessenes Feld ist ein Compilerfehler, kein still
+        // zurueckgesetzter Jugendschutzfilter mehr (siehe ProfileSettings).
+        var einstellungen = new ProfileSettings
+        {
+            TypingMinAccuracy = TypingMinAccuracyPercent / 100.0,
+            QuizFirstAttemptThreshold = QuizFirstAttemptThresholdPercent / 100.0,
+            QuizRetryThreshold = QuizRetryThresholdPercent / 100.0,
+            ReadingMinutes = ReadingMinutes,
+            NewsSecondsPerArticle = NewsSecondsPerArticle,
+            NewsArticleCount = NewsArticleCount,
+            NewsFilterStrictness = NewsFilterStrictness,
+            ExerciseSecondsPerQuestion = ExerciseSecondsPerQuestion,
+            ExercisesPerSubject = ExercisesPerSubject,
+            QuizQuestionCount = QuizQuestionCount,
+            QuizRetryQuestionCount = QuizRetryQuestionCount,
+            CustomTypingSentenceText = TypingTextOverrides.Sanitize(CustomTypingSentenceText),
+            CustomTypingFinalText = TypingTextOverrides.Sanitize(CustomTypingFinalText),
+            WeeklyGoalDays = WeeklyGoalDays,
+            PinnedReadingTextKey = profile.PinnedReadingTextKey,
+            DrivingAreaEnabled = DrivingAreaEnabled,
+            ErsteHilfeEnabled = ErsteHilfeEnabled,
+            DrivingChallengeSignCount = DrivingChallengeSignCount,
+            DisabledSignCategories = CollectDisabledSignCategories(),
+        };
+
+        await _profileRepo.UpdateSettingsAsync(profile.Id, einstellungen);
 
         // Eigene Ein-Spalten-Methode statt eines 21. Parameters am Voll-Ueberschreiber.
         await _profileRepo.SetTimetableSubjectsEnabledAsync(profile.Id, timetableSubjectsEnabled);

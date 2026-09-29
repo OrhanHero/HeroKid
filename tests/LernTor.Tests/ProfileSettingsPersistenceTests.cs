@@ -41,24 +41,25 @@ public sealed class ProfileSettingsPersistenceTests : IDisposable
 
         await repo.UpdateSettingsAsync(
             profil.Id,
-            typingMinAccuracy: 0.8,
-            quizFirstAttemptThreshold: 0.7,
-            quizRetryThreshold: 0.4,
-            readingMinutes: 7,
-            newsSecondsPerArticle: 20,
-            exerciseSecondsPerQuestion: 8,
-            exercisesPerSubject: 9,
-            quizQuestionCount: 25,
-            quizRetryQuestionCount: 18,
-            customTypingSentenceText: null,
-            customTypingFinalText: null,
-            weeklyGoalDays: 4,
-            pinnedReadingTextKey: null,
-            newsArticleCount: 6,
-            newsFilterStrictness: NewsFilterStrictness.Streng,
-            drivingAreaEnabled: false,
-            ersteHilfeEnabled: false,
-            drivingChallengeSignCount: 3);
+            ProfileSettings.From(profil) with
+            {
+                TypingMinAccuracy = 0.8,
+                QuizFirstAttemptThreshold = 0.7,
+                QuizRetryThreshold = 0.4,
+                ReadingMinutes = 7,
+                NewsSecondsPerArticle = 20,
+                ExerciseSecondsPerQuestion = 8,
+                ExercisesPerSubject = 9,
+                QuizQuestionCount = 25,
+                QuizRetryQuestionCount = 18,
+                WeeklyGoalDays = 4,
+                PinnedReadingTextKey = null,
+                NewsArticleCount = 6,
+                NewsFilterStrictness = NewsFilterStrictness.Streng,
+                DrivingAreaEnabled = false,
+                ErsteHilfeEnabled = false,
+                DrivingChallengeSignCount = 3,
+            });
 
         await repo.SetPinnedReadingTextAsync(profil.Id, "lesetext-42");
 
@@ -158,24 +159,25 @@ public sealed class ProfileSettingsPersistenceTests : IDisposable
         var profil = await repo.CreateAsync("Testkind", 14, "9a", GradeLevel.Klasse9, "🧒");
         await repo.UpdateSettingsAsync(
             profil.Id,
-            typingMinAccuracy: 0.8,
-            quizFirstAttemptThreshold: 0.7,
-            quizRetryThreshold: 0.4,
-            readingMinutes: 7,
-            newsSecondsPerArticle: 20,
-            exerciseSecondsPerQuestion: 8,
-            exercisesPerSubject: 9,
-            quizQuestionCount: 25,
-            quizRetryQuestionCount: 18,
-            customTypingSentenceText: null,
-            customTypingFinalText: null,
-            weeklyGoalDays: 4,
-            pinnedReadingTextKey: "lesetext-42",
-            newsArticleCount: 6,
-            newsFilterStrictness: NewsFilterStrictness.Streng,
-            drivingAreaEnabled: false,
-            ersteHilfeEnabled: false,
-            drivingChallengeSignCount: 3);
+            ProfileSettings.From(profil) with
+            {
+                TypingMinAccuracy = 0.8,
+                QuizFirstAttemptThreshold = 0.7,
+                QuizRetryThreshold = 0.4,
+                ReadingMinutes = 7,
+                NewsSecondsPerArticle = 20,
+                ExerciseSecondsPerQuestion = 8,
+                ExercisesPerSubject = 9,
+                QuizQuestionCount = 25,
+                QuizRetryQuestionCount = 18,
+                WeeklyGoalDays = 4,
+                PinnedReadingTextKey = "lesetext-42",
+                NewsArticleCount = 6,
+                NewsFilterStrictness = NewsFilterStrictness.Streng,
+                DrivingAreaEnabled = false,
+                ErsteHilfeEnabled = false,
+                DrivingChallengeSignCount = 3,
+            });
 
         await repo.SetTimetableSubjectsEnabledAsync(profil.Id, false);
 
