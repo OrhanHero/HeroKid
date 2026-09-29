@@ -36,7 +36,9 @@ Stundenplan reichen:
 |---|---|---:|---:|
 | Emirhan | Türkisch (Kl. 6) | ~~160~~ 260 | ~~5~~ **~8,7 Wochen** |
 | Batuhan | Türkisch (Kl. 9) | ~~200~~ 300 | ~~7~~ **10 Wochen** |
-| Emirhan | Englisch (Kl. 6) | 140 | ~8 Wochen |
+| Emirhan | Englisch (Kl. 6) | ~~140~~ 200 | ~~8~~ **~11 Wochen** |
+| Emirhan | Musik (Kl. 6) | ~~100~~ 140 | ~~8,3~~ **~11,7 Wochen** |
+| Batuhan | Englisch (Kl. 9) | ~~180~~ 220 | ~~10~~ **~12 Wochen** |
 
 Türkisch ist jeden Tag dabei und deshalb als erstes durch. Danach kommen nur noch fällige
 Wiederholungen (7/30/90 Tage) und die Fehler-Kartei. Das ist nicht falsch, fühlt sich aber
@@ -45,8 +47,12 @@ nach „immer dasselbe“ an.
 - [x] **Türkisch Klasse 6 und Klasse 9 um je 100 Fragen erweitert** (28.09.2026, je fünf
   Themen à 20; Längen-Bias 35 %). Reichweite jetzt: Emirhan ~8,7 Wochen (260 Fragen),
   Batuhan 10 Wochen (300 Fragen). Ein Test hält die Poolgröße fest.
-- [ ] Englisch Klasse 6 um ~40 Fragen (zwei Themen).
-- [ ] Danach `pool-reichweite.py` erneut laufen lassen.
+- [x] **Englisch Klasse 6 +60, Musik Klasse 6 +40, Englisch Klasse 9 +40 Fragen** (29.09.2026,
+  Simple Past, Pronomen, in/on/at, Notenwerte/Takt, Stimme/Gesang, Second Conditional, Relative
+  Clauses). `PoolReichweiteTests` hält die Poolgrößen fest.
+- [x] `pool-reichweite.py` erneut gelaufen: kein Fach unter 8 Wochen; am kürzesten reicht jetzt
+  Türkisch Klasse 6 (8,7 Wochen, jeden Tag dabei).
+- [ ] Die neuen Englischfragen von jemandem mit gutem Englisch gegenlesen lassen.
 
 Die Türkisch-Fragen sollten von jemandem gegengelesen werden, der Türkisch als Muttersprache
 spricht.

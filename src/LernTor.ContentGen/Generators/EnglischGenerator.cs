@@ -3,7 +3,12 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Englisch als Fremdsprache, Klasse 6 (Grundlagen), Klasse 7 (Aufbau) und Klasse 9 (vertieft).</summary>
+/// <summary>
+/// Englisch als Fremdsprache, Klasse 6 (Grundlagen), Klasse 7 (Aufbau) und Klasse 9 (vertieft).
+/// Klasse 6 hat seit 29.09.2026 zehn Themen (neu: Simple Past, Pronomen, in/on/at), Klasse 9
+/// elf (neu: Second Conditional, Relative Clauses) - vorher reichten beide Pools bei der Übung nach
+/// Stundenplan nur acht bis zehn Wochen.
+/// </summary>
 public sealed class EnglischGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Englisch;
@@ -14,7 +19,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             [GradeLevel.Klasse6] = new List<TopicFactory>
             {
                 SimplePresentVsProgressive, IrregularPlurals, QuestionWords,
-                AlltagUndFamilie, SchuleUndGesellschaft, KulturUndTraditionen, NaturUndUmwelt
+                AlltagUndFamilie, SchuleUndGesellschaft, KulturUndTraditionen, NaturUndUmwelt,
+                SimplePastFormen, PossessivUndObjektpronomen, PraepositionenInOnAt
             },
             [GradeLevel.Klasse7] = new List<TopicFactory>
             {
@@ -25,7 +31,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             {
                 SimplePastVsPresentPerfect, FirstConditional, PassiveVoice,
                 IdentitaetUndZukunft, GesellschaftUndMedien, UmweltUndNachhaltigkeit,
-                AlltagUndKonsum, SchuleUndArbeitswelt, KulturUndHistorischerHintergrund
+                AlltagUndKonsum, SchuleUndArbeitswelt, KulturUndHistorischerHintergrund,
+                SecondConditional, RelativeClauses
             }
         };
 
@@ -833,6 +840,200 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Topic = "Großbritannien (Landeskunde)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Landeskunde UK: London/Thames/Big Ben/Tube, Union Jack, Linksverkehr, pound sterling, Edinburgh, Stonehenge, Schuluniformen."
+        };
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Klasse 6, Ausbau 29.09.2026: drei Themen à 20 Fragen. Englisch Klasse 6 reichte bei der
+    // Übung nach Stundenplan nur knapp acht Wochen (scripts/pool-reichweite.py).
+    // ---------------------------------------------------------------------------------------
+
+    // Bewusst nur Verben, deren falsche Regelform die richtige Form NICHT enthält: die offene
+    // Eingabe gilt als richtig, wenn die Antwort die Lösung enthält - "eated" enthielte "ate"
+    // und würde fälschlich als richtig gewertet, deshalb fehlt "eat" hier.
+    private static readonly (string Satz, string Loesung, string Regel)[] SimplePastFormenListe =
+    {
+        ("Yesterday we ___ (go) to the zoo.", "went", "\"go\" ist unregelmäßig: go – went – gone. \"Yesterday\" zeigt, dass es vorbei ist."),
+        ("Last weekend I ___ (play) football with my cousins.", "played", "Regelmäßige Verben bekommen im Simple Past einfach -ed: play → played."),
+        ("My grandma ___ (make) a cake for my birthday.", "made", "\"make\" ist unregelmäßig: make – made – made."),
+        ("We ___ (visit) our family in Istanbul last summer.", "visited", "Regelmäßig: visit → visited. \"last summer\" zeigt die Vergangenheit."),
+        ("The bus ___ (stop) right in front of the school.", "stopped", "Endet ein kurzes Verb auf Vokal + Konsonant, wird der Konsonant verdoppelt: stop → stopped."),
+        ("I ___ (see) a fox in the park yesterday.", "saw", "\"see\" ist unregelmäßig: see – saw – seen."),
+        ("She ___ (study) for the test last night.", "studied", "Konsonant + y wird im Simple Past zu -ied: study → studied."),
+        ("They ___ (buy) new trainers on Saturday.", "bought", "\"buy\" ist unregelmäßig: buy – bought – bought."),
+        ("My brother ___ (win) the chess game.", "won", "\"win\" ist unregelmäßig: win – won – won."),
+        ("We ___ (swim) in the lake after lunch.", "swam", "\"swim\" ist unregelmäßig: swim – swam – swum."),
+        ("I ___ (write) a message to my pen friend.", "wrote", "\"write\" ist unregelmäßig: write – wrote – written."),
+        ("Tom ___ (drop) his phone on the stairs.", "dropped", "Kurzes Verb mit Vokal + Konsonant am Ende: der Konsonant wird verdoppelt – drop → dropped."),
+        ("The children ___ (laugh) at the funny clown.", "laughed", "Regelmäßig: laugh → laughed (nur -ed anhängen)."),
+        ("My dad ___ (drive) us to the airport.", "drove", "\"drive\" ist unregelmäßig: drive – drove – driven."),
+        ("She ___ (carry) the heavy bag upstairs.", "carried", "Konsonant + y wird zu -ied: carry → carried."),
+        ("We ___ (take) a lot of photos on our trip.", "took", "\"take\" ist unregelmäßig: take – took – taken."),
+        ("I ___ (like) the film very much.", "liked", "Endet das Verb schon auf -e, hängt man nur -d an: like → liked."),
+        ("The teacher ___ (give) us a lot of homework.", "gave", "\"give\" ist unregelmäßig: give – gave – given."),
+        ("Last year my family ___ (fly) to Antalya.", "flew", "\"fly\" ist unregelmäßig: fly – flew – flown."),
+        ("He ___ (find) his keys under the sofa.", "found", "\"find\" ist unregelmäßig: find – found – found.")
+    };
+
+    private static QuizQuestion SimplePastFormen(Random r)
+    {
+        var p = SimplePastFormenListe[r.Next(SimplePastFormenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Simple Past: regelmäßige und unregelmäßige Verben", Type = QuestionType.OpenText,
+            Prompt = $"Setze das Verb im Simple Past ein: \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Regelmäßig: + -ed (like → liked, stop → stopped, study → studied). Unregelmäßige Verben muss man lernen: go – went, see – saw, buy – bought."
+        };
+    }
+
+    private static readonly (string Satz, string[] Optionen, string Antwort, string Erklaerung)[] PronomenListe =
+    {
+        ("This is Ayşe's bag. It's ___ bag.", new[] { "her", "she", "hers" }, "her", "Vor einem Nomen steht der Possessivbegleiter: she → her (her bag)."),
+        ("Can you help ___ with my homework?", new[] { "me", "my", "I" }, "me", "Nach einem Verb wie \"help\" steht das Objektpronomen: I → me."),
+        ("Mert and I are brothers. ___ parents are from Izmir.", new[] { "Our", "Us", "We" }, "Our", "Vor dem Nomen \"parents\" steht der Possessivbegleiter: we → our."),
+        ("I like Mr Becker. I often talk to ___.", new[] { "him", "his", "he" }, "him", "Nach \"to\" steht das Objektpronomen: he → him."),
+        ("The cat is hungry. Give ___ some food, please.", new[] { "it", "its", "it's" }, "it", "Nach \"give\" steht das Objektpronomen; bei \"it\" bleibt die Form gleich."),
+        ("The dog is wagging ___ tail.", new[] { "its", "it's", "it" }, "its", "\"its\" ohne Apostroph heißt \"sein/ihr\" bei Tieren und Dingen. \"it's\" ist die Kurzform von \"it is\"."),
+        ("Where are Lena and Paul? I can't see ___.", new[] { "them", "their", "they" }, "them", "Nach \"see\" steht das Objektpronomen: they → them."),
+        ("My friends are here. This is ___ classroom.", new[] { "their", "there", "they're" }, "their", "\"their\" heißt \"ihr/ihre\" (mehrere Personen). \"there\" heißt \"dort\", \"they're\" ist \"they are\"."),
+        ("Is this your pencil? – Yes, it's ___.", new[] { "mine", "my", "me" }, "mine", "Steht kein Nomen dahinter, nimmt man das Possessivpronomen: mine (= meiner/meine/meins)."),
+        ("You and Selin are late! ___ bus has already left.", new[] { "Your", "You", "Yours" }, "Your", "Vor dem Nomen \"bus\" steht der Possessivbegleiter: you → your."),
+        ("Our teacher gave ___ a quiz.", new[] { "us", "our", "we" }, "us", "Nach \"gave\" steht das Objektpronomen: we → us."),
+        ("Emre has a new bike. ___ bike is red.", new[] { "His", "He", "Him" }, "His", "Vor dem Nomen \"bike\" steht der Possessivbegleiter: he → his."),
+        ("Can you call ___ tonight? She is waiting.", new[] { "her", "she", "hers" }, "her", "Nach \"call\" steht das Objektpronomen: she → her."),
+        ("That isn't my jacket. ___ is blue.", new[] { "Mine", "My", "Me" }, "Mine", "Ohne Nomen dahinter steht das Possessivpronomen: Mine (= meine Jacke) is blue."),
+        ("We love ___ grandparents very much.", new[] { "our", "us", "ours" }, "our", "Vor dem Nomen \"grandparents\" steht der Possessivbegleiter: our."),
+        ("I've got two sisters. I play with ___ every day.", new[] { "them", "they", "their" }, "them", "Nach \"with\" steht das Objektpronomen: they → them."),
+        ("Please sit next to ___, Can.", new[] { "me", "my", "I" }, "me", "Nach \"next to\" steht das Objektpronomen: I → me."),
+        ("Is that ___ phone, Jana? – No, it's my sister's.", new[] { "your", "yours", "you" }, "your", "Vor dem Nomen \"phone\" steht der Possessivbegleiter: your."),
+        ("The children lost ___ ball in the river.", new[] { "their", "they", "them" }, "their", "Vor dem Nomen \"ball\" steht der Possessivbegleiter: they → their."),
+        ("These seats are ___. We booked them.", new[] { "ours", "our", "us" }, "ours", "Ohne Nomen dahinter steht das Possessivpronomen: ours (= unsere).")
+    };
+
+    private static QuizQuestion PossessivUndObjektpronomen(Random r)
+    {
+        var f = PronomenListe[r.Next(PronomenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Possessivbegleiter und Objektpronomen", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welches Wort passt? \"{f.Satz}\"", Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Vor einem Nomen: my, your, his, her, its, our, their. Nach einem Verb oder einer Präposition: me, you, him, her, it, us, them. Allein stehend: mine, yours, ours."
+        };
+    }
+
+    private static readonly (string Satz, string[] Optionen, string Antwort, string Erklaerung)[] InOnAtListe =
+    {
+        ("My birthday is ___ May.", new[] { "in", "on", "at" }, "in", "Monate stehen mit \"in\": in May."),
+        ("School starts ___ 8 o'clock.", new[] { "at", "in", "on" }, "at", "Uhrzeiten stehen mit \"at\": at 8 o'clock."),
+        ("We have P.E. ___ Monday.", new[] { "on", "in", "at" }, "on", "Wochentage stehen mit \"on\": on Monday."),
+        ("I was born ___ 2014.", new[] { "in", "on", "at" }, "in", "Jahreszahlen stehen mit \"in\": in 2014."),
+        ("The keys are ___ the table.", new[] { "on", "in", "at" }, "on", "Etwas liegt auf einer Fläche: on the table."),
+        ("Mum is ___ work until five.", new[] { "at", "in", "on" }, "at", "Feste Wendung: at work (bei der Arbeit)."),
+        ("There are 25 students ___ my class.", new[] { "in", "on", "at" }, "in", "Innerhalb einer Gruppe oder eines Raums: in my class."),
+        ("We go skiing ___ winter.", new[] { "in", "on", "at" }, "in", "Jahreszeiten stehen mit \"in\": in winter."),
+        ("Ramazan Bayramı starts ___ Friday this year.", new[] { "on", "in", "at" }, "on", "Ein bestimmter Wochentag steht mit \"on\": on Friday."),
+        ("Look at the picture ___ page 12.", new[] { "on", "in", "at" }, "on", "Seiten im Buch: on page 12."),
+        ("My cousin lives ___ Berlin.", new[] { "in", "at", "on" }, "in", "Städte und Länder stehen mit \"in\": in Berlin, in Turkey."),
+        ("I usually read ___ night.", new[] { "at", "in", "on" }, "at", "Feste Wendung: at night. Aber: in the morning, in the afternoon, in the evening."),
+        ("We have breakfast ___ the morning.", new[] { "in", "at", "on" }, "in", "Tageszeiten stehen mit \"in\": in the morning (Ausnahme: at night)."),
+        ("The poster is ___ the wall.", new[] { "on", "in", "at" }, "on", "Etwas hängt an einer Wand oder Fläche: on the wall."),
+        ("Wait for me ___ the bus stop.", new[] { "at", "in", "on" }, "at", "Ein bestimmter Punkt oder Treffpunkt steht mit \"at\": at the bus stop."),
+        ("The milk is ___ the fridge.", new[] { "in", "on", "at" }, "in", "In einem geschlossenen Raum oder Behälter: in the fridge."),
+        ("My party is ___ 3rd June.", new[] { "on", "in", "at" }, "on", "Ein Datum mit Tag steht mit \"on\": on 3rd June."),
+        ("We watched the match ___ TV.", new[] { "on", "in", "at" }, "on", "Feste Wendung: on TV (im Fernsehen)."),
+        ("The shop closes ___ midnight.", new[] { "at", "in", "on" }, "at", "Genaue Zeitpunkte stehen mit \"at\": at midnight, at noon."),
+        ("I'm ___ home tonight. Call me!", new[] { "at", "in", "on" }, "at", "Feste Wendung: at home (zu Hause).")
+    };
+
+    private static QuizQuestion PraepositionenInOnAt(Random r)
+    {
+        var f = InOnAtListe[r.Next(InOnAtListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Präpositionen in, on, at", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welche Präposition passt? \"{f.Satz}\"", Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Zeit: at + Uhrzeit, on + Tag/Datum, in + Monat/Jahr/Jahreszeit. Ort: at + Punkt (at the bus stop), on + Fläche (on the table), in + Raum/Stadt (in the fridge, in Berlin)."
+        };
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Klasse 9, Ausbau 29.09.2026: zwei Themen à 20 Fragen (Niveau B1).
+    // ---------------------------------------------------------------------------------------
+
+    private static readonly (string Satz, string[] Loesungen, string Regel)[] SecondConditionalListe =
+    {
+        ("If I ___ (have) more time, I would learn to play the guitar.", new[] { "had" }, "Im if-Satz des Second Conditional steht das Simple Past: If I had …"),
+        ("If she studied harder, she ___ (get) better marks.", new[] { "would get", "'d get" }, "Im Hauptsatz steht would + Grundform: she would get …"),
+        ("If I ___ (be) you, I would apologise to her.", new[] { "were", "was" }, "Bei \"to be\" nimmt man im if-Satz meist \"were\" für alle Personen: If I were you … (\"was\" hört man umgangssprachlich auch)."),
+        ("If we lived by the sea, we ___ (go) swimming every day.", new[] { "would go", "'d go" }, "Hauptsatz: would + Grundform – we would go."),
+        ("If he ___ (know) the answer, he would tell us.", new[] { "knew" }, "Simple Past von \"know\" ist unregelmäßig: know – knew – known."),
+        ("What would you do if you ___ (find) a wallet in the street?", new[] { "found" }, "Im if-Satz steht das Simple Past: find – found."),
+        ("If our school ___ (have) a pool, I would swim every morning.", new[] { "had" }, "Im if-Satz steht das Simple Past: have – had."),
+        ("If I spoke Japanese, I ___ (understand) this anime without subtitles.", new[] { "would understand", "'d understand" }, "Hauptsatz: would + Grundform – I would understand."),
+        ("If it ___ (not/rain) so much, we could play outside.", new[] { "didn't rain", "did not rain" }, "Verneinung im if-Satz: didn't + Grundform."),
+        ("If my parents ___ (allow) it, I would get a dog.", new[] { "allowed" }, "Im if-Satz steht das Simple Past: allow → allowed."),
+        ("If you ate more vegetables, you ___ (feel) healthier.", new[] { "would feel", "'d feel" }, "Hauptsatz: would + Grundform – you would feel."),
+        ("If I ___ (can) fly, I would visit my grandparents in Trabzon every weekend.", new[] { "could" }, "Die Vergangenheitsform von \"can\" ist \"could\"."),
+        ("She would call you if she ___ (have) your number.", new[] { "had" }, "Der if-Satz darf auch hinten stehen – er bleibt trotzdem im Simple Past."),
+        ("If they ___ (live) closer, we would see them more often.", new[] { "lived" }, "Im if-Satz steht das Simple Past: live → lived."),
+        ("If I won a million euros, I ___ (not/work) any more.", new[] { "wouldn't work", "would not work" }, "Verneinung im Hauptsatz: wouldn't + Grundform."),
+        ("If we ___ (take) the train, we would arrive earlier.", new[] { "took" }, "Simple Past von \"take\": take – took – taken."),
+        ("If the tickets were cheaper, more people ___ (come) to the concert.", new[] { "would come", "'d come" }, "Hauptsatz: would + Grundform – more people would come."),
+        ("If he ___ (not/spend) so much time on his phone, he would sleep better.", new[] { "didn't spend", "did not spend" }, "Verneinung im if-Satz: didn't + Grundform."),
+        ("If I ___ (meet) my favourite footballer, I would ask for a selfie.", new[] { "met" }, "Simple Past von \"meet\": meet – met – met."),
+        ("Where would you live if you ___ (can) choose any city in the world?", new[] { "could" }, "Im if-Satz steht \"could\" als Vergangenheitsform von \"can\".")
+    };
+
+    private static QuizQuestion SecondConditional(Random r)
+    {
+        var p = SecondConditionalListe[r.Next(SecondConditionalListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Second Conditional", Type = QuestionType.OpenText,
+            Prompt = $"Setze die richtige Form ein (Second Conditional): \"{p.Satz}\"",
+            CorrectAnswers = p.Loesungen, Explanation = p.Regel,
+            HelpHint = "Second Conditional für Gedachtes oder Unwahrscheinliches: if + Simple Past, im Hauptsatz would + Grundform (If I had time, I would help)."
+        };
+    }
+
+    private static readonly (string Satz, string[] Optionen, string Antwort, string Erklaerung)[] RelativsatzListe =
+    {
+        ("The girl ___ sits next to me is from Ankara.", new[] { "who", "which", "whose" }, "who", "Für Personen nimmt man \"who\"."),
+        ("This is the phone ___ I got for my birthday.", new[] { "which", "who", "where" }, "which", "Für Dinge nimmt man \"which\" (oder \"that\")."),
+        ("That's the boy ___ father is a doctor.", new[] { "whose", "who", "which" }, "whose", "\"whose\" zeigt Besitz: der Junge, dessen Vater Arzt ist."),
+        ("Kreuzberg is the district ___ my grandparents first lived.", new[] { "where", "which", "who" }, "where", "Für einen Ort, an dem etwas passiert, nimmt man \"where\"."),
+        ("I have a friend ___ can speak four languages.", new[] { "who", "which", "where" }, "who", "Für Personen nimmt man \"who\"."),
+        ("The film ___ we watched yesterday was boring.", new[] { "which", "who", "whose" }, "which", "Für Dinge nimmt man \"which\"."),
+        ("Do you know the woman ___ dog is barking?", new[] { "whose", "who", "where" }, "whose", "\"whose\" zeigt Besitz: die Frau, deren Hund bellt."),
+        ("This is the café ___ we always meet after school.", new[] { "where", "which", "whose" }, "where", "Ein Ort, an dem etwas passiert: where."),
+        ("The teacher ___ helped me most was Ms Yılmaz.", new[] { "who", "which", "whose" }, "who", "Für Personen nimmt man \"who\"."),
+        ("Berlin is a city ___ has a lot of history.", new[] { "which", "where", "who" }, "which", "Hier ist die Stadt selbst das Subjekt (die Stadt HAT viel Geschichte) – deshalb \"which\" und nicht \"where\"."),
+        ("The singer ___ songs I love is giving a concert.", new[] { "whose", "who", "which" }, "whose", "\"whose\" zeigt Besitz: die Sängerin, deren Lieder ich liebe."),
+        ("I lost the key ___ opens the garage.", new[] { "which", "who", "whose" }, "which", "Für Dinge nimmt man \"which\"."),
+        ("That's the stadium ___ Hertha BSC plays.", new[] { "where", "which", "who" }, "where", "Ein Ort, an dem etwas passiert: where."),
+        ("People ___ recycle help the environment.", new[] { "who", "which", "whose" }, "who", "Für Personen nimmt man \"who\"."),
+        ("The bike ___ was stolen has been found.", new[] { "which", "who", "where" }, "which", "Für Dinge nimmt man \"which\"."),
+        ("She's the student ___ project won the prize.", new[] { "whose", "who", "which" }, "whose", "\"whose\" zeigt Besitz: die Schülerin, deren Projekt gewonnen hat."),
+        ("Is this the park ___ you lost your wallet?", new[] { "where", "which", "whose" }, "where", "Ein Ort, an dem etwas passiert ist: where."),
+        ("The man ___ lives upstairs is very friendly.", new[] { "who", "whose", "where" }, "who", "Für Personen nimmt man \"who\"."),
+        ("I read a book ___ was written by a Turkish author.", new[] { "which", "who", "where" }, "which", "Für Dinge nimmt man \"which\"."),
+        ("My uncle, ___ works as a pilot, travels a lot.", new[] { "who", "which", "that" }, "who", "In Relativsätzen mit Kommas steht für Personen \"who\" – \"that\" ist dort nicht erlaubt.")
+    };
+
+    private static QuizQuestion RelativeClauses(Random r)
+    {
+        var f = RelativsatzListe[r.Next(RelativsatzListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Relative Clauses", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welches Relativpronomen passt? \"{f.Satz}\"", Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "who = Personen, which = Dinge und Tiere, whose = Besitz (dessen/deren), where = Orte, an denen etwas passiert."
         };
     }
 }
