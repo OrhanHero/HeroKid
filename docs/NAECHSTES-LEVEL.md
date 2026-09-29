@@ -8,6 +8,22 @@ Umgesetzt wird **in der Reihenfolge unten, jeder Schritt einzeln**: bauen, teste
 von der CI auf `windows-latest` bestätigen lassen. Ein Schritt, der dort rot wird, wird repariert,
 bevor der nächste beginnt.
 
+### Stand der Umsetzung
+
+| Schritt | Stand |
+|---|---|
+| 1 — .NET 10 LTS | ✅ umgesetzt 29.09.2026 |
+| 2 — Fragenpools | ✅ umgesetzt 29.09.2026 (+140 Fragen) |
+| 3 — Fehler-Kartei | ✅ umgesetzt 29.09.2026 (anders als geplant, siehe dort) |
+| 4 — Meisterschaft je Thema | ✅ umgesetzt 29.09.2026 |
+| 5 — Abzeichen | ✅ umgesetzt 29.09.2026 (25 Abzeichen) |
+| 6 — Sicherheit und Wartbarkeit | ✅ umgesetzt 29.09.2026 |
+| 7 — Betrieb und Weitergabe | ✅ umgesetzt 29.09.2026 |
+| 8 — Dokumentation | ✅ umgesetzt 29.09.2026 |
+
+Offen ist nur, was eine CI nicht kann: **die Familie muss es sehen** (unten und im
+[Testplan](TESTPLAN.md#neu-seit-29092026-version-20)).
+
 ---
 
 ## Ausgangslage

@@ -1,31 +1,37 @@
 # Nächste Schritte
 
-Stand: 28.09.2026. Diese Seite ist die Arbeitsliste nach dem großen Nachziehen vom 28.09.
-Was bis dahin erledigt wurde, steht unten unter [Erledigt am 28.09.2026](#erledigt-am-28092026). Die
-Begründungen und die ältere Planung stehen in [`PLAN.md`](PLAN.md).
+Stand: 29.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht unten unter
+[Erledigt am 29.09.2026](#erledigt-am-29092026-version-20) und
+[Erledigt am 28.09.2026](#erledigt-am-28092026). Die Begründungen und die ältere Planung stehen in
+[`PLAN.md`](PLAN.md) und [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
 
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
-> **Neu (29.09.2026):** Der größere Ausbau – .NET 10, Abzeichen, Meisterschaft je Thema,
-> sichtbare Fehler-Kartei, größere Englisch- und Musikpools – steht mit Begründung in
-> [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
+> **Neu (29.09.2026): Version 2.0** – .NET 10, Meisterschaft je Thema, Abzeichen, eine
+> Fehler-Kartei-Zahl, die stimmt, größere Englisch- und Musikpools, stärkeres Eltern-Passwort,
+> Systeminfo. Plan und Begründung: [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
 
 ---
 
 ## 1. Jetzt: die Familie (kein Code nötig)
 
 - [ ] **Pull Request [OrhanHero/HeroKid#1](https://github.com/OrhanHero/HeroKid/pull/1) mergen**
-  und die neue Version installieren (CI-Artefakt `LernTor-win-x64`, siehe [`BUILD.md`](BUILD.md)).
+  und die neue Version installieren: CI-Artefakt `LernTor-win-x64`, oder – nach dem Merge – einen
+  Tag `v2.0.0` setzen, dann liegt das ZIP als GitHub-Release bereit (siehe [`BUILD.md`](BUILD.md),
+  „Release über GitHub“). **Bis zum 10.11.2026**: danach bekommt das alte .NET 8 keine
+  Sicherheitsupdates mehr.
 - [ ] **Vorher eine Sicherung auf USB** (Eltern-Bereich → „Sicherung erstellen…“). Das Update
-  ergänzt eine Spalte in der Datenbank; die automatische `-schema.db`-Sicherung entsteht zwar
-  von selbst, liegt aber auf derselben Platte.
+  ergänzt eine Spalte und eine Tabelle in der Datenbank; die automatische `-schema.db`-Sicherung
+  entsteht zwar von selbst, liegt aber auf derselben Platte.
 - [ ] **Stundenpläne eintragen**: Text und Zeitraster aus
   [`STUNDENPLAENE-2026-27.md`](STUNDENPLAENE-2026-27.md) in den Eltern-Bereich einfügen.
 - [ ] Bei Batuhan am Original nachsehen: **Ethik** nur Do 6? **Mathe** Fr 6/7 als Doppelstunde?
 - [ ] Nach dem Eintragen **„🩻 Datenbank prüfen“** einmal drücken. Das Ergebnis muss ✅ sein.
-- [ ] Die neuen Punkte im [Testplan](TESTPLAN.md#neu-seit-28092026) abhaken. Es sind acht,
-  sie dauern zusammen etwa 20 Minuten.
+- [ ] Die neuen Punkte im Testplan abhaken: [acht vom 28.09.](TESTPLAN.md#neu-seit-28092026) und
+  [zehn für Version 2.0](TESTPLAN.md#neu-seit-29092026-version-20), zusammen etwa 45 Minuten.
+  Am wichtigsten: **V.2** (Eltern-Passwort geht nach dem Update noch) und **V.7** (der Knopf
+  „PC jetzt benutzen“ ist nach dem Abschlussquiz ohne Scrollen sichtbar).
 
 ## 2. In den nächsten Wochen: Türkisch-Pool vergrößern
 
@@ -87,10 +93,9 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
   `TimetableSubjectsDisabled` sind drei Einzelspalten mit derselben Invertierungs-Falle. Beim
   vierten Schalter lohnt eine Spalte `DisabledModulesJson`. Dafür braucht es eine Migration der
   vorhandenen Werte, also genau die nicht-additive Änderung, die `SqliteSchemaUpdater` nicht kann.
-- **`UpdateSettingsAsync` auf ein Einstellungs-Objekt umstellen**: 20 Positionsparameter. Die
-  Vorab-Prüfung `voll-ueberschreiber` bewacht den einzigen Aufrufer; neue Einstellungen bekommen
-  seit 28.09. eigene Ein-Spalten-Methoden (`SetTimetableSubjectsEnabledAsync`,
-  `SetGradeLevelAsync`).
+- ~~**`UpdateSettingsAsync` auf ein Einstellungs-Objekt umstellen**~~ – erledigt 29.09.2026:
+  `ProfileSettings` mit lauter `required`-Eigenschaften, ein vergessenes Feld ist ein
+  Compilerfehler.
 - **README aufteilen** (über 400 Zeilen): Überblick im README, Details je Bereich in `docs/`.
 
 ## 6. Ideen (nachrangig, siehe PLAN.md Phase 5)
@@ -106,6 +111,23 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
   Ein Auto-Update wäre der erste Netzzugriff der App außer News und Wetter.
 
 ---
+
+## Erledigt am 29.09.2026 (Version 2.0)
+
+Alles im Pull Request [OrhanHero/HeroKid#1](https://github.com/OrhanHero/HeroKid/pull/1), jeder
+Schritt einzeln lokal gebaut und getestet (neu: die ganze Solution baut auch unter Linux) und von
+der CI auf `windows-latest` bestätigt. Plan: [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
+
+| Schritt | Was | Wo |
+|---|---|---|
+| 1 | **.NET 10 LTS** (Support bis 11/2028), zentrale Paketversionen, `global.json`, Dependabot, schneller Linux-CI-Lauf | `Directory.Build.props`, `Directory.Packages.props` |
+| 2 | **+140 Fragen**: Englisch Kl. 6 (+60), Englisch Kl. 9 (+40), Musik Kl. 6 (+40) – kein Fach mehr unter 8 Wochen | `EnglischGenerator`, `MusikGenerator` |
+| 3 | Fehler-Kartei-Zahl auf der Startseite zählt nur, was **heute** drankommt | `ReviewForecast` |
+| 4 | **🏆 Mein Fortschritt**: Meisterschaft je Thema in vier Stufen, auch im Elternbericht | `TopicMasteryCalculator` |
+| 5 | **🏅 25 Abzeichen**, die nie verfallen | `AchievementCatalog`, Tabelle `UnlockedAchievements` |
+| 6 | Eltern-Passwort mit 600.000 PBKDF2-Durchläufen (alte bleiben gültig); `UpdateSettingsAsync` mit Einstellungs-Objekt | `AdminAuthService`, `ProfileSettings` |
+| 7 | Version 2.0.0, **Systeminfo** im Eltern-Bereich, Release-Workflow für Tags | `SystemInfoReport`, `release.yml` |
+| — | Der Geschafft-Bildschirm scrollt bei Bedarf: der Freischalten-Knopf kann nicht mehr unter den Rand rutschen | `ResultView.xaml` |
 
 ## Erledigt am 28.09.2026
 

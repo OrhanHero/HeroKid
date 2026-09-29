@@ -6,7 +6,9 @@ Stand: 28.09.2026. **Die laufende Arbeitsliste steht jetzt in
 Erledigt: Phase 0 (die App wurde laut Familie einmal komplett durchgespielt), 1.0, 1.1, 1.2,
 1.3, der Stundenplan-Teil von 2.0, 2.1, 2.2, 3.1, 3.3, 4.2, 4.3 und aus 4.1 der tote Code.
 Offen: das Zeitbudget in Minuten (Rest von 2.0, nur falls nötig), 3.2 (Frühjahr 2027), 4.1
-(Schalter vereinheitlichen, Einstellungs-Objekt), 4.4 (README aufteilen) und Phase 5.
+(Schalter vereinheitlichen; das Einstellungs-Objekt ist seit 29.09.2026 erledigt), 4.4 (README
+aufteilen) und Phase 5. **Der Ausbau vom 29.09.2026 (Version 2.0: .NET 10, Meisterschaft,
+Abzeichen) steht in [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).**
 
 Dieser Plan ordnet nach **Risiko für die Familie**, nicht nach technischer Eleganz. Die App wird
 täglich von zwei Kindern benutzt; was sie am ehesten kaputtmacht oder ihnen Arbeit vernichtet,

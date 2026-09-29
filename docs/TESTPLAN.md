@@ -158,3 +158,23 @@ sie aber noch niemand. **Vorher eine Sicherung auf USB.**
 | N.6 | Elternteil | „🩻 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
 | N.7 | Elternteil | Klassenstufe eines Kindes testweise ändern und zurückstellen | Rückfrage, dann „✅ Gespeichert“; Sterne und Stundenplan sind danach noch da | |
 | N.8 | Notfall | Eine automatische Sicherung aus `…\LernTor\sicherungen\` über „Sicherung wiederherstellen…“ einspielen | App beendet sich; nach dem Neustart ist alles da, was vor der Sicherung da war | |
+
+## Neu seit 29.09.2026 (Version 2.0)
+
+Zehn Punkte für .NET 10 und die neuen Funktionen aus [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
+Alles läuft durch die CI (auch die neuen Ansichten werden dort mit Beispieldaten gerendert),
+**gesehen hat es noch niemand**. **Vorher eine Sicherung auf USB** – das Update legt eine neue
+Tabelle an (die automatische `-schema.db`-Sicherung entsteht trotzdem von selbst).
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| V.1 | Elternteil | Neue Version über die alte entpacken, starten | Startet wie vorher; Profile, Sterne, Stundenpläne sind da | |
+| V.2 | Elternteil | **Eltern-Bereich mit dem bisherigen Passwort öffnen** | Geht beim ersten Mal (dauert kaum merklich länger), beim zweiten Mal ebenso – das Passwort wurde still auf die neue Stärke umgestellt | |
+| V.3 | Elternteil | Eltern-Bereich → Systeminfo | „LernTor 2.0.0 (…)“, „.NET 10.0.…“, Datenbankgröße, letzte Sicherung; „📋 Kopieren“ legt den Text in die Zwischenablage | |
+| V.4 | Kind | Startseite: Zeile „🔁 Aus deiner Fehler-Kartei heute dran: N“ | N stimmt mit den 🔁-Fragen überein, die heute wirklich kommen (höchstens 3 je Fach, nur Fächer des Tages) | |
+| V.5 | Kind | „🏆 Mein Fortschritt“ auf der Startseite | Abzeichen oben, darunter die Fächer mit Themen und Stufe (🌱/📘/✅/🏆); **alles lesbar, nichts abgeschnitten** | |
+| V.6 | Kind | Mitten am Tag Planer öffnen → „🏆 Mein Fortschritt“ → Zurück → „Zurück zum Lernen“ | Man landet in derselben, halb beantworteten Aufgabe; die Mindestzeit ist nicht weitergelaufen | |
+| V.7 | Kind | Abschlussquiz bestehen | Falls ein Abzeichen dazugekommen ist: goldene Zeile „🏅 Neues Abzeichen: …“; der Knopf „PC jetzt benutzen“ ist **ohne Scrollen** sichtbar (auch auf einem kleinen Bildschirm) | |
+| V.8 | Elternteil | Führerschein-Bereich für ein Kind abschalten, „Mein Fortschritt“ ansehen | Die offenen Führerschein-Abzeichen sind verschwunden; schon verdiente bleiben | |
+| V.9 | Elternteil | Bericht → „🏆 Meisterschaft je Fach“ und HTML-Export | Dieselben Zahlen wie beim Kind in „Mein Fortschritt“ | |
+| V.10 | Emirhan / Batuhan | Englisch- bzw. Musikaufgaben der neuen Themen (Simple Past, Pronomen, in/on/at, Notenwerte, Stimme; Second Conditional, Relative Clauses) | Fragen und Erklärungen stimmen – **bitte von jemandem mit gutem Englisch gegenlesen lassen** | |

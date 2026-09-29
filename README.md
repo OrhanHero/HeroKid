@@ -283,8 +283,23 @@ deshalb bewusst nicht umgesetzt.
   Rückfrage; Abbuchung + Protokolleintrag passieren in einem Schritt). Eingelöste Belohnungen
   erscheinen je Profil im Eltern-Bereich - eingelöst wird in der echten Welt von den Eltern.
   Die Historie bleibt als Schnappschuss erhalten, auch wenn die Belohnung später gelöscht wird.
+- **🏆 Mein Fortschritt – Meisterschaft je Thema** (seit 2.0, Vorbild Khan Academy,
+  `TopicMasteryCalculator`): jedes geübte Thema steht auf einer von vier Stufen – 🌱 angefangen
+  (unter 5 Antworten), 📘 vertraut, ✅ sicher (zuletzt ab 70 % richtig), 🏆 gemeistert (zuletzt ab
+  90 % **und** zwei Fragen daraus haben nach Tagen eine Wiederholung bestanden – Behalten, nicht nur
+  frisch Können). Gezählt werden die letzten 10 Antworten, damit Fortschritt sichtbar wird; Stufen
+  können auch wieder sinken. Erreichbar über „🏆 Mein Fortschritt“ auf der Startseite, auch aus dem
+  Planer heraus. Bewusst kein Rot für schwache Themen. Eltern sehen dieselbe Auswertung je Fach im
+  Bericht.
+- **🏅 Abzeichen** (seit 2.0, Vorbild ANTON/Duolingo, `AchievementCatalog`): 25 Abzeichen für echte
+  Leistungen – 100/500/1000 richtige Aufgaben, 10/50/100 Lerntage (gesamt, keine Serie),
+  korrigierte Fehler aus der Fehler-Kartei, sichere und gemeisterte Themen, „Dreisprachig“,
+  „Allrounder“, fehlerfreies Abschlussquiz, Tipptrainer, alle Verkehrszeichen. **Nichts verfällt:**
+  ein Abzeichen wird einmal gespeichert und nie entzogen. Neue erscheinen nach dem bestandenen
+  Abschlussquiz als goldene Zeile, alle zusammen in „Mein Fortschritt“ (offene blass mit dem Weg
+  dorthin; Abzeichen abgeschalteter Bereiche werden ausgeblendet).
 - Bewusst KEINE Tages-Streaks: ein verpasster Tag soll kein schlechtes Gewissen erzeugen - Sterne
-  können nur wachsen, nie verfallen (einlösen ja, verfallen nein).
+  können nur wachsen, nie verfallen (einlösen ja, verfallen nein). Dasselbe gilt für die Abzeichen.
 
 ## 🚗 Führerschein Klasse B
 
@@ -396,7 +411,10 @@ der Plan war weg.
 ## Eltern-Features
 
 - Zahnrad-Symbol (unten rechts, dezent) öffnet den passwortgeschützten Eltern-Bereich.
-- Erststart: Admin-Passwort selbst festlegen (PBKDF2-Hash, kein Klartext gespeichert).
+- Erststart: Admin-Passwort selbst festlegen (PBKDF2-SHA256 mit 600.000 Durchläufen, kein Klartext
+  gespeichert; ältere Passwörter werden beim nächsten Anmelden still auf diese Stärke umgestellt).
+- **ℹ️ Systeminfo** (seit 2.0): App-Version samt Git-Stand, .NET, Windows, Datenbankgröße, letzte
+  automatische Sicherung – mit Kopieren-Knopf, für jede Rückfrage bei einem Problem.
 - Fachbereiche einzeln deaktivieren, Klassenstufe (6/7/8/9/10) einstellen.
 - **🏖️ Ferien-/Pausenmodus** (global, ein Datum): bis **einschließlich** dieses Tages startet
   LernTor ohne Kiosk-Sperre **und ohne Lernpflicht**. Das Kind sieht statt der Lernstrecke einen

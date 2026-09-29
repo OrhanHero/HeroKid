@@ -140,6 +140,21 @@ family's timetables live in `docs/STUNDENPLAENE-2026-27.md` and, verbatim, in
 `TimetableSubjectPlannerTests`; `scripts/pool-reichweite.py` reads that doc to compute how many
 weeks each question pool lasts.
 
+### Mastery and badges (since 2.0, 29.09.2026)
+
+`TopicMasteryCalculator` (Core) derives one of four levels per (subject, topic) from the whole
+activity log plus `MasteredPromptRepository.GetReviewPassedPromptsAsync` (ReviewStage ≥ 2):
+Angefangen (<5 answers), Vertraut, Sicher (last 10 answers ≥70 %), Gemeistert (≥90 % **and** ≥2
+prompts of the topic passed a spaced review). The "🔁 " Fehler-Kartei prefix is stripped from
+topics; News/Tippen/Führerschein don't count. `AchievementCatalog` (Core) holds 25 badges with
+DE/TR texts and pure predicates over `AchievementFacts`; `AchievementRepository.UnlockAsync`
+stores newly earned ones in `UnlockedAchievements` and **never removes any**. Badge ids are
+persisted — never rename one, append new ones. Both surface in `ProgressOverviewViewModel`
+("🏆 Mein Fortschritt", opened from the Welcome screen, also in planner-peek mode) and, for new
+badges, as one line on the result screen; mastery per subject is also in the parent report.
+`ReviewForecast` computes the Fehler-Kartei count on the Welcome screen from today's subjects and
+the same per-subject cap the exercise builder uses.
+
 ### Stage navigation (`LernTor.Core.Services.LearningStageSubjects`)
 
 `LearningStage` (an ordered enum: Willkommen → News → one entry per subject → Abschlussquiz →
@@ -337,6 +352,18 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   hand-written list of `DbSet`s for anything that must cover "all data".
 - **Don't delete `.github/workflows/build.yml`.** It was removed on 17.08.2026 (`00bf7a3`) and for
   six weeks nothing pushed was ever compiled. It is the only place code is built at all.
+- **The parameterless XAML load test never instantiates item templates.** `XamlLoadTests` creates
+  each view without a DataContext, so every `ItemsControl` is empty and nothing inside its
+  `DataTemplate` (styles, `DataTrigger`s on enums, converters) is ever loaded — a runtime error
+  there stays invisible. For any view with non-trivial item templates, add a `[WpfFact]` that sets
+  a ViewModel with sample data, measures/arranges and asserts a rendered text (pattern:
+  `Fortschritt_rendert_alle_Stufen_mit_Daten`).
+- **An exception in an `async void` handler or `async () => …` lambda ends up in the global
+  crash handler, which restarts the app in kiosk mode.** Wrap navigation callbacks that await
+  (e.g. `ReturnToWelcome`, `OnOpenProgressRequested`) in try/catch and log. On the result screen
+  this matters doubly: it carries the button that unlocks the PC, so badge unlocking there is
+  wrapped and can never prevent the screen from appearing. The result screen's content also sits in
+  a `ScrollViewer` since 2.0 so the unlock button can't be pushed below the fold on 1366×768.
 - **`StudentProgress` had three completion flags but `ProgressEntity` only stored one.**
   `HasCompletedTyping`/`HasCompletedWriting` were read by `ProgressGateService` and set by
   `MainViewModel`, but never persisted — a restart mid-session made the child redo the typing
