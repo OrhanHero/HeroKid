@@ -1,0 +1,44 @@
+# Dependabot schlägt einmal im Monat Updates als Pull Request vor - für NuGet-Pakete und für die
+# GitHub-Actions im CI-Workflow. Jeder Vorschlag läuft durch dieselbe CI wie jede andere Änderung;
+# übernommen wird nur, was dort grün ist.
+#
+# Gruppiert, damit zusammengehörige Pakete in EINEM Pull Request kommen: die .NET-Familie muss auf
+# demselben Patchstand stehen, und LLamaSharp darf nie ohne sein Backend wechseln.
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      dotnet:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "Microsoft.Extensions.*"
+          - "System.*"
+      llamasharp:
+        patterns:
+          - "LLamaSharp*"
+      pdfpig:
+        patterns:
+          - "UglyToad.PdfPig*"
+      tests:
+        patterns:
+          - "Microsoft.NET.Test.Sdk"
+          - "xunit*"
+          - "Xunit.*"
+    ignore:
+      # Große Versionssprünge (z. B. .NET 11, xunit v3) sind eine bewusste Entscheidung mit
+      # eigenem Plan, kein Routine-Update.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns:
+          - "*"

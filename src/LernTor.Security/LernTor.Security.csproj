@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <RootNamespace>LernTor.Security</RootNamespace>
     <UseWindowsForms>false</UseWindowsForms>
     <UseWPF>false</UseWPF>
@@ -14,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TaskScheduler" Version="2.11.0" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <PackageReference Include="TaskScheduler" />
+    <!-- Microsoft.Win32.Registry ist seit .NET Core 3 Teil des Frameworks; das frühere
+         Paket 5.0.0 wäre ab .NET 10 nur noch eine Warnung (NU1510). -->
   </ItemGroup>
 
 </Project>

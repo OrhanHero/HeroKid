@@ -158,8 +158,12 @@ public sealed class DatabaseMaintenanceRepository
 
         // Pfad als SQL-Literal: Microsoft.Data.Sqlite kann VACUUM INTO nicht parametrisieren,
         // deshalb klassisches Escaping durch Verdoppeln von Hochkommata.
+        // Der Befehl wird VOR dem Aufruf fertig zusammengesetzt: so sieht der EF-Analysator
+        // (EF1002) keinen interpolierten String im Aufruf, und die Stelle, an der escaped wird,
+        // steht direkt daneben statt versteckt in einer Interpolation.
         var escapedPath = targetPath.Replace("'", "''");
-        await _db.Database.ExecuteSqlRawAsync($"VACUUM INTO '{escapedPath}'", cancellationToken);
+        var vacuumInto = "VACUUM INTO '" + escapedPath + "'";
+        await _db.Database.ExecuteSqlRawAsync(vacuumInto, cancellationToken);
     }
 
     /// <summary>

@@ -14,13 +14,18 @@ Klasse 6 and 9. Full behavioral spec lives in `README.md`; curriculum topic mapp
 `docs/FAECHER-SYSTEM.md`; typing trainer details in `docs/TIPPTRAINER.md`; the driving-licence area
 (traffic signs, own vector rendering, licensing constraints) in `docs/FUEHRERSCHEIN.md`.
 
-**Environment constraint**: this repo is often developed from a Linux sandbox with no .NET SDK
-and no Windows, so nothing here can actually be compiled or run locally in that environment.
-`LernTor.App` and `LernTor.Security` require Windows (WPF, Win32 P/Invoke) and won't build on
-Linux/macOS even with the SDK installed. **The GitHub Actions workflow
-(`.github/workflows/build.yml`, runs on `windows-latest`) is the real build/test verification** —
-after pushing, check the workflow run rather than assuming local compilation succeeded. Several
-real bugs in this codebase's history were only caught this way (see "Hard-won gotchas" below).
+**Environment constraint**: this repo is often developed from a Linux sandbox without Windows.
+**The whole solution DOES build there** (discovered 29.09.2026 — it was long assumed impossible):
+`apt-get install -y dotnet-sdk-10.0` (plain Ubuntu 24.04 archive; the Microsoft download host is
+blocked by the proxy, nuget.org is not), then `dotnet build LernTor.sln -c Release` — including
+the WPF app and XAML markup compilation, because `Directory.Build.props` sets
+`EnableWindowsTargeting`. `dotnet test tests/LernTor.Tests/...` runs the ~900 unit tests in
+seconds. **Always build and run the unit tests locally before pushing.** What Linux cannot do is
+*run* WPF: `XamlParseException`-class runtime bugs (see "Hard-won gotchas") and the UI tests only
+surface on the GitHub Actions workflow (`.github/workflows/build.yml`), whose `windows-latest` job
+remains the real verification — after pushing, check that run (matching `head_sha`) rather than
+assuming a green local build is enough. A second `linux-schnell` job gives build+unit-test
+feedback in ~2 minutes.
 
 ## Commands
 
@@ -62,14 +67,20 @@ Seven projects, dependency graph flows one direction (`Core` has no dependencies
 everything):
 
 ```
-LernTor.Core         net8.0, no deps       — models, enums, ProgressGateService, ScoringService
+LernTor.Core         net10.0, no deps       — models, enums, ProgressGateService, ScoringService
 LernTor.ContentGen    → Core               — rule-based per-subject question generators + QuizComposer
 LernTor.News          → Core               — RSS ingestion, simplification, comprehension questions
 LernTor.Data          → Core               — EF Core/SQLite repositories
-LernTor.Security      → Core (net8.0-windows) — kiosk keyboard hook, task-manager policy, autostart, admin auth
-LernTor.App           → all of the above (net8.0-windows, WPF) — the actual UI
+LernTor.Security      → Core (net10.0-windows) — kiosk keyboard hook, task-manager policy, autostart, admin auth
+LernTor.App           → all of the above (net10.0-windows, WPF) — the actual UI
 LernTor.Installer                          — Inno Setup script + PowerShell autostart helper (not a .csproj)
 ```
+
+Build configuration is centralised: **package versions live only in `Directory.Packages.props`**
+(Central Package Management — a `<PackageReference>` with a `Version=` attribute is a build
+error), shared properties (Nullable, ImplicitUsings, `EnableWindowsTargeting`, NuGet audit) in
+`Directory.Build.props`, the SDK floor in `global.json`. Dependabot proposes monthly updates,
+grouped so the .NET family and LLamaSharp + its backend always move together.
 
 ### Content generators (`LernTor.ContentGen/Generators`)
 
@@ -177,8 +188,8 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
 
 ## Hard-won gotchas (don't reintroduce these)
 
-- **`net8.0-windows` + `UseWPF=true` does NOT get the same implicit global usings as plain
-  `net8.0`.** Plain SDK projects (Core/ContentGen/News/Data) get `System.Net.Http` for free; the
+- **`net10.0-windows` + `UseWPF=true` does NOT get the same implicit global usings as plain
+  `net10.0`** (same on net8). Plain SDK projects (Core/ContentGen/News/Data) get `System.Net.Http` for free; the
   WPF project does not — add `using System.Net.Http;` explicitly wherever `HttpClient` is used in
   `LernTor.App`. This only surfaced as a CI compile error, not locally.
 - **`pack://application:,,,/Path` only resolves an embedded `Resource` when the EXECUTING

@@ -65,7 +65,7 @@ public sealed class TimetableTextParserTests
 
         Assert.Empty(ergebnis.Warnings);
         Assert.Equal(2, ergebnis.Lessons.Count(s => s.Day == DayOfWeek.Monday));
-        Assert.Single(ergebnis.Lessons.Where(s => s.Day == DayOfWeek.Tuesday));
+        Assert.Single(ergebnis.Lessons, s => s.Day == DayOfWeek.Tuesday);
     }
 
     [Fact]

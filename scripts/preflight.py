@@ -193,7 +193,7 @@ def check_duplicate_style_assignment() -> None:
 
 
 def check_httpclient_using() -> None:
-    """net8.0-windows + UseWPF bekommt System.Net.Http NICHT als implicit using."""
+    """netX.0-windows + UseWPF bekommt System.Net.Http NICHT als implicit using (gilt für net8 wie net10)."""
     app_dir = SRC / "LernTor.App"
     if not app_dir.exists():
         return

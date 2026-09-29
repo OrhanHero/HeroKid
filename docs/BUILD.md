@@ -2,17 +2,45 @@
 
 ## Voraussetzungen
 
-- Windows 10 oder 11 (die App nutzt WPF + Win32-APIs und läuft nicht unter Linux/macOS)
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- Optional: Visual Studio 2022 (Workload ".NET Desktop Development")
+- Windows 10 oder 11 zum **Ausführen** (die App nutzt WPF + Win32-APIs)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (Langzeitversion, unterstützt bis
+  November 2028; die genaue Mindestversion steht in `global.json`)
+- Optional: Visual Studio 2022 17.14+ oder 2026 (Workload ".NET Desktop Development")
 - Optional, für den Installer: [Inno Setup 6](https://jrsoftware.org/isinfo.php)
 
-> Hinweis: Dieses Projekt wurde in einer Linux-Cloud-Umgebung entwickelt, die WPF nicht ausführen/bauen
-> kann. Der Code wurde sorgfältig geschrieben und die plattformunabhängigen Teile (Core/ContentGen/News)
-> sind mit xUnit-Tests abgesichert, aber der erste echte Build auf einem Windows-Rechner sollte auf
-> Restfehler geprüft werden. Der GitHub-Actions-Workflow `.github/workflows/build.yml` baut das gesamte
-> Solution automatisch auf `windows-latest` und lädt ein Build-Artefakt hoch – das ist die einfachste Art,
-> einen Build ohne eigenen Windows-Rechner zu bekommen.
+> **Seit 29.09.2026 auf .NET 10.** .NET 8 bekommt ab dem 10.11.2026 keine Sicherheitsupdates mehr.
+> Die Datenbank ist davon nicht betroffen, ein Update von einer .NET-8-Version braucht keinen
+> Zwischenschritt.
+
+Der GitHub-Actions-Workflow `.github/workflows/build.yml` baut die Solution bei jedem Push zweimal:
+schnell unter Linux (Bauen + Unit-Tests, etwa zwei Minuten) und vollständig unter `windows-latest`
+(zusätzlich UI-Tests, Publish, Prüfung der KI-Bibliotheken) und lädt das fertige Programm als
+Artefakt `LernTor-win-x64` hoch. Das ist der einfachste Weg zu einem Build ohne eigenen
+Windows-Rechner.
+
+### Bauen unter Linux (Entwicklungsumgebung ohne Windows)
+
+**Bauen geht überall, ausführen nur unter Windows.** `Directory.Build.props` setzt
+`EnableWindowsTargeting`, damit holt sich das SDK die Windows-Referenz-Assemblys als NuGet-Paket.
+Compiler und XAML-Übersetzung laufen dann auch für die WPF-App vollständig durch:
+
+```bash
+sudo apt-get install -y dotnet-sdk-10.0      # Ubuntu 24.04: aus dem normalen Ubuntu-Archiv
+dotnet build LernTor.sln -c Release           # ganze Solution, auch LernTor.App (WPF)
+dotnet test tests/LernTor.Tests/LernTor.Tests.csproj -c Release --no-build
+```
+
+Das fängt alle Fehler, die der Compiler sieht (auch `MC3024` und andere XAML-Übersetzungsfehler), in
+Sekunden statt nach einer CI-Runde. **Nicht** gefangen werden Laufzeitfehler beim Laden der XAML
+(`XamlParseException`) - die finden nur die UI-Tests, und die laufen nur unter Windows.
+
+### Paketversionen
+
+Jede NuGet-Paketversion steht genau einmal in `Directory.Packages.props` (zentrale
+Paketverwaltung); die `.csproj`-Dateien nennen nur den Paketnamen. Gemeinsame Einstellungen
+(Nullable, ImplicitUsings, NuGet-Sicherheitsprüfung) stehen in `Directory.Build.props`. Dependabot
+schlägt monatlich Updates vor (`.github/dependabot.yml`); große Versionssprünge (z. B. .NET 11)
+bleiben eine bewusste Entscheidung.
 
 ## 1. Entwicklung / Debuggen (ohne Kiosk-Sperre!)
 
@@ -29,7 +57,8 @@ Die Sperre wird auch automatisch übersprungen, wenn ein Debugger angehängt ist
 ## 2. Tests ausführen
 
 ```powershell
-dotnet test tests/LernTor.Tests/LernTor.Tests.csproj
+dotnet test tests/LernTor.Tests/LernTor.Tests.csproj     # überall (auch Linux)
+dotnet test tests/LernTor.UiTests/LernTor.UiTests.csproj # nur Windows: XAML-Laden, echter App-Start
 ```
 
 ## 3. Self-contained Release-Build erzeugen

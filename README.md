@@ -213,7 +213,8 @@ ein Absturz oder Neustart verliert also keinen Fortschritt.
 
 ## Architektur & Technologie-Entscheidung
 
-**.NET 8 + WPF**, kein WinUI 3, kein Electron. Begründung: Die sicherheitskritischste Anforderung
+**.NET 10 (LTS) + WPF**, kein WinUI 3, kein Electron. (Bis 29.09.2026 .NET 8; umgestellt, weil
+dessen Support am 10.11.2026 endet - .NET 10 wird bis November 2028 unterstützt.) Begründung: Die sicherheitskritischste Anforderung
 (Kiosk-Sperre: Task-Manager deaktivieren, Windows-Taste/Alt+Tab abfangen) ist mit klassischen
 Win32-APIs (P/Invoke) am zuverlässigsten umsetzbar, und WPF hat dafür die geringste Reibung bei
 gleichzeitig moderner, gut stylebarer UI. Details siehe Projekt-Chatverlauf/Architektur-Entscheidung.

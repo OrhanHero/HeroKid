@@ -7,19 +7,83 @@ on:
     branches: [ "**" ]
   workflow_dispatch:
 
+# Ein neuer Push auf denselben Branch macht den laufenden Lauf wertlos - abbrechen statt
+# zwei Läufe um die Runner konkurrieren zu lassen. Achtung beim Prüfen: ein abgebrochener Lauf
+# ist nicht "rot", sondern überholt. Maßgeblich ist der Lauf, dessen head_sha dem eigenen Commit
+# entspricht (siehe CLAUDE.md, "A green CI badge ...").
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
 jobs:
+  # Schnelle Rückmeldung in etwa zwei Minuten: baut die GANZE Solution unter Linux (auch die
+  # WPF-App - EnableWindowsTargeting in Directory.Build.props macht das möglich) und führt die
+  # Unit-Tests aus. Fängt Tippfehler, fehlende usings und XAML-Übersetzungsfehler (MC3024 …),
+  # bevor der langsame Windows-Lauf fertig ist. Ersetzt ihn NICHT: UI-Tests, Publish und die
+  # Prüfung der KI-Bibliotheken gibt es nur unter Windows.
+  linux-schnell:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 10 SDK einrichten
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: NuGet-Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-linux-${{ hashFiles('Directory.Packages.props', '**/*.csproj', 'global.json') }}
+          restore-keys: nuget-linux-
+
+      - name: NuGet-Pakete wiederherstellen
+        run: dotnet restore LernTor.sln
+
+      - name: Solution bauen (Release, inkl. WPF-App)
+        run: dotnet build LernTor.sln --configuration Release --no-restore
+
+      - name: Unit-Tests ausführen
+        run: dotnet test tests/LernTor.Tests/LernTor.Tests.csproj --configuration Release --no-build
+
+      - name: Python für Content-Checks einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Vorab-Prüfung und Längen-Bias-Wächter
+        run: |
+          python scripts/preflight.py
+          python scripts/check-answer-length-bias.py
+
   build:
-    # windows-latest ist nötig, weil LernTor.App (WPF) und LernTor.Security (net8.0-windows,
-    # Win32-P/Invoke) nur unter Windows kompilieren.
+    # windows-latest ist nötig, um die WPF-App und die UI-Tests AUSZUFÜHREN und den
+    # self-contained win-x64-Build zu veröffentlichen. Bauen allein ginge auch unter Linux
+    # (siehe Job linux-schnell).
     runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: .NET 8 SDK einrichten
+      - name: .NET 10 SDK einrichten
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "10.0.x"
+
+      - name: NuGet-Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-windows-${{ hashFiles('Directory.Packages.props', '**/*.csproj', 'global.json') }}
+          restore-keys: nuget-windows-
 
       - name: NuGet-Pakete wiederherstellen
         run: dotnet restore LernTor.sln

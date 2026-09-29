@@ -1,0 +1,26 @@
+<Project>
+
+  <!-- Gemeinsame Einstellungen für ALLE Projekte der Solution. Was hier steht, steht nicht mehr
+       einzeln in acht .csproj-Dateien - und kann damit nicht mehr auseinanderlaufen.
+
+       Das Zielframework bleibt bewusst in jeder .csproj sichtbar (net10.0 bzw.
+       net10.0-windows): wer ein Projekt öffnet, soll auf einen Blick sehen, worauf es läuft. -->
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Erlaubt das Bauen der Windows-Projekte (WPF, Security, UiTests) auch unter Linux - die
+         Referenz-Assemblys kommen dann als NuGet-Paket. Ausführen lassen sie sich dort nicht,
+         aber Compiler und XAML-Übersetzung laufen vollständig durch. Damit fallen
+         Tippfehler, fehlende usings und MC3024-Fehler in der Linux-Entwicklungsumgebung auf,
+         statt erst nach acht Minuten CI (siehe docs/BUILD.md, "Bauen unter Linux").
+         Unter Windows hat die Eigenschaft keine Wirkung. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <!-- Paket-Sicherheitsprüfung beim Wiederherstellen: meldet bekannte Schwachstellen auch in
+         transitiven Abhängigkeiten (NU1901-NU1904) als Warnung. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+  </PropertyGroup>
+
+</Project>
