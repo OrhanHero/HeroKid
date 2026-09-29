@@ -34,7 +34,7 @@ Dazu fehlen Dinge, die gute Lern-Apps heute haben und die Kinder dort gewohnt si
 |---|---|---|
 | **ANTON** (Berliner Rahmenlehrplan, in Schulen verbreitet) | Abzeichen für echte Leistungen, sichtbarer Lernstand je Thema | **Abzeichen** (Schritt 5), **Meisterschaft je Thema** (Schritt 4) |
 | **Khan Academy** | Vier Stufen je Fähigkeit: *versucht → vertraut → sicher → gemeistert* | **Meisterschaftsstufen** je Thema, für Kind und Eltern sichtbar |
-| **Anki** | Karten kommen wieder, wenn sie fällig sind, und man sieht, wie viele heute fällig sind | **Fehler-Kartei sichtbar machen**: „Heute kommen 3 Fragen wieder“ (Schritt 3) |
+| **Anki** | Karten kommen wieder, wenn sie fällig sind, und man sieht, wie viele heute fällig sind | **Fehler-Kartei-Zahl, die stimmt**: „Aus deiner Fehler-Kartei heute dran: 3“ (Schritt 3) |
 | **Duolingo** | Kleine Erfolge feiern, Fortschritt ständig sichtbar | Abzeichen mit Feier auf dem Geschafft-Bildschirm |
 | **sofatutor / simpleclub** | Eltern sehen auf einen Blick, wo das Kind steht | Meisterschaft je Fach im Elternbericht |
 
@@ -102,18 +102,23 @@ laufen.
 **Fertig, wenn:** `pool-reichweite.py` für alle drei mindestens 10 Wochen zeigt und ein Test die
 Poolgröße festhält.
 
-## Schritt 3 — Fehler-Kartei sichtbar machen (nach Anki)
+## Schritt 3 — Fehler-Kartei: eine Zahl, die stimmt (nach Anki)
 
-**Warum:** Die Fehler-Kartei und die fälligen Wiederholungen arbeiten bisher unsichtbar. Das Kind
-merkt nur, dass „die Frage schon wieder kommt“, und empfindet das als Wiederholung statt als
-Absicht.
+> **Beim Umsetzen festgestellt:** Die Startseite zeigte die Fehler-Kartei schon („🔁 Von früher
+> noch offen: 12“); der Punkt in `NAECHSTE-SCHRITTE.md` war veraltet. Die Zahl stimmte aber seit
+> der Fächerauswahl nach Stundenplan nicht mehr: gezählt wurden alle offenen Einträge, auch in
+> Fächern, die heute gar nicht dran sind, und ohne die Obergrenze von drei je Fach. Ein Kind las
+> „12“ und bekam vier. Schritt 3 macht die Zahl deshalb **richtig**, statt eine zweite Zeile
+> hinzuzufügen. Eine Zeile für fällige Wiederholungen nach Abstand (7/30/90 Tage) gibt es bewusst
+> nicht: diese Fragen dürfen wieder kommen, werden aber nicht bevorzugt gezogen – eine Zahl dafür
+> wäre ein Versprechen, das der Ablauf nicht hält.
 
-**Was:** Auf der Startseite steht eine Zeile wie „🔁 Heute kommen 3 Fragen aus deiner
-Fehler-Kartei wieder“ und bei fälligen Wiederholungen „📅 5 Fragen sind zur Wiederholung dran“.
-Die Zahlen kommen aus `ReviewQuestionRepository` und `MasteredPromptRepository`.
+**Was:** `ReviewForecast` (Core) zählt nur die Fächer, die heute geübt werden, und höchstens
+`PerSubjectCap` (3) je Fach – dieselbe Konstante, mit der der Aufgabenablauf die Fragen zieht.
+Die Zeile heißt jetzt „🔁 Aus deiner Fehler-Kartei heute dran: 4“.
 
 **Fertig, wenn:** die Zählung per Test abgesichert ist und die Zeile nur erscheint, wenn es etwas
-zu zeigen gibt.
+zu zeigen gibt (unverändert: `ShowDueReviews`).
 
 ## Schritt 4 — Meisterschaft je Thema (nach Khan Academy)
 

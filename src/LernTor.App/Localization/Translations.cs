@@ -30,9 +30,11 @@ public static class Translations
             ["Welcome_Streak"] = L("🔥 {0} Tage in Folge - stark!", "🔥 {0} gündür üst üste - süper!"),
             // Fehler-Kartei: zeigt den Kindern, dass Fehler wiederkommen, statt zu verschwinden.
             // Formulierung bewusst ohne Plural-Nomen hinter der Zahl, damit "1" und "7" beide passen.
+            // Seit 29.09.2026 "heute": gezählt wird nur, was heute wirklich drankommt
+            // (ReviewForecast) - vorher alle offenen Einträge, auch in Fächern ohne Stunde.
             ["Welcome_DueReviews"] = L(
-                "🔁 Von früher noch offen: {0} - beim zweiten Mal sitzt es meistens.",
-                "🔁 Önceden kalan: {0} - ikinci seferde genelde oturur."),
+                "🔁 Aus deiner Fehler-Kartei heute dran: {0} - beim zweiten Mal sitzt es meistens.",
+                "🔁 Hata kutundan bugün sıra gelen: {0} - ikinci seferde genelde oturur."),
             ["Welcome_Homework"] = L(
                 "📒 Hausaufgaben: {0} noch offen",
                 "📒 Ev ödevleri: {0} tane açık"),

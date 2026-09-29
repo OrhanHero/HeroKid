@@ -99,7 +99,8 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
   (welches Spiel, welche Monetarisierung, welche Tricks). Ohne das keine Fragen. Außerdem gilt:
   mit der Auswahl nach Stundenplan hätte ein Fach, das auf keinem Plan steht, keinen Tag. Es
   müsste wie Türkisch fest dabei sein oder als eigener Bereich laufen.
-- Fehler-Kartei für die Kinder sichtbar machen („3 Fragen kommen heute wieder“).
+- ~~Fehler-Kartei für die Kinder sichtbar machen~~ – war schon da; seit 29.09.2026 zählt die Zahl
+  auf der Startseite nur noch, was heute wirklich drankommt (`ReviewForecast`).
 - Elternbericht als PDF.
 - Aus dem Pilot offen: Installer signieren (EV-Zertifikat), Entscheidung über Auto-Update.
   Ein Auto-Update wäre der erste Netzzugriff der App außer News und Wetter.

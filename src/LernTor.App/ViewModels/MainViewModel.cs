@@ -396,7 +396,11 @@ public sealed partial class MainViewModel : ObservableObject
 
         // Fehler-Kartei sichtbar machen: die Kinder sollen wissen, dass falsch beantwortete
         // Fragen wiederkommen, bevor sie in die Fächer gehen - nicht erst, wenn sie dort auftauchen.
-        var dueReviews = await _reviewRepo.GetDueCountAsync(CurrentProfile!.Id);
+        // Gezählt wird nur, was HEUTE wirklich drankommt (Fächer des Tages, höchstens drei je
+        // Fach) - siehe ReviewForecast.
+        var dueReviews = ReviewForecast.CountForToday(
+            await _reviewRepo.GetDueCountsBySubjectAsync(CurrentProfile!.Id),
+            fach => !IsSubjectDisabled(fach));
 
         // Wochenziel (0 = aus): reine Anzeige, siehe WeeklyGoalCalculator.
         var weeklyGoal = WeeklyGoalCalculator.Evaluate(
@@ -1412,7 +1416,8 @@ public sealed partial class MainViewModel : ObservableObject
         // Fehler-Kartei: an Vortagen falsch beantwortete Aufgaben dieses Fachs kommen ZUERST
         // (mit 🔁-Thema markiert), bis sie zweimal in Folge richtig beantwortet wurden. Zufällige
         // Dubletten aus dem Generator werden über den Aufgabentext aussortiert.
-        var review = await _reviewRepo.GetDueQuestionsAsync(CurrentProfile!.Id, subject, maxCount: 3);
+        var review = await _reviewRepo.GetDueQuestionsAsync(
+            CurrentProfile!.Id, subject, maxCount: ReviewForecast.PerSubjectCap);
         var reviewPrompts = review.Select(r => r.Prompt).ToHashSet();
 
         // Vokabeln (nur Englisch/Türkisch, nur wenn Eltern welche hinterlegt haben): sie ersetzen
