@@ -524,8 +524,30 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             return;
         }
 
-        if (AdminAuthService.Verify(password, _settings.AdminPasswordHash, _settings.AdminPasswordSalt))
+        // Im Hintergrund: 600.000 PBKDF2-Durchläufe dauern spürbar, und das Fenster soll dabei
+        // nicht einfrieren.
+        var gespeicherterHash = _settings.AdminPasswordHash;
+        var gespeichertesSalt = _settings.AdminPasswordSalt;
+        if (await Task.Run(() => AdminAuthService.Verify(password, gespeicherterHash, gespeichertesSalt)))
         {
+            // Ältere, schwächer gespeicherte Passwörter (vor 29.09.2026) jetzt unbemerkt mit der
+            // aktuellen Stärke neu speichern - das Klartext-Passwort ist gerade bekannt. Scheitert
+            // das, bleibt das alte gültig; anmelden kann man sich trotzdem.
+            if (AdminAuthService.NeedsRehash(gespeichertesSalt))
+            {
+                try
+                {
+                    var (neuerHash, neuesSalt) = await Task.Run(() => AdminAuthService.HashPassword(password));
+                    _settings.AdminPasswordHash = neuerHash;
+                    _settings.AdminPasswordSalt = neuesSalt;
+                    await _settingsRepo.SaveAsync(_settings);
+                }
+                catch (Exception ex)
+                {
+                    Core.Logging.AppLog.Error("Eltern-Bereich", "Passwort konnte nicht neu gespeichert werden", ex);
+                }
+            }
+
             await AuthenticateAsync();
         }
         else
