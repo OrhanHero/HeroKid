@@ -582,6 +582,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
         await ReloadCustomQuestionsAsync();
         await LoadProfileComparisonAsync();
+        RefreshSystemInfo();
     }
 
     private async Task ReloadCustomQuestionsAsync()
@@ -2039,6 +2040,60 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         catch (Exception ex)
         {
             WorksheetStatus = $"Speichern fehlgeschlagen: {ex.Message}";
+        }
+    }
+
+    // --- Systeminfo ---
+
+    /// <summary>
+    /// App-Version, .NET, Windows, Datenbankgröße, letzte automatische Sicherung - die ersten
+    /// Fragen bei jedem Problem (siehe <see cref="SystemInfoReport"/>). Wird beim Öffnen des
+    /// Bereichs frisch gesammelt; der Knopf daneben kopiert sie in die Zwischenablage.
+    /// </summary>
+    [ObservableProperty]
+    private string systemInfoText = string.Empty;
+
+    private void RefreshSystemInfo()
+    {
+        try
+        {
+            var dbPfad = LernTorDbContext.GetDefaultDbPath();
+            var db = new FileInfo(dbPfad);
+            // AutoBackupFile ist ein struct - deshalb kein "?." auf FirstOrDefault().
+            var sicherungen = _autoBackup.List();
+            DateTimeOffset? letzteSicherung = sicherungen.Count > 0 ? sicherungen[0].CreatedAt : null;
+            var info = new SystemInfoSnapshot(
+                typeof(ParentSettingsViewModel).Assembly
+                    .GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+                    .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
+                    .FirstOrDefault()?.InformationalVersion,
+                Environment.Version.ToString(),
+                System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                db.Exists ? db.Length : null,
+                letzteSicherung,
+                Profiles.Count,
+                Path.GetDirectoryName(dbPfad) ?? dbPfad);
+
+            SystemInfoText = string.Join(Environment.NewLine, SystemInfoReport.Lines(info));
+        }
+        catch (Exception ex)
+        {
+            // Eine Anzeige darf den Eltern-Bereich nie blockieren.
+            SystemInfoText = $"Systeminfo nicht verfügbar: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void CopySystemInfo()
+    {
+        try
+        {
+            System.Windows.Clipboard.SetText(SystemInfoText);
+        }
+        catch (Exception ex)
+        {
+            // Die Zwischenablage kann kurz von einem anderen Programm belegt sein.
+            LernTor.Core.Logging.AppLog.Warn("Parent", $"Systeminfo kopieren fehlgeschlagen - {ex.Message}");
         }
     }
 

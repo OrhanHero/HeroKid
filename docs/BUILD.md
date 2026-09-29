@@ -111,6 +111,23 @@ aus. Beim Aktualisieren einer bestehenden Installation deshalb immer das komplet
 Windows würde Trimmen zur Laufzeit unsichtbar Funktionalität entfernen (kein Compile-Fehler, nur
 kaputtes UI). Der Startzeit-Gewinn kommt ohnehin größtenteils schon aus ReadyToRun.
 
+### Release über GitHub (seit 29.09.2026)
+
+Ein Git-Tag `v<Version>` baut die App mit genau diesen Flags, führt Unit- und UI-Tests aus, prüft
+die KI-Bibliotheken und legt das Ergebnis als ZIP samt SHA-256-Prüfsumme an ein GitHub-Release
+(`.github/workflows/release.yml`):
+
+```bash
+git tag v2.0.1
+git push origin v2.0.1
+```
+
+Die Versionsnummer kommt aus dem Tag und erscheint in der **Systeminfo** im Eltern-Bereich
+(„LernTor 2.0.1 (245a544)“ – dahinter der Git-Stand, aus dem gebaut wurde). Ohne Tag gilt die
+`<Version>` aus `Directory.Build.props`. Das Release schaltet nichts ein: LernTor fragt nirgends
+nach neuen Versionen, ein Auto-Update wäre eine eigene Entscheidung (siehe
+[`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md)).
+
 ## 4. Installer bauen (optional)
 
 ```powershell
@@ -118,7 +135,8 @@ kaputtes UI). Der Startzeit-Gewinn kommt ohnehin größtenteils schon aus ReadyT
 iscc src\LernTor.Installer\setup.iss
 ```
 
-Das fertige Setup landet in `dist\LernTor-Setup-1.0.0.exe`. Der Installer:
+Das fertige Setup landet in `dist\LernTor-Setup-2.0.0.exe` (Version aus `MyAppVersion` in
+`setup.iss`). Der Installer:
 
 - kopiert die App nach `Program Files\LernTor`,
 - registriert automatisch einen Autostart-Task (läuft direkt nach dem Windows-Login des Kindes),
@@ -154,7 +172,9 @@ Datenbank inkl. der beiden Beispielprofile an):
 
 Beim allerersten Start ist noch kein Admin-Passwort gesetzt. Über das dezente Zahnrad-Symbol
 (unten rechts im Kiosk-Fenster) gelangt man in den Eltern-Bereich und legt beim ersten Mal ein
-Passwort fest (mind. 4 Zeichen, wird als PBKDF2-Hash gespeichert, nie im Klartext).
+Passwort fest (mind. 4 Zeichen, wird als PBKDF2-SHA256-Hash mit 600.000 Durchläufen gespeichert,
+nie im Klartext). Passwörter aus der Zeit vor dem 29.09.2026 (210.000 Durchläufe) bleiben gültig
+und werden beim nächsten Anmelden unbemerkt mit der neuen Stärke gespeichert.
 
 ## 7. Deinstallation / Zurücksetzen des Fortschritts
 

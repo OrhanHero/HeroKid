@@ -1950,6 +1950,19 @@
                 <TextBlock Text="{Binding DatabaseIntegrityStatus, Mode=OneWay}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,20" />
 
+                <!-- Systeminfo: Version, .NET, Windows, Datenbankgroesse, letzte Sicherung - die
+                     ersten Fragen bei jedem Problem. Kopierbar, damit man sie weitergeben kann,
+                     ohne sie abzutippen. -->
+                <TextBlock Text="ℹ️ Systeminfo" Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,4,0,6" />
+                <TextBox Text="{Binding SystemInfoText, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas"
+                         FontSize="12" TextWrapping="Wrap" BorderThickness="0" Background="Transparent"
+                         Margin="0,0,0,6" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <Button Content="📋 Kopieren" Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8"
+                            Background="{StaticResource TextSecondaryBrush}"
+                            Command="{Binding CopySystemInfoCommand}" />
+                </StackPanel>
+
                 <!-- Automatische Sicherungen: laufen still beim App-Start, vor allem VOR jeder
                      Schema-Aenderung. Genau deshalb muessen sie hier sichtbar sein - ein
                      Schutzmechanismus, von dem niemand weiss, ob er greift, beruhigt zu Unrecht.
