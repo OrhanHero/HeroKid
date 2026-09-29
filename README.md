@@ -21,6 +21,7 @@ Kindes aus: geübt wird, was am nächsten Schultag dran ist, plus Türkisch (sie
 
 | Dokument | Inhalt |
 |---|---|
+| [docs/NAECHSTES-LEVEL.md](docs/NAECHSTES-LEVEL.md) | **Plan vom 29.09.2026**: .NET 10, Abzeichen, Meisterschaft je Thema, größere Pools |
 | [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md) | **Was als Nächstes zu tun ist**, und was am 28.09.2026 erledigt wurde |
 | [docs/WIEDERHERSTELLUNG.md](docs/WIEDERHERSTELLUNG.md) | Notfall: Sicherung einspielen, App startet nicht, Kiosk lösen |
 | [docs/STUNDENPLAENE-2026-27.md](docs/STUNDENPLAENE-2026-27.md) | Stundenpläne der Kinder zum Einfügen |

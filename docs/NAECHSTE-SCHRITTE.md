@@ -7,6 +7,10 @@ Begründungen und die ältere Planung stehen in [`PLAN.md`](PLAN.md).
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
+> **Neu (29.09.2026):** Der größere Ausbau – .NET 10, Abzeichen, Meisterschaft je Thema,
+> sichtbare Fehler-Kartei, größere Englisch- und Musikpools – steht mit Begründung in
+> [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
+
 ---
 
 ## 1. Jetzt: die Familie (kein Code nötig)
