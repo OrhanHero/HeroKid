@@ -40,6 +40,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private readonly TheoryProgressRepository _theoryRepo;
     private readonly CourseProgressRepository _courseRepo;
     private readonly TimetableRepository _timetableRepo;
+    private readonly MasteredPromptRepository _masteredPromptRepo;
     private readonly AutoBackupService _autoBackup;
     private readonly QuizComposer _quizComposer;
 
@@ -380,8 +381,10 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         CourseProgressRepository courseRepo,
         TimetableRepository timetableRepo,
         AutoBackupService autoBackup,
-        QuizComposer quizComposer)
+        QuizComposer quizComposer,
+        MasteredPromptRepository masteredPromptRepo)
     {
+        _masteredPromptRepo = masteredPromptRepo;
         _rewardRepo = rewardRepo;
         _signProgressRepo = signProgressRepo;
         _theoryRepo = theoryRepo;
@@ -1205,6 +1208,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         RecentActivity.Clear();
         QuizHistory.Clear();
         RewardRedemptions.Clear();
+        MasteryReportRows.Clear();
+        OnPropertyChanged(nameof(HasMasteryReportData));
         _reportActivity = Array.Empty<ActivityLogEntity>();
 
         if (SelectedProfile is null)
@@ -1229,9 +1234,36 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             RewardRedemptions.Add(redemption);
         }
 
+        await LoadMasteryReportAsync(SelectedProfile.Id);
+
         // 30 Tage einmal laden - die 7/30-Tage-Umschaltung filtert danach nur noch in-memory.
         _reportActivity = await _activityLogRepo.GetActivitySinceAsync(SelectedProfile.Id, TimeSpan.FromDays(30));
         RebuildReport();
+    }
+
+    private async Task LoadMasteryReportAsync(string profileId)
+    {
+        var loc = LocalizationService.Instance;
+        var themen = TopicMasteryCalculator.Calculate(
+            await _activityLogRepo.GetAllAnswersAsync(profileId),
+            await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+
+        foreach (var fach in themen.GroupBy(thema => thema.Subject))
+        {
+            var zaehlung = TopicMasteryCalculator.CountByLevel(fach);
+            var sicherOderBesser = zaehlung[MasteryLevel.Gemeistert] + zaehlung[MasteryLevel.Sicher];
+            MasteryReportRows.Add(new ReportExportRow(
+                loc[$"Stage_{fach.Key}"],
+                string.Format(
+                    loc["Parent_Report_MasteryRow"],
+                    zaehlung[MasteryLevel.Gemeistert],
+                    zaehlung[MasteryLevel.Sicher],
+                    zaehlung[MasteryLevel.Vertraut],
+                    zaehlung[MasteryLevel.Angefangen]),
+                Rate: (double)sicherOderBesser / fach.Count()));
+        }
+
+        OnPropertyChanged(nameof(HasMasteryReportData));
     }
 
     // --- Geschwister-Vergleich (optional, Standard aus) ---
@@ -1332,6 +1364,17 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool hasTopicReportData;
+
+    /// <summary>
+    /// Meisterschaft je Fach (siehe <see cref="TopicMasteryCalculator"/>): wie viele Themen
+    /// gemeistert, sicher, vertraut oder angefangen sind. Anders als der übrige Bericht über
+    /// ALLE Antworten seit Beginn - ein im Frühjahr gemeistertes Thema ist nicht vergessen, nur
+    /// weil es aus dem 30-Tage-Fenster gefallen ist. Dieselbe Regel wie in „Mein Fortschritt“
+    /// beim Kind, damit Eltern und Kind dieselben Zahlen sehen.
+    /// </summary>
+    public ObservableCollection<ReportExportRow> MasteryReportRows { get; } = new();
+
+    public bool HasMasteryReportData => MasteryReportRows.Count > 0;
 
     [ObservableProperty]
     private int reportDays = 7;
@@ -1527,6 +1570,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             new(loc["Parent_Report_WeakTopics"], TopicReportRows
                 .Select(row => new ReportExportRow(row.Label, row.RateDisplay, row.Rate))
                 .ToList()),
+            new(loc["Parent_Report_Mastery"], MasteryReportRows.ToList()),
             new("⏱ Lernzeit je Fach", SubjectTimeRows
                 .Select(row => new ReportExportRow(
                     row.SubjectLabel,

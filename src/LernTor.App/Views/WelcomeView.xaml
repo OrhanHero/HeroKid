@@ -301,6 +301,16 @@
                             HorizontalAlignment="Center" Margin="0,8,0,0"
                             Visibility="{Binding ShowBackToResult, Converter={StaticResource BoolToVis}}"
                             Command="{Binding ContinueCommand}" />
+
+                    <!-- "Mein Fortschritt": Meisterschaft je Thema. Bewusst kleiner und unter dem
+                         Start-Knopf - der Tag beginnt mit Lernen, nicht mit Statistik. Reine
+                         Anzeige, schaltet nichts frei. -->
+                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_OpenProgress]}"
+                            Style="{StaticResource RoundedButton}" FontSize="16" Padding="22,10"
+                            HorizontalAlignment="Center" Margin="0,16,0,0"
+                            Background="{StaticResource TextSecondaryBrush}"
+                            Visibility="{Binding ShowProgressButton, Converter={StaticResource BoolToVis}}"
+                            Command="{Binding OpenProgressCommand}" />
                 </StackPanel>
             </ScrollViewer>
 

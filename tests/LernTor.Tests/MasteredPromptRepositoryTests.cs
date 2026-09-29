@@ -54,6 +54,24 @@ public sealed class MasteredPromptRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task Bestandene_Wiederholung_zaehlt_erst_ab_Stufe_2_und_nur_fuer_das_eigene_Profil()
+    {
+        // Grundlage fuer "gemeistert" (TopicMasteryCalculator): das erste richtige Beantworten
+        // (Stufe 1) ist noch kein Behalten, erst die bestandene Auffrischung nach Abstand.
+        using var db = CreateContext();
+        var repo = new MasteredPromptRepository(db);
+
+        await repo.RecordOutcomeAsync("p1", MathQuestion(), wasCorrect: true);
+        await repo.RecordOutcomeAsync("p2", MathQuestion(), wasCorrect: true);
+        Assert.Empty(await repo.GetReviewPassedPromptsAsync("p1"));
+
+        await repo.RecordOutcomeAsync("p1", MathQuestion(), wasCorrect: true);
+
+        Assert.Equal(new[] { "Was ist 1/2 + 1/4?" }, (await repo.GetReviewPassedPromptsAsync("p1")).ToArray());
+        Assert.Empty(await repo.GetReviewPassedPromptsAsync("p2"));
+    }
+
+    [Fact]
     public async Task Faellige_Aufgabe_ist_nicht_mehr_ausgeschlossen()
     {
         using var db = CreateContext();

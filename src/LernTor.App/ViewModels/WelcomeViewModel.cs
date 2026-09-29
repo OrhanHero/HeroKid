@@ -15,6 +15,15 @@ public sealed partial class WelcomeViewModel : ObservableObject
     private readonly Action<ExamItemViewModel>? _onDeleteExam;
     private readonly Action? _onAddHomework;
     private readonly Action<HomeworkItemViewModel>? _onDeleteHomework;
+    private readonly Action? _onOpenProgress;
+
+    /// <summary>Oeffnet "Mein Fortschritt" (Meisterschaft je Thema). Reine Anzeige - der Weg
+    /// zurueck fuehrt auf genau diese Startseite, im Planer-Zwischenstopp also auch wieder in den
+    /// Zwischenstopp.</summary>
+    [RelayCommand]
+    private void OpenProgress() => _onOpenProgress?.Invoke();
+
+    public bool ShowProgressButton => _onOpenProgress is not null;
 
     /// <summary>Oeffnet die Hausaufgaben-Eingabe. Wie bei den Klausuren auch fuer Kinder:
     /// wer selbst eintraegt, was zu tun ist, hat es schon einmal bewusst gelesen.</summary>
@@ -121,8 +130,10 @@ public sealed partial class WelcomeViewModel : ObservableObject
         DateTime? now = null,
         bool dayIsDone = false,
         DateOnly? practiceDay = null,
-        IReadOnlySet<Subject>? practiceSubjects = null)
+        IReadOnlySet<Subject>? practiceSubjects = null,
+        Action? onOpenProgress = null)
     {
+        _onOpenProgress = onOpenProgress;
         IsPlannerPeek = isPlannerPeek;
         IsDayDone = dayIsDone;
         Calendar = SchoolCalendar.Today(today ?? DateOnly.FromDateTime(DateTime.Today));

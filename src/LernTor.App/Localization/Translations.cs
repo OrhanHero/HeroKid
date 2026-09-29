@@ -35,6 +35,31 @@ public static class Translations
             ["Welcome_DueReviews"] = L(
                 "🔁 Aus deiner Fehler-Kartei heute dran: {0} - beim zweiten Mal sitzt es meistens.",
                 "🔁 Hata kutundan bugün sıra gelen: {0} - ikinci seferde genelde oturur."),
+            // "Mein Fortschritt": Meisterschaft je Thema (TopicMasteryCalculator, Vorbild Khan Academy).
+            ["Welcome_OpenProgress"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
+            ["Progress_Title"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
+            ["Progress_Summary"] = L(
+                "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",
+                "🏆 {0} ustalaştın · ✅ {1} emin · 📘 {2} tanıdık · 🌱 {3} başladın"),
+            ["Progress_HowTo"] = L(
+                "Gezählt werden deine letzten 10 Antworten je Thema. Gemeistert ist ein Thema, wenn davon mindestens 9 richtig sind und du zwei Fragen daraus nach ein paar Tagen noch einmal richtig hattest.",
+                "Her konuda son 10 cevabın sayılır. En az 9'u doğruysa ve birkaç gün sonra iki soruyu tekrar doğru cevapladıysan o konuda ustalaşmışsın demektir."),
+            ["Progress_Empty"] = L(
+                "Sobald du ein paar Aufgaben gelöst hast, siehst du hier, wie gut du jedes Thema schon kannst.",
+                "Birkaç görev çözdükten sonra burada her konuyu ne kadar iyi bildiğini göreceksin."),
+            ["Progress_SubjectSummary"] = L("{0} von {1} Themen sicher", "{1} konudan {0} tanesinde eminsin"),
+            ["Progress_TopicDetail"] = L("zuletzt {0} von {1} richtig", "son {1} sorudan {0} doğru"),
+            ["Progress_Level_Angefangen"] = L("🌱 Angefangen", "🌱 Başladın"),
+            ["Progress_Level_Vertraut"] = L("📘 Vertraut", "📘 Tanıdık"),
+            ["Progress_Level_Sicher"] = L("✅ Sicher", "✅ Emin"),
+            ["Progress_Level_Gemeistert"] = L("🏆 Gemeistert", "🏆 Ustalaştın"),
+            ["Progress_Back"] = L("⬅ Zurück", "⬅ Geri"),
+            ["Parent_Report_Mastery"] = L(
+                "🏆 Meisterschaft je Fach (alle Themen seit Beginn)",
+                "🏆 Derslere göre ustalık (başlangıçtan beri tüm konular)"),
+            ["Parent_Report_MasteryRow"] = L(
+                "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",
+                "🏆 {0} ustalaşılmış · ✅ {1} emin · 📘 {2} tanıdık · 🌱 {3} başlanmış"),
             ["Welcome_Homework"] = L(
                 "📒 Hausaufgaben: {0} noch offen",
                 "📒 Ev ödevleri: {0} tane açık"),

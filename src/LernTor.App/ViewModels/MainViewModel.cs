@@ -442,7 +442,51 @@ public sealed partial class MainViewModel : ObservableObject
             practiceDay: _scheduledForDay,
             practiceSubjects: _scheduledSubjects is null
                 ? null
-                : _scheduledSubjects.Where(fach => !IsSubjectDisabled(fach)).ToHashSet());
+                : _scheduledSubjects.Where(fach => !IsSubjectDisabled(fach)).ToHashSet(),
+            onOpenProgress: () => OnOpenProgressRequested(plannerPeek));
+    }
+
+    /// <summary>
+    /// "Mein Fortschritt" (Meisterschaft je Thema, siehe <see cref="TopicMasteryCalculator"/>).
+    /// Zurück geht es auf die Startseite in derselben Rolle, aus der das Kind kam: im
+    /// Planer-Zwischenstopp bleibt die angehaltene Etappe (<c>_stashedViewModel</c>) dabei
+    /// unangetastet, und der große Knopf dort führt wie vorher zurück in die Etappe.
+    /// </summary>
+    private async void OnOpenProgressRequested(bool plannerPeek)
+    {
+        try
+        {
+            var profileId = CurrentProfile!.Id;
+            var themen = TopicMasteryCalculator.Calculate(
+                await _activityLogRepo.GetAllAnswersAsync(profileId),
+                await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+
+            CurrentViewModel = new ProgressOverviewViewModel(
+                CurrentProfile!.Name,
+                themen,
+                onBack: () => ReturnToWelcome(plannerPeek));
+        }
+        catch (Exception ex)
+        {
+            // Eine Anzeige darf den Lerntag nie blockieren: lieber auf der Startseite bleiben.
+            Core.Logging.AppLog.Error("Fortschritt", "Ansicht konnte nicht aufgebaut werden", ex);
+        }
+    }
+
+    /// <summary>Zurück auf die Startseite in derselben Rolle (Tagesbeginn oder
+    /// Planer-Zwischenstopp). Eigene Methode mit try/catch statt eines async-Lambdas: eine
+    /// Ausnahme in einem async-void-Lambda landete im globalen Absturz-Handler, und der startet
+    /// die App im Kiosk-Betrieb neu.</summary>
+    private async void ReturnToWelcome(bool plannerPeek)
+    {
+        try
+        {
+            CurrentViewModel = await BuildWelcomeViewModelAsync(plannerPeek);
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Fortschritt", "Rückweg zur Startseite fehlgeschlagen", ex);
+        }
     }
 
     /// <summary>
