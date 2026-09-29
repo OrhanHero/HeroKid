@@ -26,6 +26,54 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,0">
             <StackPanel HorizontalAlignment="Center" MaxWidth="900" MinWidth="560">
 
+                <!-- Abzeichen: freigeschaltete farbig (heute neue golden umrandet), offene blass
+                     mit dem Hinweis, wie man sie bekommt. Nichts davon verfaellt. -->
+                <Border Style="{StaticResource CardBorder}" Padding="22,18" Margin="0,0,0,14"
+                        Visibility="{Binding HasAchievements, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding AchievementsHeadline, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
+                        <ItemsControl ItemsSource="{Binding Achievements}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="200" Margin="0,0,10,10" Padding="12,10" CornerRadius="16"
+                                            BorderThickness="2">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                                <Setter Property="BorderBrush" Value="Transparent" />
+                                                <Setter Property="Opacity" Value="0.5" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsUnlocked}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource TileSandBrush}" />
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsNew}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Emoji}" FontSize="30" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold"
+                                                       TextAlignment="Center" TextWrapping="Wrap" Margin="0,4,0,2"
+                                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                            <TextBlock Text="{Binding DetailDisplay}" Style="{StaticResource BodyText}"
+                                                       FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Progress_Empty]}"
                            Style="{StaticResource BodyText}" FontSize="18" TextAlignment="Center"
                            TextWrapping="Wrap" Margin="0,40,0,0"

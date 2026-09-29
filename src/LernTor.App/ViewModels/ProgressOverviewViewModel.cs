@@ -22,10 +22,19 @@ public sealed partial class ProgressOverviewViewModel : ObservableObject
 {
     private readonly Action _onBack;
 
-    public ProgressOverviewViewModel(string profileName, IReadOnlyList<TopicMasteryStatus> topics, Action onBack)
+    public ProgressOverviewViewModel(
+        string profileName,
+        IReadOnlyList<TopicMasteryStatus> topics,
+        Action onBack,
+        IReadOnlyList<AchievementRowViewModel>? achievements = null)
     {
         _onBack = onBack;
         ProfileName = profileName;
+
+        foreach (var abzeichen in achievements ?? Array.Empty<AchievementRowViewModel>())
+        {
+            Achievements.Add(abzeichen);
+        }
 
         var zaehlung = TopicMasteryCalculator.CountByLevel(topics);
         MasteredCount = zaehlung[MasteryLevel.Gemeistert];
@@ -56,6 +65,17 @@ public sealed partial class ProgressOverviewViewModel : ObservableObject
     public ObservableCollection<SubjectMasteryGroupViewModel> Subjects { get; } = new();
 
     public bool HasTopics => Subjects.Count > 0;
+
+    /// <summary>Alle Abzeichen: freigeschaltete zuerst, offene grau mit Hinweis, wie man sie
+    /// bekommt (siehe <see cref="AchievementRowViewModel.BuildList"/>).</summary>
+    public ObservableCollection<AchievementRowViewModel> Achievements { get; } = new();
+
+    public bool HasAchievements => Achievements.Count > 0;
+
+    public string AchievementsHeadline => string.Format(
+        LocalizationService.Instance["Badges_Headline"],
+        Achievements.Count(a => a.IsUnlocked),
+        Achievements.Count);
 
     [RelayCommand]
     private void Back() => _onBack();

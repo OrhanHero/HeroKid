@@ -54,6 +54,11 @@ public static class Translations
             ["Progress_Level_Sicher"] = L("✅ Sicher", "✅ Emin"),
             ["Progress_Level_Gemeistert"] = L("🏆 Gemeistert", "🏆 Ustalaştın"),
             ["Progress_Back"] = L("⬅ Zurück", "⬅ Geri"),
+            // Abzeichen (AchievementCatalog) - die Namen selbst stehen zweisprachig im Katalog.
+            ["Badges_Headline"] = L("🏅 Abzeichen: {0} von {1}", "🏅 Rozetler: {1} rozetten {0} tanesi"),
+            ["Badges_UnlockedOn"] = L("am {0}", "{0} tarihinde"),
+            ["Result_NewBadge"] = L("🏅 Neues Abzeichen: {0}", "🏅 Yeni rozet: {0}"),
+            ["Result_NewBadges"] = L("🏅 Neue Abzeichen: {0}", "🏅 Yeni rozetler: {0}"),
             ["Parent_Report_Mastery"] = L(
                 "🏆 Meisterschaft je Fach (alle Themen seit Beginn)",
                 "🏆 Derslere göre ustalık (başlangıçtan beri tüm konular)"),

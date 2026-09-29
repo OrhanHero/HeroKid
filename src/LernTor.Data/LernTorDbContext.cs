@@ -28,6 +28,7 @@ public sealed class LernTorDbContext : DbContext
     public DbSet<CourseLessonProgressEntity> CourseLessonProgress => Set<CourseLessonProgressEntity>();
     public DbSet<TimetableLessonEntity> TimetableLessons => Set<TimetableLessonEntity>();
     public DbSet<TimetablePeriodEntity> TimetablePeriods => Set<TimetablePeriodEntity>();
+    public DbSet<UnlockedAchievementEntity> UnlockedAchievements => Set<UnlockedAchievementEntity>();
 
     public LernTorDbContext(DbContextOptions<LernTorDbContext> options) : base(options)
     {
@@ -172,6 +173,14 @@ public sealed class LernTorDbContext : DbContext
         {
             e.HasKey(t => t.Id);
             e.HasIndex(t => new { t.ProfileId, t.Period }).IsUnique();
+        });
+
+        // Abzeichen (seit 29.09.2026): jedes höchstens einmal je Profil. Neue Tabelle und Index
+        // legt der SqliteSchemaUpdater in bestehenden Datenbanken beim Start an.
+        modelBuilder.Entity<UnlockedAchievementEntity>(e =>
+        {
+            e.HasKey(a => a.Id);
+            e.HasIndex(a => new { a.ProfileId, a.AchievementId }).IsUnique();
         });
     }
 

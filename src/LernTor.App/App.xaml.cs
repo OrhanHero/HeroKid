@@ -181,6 +181,7 @@ public partial class App : Application
                 services.AddSingleton<TimetableRepository>();
                 services.AddSingleton<ReviewQuestionRepository>();
                 services.AddSingleton<MasteredPromptRepository>();
+                services.AddSingleton<AchievementRepository>();
                 services.AddSingleton<ArchivedArticleRepository>();
                 services.AddSingleton<RewardRepository>();
                 services.AddSingleton<TypingProgressRepository>();

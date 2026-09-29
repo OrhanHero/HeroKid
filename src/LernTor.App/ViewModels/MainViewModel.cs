@@ -36,6 +36,7 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly VocabularyRepository _vocabularyRepo;
     private readonly ReviewQuestionRepository _reviewRepo;
     private readonly MasteredPromptRepository _masteredPromptRepo;
+    private readonly AchievementRepository _achievementRepo;
     private readonly ArchivedArticleRepository _archiveRepo;
     private readonly HomeworkTaskRepository _homeworkRepo;
     private readonly ExamEntryRepository _examRepo;
@@ -101,8 +102,10 @@ public sealed partial class MainViewModel : ObservableObject
         KioskLockService kioskLock,
         IHomeworkHelpChatService homeworkChat,
         TextToSpeechService tts,
-        TypingExerciseService typingService)
+        TypingExerciseService typingService,
+        AchievementRepository achievementRepo)
     {
+        _achievementRepo = achievementRepo;
         _weatherService = weatherService;
         _gate = gate;
         _scoring = scoring;
@@ -457,14 +460,21 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             var profileId = CurrentProfile!.Id;
-            var themen = TopicMasteryCalculator.Calculate(
-                await _activityLogRepo.GetAllAnswersAsync(profileId),
-                await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+            var (themen, fakten) = await LoadMasteryAndAchievementFactsAsync();
+
+            // Auch hier freischalten, nicht nur auf dem Geschafft-Bildschirm: wer mitten am Tag
+            // nachschaut, soll ein eben verdientes Abzeichen schon sehen.
+            await _achievementRepo.UnlockAsync(profileId, fakten);
+            var abzeichen = AchievementRowViewModel.BuildList(
+                await _achievementRepo.GetUnlockedAsync(profileId),
+                IsAreaAvailable,
+                DateOnly.FromDateTime(DateTime.Today));
 
             CurrentViewModel = new ProgressOverviewViewModel(
                 CurrentProfile!.Name,
                 themen,
-                onBack: () => ReturnToWelcome(plannerPeek));
+                onBack: () => ReturnToWelcome(plannerPeek),
+                achievements: abzeichen);
         }
         catch (Exception ex)
         {
@@ -472,6 +482,48 @@ public sealed partial class MainViewModel : ObservableObject
             Core.Logging.AppLog.Error("Fortschritt", "Ansicht konnte nicht aufgebaut werden", ex);
         }
     }
+
+    /// <summary>
+    /// Meisterschaft je Thema und alle Fakten für die Abzeichen in einem Zug - beide brauchen
+    /// dieselben Antworten, und die sollen nur einmal geladen werden.
+    /// </summary>
+    private async Task<(IReadOnlyList<TopicMasteryStatus> Themen, AchievementFacts Fakten)> LoadMasteryAndAchievementFactsAsync()
+    {
+        var profileId = CurrentProfile!.Id;
+        var antworten = await _activityLogRepo.GetAllAnswersAsync(profileId);
+        var themen = TopicMasteryCalculator.Calculate(
+            antworten, await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+
+        var quizze = await _activityLogRepo.GetQuizHistoryAsync(profileId, take: int.MaxValue);
+        var tippen = await _typingProgressRepo.GetProgressAsync(profileId);
+        var zeichen = IsAreaAvailable(Subject.Fuehrerschein) ? DrivingSignPool() : Array.Empty<TrafficSign>();
+        var gekonnt = await _signProgressRepo.GetMasteredNumbersAsync(profileId);
+        var pruefungen = await _theoryRepo.GetRecentExamsAsync(profileId, int.MaxValue);
+
+        var fakten = AchievementCatalog.FromAnswers(antworten, themen) with
+        {
+            PassedFinalQuizzes = quizze.Count(q => q.Passed),
+            PerfectFinalQuizzes = quizze.Count(q => q.Passed && q.TotalQuestions > 0 && q.CorrectCount >= q.TotalQuestions),
+            TypingLessonsCompleted = tippen.Values.Count(lektion => lektion.IsCompleted),
+            TrafficSignsAvailable = zeichen.Count,
+            TrafficSignsMastered = zeichen.Count(schild => gekonnt.Contains(schild.Number)),
+            TheoryExamsPassed = pruefungen.Count(lauf => lauf.ToResult().Passed),
+        };
+
+        return (themen, fakten);
+    }
+
+    /// <summary>
+    /// Ob ein Bereich für dieses Kind grundsätzlich an ist - die Schalter der Eltern, aber
+    /// bewusst OHNE die Tagesauswahl nach Stundenplan: ein Abzeichen für Physik bleibt ein Ziel,
+    /// auch an einem Tag ohne Physik.
+    /// </summary>
+    private bool IsAreaAvailable(Subject area) =>
+        !SubjectAvailability.IsDisabled(
+            area,
+            Settings.DisabledSubjects,
+            CurrentProfile?.DrivingAreaEnabled ?? true,
+            CurrentProfile?.ErsteHilfeEnabled ?? true);
 
     /// <summary>Zurück auf die Startseite in derselben Rolle (Tagesbeginn oder
     /// Planer-Zwischenstopp). Eigene Methode mit try/catch statt eines async-Lambdas: eine
@@ -1677,12 +1729,29 @@ public sealed partial class MainViewModel : ObservableObject
                 DateOnly.FromDateTime(DateTime.Today));
         }
 
+        // Abzeichen: nur nach dem bestandenen Quiz, und NIE so, dass ein Fehler hier den
+        // Geschafft-Bildschirm verhindert - an ihm hängt der Knopf, der den PC freigibt.
+        IReadOnlyList<Achievement> neueAbzeichen = Array.Empty<Achievement>();
+        if (passed && CurrentProfile is not null)
+        {
+            try
+            {
+                var (_, fakten) = await LoadMasteryAndAchievementFactsAsync();
+                neueAbzeichen = await _achievementRepo.UnlockAsync(CurrentProfile.Id, fakten);
+            }
+            catch (Exception ex)
+            {
+                Core.Logging.AppLog.Error("Abzeichen", "Freischalten auf dem Geschafft-Bildschirm fehlgeschlagen", ex);
+            }
+        }
+
         return new ResultViewModel(
             passed, result, Progress.EarnedStarsToday, CurrentProfile?.TotalStars ?? 0,
             todayAnswered, todayCorrectPercent, streak,
             OnRetryWeakSubjectsRequested, OnUnlockConfirmed,
             _rewardRepo, CurrentProfile?.Id,
-            subjectProgress);
+            subjectProgress,
+            neueAbzeichen);
     }
 
     private async void OnRetryWeakSubjectsRequested()

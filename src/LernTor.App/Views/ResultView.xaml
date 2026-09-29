@@ -4,7 +4,12 @@
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              Loaded="ResultView_Loaded">
     <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700">
+        <!-- ScrollViewer seit 29.09.2026: auf kleinen Bildschirmen (1366x768) schob jede weitere
+             Karte den Freischalten-Knopf naeher an den unteren Rand - und darunter waere er
+             unerreichbar gewesen. Der ScrollContentPresenter gibt dem Inhalt mindestens die
+             Fensterhoehe, VerticalAlignment="Center" zentriert also weiter wie vorher. -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700" Margin="0,16">
 
             <TextBlock x:Name="CelebrationIcon" Text="🎉🏆🎉" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"
                        RenderTransformOrigin="0.5,0.5"
@@ -159,6 +164,17 @@
                 <TextBlock Text="{Binding StarsSummary}" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
             </Border>
 
+            <!-- 🏅 Heute neu freigeschaltete Abzeichen - bewusst EINE Zeile statt einer Karte, damit
+                 der Freischalten-Knopf nicht weiter nach unten rutscht. Alle Abzeichen stehen in
+                 "Mein Fortschritt". -->
+            <Border Background="{StaticResource AccentBrush}" CornerRadius="14" Padding="18,10" MaxWidth="560"
+                    HorizontalAlignment="Center" Margin="0,0,0,16"
+                    Visibility="{Binding HasNewAchievements, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding NewAchievementsSummary, Mode=OneWay}" Style="{StaticResource BodyText}"
+                           FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+            </Border>
+
             <!-- 🎁 Belohnungen (von den Eltern gepflegt, mit Sternen einlösbar): erreichbare zeigen
                  Kosten + Einlösen-Button, für die anderen steht der Fortschritt ("12 / 20 ⭐"). -->
             <Border Style="{StaticResource CardBorder}" Padding="20" MaxWidth="520" Margin="0,0,0,24"
@@ -203,6 +219,7 @@
                     Visibility="{Binding Passed, Converter={StaticResource InverseBoolToVis}}"
                     Command="{Binding RetryWeakSubjectsCommand}" />
         </StackPanel>
+        </ScrollViewer>
 
         <!-- Konfetti-Ebene (nur bei bestandenem Quiz, einmalig - siehe Code-behind). Liegt über dem
              Inhalt, fängt aber keine Klicks ab. -->
