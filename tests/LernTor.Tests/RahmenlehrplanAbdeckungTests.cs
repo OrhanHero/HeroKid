@@ -15,7 +15,7 @@ namespace LernTor.Tests;
 public sealed class RahmenlehrplanAbdeckungTests
 {
     /// <summary>Offene Themenfelder. Darf nur sinken: wer eines schließt, senkt die Zahl.</summary>
-    private const int OffeneThemenfelder = 3;
+    private const int OffeneThemenfelder = 1;
 
     private const string DokumentSchreiben = "LERNTOR_RLP_DOC";
 

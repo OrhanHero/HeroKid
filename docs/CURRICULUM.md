@@ -121,6 +121,7 @@ Wochen. Die zweite Erweiterung vom 30.09.2026 bringt Klasse 6 auf 360 (12 Wochen
 | Wechselwirkung und Kraft | | |
 | Mechanische Energie und Arbeit | | |
 | Thermische Energie und Wärme | | |
+| Die Sonne als Energiequelle (Wasserkreislauf, Treibhauseffekt) – seit 3.2 | | |
 
 ## Chemie (`ChemieGenerator.cs`)
 
@@ -153,6 +154,8 @@ Rahmenlehrplan" weiter unten).
 | Lebensräume und ihre Bewohner (Nahrungsketten) | Angepasstheit an Lebensräume | Sucht und Suchtprävention |
 | Ernährung und Verdauung (seit 3.1) | | Vererbung beim Menschen (Humangenetik) |
 | Blütenpflanzen: Blüte, Bestäubung, Samen (seit 3.1) | | Evolution – Theorien und Stammesgeschichte |
+| Überwintern: Winterschlaf, Winterruhe, Winterstarre, Frühblüher (seit 3.2) | | |
+| Gesund leben und Sucht vorbeugen (seit 3.2) | | |
 
 > **Vokabeln**: Zusätzlich zu den Themenpools können Eltern im Eltern-Bereich eigene Wortlisten
 > für Englisch und Türkisch hinterlegen (`VocabularyRepository`). Diese Vokabeln laufen im
@@ -276,7 +279,7 @@ Rahmenlehrplan" weiter unten).
 | Datenschutz-Grundlagen | Algorithmen, Hardware und sicheres Arbeiten | Cybermobbing |
 | Sichere Passwörter | Daten, Medien und digitale Werkzeuge | Fake News erkennen |
 | Urheberrecht im Internet | Hardware, Netzwerke und Internet | Algorithmen-Grundbegriff |
-|  | IT-Sicherheit und digitale Verantwortung |  |
+|  | IT-Sicherheit und digitale Verantwortung | Informatiksysteme: Aufbau, Daten und Netze – seit 3.2 |
 
 ## KI-Bereich (`KiWissenGenerator.cs` + `KiContentService`)
 

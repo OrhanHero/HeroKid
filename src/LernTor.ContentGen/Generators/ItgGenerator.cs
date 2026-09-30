@@ -16,7 +16,7 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Datenschutz, SicherePasswoerter, Urheberrecht },
             [GradeLevel.Klasse7] = new List<TopicFactory> { AlgorithmenUndDigitaleWerkzeuge, DatenMedienUndWerkzeuge, HardwareUndNetzwerke, SicherheitUndVerantwortung },
-            [GradeLevel.Klasse9] = new List<TopicFactory> { Cybermobbing, FakeNewsErkennen, Algorithmen }
+            [GradeLevel.Klasse9] = new List<TopicFactory> { Cybermobbing, FakeNewsErkennen, Algorithmen, Informatiksysteme }
         };
 
     private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DatenschutzListe =
@@ -577,6 +577,64 @@ public sealed class ItgGenerator : ExerciseGeneratorBase
             Topic = "IT-Sicherheit und digitale Verantwortung", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Phishing arbeitet mit Zeitdruck und gefälschten Absendern. Zwei-Faktor schützt auch bei geklautem Passwort. Updates schließen Sicherheitslücken, Backups helfen gegen Ransomware."
+        };
+    }
+
+    // ----- Seit 3.2 (docs/NAECHSTES-LEVEL-3-2.md): Rahmenlehrplan-Lücken -----
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] InformatiksystemeListe =
+    {
+        ("Wofür steht das EVA-Prinzip in der Informatik?", new[] { "Eingabe, Verarbeitung, Ausgabe", "Energie, Versorgung, Ablage", "Einschalten, Verbinden, Ausschalten" }, "Eingabe, Verarbeitung, Ausgabe",
+            "Jedes Informatiksystem nimmt Daten auf, verarbeitet sie und gibt ein Ergebnis aus."),
+        ("Welches Gerät ist ein Eingabegerät?", new[] { "Tastatur", "Monitor", "Drucker" }, "Tastatur",
+            "Tastatur, Maus, Mikrofon und Kamera geben Daten ein; Monitor und Drucker geben sie aus."),
+        ("Welches Bauteil führt im Computer die Rechenbefehle aus?", new[] { "Der Prozessor (CPU)", "Die Festplatte", "Das Netzteil" }, "Der Prozessor (CPU)",
+            "Die CPU ist das Rechenwerk - sie führt die Befehle der Programme aus."),
+        ("Was unterscheidet den Arbeitsspeicher (RAM) von einer SSD?", new[] { "RAM verliert seinen Inhalt beim Ausschalten, die SSD nicht", "RAM ist immer größer als jede SSD", "Die SSD vergisst beim Ausschalten alles" }, "RAM verliert seinen Inhalt beim Ausschalten, die SSD nicht",
+            "Der Arbeitsspeicher ist schnell, aber flüchtig; Daten dauerhaft speichern SSD oder Festplatte."),
+        ("Was ist ein Betriebssystem?", new[] { "Software, die Hardware und Programme verwaltet", "Ein Programm nur zum Spielen", "Ein Teil der Tastatur" }, "Software, die Hardware und Programme verwaltet",
+            "Windows, macOS, Linux, Android und iOS sind Betriebssysteme."),
+        ("Was ist der Unterschied zwischen Hardware und Software?", new[] { "Hardware kann man anfassen, Software sind Programme", "Hardware ist teurer, Software immer kostenlos", "Software kann man anfassen, Hardware nicht" }, "Hardware kann man anfassen, Software sind Programme",
+            "Bauteile wie Tastatur und Prozessor sind Hardware; Apps und Betriebssystem sind Software."),
+        ("Wie viele Bit hat ein Byte?", new[] { "8", "2", "10" }, "8",
+            "Ein Bit ist 0 oder 1; acht Bit bilden ein Byte, damit lassen sich 256 Werte darstellen."),
+        ("Welche Dezimalzahl ist die Binärzahl 101?", new[] { "5", "3", "101" }, "5",
+            "Binär: 1·4 + 0·2 + 1·1 = 5. Jede Stelle nach links ist doppelt so viel wert."),
+        ("Wie schreibt man die Dezimalzahl 6 im Binärsystem?", new[] { "110", "101", "011" }, "110",
+            "6 = 1·4 + 1·2 + 0·1, also 110."),
+        ("Welche Speichergröße ist am größten?", new[] { "1 Terabyte", "1 Gigabyte", "1 Megabyte" }, "1 Terabyte",
+            "Die Reihe ist Kilobyte, Megabyte, Gigabyte, Terabyte - jeweils etwa tausendmal größer."),
+        ("Warum arbeiten Computer mit nur zwei Zuständen, 0 und 1?", new[] { "Strom an und aus lässt sich technisch sicher unterscheiden", "Weil Computer nicht bis drei zählen können", "Weil es nur zwei Tasten gibt" }, "Strom an und aus lässt sich technisch sicher unterscheiden",
+            "Zwei Zustände sind robust gegen Störungen - alles wird daraus kodiert."),
+        ("Was ist eine IP-Adresse?", new[] { "Eine Nummer, unter der ein Gerät im Netzwerk erreichbar ist", "Das Passwort für das WLAN", "Der Name des Internetanbieters" }, "Eine Nummer, unter der ein Gerät im Netzwerk erreichbar ist",
+            "Wie eine Postanschrift: Daten finden über die IP-Adresse den Weg zum richtigen Gerät."),
+        ("Was macht ein Router zu Hause?", new[] { "Er verbindet die Geräte im Haus mit dem Internet", "Er druckt Webseiten aus", "Er speichert alle Fotos der Familie" }, "Er verbindet die Geräte im Haus mit dem Internet",
+            "Der Router leitet Datenpakete zwischen dem Heimnetz und dem Internet weiter."),
+        ("Wie werden Daten im Internet verschickt?", new[] { "In kleinen Paketen, die getrennt reisen können", "Als ein einziger großer Block am Stück", "Nur über Satelliten im Weltall" }, "In kleinen Paketen, die getrennt reisen können",
+            "Große Dateien werden zerlegt; die Pakete finden getrennte Wege und werden am Ziel zusammengesetzt."),
+        ("Was ist ein Server?", new[] { "Ein Rechner, der anderen Rechnern Dienste anbietet", "Ein besonders schneller Bildschirm", "Ein Kabel zwischen zwei Computern" }, "Ein Rechner, der anderen Rechnern Dienste anbietet",
+            "Webseiten, E-Mails und Spiele liegen auf Servern, die Anfragen von Geräten beantworten."),
+        ("Wofür steht „https“ am Anfang einer Webadresse?", new[] { "Die Verbindung ist verschlüsselt", "Die Seite ist besonders schnell", "Die Seite ist kostenlos" }, "Die Verbindung ist verschlüsselt",
+            "Bei https werden die Daten verschlüsselt übertragen - wichtig bei Passwörtern."),
+        ("Was ist ein Algorithmus?", new[] { "Eine eindeutige Schrittfolge zur Lösung eines Problems", "Ein besonders teures Computerspiel", "Ein Virus im Betriebssystem" }, "Eine eindeutige Schrittfolge zur Lösung eines Problems",
+            "Ein Kochrezept ist ein Alltagsbeispiel: klare Schritte in fester Reihenfolge."),
+        ("Was ist eine Programmiersprache?", new[] { "Eine Sprache, mit der man einem Computer Befehle gibt", "Die Sprache, in der Computer miteinander sprechen", "Eine Fremdsprache für Informatiker" }, "Eine Sprache, mit der man einem Computer Befehle gibt",
+            "Python, Scratch oder Java übersetzen menschliche Anweisungen in Befehle für den Rechner."),
+        ("Was ist ein Update?", new[] { "Eine neue Version einer Software, oft mit Sicherheitskorrekturen", "Ein neues Gerät, das man kaufen muss", "Das Löschen aller Daten auf dem Gerät" }, "Eine neue Version einer Software, oft mit Sicherheitskorrekturen",
+            "Updates schließen Sicherheitslücken - deshalb sollte man sie zeitnah installieren."),
+        ("Was ist Schadsoftware (Malware)?", new[] { "Programme, die einem Gerät oder seinen Daten schaden", "Programme, die den Akku schonen", "Programme für Grafik und Videos" }, "Programme, die einem Gerät oder seinen Daten schaden",
+            "Viren, Trojaner und Erpressungssoftware gehören dazu - Updates und Vorsicht bei Anhängen schützen.")
+    };
+
+    private static QuizQuestion Informatiksysteme(Random r)
+    {
+        var f = InformatiksystemeListe[r.Next(InformatiksystemeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Itg, GradeLevel = GradeLevel.Klasse9,
+            Topic = "Informatiksysteme: Aufbau, Daten und Netze", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "EVA: Eingabe - Verarbeitung - Ausgabe. CPU rechnet, RAM ist flüchtig, SSD speichert dauerhaft. 1 Byte = 8 Bit, binär 101 = 5. Daten reisen in Paketen, IP-Adresse = Anschrift im Netz."
         };
     }
 }

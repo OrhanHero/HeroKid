@@ -16,7 +16,7 @@ jedem Schritt nachgeführt.
 | 1 — Rahmenlehrplan-Katalog im Code | ✅ 30.09.2026: `RahmenlehrplanKatalog` mit 186 Themenfeldern für 5/6 und 9/10 aus den bisherigen Checklisten, alle Zuordnungen per Test gegen die Generatoren geprüft; 3 offen, 2 teilweise, 25 bewusst nicht (Sport, Wahlpflicht, Praxis); Übersicht [`RAHMENLEHRPLAN.md`](RAHMENLEHRPLAN.md) wird erzeugt. **Für 7/8 und die Klasse-10-Prüfung fehlt der Zugriff auf Teil C** (Umgebung sperrt die Quelle) |
 | 2 — Klasse 7/8 vollständig (Emirhan ab Sommer 2027) | ⏳ geplant |
 | 3 — Klasse 9/10 vollständig (Batuhan, 2027/28 Klasse 10 mit MSA) | ⏳ geplant |
-| 4 — Klasse 5/6: letzte Lücken | ⏳ geplant |
+| 4 — Klasse 5/6: letzte Lücken | ✅ 30.09.2026 (vorgezogen): Physik Kl. 6 „Die Sonne als Energiequelle“, Biologie Kl. 6 „Überwintern“ und „Gesund leben und Sucht vorbeugen“ – NaWi 3.3, 3.5, 3.7 vollständig; dazu ITG Kl. 9 „Informatiksysteme“. 80 neue Fragen; offen im Katalog nur noch das Wahlpflichtmodul Darstellende Geometrie |
 | 5 — Eltern-Bericht: Rahmenlehrplan je Fach | ⏳ geplant |
 | 6 — Dokumentation, Version 3.2.0, Release | ⏳ geplant |
 

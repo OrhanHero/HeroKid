@@ -13,7 +13,7 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik, WaermeausdehnungKoerper, WechselwirkungUndKraft, MechanischeEnergieUndArbeit, ThermischeEnergieUndWaerme },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { Aggregatzustaende, Stromkreis, Magnetismus, MessenUndSinne, OptikUndWeltraum, BewegungUndBionik, WaermeausdehnungKoerper, WechselwirkungUndKraft, MechanischeEnergieUndArbeit, ThermischeEnergieUndWaerme, SonneAlsEnergiequelle },
             [GradeLevel.Klasse7] = new List<TopicFactory> { OptikLichtUndSehen, KraftUndBewegung, DruckUndAuftrieb, WaermelehreK7, EnergieformenUndUmwandlung, ElektrizitaetGrundlagen },
             [GradeLevel.Klasse9] = new List<TopicFactory> { OhmschesGesetz, Energieerhaltung, NewtonscheGesetze, MagnetfelderInduktion, Kinematik, RadioaktivitaetUndKernphysik, SchwingungenWellenOptik }
         };
@@ -1275,6 +1275,64 @@ public sealed class PhysikGenerator : ExerciseGeneratorBase
             Topic = "Elektrizität: Stromkreis und Wirkungen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Stromstärke in Ampere, Spannung in Volt, Widerstand in Ohm. Reihenschaltung: einer aus, alle aus. Parallelschaltung: unabhängig. 230 V aus der Steckdose sind lebensgefährlich."
+        };
+    }
+
+    // ----- Seit 3.2 (docs/NAECHSTES-LEVEL-3-2.md): Rahmenlehrplan-Lücken -----
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] SonneListe =
+    {
+        ("Woher bekommt die Erde fast ihre ganze Energie?", new[] { "Von der Sonne", "Aus dem Erdkern", "Vom Mond" }, "Von der Sonne",
+            "Licht und Wärme der Sonne treiben Wetter, Wasserkreislauf und das Pflanzenwachstum an."),
+        ("Was treibt den Wasserkreislauf an?", new[] { "Die Energie der Sonne", "Die Anziehung des Mondes", "Der Wind allein" }, "Die Energie der Sonne",
+            "Die Sonne erwärmt Wasser, es verdunstet, steigt als Wasserdampf auf und fällt später als Niederschlag."),
+        ("Wie nennt man es, wenn Wasser durch Wärme zu Wasserdampf wird, ohne zu kochen?", new[] { "Verdunsten", "Kondensieren", "Gefrieren" }, "Verdunsten",
+            "Auch unter 100 °C geht Wasser in die Luft über - etwa aus Pfützen oder nasser Wäsche."),
+        ("Was passiert, wenn Wasserdampf in der Höhe abkühlt?", new[] { "Er kondensiert zu winzigen Tröpfchen und bildet Wolken", "Er wird zu Salz und fällt ins Meer", "Er verschwindet vollständig aus der Luft" }, "Er kondensiert zu winzigen Tröpfchen und bildet Wolken",
+            "Kalte Luft kann weniger Wasserdampf halten; er wird wieder flüssig - so entstehen Wolken."),
+        ("Wie heißt Wasser, das als Regen, Schnee oder Hagel zur Erde fällt?", new[] { "Niederschlag", "Verdunstung", "Grundwasser" }, "Niederschlag",
+            "Niederschlag bringt das Wasser zurück auf die Erde - in Flüsse, Seen oder in den Boden."),
+        ("Wo sammelt sich Regenwasser, das im Boden versickert?", new[] { "Im Grundwasser", "In den Wolken", "Im Erdkern" }, "Im Grundwasser",
+            "Versickertes Wasser sammelt sich in tiefen Schichten; in Berlin kommt das Trinkwasser aus Grundwasser."),
+        ("Warum ist es in einem Auto, das in der Sonne steht, viel wärmer als draußen?", new[] { "Licht dringt ein, die Wärme kann schlecht wieder hinaus", "Der Motor heizt auch im Stand weiter", "Die Scheiben ziehen kalte Luft nach draußen" }, "Licht dringt ein, die Wärme kann schlecht wieder hinaus",
+            "Das ist ein Modell für den Treibhauseffekt: Licht wird innen zu Wärme, die das Glas zurückhält."),
+        ("Was bewirken Treibhausgase wie Kohlenstoffdioxid in der Luft?", new[] { "Sie halten Wärme in der Atmosphäre zurück", "Sie kühlen die Erde stark ab", "Sie verhindern jeden Regen" }, "Sie halten Wärme in der Atmosphäre zurück",
+            "Ohne natürlichen Treibhauseffekt wäre es auf der Erde eisig; zusätzliche Gase erwärmen sie weiter."),
+        ("Warum wird die Erde durch den Menschen wärmer?", new[] { "Durch mehr Treibhausgase, etwa aus Verbrennung von Kohle und Öl", "Weil die Sonne jedes Jahr näher kommt", "Weil es immer mehr Vulkane gibt" }, "Durch mehr Treibhausgase, etwa aus Verbrennung von Kohle und Öl",
+            "Beim Verbrennen von Kohle, Öl und Gas entsteht Kohlenstoffdioxid, das den Treibhauseffekt verstärkt."),
+        ("Was macht eine Solarzelle aus Sonnenlicht?", new[] { "Elektrischen Strom", "Warmes Wasser", "Wind" }, "Elektrischen Strom",
+            "Solarzellen (Photovoltaik) wandeln Licht direkt in elektrische Energie um."),
+        ("Was macht ein Sonnenkollektor auf dem Dach?", new[] { "Er erwärmt Wasser mit Sonnenwärme", "Er erzeugt Strom aus Wind", "Er speichert Regenwasser" }, "Er erwärmt Wasser mit Sonnenwärme",
+            "Im Kollektor fließt Wasser durch dunkle Rohre, die die Sonne aufheizt."),
+        ("Warum erwärmt sich ein schwarzes T-Shirt in der Sonne stärker als ein weißes?", new[] { "Dunkle Flächen nehmen mehr Licht auf", "Schwarzer Stoff ist immer dicker", "Weiße Flächen erzeugen Kälte" }, "Dunkle Flächen nehmen mehr Licht auf",
+            "Helle Flächen werfen viel Licht zurück, dunkle nehmen es auf und wandeln es in Wärme um."),
+        ("Wie gelangt die Wärme der Sonne zur Erde, obwohl dazwischen fast leerer Raum ist?", new[] { "Durch Strahlung", "Durch Wärmeleitung über Luft", "Durch Wind im Weltall" }, "Durch Strahlung",
+            "Wärmestrahlung braucht keinen Stoff - deshalb spürt man die Sonne auch durch das Weltall."),
+        ("Warum ist es am Äquator wärmer als an den Polen?", new[] { "Die Sonnenstrahlen fallen dort steiler ein", "Der Äquator ist näher am Erdkern", "An den Polen scheint nie die Sonne" }, "Die Sonnenstrahlen fallen dort steiler ein",
+            "Steil einfallendes Licht verteilt sich auf eine kleinere Fläche und erwärmt sie stärker."),
+        ("Wodurch entstehen die Jahreszeiten?", new[] { "Durch die schräge Erdachse beim Lauf um die Sonne", "Durch den wechselnden Abstand zum Mond", "Durch das Wetter im Winter" }, "Durch die schräge Erdachse beim Lauf um die Sonne",
+            "Im Sommer ist unsere Halbkugel der Sonne zugeneigt: steilere Strahlen, längere Tage."),
+        ("Wie nutzen Pflanzen die Energie der Sonne?", new[] { "Sie bauen mit Licht Traubenzucker auf (Fotosynthese)", "Sie speichern das Licht in den Wurzeln", "Sie wandeln Licht in Strom um" }, "Sie bauen mit Licht Traubenzucker auf (Fotosynthese)",
+            "Bei der Fotosynthese entsteht aus Wasser und Kohlenstoffdioxid mit Licht Zucker und Sauerstoff."),
+        ("Warum steckt in Kohle, Erdöl und Erdgas eigentlich Sonnenenergie?", new[] { "Sie entstanden aus Pflanzen und Tieren, die von der Sonne lebten", "Sie wurden von der Sonne direkt ins Erdinnere gestrahlt", "Sie entstehen jeden Tag neu durch Sonnenlicht" }, "Sie entstanden aus Pflanzen und Tieren, die von der Sonne lebten",
+            "Über Millionen Jahre wurden Reste von Lebewesen zu Kohle, Öl und Gas - gespeicherte Sonnenenergie."),
+        ("Was ist ein Wasserkraftwerk-Beispiel für Sonnenenergie?", new[] { "Die Sonne verdunstet Wasser, das später bergab fließt", "Die Sonne heizt das Wasser im Kraftwerk auf", "Die Sonne zieht das Wasser nach oben in den Stausee" }, "Die Sonne verdunstet Wasser, das später bergab fließt",
+            "Ohne Verdunstung durch die Sonne gäbe es keinen Regen und damit kein Wasser im Stausee."),
+        ("Warum sollte man sich im Sommer mit Sonnencreme schützen?", new[] { "UV-Strahlen der Sonne können die Haut schädigen", "Die Sonne macht die Haut sonst zu kalt", "Sonnencreme lässt die Haut schneller bräunen" }, "UV-Strahlen der Sonne können die Haut schädigen",
+            "UV-Strahlung verursacht Sonnenbrand und kann langfristig Hautkrebs auslösen."),
+        ("Wie heißt das Aufsteigen von Wasser aus den Blättern der Pflanzen in die Luft?", new[] { "Transpiration (Verdunstung über die Blätter)", "Kondensation in den Wurzeln", "Niederschlag im Blatt" }, "Transpiration (Verdunstung über die Blätter)",
+            "Pflanzen geben über winzige Öffnungen Wasserdampf ab - auch das gehört zum Wasserkreislauf.")
+    };
+
+    private static QuizQuestion SonneAlsEnergiequelle(Random r)
+    {
+        var f = SonneListe[r.Next(SonneListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Physik, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Die Sonne als Energiequelle (Wasserkreislauf, Treibhauseffekt)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Sonnenenergie treibt Wasserkreislauf (verdunsten, kondensieren, Niederschlag, versickern), Wetter und Fotosynthese an. Treibhausgase halten Wärme zurück wie das Glas eines Autos."
         };
     }
 }

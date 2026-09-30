@@ -13,7 +13,7 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung, Zelle, LebensraeumeUndNahrungsketten, ErnaehrungUndVerdauung, Bluetenpflanzen },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung, Zelle, LebensraeumeUndNahrungsketten, ErnaehrungUndVerdauung, Bluetenpflanzen, UeberwinternVonTierenUndPflanzen, GesundLebenUndSucht },
             [GradeLevel.Klasse7] = new List<TopicFactory> { ZelleUndZellteilung, StoffwechselPflanzeTier, Sinnesorgane, BlutUndKreislauf, OekosystemWald, AngepasstheitLebensraum },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem, Immunsystem, Nervensystem, SuchtUndSuchtpraevention, Humangenetik, Evolution }
         };
@@ -1241,6 +1241,120 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Topic = "Blütenpflanzen: Blüte, Bestäubung, Samen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Staubblätter (männlich, Pollen), Stempel mit Narbe, Griffel, Fruchtknoten (weiblich). Bestäubung: Pollen auf die Narbe; Befruchtung: Verschmelzung; aus dem Fruchtknoten wird die Frucht."
+        };
+    }
+
+    // ----- Seit 3.2 (docs/NAECHSTES-LEVEL-3-2.md): Rahmenlehrplan-Lücken -----
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] UeberwinternListe =
+    {
+        ("Was macht ein Igel im Winter?", new[] { "Er hält Winterschlaf", "Er zieht nach Süden", "Er bleibt die ganze Zeit wach" }, "Er hält Winterschlaf",
+            "Im Winterschlaf sinken Körpertemperatur, Herzschlag und Atmung stark ab - der Igel lebt von seinen Fettreserven."),
+        ("Was unterscheidet die Winterruhe (z. B. beim Eichhörnchen) vom Winterschlaf?", new[] { "Das Tier wacht öfter auf und frisst von seinen Vorräten", "Das Tier schläft ohne Pause fünf Monate lang", "Das Tier friert komplett ein" }, "Das Tier wacht öfter auf und frisst von seinen Vorräten",
+            "Bei der Winterruhe sinkt die Körpertemperatur kaum; das Eichhörnchen wacht auf und holt sich Vorräte."),
+        ("Was geschieht bei der Winterstarre, zum Beispiel beim Frosch?", new[] { "Die Körpertemperatur passt sich der Kälte an, das Tier erstarrt", "Das Tier heizt seinen Körper besonders stark", "Das Tier fliegt in wärmere Länder" }, "Die Körpertemperatur passt sich der Kälte an, das Tier erstarrt",
+            "Wechselwarme Tiere wie Frösche, Eidechsen und Insekten werden bei Kälte starr und bewegungslos."),
+        ("Warum fressen sich Tiere vor dem Winterschlaf ein Fettpolster an?", new[] { "Sie leben im Winter von diesem Energievorrat", "Damit sie im Winter nicht gesehen werden", "Weil das Fett sie wärmer als die Sonne macht" }, "Sie leben im Winter von diesem Energievorrat",
+            "Im Winterschlaf fressen sie nichts - das Fett liefert die Energie für die ganze Zeit."),
+        ("Welche Tiere halten Winterschlaf?", new[] { "Igel, Fledermaus und Siebenschläfer", "Eichhörnchen, Dachs und Braunbär", "Amsel, Meise und Spatz" }, "Igel, Fledermaus und Siebenschläfer",
+            "Echten Winterschlaf halten zum Beispiel Igel, Fledermäuse, Murmeltiere und Siebenschläfer."),
+        ("Warum ziehen Zugvögel wie der Storch im Herbst nach Süden?", new[] { "Im Winter finden sie hier nicht genug Nahrung", "Weil sie den Schnee nicht sehen mögen", "Weil sie im Süden Winterschlaf halten" }, "Im Winter finden sie hier nicht genug Nahrung",
+            "Störche fressen Frösche und Insekten - die gibt es im Winter hier kaum. Sie fliegen bis nach Afrika."),
+        ("Wie schützen sich Standvögel wie die Meise vor Kälte?", new[] { "Sie plustern ihr Gefieder auf, das hält warme Luft", "Sie ziehen ihre Federn aus", "Sie graben sich in die Erde" }, "Sie plustern ihr Gefieder auf, das hält warme Luft",
+            "Zwischen aufgeplusterten Federn bildet sich ein Luftpolster, das gut isoliert."),
+        ("Warum bekommen viele Säugetiere im Herbst ein dichteres Fell?", new[] { "Das Winterfell isoliert besser gegen Kälte", "Damit sie schneller laufen können", "Weil das Sommerfell im Herbst verrottet" }, "Das Winterfell isoliert besser gegen Kälte",
+            "Ein dichteres Fell hält mehr warme Luft am Körper - man nennt das Fellwechsel."),
+        ("Warum werfen Laubbäume im Herbst ihre Blätter ab?", new[] { "Sonst würden sie im Winter über die Blätter Wasser verlieren", "Weil die Blätter im Winter zu schwer werden", "Damit Tiere darunter schlafen können" }, "Sonst würden sie im Winter über die Blätter Wasser verlieren",
+            "Im gefrorenen Boden kommt kaum Wasser nach; ohne Blätter verdunstet der Baum viel weniger."),
+        ("Warum bleiben Nadelbäume im Winter grün?", new[] { "Ihre Nadeln haben eine Wachsschicht und verdunsten wenig", "Sie brauchen im Winter kein Wasser", "Sie werden im Winter neu bemalt" }, "Ihre Nadeln haben eine Wachsschicht und verdunsten wenig",
+            "Die schmalen Nadeln mit Wachsschicht verlieren kaum Wasser - die Lärche wirft ihre aber doch ab."),
+        ("Was sind Frühblüher?", new[] { "Pflanzen, die schon im zeitigen Frühjahr blühen", "Pflanzen, die nur morgens blühen", "Pflanzen, die im Herbst blühen" }, "Pflanzen, die schon im zeitigen Frühjahr blühen",
+            "Schneeglöckchen, Krokus und Buschwindröschen blühen, bevor die Bäume Blätter haben."),
+        ("Warum blühen Frühblüher im Wald so früh im Jahr?", new[] { "Bevor die Bäume Laub tragen, kommt noch viel Licht an den Boden", "Weil es im Frühjahr am wärmsten ist", "Weil dann keine Insekten unterwegs sind" }, "Bevor die Bäume Laub tragen, kommt noch viel Licht an den Boden",
+            "Sobald die Baumkronen dicht sind, ist es am Waldboden schattig - die Frühblüher nutzen die Zeit davor."),
+        ("Woher nimmt ein Krokus die Energie, um so früh zu blühen?", new[] { "Aus Vorräten in seiner Knolle", "Aus dem Schnee, der auf ihm liegt", "Aus Insekten, die er fängt" }, "Aus Vorräten in seiner Knolle",
+            "Knollen, Zwiebeln und Wurzelstöcke speichern Nährstoffe aus dem Vorjahr."),
+        ("Welche Pflanze speichert ihre Vorräte in einer Zwiebel?", new[] { "Die Tulpe", "Die Eiche", "Der Rasen" }, "Die Tulpe",
+            "Tulpen, Schneeglöckchen und Narzissen überwintern als Zwiebel im Boden."),
+        ("Wie überwintern viele einjährige Pflanzen, etwa die Sonnenblume?", new[] { "Als Samen im Boden", "Als grüne Pflanze unter dem Schnee", "Als Zwiebel in der Luft" }, "Als Samen im Boden",
+            "Die Pflanze stirbt im Herbst ab; nur ihre Samen überdauern den Winter und keimen im Frühjahr."),
+        ("Warum sollte man einen Igel im Winterschlaf nicht wecken?", new[] { "Das Aufwachen verbraucht sehr viel seiner Fettreserven", "Weil er dann sofort nach Süden fliegt", "Weil er im Winter besonders gefährlich ist" }, "Das Aufwachen verbraucht sehr viel seiner Fettreserven",
+            "Jedes Aufwachen kostet viel Energie - im schlimmsten Fall reichen die Reserven dann nicht bis zum Frühling."),
+        ("Wie überwintern viele Insekten, zum Beispiel Marienkäfer?", new[] { "In Winterstarre an geschützten Stellen", "Sie ziehen in großen Schwärmen nach Afrika", "Sie halten sich in Vogelnestern warm" }, "In Winterstarre an geschützten Stellen",
+            "Marienkäfer sammeln sich oft in Ritzen oder unter Laub und fallen in Winterstarre."),
+        ("Was machen Fische im Winter, wenn der See zufriert?", new[] { "Sie bleiben am Grund, wo das Wasser etwa 4 °C hat", "Sie frieren im Eis ein und tauen im Frühling auf", "Sie wandern über Land zum nächsten See" }, "Sie bleiben am Grund, wo das Wasser etwa 4 °C hat",
+            "Wasser ist bei 4 °C am schwersten und sinkt nach unten - dort friert der See nicht."),
+        ("Warum ist ein Laubhaufen im Garten gut für Tiere?", new[] { "Igel und Insekten finden darin einen Platz zum Überwintern", "Er hält Vögel vom Garten fern", "Er wärmt den Boden für Frühblüher" }, "Igel und Insekten finden darin einen Platz zum Überwintern",
+            "Laub schützt vor Frost - viele Tiere nutzen ihn als Winterquartier."),
+        ("Wie nennt man Tiere, deren Körpertemperatur sich der Umgebung anpasst?", new[] { "Wechselwarme Tiere", "Gleichwarme Tiere", "Warmblütige Tiere" }, "Wechselwarme Tiere",
+            "Reptilien, Amphibien, Fische und Insekten sind wechselwarm; Säugetiere und Vögel sind gleichwarm.")
+    };
+
+    private static QuizQuestion UeberwinternVonTierenUndPflanzen(Random r)
+    {
+        var f = UeberwinternListe[r.Next(UeberwinternListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Überwintern: Winterschlaf, Winterruhe, Winterstarre, Frühblüher", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Winterschlaf (Igel): Körper fährt stark herunter. Winterruhe (Eichhörnchen): wacht auf und frisst Vorräte. Winterstarre: wechselwarme Tiere erstarren. Frühblüher leben von Vorräten in Zwiebel oder Knolle."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GesundLebenListe =
+    {
+        ("Was bedeutet es, süchtig nach etwas zu sein?", new[] { "Man kann nicht mehr aufhören, obwohl es einem schadet", "Man mag etwas sehr gerne", "Man probiert etwas zum ersten Mal" }, "Man kann nicht mehr aufhören, obwohl es einem schadet",
+            "Bei einer Sucht verliert man die Kontrolle - der Körper oder der Kopf verlangt immer mehr."),
+        ("Warum ist Rauchen für Kinder und Jugendliche besonders schädlich?", new[] { "Der Körper wächst noch und nimmt schneller Schaden", "Weil Kinder den Rauch nicht riechen", "Weil es nur Kindern schmeckt" }, "Der Körper wächst noch und nimmt schneller Schaden",
+            "Nikotin macht schnell abhängig, und die Schadstoffe schädigen Lunge, Herz und Blutgefäße."),
+        ("Was ist Nikotin?", new[] { "Ein Stoff im Tabak, der sehr schnell abhängig macht", "Ein Vitamin, das die Lunge stärkt", "Ein Zucker in süßen Getränken" }, "Ein Stoff im Tabak, der sehr schnell abhängig macht",
+            "Nikotin wirkt auf das Gehirn - schon wenige Zigaretten können abhängig machen."),
+        ("Warum dürfen Kinder in Deutschland keinen Alkohol trinken?", new[] { "Alkohol schadet dem wachsenden Gehirn und Körper", "Weil Alkohol zu teuer für Kinder ist", "Weil Alkohol erst abends wirkt" }, "Alkohol schadet dem wachsenden Gehirn und Körper",
+            "Das Jugendschutzgesetz verbietet Alkohol für Kinder - der junge Körper baut ihn schlecht ab."),
+        ("Warum sind Energydrinks für Kinder nicht geeignet?", new[] { "Sie enthalten viel Koffein und Zucker", "Sie enthalten zu viele Vitamine", "Sie machen nur durstiger" }, "Sie enthalten viel Koffein und Zucker",
+            "Viel Koffein kann Herzrasen, Unruhe und Schlafprobleme auslösen."),
+        ("Woran merkst du, dass Handy oder Spiele zu viel werden?", new[] { "Man denkt ständig daran und vernachlässigt Freunde und Schlaf", "Man spielt am Wochenende eine Stunde", "Man chattet mit der Familie" }, "Man denkt ständig daran und vernachlässigt Freunde und Schlaf",
+            "Wenn Schlaf, Schule und Treffen mit Freunden leiden, ist es Zeit für eine Pause."),
+        ("Was hilft, wenn Freunde dich zum Rauchen überreden wollen?", new[] { "Klar Nein sagen und sich nicht unter Druck setzen lassen", "Einmal mitmachen, damit Ruhe ist", "Sich bei allen entschuldigen" }, "Klar Nein sagen und sich nicht unter Druck setzen lassen",
+            "Echte Freunde akzeptieren ein Nein. Man muss nichts ausprobieren, um dazuzugehören."),
+        ("Was ist Gruppendruck?", new[] { "Wenn andere wollen, dass man etwas tut, was man nicht will", "Wenn eine Gruppe gemeinsam Hausaufgaben macht", "Wenn man im Sport viel Druck hat" }, "Wenn andere wollen, dass man etwas tut, was man nicht will",
+            "Gruppendruck kann dazu führen, Dinge zu tun, die man eigentlich nicht möchte."),
+        ("Was ist Passivrauchen?", new[] { "Man atmet den Rauch anderer ein und nimmt dabei Schaden", "Man raucht nur am Wochenende", "Man raucht eine E-Zigarette" }, "Man atmet den Rauch anderer ein und nimmt dabei Schaden",
+            "Auch wer nicht selbst raucht, atmet Schadstoffe ein - deshalb gibt es Rauchverbote in Innenräumen."),
+        ("Sind E-Zigaretten für Jugendliche harmlos?", new[] { "Nein, sie enthalten meist Nikotin und machen abhängig", "Ja, sie enthalten nur Wasserdampf", "Ja, sie sind eine Art Vitamin" }, "Nein, sie enthalten meist Nikotin und machen abhängig",
+            "Die meisten E-Zigaretten enthalten Nikotin; die Dämpfe sind nicht harmlos."),
+        ("Was tut dem Körper gut, wenn man sich gestresst fühlt?", new[] { "Bewegung, Schlaf und mit jemandem reden", "Energydrinks und Süßigkeiten", "Die ganze Nacht Videos schauen" }, "Bewegung, Schlaf und mit jemandem reden",
+            "Sport, genug Schlaf und Gespräche helfen besser gegen Stress als Suchtmittel."),
+        ("Wie viel Schlaf brauchen Kinder in deinem Alter ungefähr?", new[] { "Etwa 9 bis 11 Stunden", "Etwa 4 bis 5 Stunden", "Etwa 15 bis 16 Stunden" }, "Etwa 9 bis 11 Stunden",
+            "Im Schlaf erholen sich Körper und Gehirn; Kinder zwischen 6 und 13 brauchen etwa 9 bis 11 Stunden."),
+        ("Warum sollte man das Handy vor dem Einschlafen weglegen?", new[] { "Das helle Licht und die Aufregung stören den Schlaf", "Weil das Handy nachts kaputtgeht", "Weil man nachts keine Nachrichten bekommt" }, "Das helle Licht und die Aufregung stören den Schlaf",
+            "Blaues Bildschirmlicht und spannende Inhalte machen wach - man schläft schlechter ein."),
+        ("An wen kannst du dich wenden, wenn du dir wegen Sucht Sorgen machst?", new[] { "An Eltern, Lehrkräfte oder das Kinder- und Jugendtelefon", "Nur an Freunde aus dem Internet", "An niemanden, das muss man allein schaffen" }, "An Eltern, Lehrkräfte oder das Kinder- und Jugendtelefon",
+            "Die Nummer gegen Kummer (116 111) ist kostenlos und anonym."),
+        ("Warum ist Zucker in großen Mengen ungesund?", new[] { "Er schadet den Zähnen und kann zu Übergewicht führen", "Er macht die Knochen weich wie Gummi", "Er färbt die Haut dunkler" }, "Er schadet den Zähnen und kann zu Übergewicht führen",
+            "Zu viel Zucker liefert Energie ohne Nährstoffe und begünstigt Karies und Übergewicht."),
+        ("Was gehört zu einem gesunden Lebensstil?", new[] { "Ausgewogen essen, bewegen und genug schlafen", "Möglichst oft Fast Food essen", "Möglichst lange am Bildschirm sitzen" }, "Ausgewogen essen, bewegen und genug schlafen",
+            "Ernährung, Bewegung und Schlaf gehören zusammen - sie stärken Körper und Konzentration."),
+        ("Was ist eine Glücksspielfalle in manchen Handyspielen?", new[] { "Lootboxen, bei denen man für zufällige Belohnungen bezahlt", "Kostenlose Level, die man freispielen kann", "Die Pausenfunktion im Spielmenü" }, "Lootboxen, bei denen man für zufällige Belohnungen bezahlt",
+            "Lootboxen funktionieren wie ein Glücksspiel: Man zahlt, ohne zu wissen, was man bekommt."),
+        ("Warum sieht Werbung für Zigaretten oder Alkohol oft so cool aus?", new[] { "Sie soll Menschen zum Kaufen verleiten", "Weil diese Produkte gesund sind", "Weil Werbung immer die Wahrheit zeigt" }, "Sie soll Menschen zum Kaufen verleiten",
+            "Werbung zeigt Freiheit und Spaß - die gesundheitlichen Schäden zeigt sie nicht."),
+        ("Wie wirkt Alkohol auf den Körper?", new[] { "Er verlangsamt Reaktionen und schadet vielen Organen", "Er macht Muskeln stärker", "Er hilft beim Lernen" }, "Er verlangsamt Reaktionen und schadet vielen Organen",
+            "Alkohol beeinträchtigt Gehirn und Leber; man reagiert langsamer und schätzt Gefahren falsch ein."),
+        ("Was kann man tun, um weniger Zeit am Bildschirm zu verbringen?", new[] { "Feste Handy-Zeiten ausmachen und etwas anderes planen", "Das Handy immer in der Hosentasche tragen", "Den Bildschirm heller stellen" }, "Feste Handy-Zeiten ausmachen und etwas anderes planen",
+            "Feste Zeiten, Hobbys und Treffen mit Freunden helfen, die Bildschirmzeit im Griff zu behalten.")
+    };
+
+    private static QuizQuestion GesundLebenUndSucht(Random r)
+    {
+        var f = GesundLebenListe[r.Next(GesundLebenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Gesund leben und Sucht vorbeugen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Sucht heißt Kontrollverlust. Nein sagen ist erlaubt. Gut tun: ausgewogen essen, bewegen, 9 bis 11 Stunden Schlaf. Hilfe: Eltern, Lehrkräfte, Nummer gegen Kummer 116 111."
         };
     }
 }

@@ -20,12 +20,12 @@ Gezählt: abgedeckte (auch teilweise) von allen Themenfeldern, die sich als Quiz
 | Geografie | 4 von 4 | – | 6 von 6 |
 | Geschichte | 3 von 3 | – | 7 von 7 |
 | Gesellschaftswissenschaften 5/6 (Gewi) | 6 von 6 | – | – |
-| ITG | 2 von 2 | – | 1 von 2 |
+| ITG | 2 von 2 | – | 2 von 2 |
 | Kunst | 4 von 4 | – | 6 von 6 |
 | Mathematik | 5 von 5 | – | 6 von 7 |
 | Musik | 7 von 7 | – | 6 von 6 |
 | Naturwissenschaften (Wahlpflicht 7–10) | – | – | nicht in LernTor |
-| Naturwissenschaften 5/6 | 8 von 9 | – | – |
+| Naturwissenschaften 5/6 | 9 von 9 | – | – |
 | Physik | 4 von 4 | – | 6 von 6 |
 | Politische Bildung | 4 von 4 | – | 6 von 6 |
 | Sport | nicht als Quiz | – | nicht als Quiz |
@@ -81,11 +81,11 @@ Gezählt: abgedeckte (auch teilweise) von allen Themenfeldern, die sich als Quiz
 |---|---|---|
 | 3.1 Von den Sinnen zum Messen | ✅ | `MessenUndSinne` |
 | 3.2 Stoffe im Alltag | ✅ | `StoffeImAlltag` |
-| 3.3 Die Sonne als Energiequelle (Wasserkreislauf, Treibhauseffekt-Modell) | ⬜ offen | Noch kein Thema in LernTor. |
+| 3.3 Die Sonne als Energiequelle (Wasserkreislauf, Treibhauseffekt-Modell) | ✅ | `SonneAlsEnergiequelle` |
 | 3.4 Welt des Großen – Welt des Kleinen | ✅ | `OptikUndWeltraum` |
-| 3.5 Pflanzen – Tiere – Lebensräume (Winterschlaf, Frühblüher, Verbreitungsstrategien) | ◐ teilweise | `Bluetenpflanzen`, `LebensraeumeUndNahrungsketten` – Frühblüher und Samenverbreitung seit 3.1 (Blütenpflanzen); Winterschlaf und Winterruhe fehlen noch. |
+| 3.5 Pflanzen – Tiere – Lebensräume (Winterschlaf, Frühblüher, Verbreitungsstrategien) | ✅ | `Bluetenpflanzen`, `LebensraeumeUndNahrungsketten`, `UeberwinternVonTierenUndPflanzen` |
 | 3.6 Bewegung zu Wasser, zu Lande und in der Luft (Bionik) | ✅ | `BewegungUndBionik` |
-| 3.7 Körper und Gesundheit (Ernährungspyramide, Suchtprävention explizit) | ◐ teilweise | `ErnaehrungUndVerdauung` – Ernährung seit 3.1; Suchtprävention ist erst in Klasse 9 als Thema da. |
+| 3.7 Körper und Gesundheit (Ernährungspyramide, Suchtprävention explizit) | ✅ | `ErnaehrungUndVerdauung`, `GesundLebenUndSucht` |
 | 3.8 Sexualerziehung | ✅ | `PubertaetUndEntwicklung` |
 | 3.9 Technik (einfacher Stromkreis, Leiter/Nichtleiter) | ✅ | `Stromkreis` |
 
@@ -372,7 +372,7 @@ Noch nicht erfasst.
 | Themenfeld | Stand | Themen in LernTor |
 |---|---|---|
 | Themenfeld: Standardsoftware | – nicht als Quiz | Praktischer Umgang mit Textverarbeitung und Tabellenkalkulation am Rechner. |
-| Themenfeld: Informatiksysteme | ⬜ offen | Noch kein Thema in LernTor. |
+| Themenfeld: Informatiksysteme | ✅ | `Informatiksysteme` |
 | Themenfeld: Leben in und mit vernetzten Systemen (Cybermobbing, Fake News) | ✅ | `Cybermobbing`, `FakeNewsErkennen` |
 
 ### Wirtschaft-Arbeit-Technik (WAT)
