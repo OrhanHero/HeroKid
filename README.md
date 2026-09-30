@@ -22,7 +22,7 @@ Kindes aus: geübt wird, was am nächsten Schultag dran ist, plus Türkisch (sie
 | Dokument | Inhalt |
 |---|---|
 | [docs/DESIGN.md](docs/DESIGN.md) | **Designs (seit 3.0)**: Farbrollen, Kontrastregeln, ein Design hinzufügen, Bildschirmfotos der CI |
-| [docs/NAECHSTES-LEVEL-3-1.md](docs/NAECHSTES-LEVEL-3-1.md) | **Plan vom 30.09.2026 (Version 3.1 – Funktion)**: jede Frage vorlesen (auch englische und türkische Sätze in der richtigen Stimme), Lernkalender, zwei neue Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28 |
+| [docs/NAECHSTES-LEVEL-3-1.md](docs/NAECHSTES-LEVEL-3-1.md) | **Version 3.1 – Funktion (Plan und Stand)**: jede Frage vorlesen (auch englische und türkische Sätze in der richtigen Stimme), Lernkalender, zwei neue Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28 |
 | [docs/NAECHSTES-LEVEL-3.md](docs/NAECHSTES-LEVEL-3.md) | **Plan vom 30.09.2026 (Version 3.0)**: wählbare Designs, Schrift und Textgröße, Bildschirmfotos und Kontrasttests in der CI, Entwicklungsumgebung, Fahrplan bis 2028 |
 | [docs/NAECHSTES-LEVEL.md](docs/NAECHSTES-LEVEL.md) | **Plan vom 29.09.2026**: .NET 10, Abzeichen, Meisterschaft je Thema, größere Pools |
 | [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md) | **Was als Nächstes zu tun ist**, und was am 28.09.2026 erledigt wurde |
@@ -301,6 +301,13 @@ deshalb bewusst nicht umgesetzt.
   ein Abzeichen wird einmal gespeichert und nie entzogen. Neue erscheinen nach dem bestandenen
   Abschlussquiz als goldene Zeile, alle zusammen in „Mein Fortschritt“ (offene blass mit dem Weg
   dorthin; Abzeichen abgeschalteter Bereiche werden ausgeblendet).
+- **📅 Deine Lerntage** (seit 3.1, `LearningCalendar`): oben in „Mein Fortschritt“ die letzten
+  zwölf Wochen als Kalender – gelernt (grün mit Häkchen), Schultag, schulfrei (nur Rand; Wochenende,
+  Feiertage, Ferien) – dazu „42 Lerntage insgesamt · 11 in den letzten vier Wochen“. Keine Serie.
+- **🔊 Jede Frage vorlesen** (seit 3.1, `SpeechSegmenter`): neben jeder Frage in Übung, Nachrichten
+  und Abschlussquiz. Deutsche Anweisungen liest die deutsche Stimme, englische und türkische Sätze
+  ihre eigene; nach dem Antworten lässt sich die englische/türkische Lösung anhören. Der Knopf
+  erscheint nur, wenn es für jede Sprache der Frage eine Stimme gibt (Piper oder Windows).
 - Bewusst KEINE Tages-Streaks: ein verpasster Tag soll kein schlechtes Gewissen erzeugen - Sterne
   können nur wachsen, nie verfallen (einlösen ja, verfallen nein). Dasselbe gilt für die Abzeichen.
 

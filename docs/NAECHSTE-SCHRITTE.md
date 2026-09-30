@@ -8,7 +8,7 @@ Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht u
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
-> **Nächste Version (Plan vom 30.09.2026): 3.1 – Funktion** – jede Frage vorlesen (englische und
+> **Version 3.1 – Funktion** (fertig, Release nach dem Merge) – jede Frage vorlesen (englische und
 > türkische Sätze in der passenden Stimme), Lernkalender in „Mein Fortschritt“, zwei neue
 > Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28:
 > [`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md).
@@ -132,6 +132,8 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
 
 | Was | Wo |
 |---|---|
+| **Version 3.1 – Funktion**: jede Frage vorlesen (englische/türkische Sätze in ihrer Stimme, Lösung anhören), Lernkalender in „Mein Fortschritt“, Designs 🏔️ Gletscher und 🌋 Vulkan als Belohnung, 120 neue Fragen (Biologie Kl. 6, Kunst/Politik Kl. 7) und mehrstufige Wahrscheinlichkeit (Mathe Kl. 9), Schulkalender bis Sommer 2028 | [`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md) |
+| **Befunde aus dem Testlauf der Familie**: Emojis als Kästchen (neue Preflight-Regel `emoji-neu`), abgeschnittener Knopf im Passwort-Fenster, rohe Namen („Klasse10“), unbeschriftete Belohnungsfelder; Eltern-Bereich mit Inhaltsverzeichnis und erstmals von einem Test geladen | `ParentSettingsWindowTests` |
 | **+660 Fragen**: Türkisch Kl. 6/7/9, Klasse 7 Englisch/Deutsch/Gewi/Musik, KI-Wissen Kl. 7 | Pull Request [OrhanHero/HeroKid#6](https://github.com/OrhanHero/HeroKid/pull/6) |
 | **Fehler:** offene Antworten galten als richtig, sobald die Lösung *darin vorkam* – „25“ war richtig, wenn „5“ gesucht war, und wer mehrere Formen hintereinander tippte, lag immer richtig. Jetzt muss die Antwort der Lösung entsprechen (Einheiten, „x =“, Artikel, ganzer Lückensatz bleiben erlaubt) | `OpenTextAnswerMatcher` |
 | **Fehler:** bei den binomischen Formeln waren 8 von 9 hinterlegten Lösungen falsch („(x + 9)² = x² + 36x + 81“). Wer richtig rechnete, bekam einen Fehler. Alte Karteikarten werden beim nächsten Abruf repariert | `BinomischeFormel` |
