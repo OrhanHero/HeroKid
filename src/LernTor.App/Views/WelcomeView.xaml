@@ -305,12 +305,20 @@
                     <!-- "Mein Fortschritt": Meisterschaft je Thema. Bewusst kleiner und unter dem
                          Start-Knopf - der Tag beginnt mit Lernen, nicht mit Statistik. Reine
                          Anzeige, schaltet nichts frei. -->
-                    <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_OpenProgress]}"
-                            Style="{StaticResource RoundedButton}" FontSize="16" Padding="22,10"
-                            HorizontalAlignment="Center" Margin="0,16,0,0"
-                            Background="{DynamicResource TextSecondaryBrush}"
-                            Visibility="{Binding ShowProgressButton, Converter={StaticResource BoolToVis}}"
-                            Command="{Binding OpenProgressCommand}" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_OpenProgress]}"
+                                Style="{StaticResource RoundedButton}" FontSize="16" Padding="22,10"
+                                Background="{DynamicResource TextSecondaryBrush}"
+                                Visibility="{Binding ShowProgressButton, Converter={StaticResource BoolToVis}}"
+                                Command="{Binding OpenProgressCommand}" />
+                        <!-- "Mein Design": wie "Mein Fortschritt" bewusst klein und unter dem
+                             Start-Knopf. -->
+                        <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Welcome_OpenDesign]}"
+                                Style="{StaticResource RoundedButton}" FontSize="16" Padding="22,10" Margin="12,0,0,0"
+                                Background="{DynamicResource TextSecondaryBrush}"
+                                Visibility="{Binding ShowDesignButton, Converter={StaticResource BoolToVis}}"
+                                Command="{Binding OpenDesignCommand}" />
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
 

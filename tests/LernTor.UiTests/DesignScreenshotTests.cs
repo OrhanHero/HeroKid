@@ -123,6 +123,12 @@ public sealed class DesignScreenshotTests
                 new Dictionary<string, DateTimeOffset> { ["richtig-10"] = DateTimeOffset.Now },
                 _ => true, DateOnly.FromDateTime(DateTime.Today)))
         }),
+        ("07-design-galerie", () => new DesignPickerView
+        {
+            DataContext = new DesignPickerViewModel("Emirhan",
+                DesignPreferences.Default with { ThemeId = "ozean", Font = DesignFont.GutLesbar },
+                new HashSet<string>(), _ => { }, () => { })
+        }),
     };
 
     /// <summary>
@@ -192,6 +198,41 @@ public sealed class DesignScreenshotTests
         var danach = new Border();
         danach.SetResourceReference(Border.BackgroundProperty, "BackgroundBrush");
         Assert.Equal(ThemeService.ToColor(DesignThemeCatalog.Default.Palette.Background), ((SolidColorBrush)danach.Background).Color);
+    }
+
+    /// <summary>
+    /// Die Galerie mit Daten: alle acht Karten werden gezeichnet (Item-Templates, siehe
+    /// CLAUDE.md), die gesperrte zeigt, wie man sie bekommt, und eine Wahl ruft den Rückruf mit
+    /// den neuen Einstellungen auf - eine gesperrte Karte nicht.
+    /// </summary>
+    [WpfFact]
+    public void Design_Galerie_waehlt_und_respektiert_gesperrte_Designs()
+    {
+        EnsureAppResourcesLoaded();
+        DesignPreferences? gemeldet = null;
+        var vm = new DesignPickerViewModel("Test", DesignPreferences.Default, new HashSet<string>(),
+            neu => gemeldet = neu, () => { });
+        var ansicht = new DesignPickerView { DataContext = vm };
+        ansicht.Measure(new Size(Breite, Hoehe));
+        ansicht.Arrange(new Rect(0, 0, Breite, Hoehe));
+        ansicht.UpdateLayout();
+
+        Assert.Equal(DesignThemeCatalog.All.Count, vm.Themes.Count);
+        var galaxie = vm.Themes.Single(t => t.Id == "galaxie");
+        Assert.True(galaxie.IsLocked);
+        Assert.Contains("🔒", galaxie.LockHint);
+
+        vm.SelectThemeCommand.Execute(galaxie);
+        Assert.Null(gemeldet);
+
+        vm.SelectThemeCommand.Execute(vm.Themes.Single(t => t.Id == "wald"));
+        vm.SelectFontCommand.Execute(vm.Fonts.Single(f => f.Key == nameof(DesignFont.Verspielt)));
+        vm.SelectTextScaleCommand.Execute(vm.TextScales.Single(s => s.Key == "120"));
+        vm.DarkInEvening = true;
+
+        Assert.Equal(new DesignPreferences("wald", DesignFont.Verspielt, 120, false, true), gemeldet);
+        Assert.True(vm.Themes.Single(t => t.Id == "wald").IsSelected);
+        Assert.Equal("Selected", vm.Fonts.Single(f => f.Key == nameof(DesignFont.Verspielt)).SelectionTag);
     }
 
     private static void Fotografiere(string ordner, string name, FrameworkElement ansicht, double skalierung)

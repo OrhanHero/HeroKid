@@ -1,0 +1,141 @@
+<UserControl x:Class="LernTor.App.Views.DesignPickerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LernTor.App.Localization">
+    <!-- "Mein Design" (docs/NAECHSTES-LEVEL-3.md, Schritt 4). Jede Wahl wirkt sofort; die Karten
+         zeigen die Farben ihres eigenen Designs (Pinsel aus dem ViewModel), alles andere hier
+         die des aktiven Designs (DynamicResource). -->
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="32,36,32,8" HorizontalAlignment="Center" MaxWidth="1100">
+            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_Title]}"
+                       Style="{StaticResource HeadlineText}" FontSize="32" TextAlignment="Center" />
+            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_Subtitle]}"
+                       Style="{StaticResource SubtitleText}" FontSize="18" TextAlignment="Center" Margin="0,8,0,0" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,0">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="1120">
+
+                <ItemsControl ItemsSource="{Binding Themes}" HorizontalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource DesignCardButton}"
+                                    Tag="{Binding SelectionTag}"
+                                    IsEnabled="{Binding IsLocked, Converter={StaticResource InverseBool}}"
+                                    Command="{Binding DataContext.SelectThemeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <Border Background="{Binding PreviewBackground}" CornerRadius="12" Padding="10">
+                                        <Border Background="{Binding PreviewSurface}" CornerRadius="10" Padding="10,8">
+                                            <StackPanel>
+                                                <TextBlock Text="Aa Bb" FontSize="18" FontWeight="Bold" Foreground="{Binding PreviewText}" />
+                                                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_PreviewSample]}"
+                                                           FontSize="12" Foreground="{Binding PreviewTextSecondary}" />
+                                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                    <Border Background="{Binding PreviewPrimary}" CornerRadius="8" Padding="12,2">
+                                                        <TextBlock Text="OK" FontSize="12" FontWeight="SemiBold" Foreground="{Binding PreviewOnColor}" />
+                                                    </Border>
+                                                    <Border Background="{Binding PreviewAccent}" CornerRadius="8" Padding="8,2" Margin="6,0,0,0">
+                                                        <TextBlock Text="💡" FontSize="12" />
+                                                    </Border>
+                                                    <Border Background="{Binding PreviewSuccess}" CornerRadius="8" Width="20" Margin="6,0,0,0" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </Border>
+                                    <TextBlock Margin="2,10,0,0" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}">
+                                        <Run Text="{Binding Emoji, Mode=OneWay}" />
+                                        <Run Text="{Binding Name, Mode=OneWay}" />
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding Description}" FontSize="13" TextWrapping="Wrap" Margin="2,2,0,0"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding LockHint}" FontSize="13" TextWrapping="Wrap" Margin="2,6,0,0"
+                                               FontStyle="Italic" Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Style="{StaticResource CardBorder}" Padding="24,18" Margin="8,16,8,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0"
+                                   FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_FontLabel]}" />
+                        <ItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Fonts}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource TabPillButton}" Tag="{Binding SelectionTag}" Margin="4"
+                                            Command="{Binding DataContext.SelectFontCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="{Binding Label}" FontFamily="{Binding FontFamily}" />
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,16,0"
+                                   FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_TextSizeLabel]}" />
+                        <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding TextScales}" Margin="0,10,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource TabPillButton}" Tag="{Binding SelectionTag}" Margin="4"
+                                            Content="{Binding Label}"
+                                            Command="{Binding DataContext.SelectTextScaleCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Margin="0,14,16,0"
+                                   FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
+                                   Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_AutoLabel]}" />
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="4,14,0,0">
+                            <CheckBox IsChecked="{Binding FollowWindows}" FontSize="16" Margin="0,0,0,8"
+                                      Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_FollowWindows]}" />
+                            <CheckBox IsChecked="{Binding DarkInEvening}" FontSize="16"
+                                      Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_DarkInEvening]}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="2" Style="{StaticResource RoundedButton}" HorizontalAlignment="Center" Margin="0,12,0,24"
+                Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Design_Done]}"
+                Command="{Binding BackCommand}" />
+    </Grid>
+</UserControl>

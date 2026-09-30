@@ -1,4 +1,5 @@
 using System.Text.Json;
+using LernTor.Core.Design;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Data.Entities;
@@ -221,6 +222,32 @@ public sealed class StudentProfileRepository
     }
 
     /// <summary>
+    /// Speichert die Design-Wahl des Kindes (docs/NAECHSTES-LEVEL-3.md, Schritt 4) - genau diese
+    /// fünf Spalten, nichts sonst (Muster wie <see cref="SetPinnedReadingTextAsync"/>). Eine
+    /// unbekannte Design-Id oder Textgröße wird auf den Standard gesetzt, statt sie zu speichern.
+    /// </summary>
+    public async Task SetDesignAsync(
+        string profileId, DesignPreferences design, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(design);
+
+        var entity = await _db.Profiles.FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        entity.DesignThemeId = DesignThemeCatalog.Find(design.ThemeId).Id;
+        entity.DesignFont = design.Font.ToString();
+        entity.DesignTextScalePercent = DesignPreferences.TextScales.Contains(design.TextScalePercent)
+            ? design.TextScalePercent
+            : 100;
+        entity.DesignFollowWindows = design.FollowWindows;
+        entity.DesignDarkInEvening = design.DarkInEvening;
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Schreibt ALLE Einstellungen eines Profils (siehe <see cref="ProfileSettings"/>). Nimmt ein
     /// Objekt mit lauter <c>required</c>-Eigenschaften statt der früheren zwanzig
     /// Positionsparameter - ein vergessenes Feld ist damit ein Compilerfehler statt einer still
@@ -300,7 +327,13 @@ public sealed class StudentProfileRepository
         DrivingChallengeSignCount = entity.DrivingChallengeSignCount > 0
             ? entity.DrivingChallengeSignCount
             : StudentProfile.DailySignChallengeDefaultCount,
-        DisabledSignCategories = DeserializeCategories(entity.DisabledSignCategoriesJson)
+        DisabledSignCategories = DeserializeCategories(entity.DisabledSignCategoriesJson),
+        Design = new DesignPreferences(
+            DesignThemeCatalog.Find(entity.DesignThemeId).Id,
+            Enum.TryParse<DesignFont>(entity.DesignFont, out var schrift) ? schrift : DesignFont.Standard,
+            entity.DesignTextScalePercent > 0 ? entity.DesignTextScalePercent : 100,
+            entity.DesignFollowWindows,
+            entity.DesignDarkInEvening)
     };
 
     /// <summary>Alt-Zeilen haben hier den leeren String (additives Schema-Update) - dann ist

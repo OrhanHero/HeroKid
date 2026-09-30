@@ -35,7 +35,16 @@ public sealed class ThemeService : INotifyPropertyChanged
     public void ApplyPreferences(DesignPreferences preferences, IReadOnlySet<string> unlockedAchievementIds)
     {
         var theme = DesignSelection.ResolveTheme(preferences, DateTime.Now, WindowsUsesDarkMode(), unlockedAchievementIds);
-        Apply(theme, preferences.Font, DesignSelection.TextScale(preferences.TextScalePercent));
+        var skalierung = DesignSelection.TextScale(preferences.TextScalePercent);
+
+        // Nichts geändert (häufig: bei jedem Etappenwechsel wird neu entschieden) - dann auch
+        // nichts tauschen, sonst liefe jedes Mal eine Neuauflösung aller Ressourcen.
+        if (_aktiv is not null && theme == CurrentTheme && preferences.Font == CurrentFont && skalierung == TextScale)
+        {
+            return;
+        }
+
+        Apply(theme, preferences.Font, skalierung);
     }
 
     /// <summary>Zurück zum Standard - für die Profilwahl, die allen Kindern gehört.</summary>

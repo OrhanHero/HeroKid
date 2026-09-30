@@ -6,7 +6,8 @@ namespace LernTor.Core.Design;
 /// <list type="bullet">
 /// <item>Text steht auf Hintergrund, Karten, Kacheln und Hervorhebungsflächen.</item>
 /// <item>Hauptfarbe, Erfolg und Fehler sind Schriftfarbe (auf Hintergrund/Karte) UND Fläche mit
-/// Schrift in <c>OnColor</c> darauf - daher beide Richtungen.</item>
+/// Schrift in <c>OnColor</c> darauf - daher beide Richtungen. Zweitrangige Knöpfe ("Mein
+/// Fortschritt") nutzen den gedämpften Text als Fläche.</item>
 /// <item>Fächerfarben und Fokusring sind große Schrift bzw. Grafik (3 : 1).</item>
 /// </list>
 /// Ein Design, das eine Regel verletzt, lässt die CI rot werden (<c>DesignThemeCatalogTests</c>).
@@ -25,7 +26,7 @@ public static class DesignContrastRules
             new[] { "Background", "Surface" }),
         new Rule(ColorContrast.Text,
             new[] { "OnColor" },
-            new[] { "Primary", "PrimaryDark", "Success", "Error" }),
+            new[] { "Primary", "PrimaryDark", "Success", "Error", "TextSecondary" }),
         new Rule(ColorContrast.Text,
             new[] { "Primary", "Success", "Error" },
             new[] { "Background", "Surface" }),

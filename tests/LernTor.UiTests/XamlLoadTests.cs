@@ -41,6 +41,7 @@ public sealed class XamlLoadTests
     {
         typeof(LernTor.App.Views.WelcomeView),
         typeof(LernTor.App.Views.ProgressOverviewView),
+        typeof(LernTor.App.Views.DesignPickerView),
         typeof(LernTor.App.Views.ProfileSelectionView),
         typeof(LernTor.App.Views.PauseModeView),
         typeof(LernTor.App.Views.ReadingView),

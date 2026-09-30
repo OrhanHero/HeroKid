@@ -28,6 +28,9 @@
         <DataTemplate DataType="{x:Type vm:ProgressOverviewViewModel}">
             <views:ProgressOverviewView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DesignPickerViewModel}">
+            <views:DesignPickerView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:ReadingViewModel}">
             <views:ReadingView />
         </DataTemplate>

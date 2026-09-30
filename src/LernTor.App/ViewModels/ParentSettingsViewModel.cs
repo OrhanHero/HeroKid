@@ -707,6 +707,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         DrivingAreaEnabled = value?.DrivingAreaEnabled ?? true;
         ErsteHilfeEnabled = value?.ErsteHilfeEnabled ?? true;
         TimetableSubjectsEnabled = value?.TimetableSubjectsEnabled ?? true;
+        DesignSummary = DescribeDesign(value?.Design);
         EditorGradeLevel = value?.GradeLevel ?? GradeLevel.Klasse6;
         EditorClassLabel = value?.ClassLabel ?? string.Empty;
         GradeLevelStatus = string.Empty;
@@ -934,6 +935,58 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     private bool timetableSubjectsEnabled = true;
 
     partial void OnTimetableSubjectsEnabledChanged(bool value) => MarkDirty();
+
+    /// <summary>Was das Kind in "🎨 Mein Design" eingestellt hat - nur Anzeige und Zurücksetzen;
+    /// wählen soll das Kind selbst (docs/NAECHSTES-LEVEL-3.md, Schritt 4).</summary>
+    [ObservableProperty]
+    private string designSummary = string.Empty;
+
+    private static string DescribeDesign(LernTor.Core.Design.DesignPreferences? design)
+    {
+        if (design is null)
+        {
+            return string.Empty;
+        }
+
+        var theme = LernTor.Core.Design.DesignThemeCatalog.Find(design.ThemeId);
+        var teile = new List<string>
+        {
+            $"{theme.Emoji} {theme.NameDe}",
+            design.Font switch
+            {
+                LernTor.Core.Design.DesignFont.GutLesbar => "Schrift „Gut lesbar“ (Verdana)",
+                LernTor.Core.Design.DesignFont.Verspielt => "Schrift „Verspielt“ (Comic Sans)",
+                _ => "Standardschrift"
+            },
+            $"Textgröße {design.TextScalePercent} %"
+        };
+        if (design.FollowWindows)
+        {
+            teile.Add("dunkel wie Windows");
+        }
+
+        if (design.DarkInEvening)
+        {
+            teile.Add("abends dunkel");
+        }
+
+        return string.Join(" · ", teile);
+    }
+
+    /// <summary>Setzt Design, Schrift und Textgröße des Kindes auf den Standard zurück - sofort
+    /// gespeichert, unabhängig vom "Speichern"-Knopf, wie die Klassenstufe.</summary>
+    [RelayCommand]
+    private async Task ResetDesignAsync()
+    {
+        if (SelectedProfile is null)
+        {
+            return;
+        }
+
+        await _profileRepo.SetDesignAsync(SelectedProfile.Id, LernTor.Core.Design.DesignPreferences.Default);
+        SelectedProfile.Design = LernTor.Core.Design.DesignPreferences.Default;
+        DesignSummary = DescribeDesign(SelectedProfile.Design);
+    }
 
     // ---------------- Klassenstufe (Schuljahreswechsel) ----------------
 

@@ -63,6 +63,20 @@ public sealed class StudentProfileEntity
     /// </summary>
     public bool TimetableSubjectsDisabled { get; set; }
 
+    /// <summary>Design-Id aus <c>DesignThemeCatalog</c>; null = Standard (Alt-Zeilen, siehe
+    /// SqliteSchemaUpdater). Unbekannte Ids fallen beim Lesen auf den Standard zurueck.</summary>
+    public string? DesignThemeId { get; set; }
+
+    /// <summary><c>DesignFont</c> als Name (nie als Zahl); leer = Standard.</summary>
+    public string DesignFont { get; set; } = string.Empty;
+
+    /// <summary>100/110/120; 0 = Alt-Zeile -> 100.</summary>
+    public int DesignTextScalePercent { get; set; }
+
+    public bool DesignFollowWindows { get; set; }
+
+    public bool DesignDarkInEvening { get; set; }
+
     /// <summary>Zeichen in der taeglichen Challenge; 0 = Alt-Zeile ohne Wert -> Standard.</summary>
     public int DrivingChallengeSignCount { get; set; }
 
