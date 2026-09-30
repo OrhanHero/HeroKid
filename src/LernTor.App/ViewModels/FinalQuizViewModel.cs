@@ -51,6 +51,8 @@ public sealed partial class FinalQuizViewModel : ObservableObject
 
     private void LoadCurrent()
     {
+        _speech?.Stop();
+
         if (CurrentIndex >= _questions.Count)
         {
             _onCompleted(_outcomes);

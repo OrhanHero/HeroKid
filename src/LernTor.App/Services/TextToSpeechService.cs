@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
+using LernTor.Core.Speech;
 
 namespace LernTor.App.Services;
 
@@ -34,6 +35,14 @@ public sealed class TextToSpeechService : IDisposable
 
     private CancellationTokenSource? _piperCts;
     private Prompt? _currentSapiPrompt;
+
+    /// <summary>Wer die laufende Vorlesung gestartet hat (z.B. eine Fragekarte) - damit ein
+    /// zweiter Klick auf DENSELBEN Knopf anhält, ein Klick auf einen anderen aber neu startet.</summary>
+    private object? _owner;
+
+    /// <summary>Die installierten Windows-Stimmen, einmal abgefragt (die Abfrage ist nicht gratis
+    /// und wird für jede Frage gebraucht, um den 🔊-Knopf ein- oder auszublenden).</summary>
+    private IReadOnlyList<VoiceInfo>? _sapiVoices;
 
     /// <summary>Läuft bei jedem Speak/Stop hoch; asynchron eintreffende Abschluss-Ereignisse einer
     /// ÄLTEREN Vorlesung (abgebrochene SAPI-Prompts, auslaufende Piper-Pipelines) dürfen den
@@ -75,30 +84,90 @@ public sealed class TextToSpeechService : IDisposable
     /// <summary>Startet das Vorlesen von <paramref name="text"/> in der Sprache
     /// <paramref name="cultureName"/> (z.B. "de-DE", "tr-TR", "en-US"); bricht eine eventuell
     /// laufende Ausgabe vorher ab.</summary>
-    public void Speak(string text, string cultureName)
+    public void Speak(string text, string cultureName) =>
+        Speak(new[] { (text, cultureName) }, owner: null);
+
+    /// <summary>
+    /// Liest mehrere Abschnitte nacheinander vor, jeden mit der Stimme seiner Sprache - für
+    /// Fragen wie „Setze die richtige Form ein: "She ___ to school."“ (siehe
+    /// <see cref="SpeechSegmenter"/>). <paramref name="owner"/> merkt sich, wer gestartet hat
+    /// (<see cref="IsSpeakingFor"/>).
+    /// </summary>
+    public void Speak(IReadOnlyList<SpeechSegment> segments, object? owner) =>
+        Speak(segments.Select(s => (s.Text, s.CultureName)).ToList(), owner);
+
+    private void Speak(IReadOnlyList<(string Text, string Culture)> segments, object? owner)
     {
-        if (string.IsNullOrWhiteSpace(text))
+        var abschnitte = segments.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
+        if (abschnitte.Count == 0)
         {
             return;
         }
 
         Stop();
+        _owner = owner;
         var version = ++_speakVersion;
         SetSpeaking(true);
 
         if (_piper.IsInstalled)
         {
             _piperCts = new CancellationTokenSource();
-            _ = RunPiperPipelineAsync(text, cultureName, version, _piperCts.Token);
+            _ = RunPiperPipelineAsync(abschnitte, version, _piperCts.Token);
         }
         else
         {
-            SpeakWithSapi(text, cultureName);
+            SpeakWithSapi(abschnitte);
         }
+    }
+
+    /// <summary>Liest gerade etwas vor, das <paramref name="owner"/> gestartet hat.</summary>
+    public bool IsSpeakingFor(object owner) => IsSpeaking && ReferenceEquals(_owner, owner);
+
+    /// <summary>
+    /// Gibt es eine Stimme für diese Sprache? Mit Piper immer (Deutsch, Türkisch, Englisch sind
+    /// dabei), sonst nur, wenn Windows eine passende Stimme hat. Ohne passende Stimme würde die
+    /// Standardstimme lesen - eine deutsche Stimme, die Englisch vorliest, bringt falsche
+    /// Aussprache bei. Deshalb blendet die Fragekarte den Knopf dann aus.
+    /// </summary>
+    public bool CanSpeak(SpeechLanguage language) =>
+        CanSpeak(language, _piper.IsInstalled, SapiVoices().Select(v => v.Culture.TwoLetterISOLanguageName));
+
+    /// <summary>Die Regel hinter <see cref="CanSpeak(SpeechLanguage)"/>, ohne Audio-Geräte testbar.</summary>
+    public static bool CanSpeak(SpeechLanguage language, bool piperInstalled, IEnumerable<string> sapiLanguages)
+    {
+        if (piperInstalled)
+        {
+            return true;
+        }
+
+        var sprache = SpeechLanguages.CultureName(language)[..2];
+        return sapiLanguages.Any(s => string.Equals(s, sprache, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private IReadOnlyList<VoiceInfo> SapiVoices()
+    {
+        if (_sapiVoices is null)
+        {
+            try
+            {
+                _sapiVoices = _synthesizer.GetInstalledVoices()
+                    .Where(v => v.Enabled)
+                    .Select(v => v.VoiceInfo)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                LernTor.Core.Logging.AppLog.Warn("TTS", $"Windows-Stimmen nicht abfragbar - {ex.Message}");
+                _sapiVoices = Array.Empty<VoiceInfo>();
+            }
+        }
+
+        return _sapiVoices;
     }
 
     public void Stop()
     {
+        _owner = null;
         _speakVersion++;
         _piperCts?.Cancel();
         _piperCts = null;
@@ -107,6 +176,44 @@ public sealed class TextToSpeechService : IDisposable
         _mediaPlayer.Stop();
         _mediaPlayer.Close();
         SetSpeaking(false);
+    }
+
+    private void SpeakWithSapi(IReadOnlyList<(string Text, string Culture)> abschnitte)
+    {
+        if (abschnitte.Count == 1)
+        {
+            SpeakWithSapi(abschnitte[0].Text, abschnitte[0].Culture);
+            return;
+        }
+
+        // Mehrere Sprachen: ein Prompt mit Stimmwechsel je Abschnitt. Hat eine Sprache keine
+        // Stimme, liest die Standardstimme diesen Abschnitt (die Fragekarte zeigt den Knopf dann
+        // gar nicht erst an, siehe CanSpeak).
+        try
+        {
+            var builder = new PromptBuilder(CultureInfo.GetCultureInfo(abschnitte[0].Culture));
+            foreach (var (text, culture) in abschnitte)
+            {
+                var stimme = SapiVoices().FirstOrDefault(v => v.Culture.TwoLetterISOLanguageName == culture[..2]);
+                if (stimme is null)
+                {
+                    builder.AppendText(text);
+                    continue;
+                }
+
+                builder.StartVoice(stimme);
+                builder.AppendText(text);
+                builder.EndVoice();
+            }
+
+            _currentSapiPrompt = _synthesizer.SpeakAsync(builder);
+        }
+        catch (Exception ex)
+        {
+            // Lieber alles in einer Stimme als gar nicht.
+            LernTor.Core.Logging.AppLog.Warn("TTS", $"Stimmwechsel fehlgeschlagen, eine Stimme für alles - {ex.Message}");
+            SpeakWithSapi(string.Join(" ", abschnitte.Select(a => a.Text)), abschnitte[0].Culture);
+        }
     }
 
     private void SpeakWithSapi(string text, string cultureName)
@@ -126,11 +233,11 @@ public sealed class TextToSpeechService : IDisposable
         _currentSapiPrompt = _synthesizer.SpeakAsync(text);
     }
 
-    private async Task RunPiperPipelineAsync(string text, string cultureName, int version, CancellationToken cancellationToken)
+    private async Task RunPiperPipelineAsync(IReadOnlyList<(string Text, string Culture)> abschnitte, int version, CancellationToken cancellationToken)
     {
         try
         {
-            await SpeakChunksWithPiperAsync(text, cultureName, cancellationToken);
+            await SpeakChunksWithPiperAsync(abschnitte, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -143,7 +250,7 @@ public sealed class TextToSpeechService : IDisposable
             LernTor.Core.Logging.AppLog.Warn("TTS", $"Piper fehlgeschlagen, SAPI-Rückfall - {ex.Message}");
             if (version == _speakVersion)
             {
-                SpeakWithSapi(text, cultureName);
+                SpeakWithSapi(abschnitte);
             }
             return;
         }
@@ -154,10 +261,13 @@ public sealed class TextToSpeechService : IDisposable
         }
     }
 
-    private async Task SpeakChunksWithPiperAsync(string text, string cultureName, CancellationToken cancellationToken)
+    private async Task SpeakChunksWithPiperAsync(IReadOnlyList<(string Text, string Culture)> abschnitte, CancellationToken cancellationToken)
     {
-        var chunks = SplitIntoChunks(text);
-        Task<string>? nextSynthesis = _piper.SynthesizeToWavAsync(chunks[0], cultureName, cancellationToken);
+        // Jeder Abschnitt wird für sich in Häppchen geteilt; jedes Häppchen behält seine Sprache.
+        var chunks = abschnitte
+            .SelectMany(a => SplitIntoChunks(a.Text).Select(text => (Text: text, a.Culture)))
+            .ToList();
+        Task<string>? nextSynthesis = _piper.SynthesizeToWavAsync(chunks[0].Text, chunks[0].Culture, cancellationToken);
 
         try
         {
@@ -166,7 +276,7 @@ public sealed class TextToSpeechService : IDisposable
                 var wavPath = await nextSynthesis!;
                 // Nächstes Häppchen schon synthetisieren, WÄHREND das aktuelle abgespielt wird.
                 nextSynthesis = i + 1 < chunks.Count
-                    ? _piper.SynthesizeToWavAsync(chunks[i + 1], cultureName, cancellationToken)
+                    ? _piper.SynthesizeToWavAsync(chunks[i + 1].Text, chunks[i + 1].Culture, cancellationToken)
                     : null;
 
                 try

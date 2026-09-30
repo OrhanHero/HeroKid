@@ -6,6 +6,7 @@ using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Core.Services;
+using LernTor.Core.Speech;
 
 namespace LernTor.App.ViewModels;
 
@@ -157,7 +158,68 @@ public sealed partial class QuestionAnswerViewModel : ObservableObject
         DisplayOptions = question.Options.Count == 0
             ? question.Options
             : question.Options.OrderBy(_ => ShuffleRandom.Next()).ToList();
+
+        // Vorlesen (docs/NAECHSTES-LEVEL-3-1.md, Schritt 1): einmal zerlegen, in der Reihenfolge,
+        // in der die Möglichkeiten auf dem Bildschirm stehen. Diktate nie - dort IST das Vorlesen
+        // die Aufgabe, und der Satz darf nicht sichtbar werden.
+        if (!IsDictation)
+        {
+            _readAloudSegments = SpeechSegmenter.ForQuestion(question, DisplayOptions);
+            _solutionSegments = SpeechSegmenter.ForSolution(question);
+        }
+
+        CanReadAloud = speech is not null && Speakable(_readAloudSegments);
     }
+
+    // --- Vorlesen jeder Frage ---
+
+    private readonly IReadOnlyList<SpeechSegment> _readAloudSegments = Array.Empty<SpeechSegment>();
+    private readonly IReadOnlyList<SpeechSegment> _solutionSegments = Array.Empty<SpeechSegment>();
+
+    /// <summary>🔊 an der Frage: nur, wenn es für JEDEN Abschnitt eine passende Stimme gibt -
+    /// eine deutsche Stimme, die Englisch vorliest, brächte falsche Aussprache bei.</summary>
+    public bool CanReadAloud { get; }
+
+    /// <summary>🔊 an der Lösung: erst nach dem Antworten, und nur bei fremdsprachigen Lösungen
+    /// (wie klingt der englische Satz richtig?). Eine deutsche Zahl vorzulesen hilft niemandem.</summary>
+    public bool CanReadSolution =>
+        IsSubmitted && _speech is not null
+        && _solutionSegments.Any(s => s.Language != SpeechLanguage.Deutsch)
+        && Speakable(_solutionSegments);
+
+    private bool Speakable(IReadOnlyList<SpeechSegment> abschnitte) =>
+        _speech is not null && abschnitte.Count > 0 && abschnitte.All(s => _speech.CanSpeak(s.Language));
+
+    /// <summary>Liest Frage und Möglichkeiten vor; ein zweiter Klick hält an.</summary>
+    [RelayCommand]
+    private void ReadAloud()
+    {
+        if (_speech is null || !CanReadAloud)
+        {
+            return;
+        }
+
+        if (_speech.IsSpeakingFor(this))
+        {
+            _speech.Stop();
+            return;
+        }
+
+        _speech.Speak(_readAloudSegments, owner: this);
+    }
+
+    [RelayCommand]
+    private void ReadSolution()
+    {
+        if (_speech is null || !CanReadSolution)
+        {
+            return;
+        }
+
+        _speech.Speak(_solutionSegments, owner: this);
+    }
+
+    partial void OnIsSubmittedChanged(bool value) => OnPropertyChanged(nameof(CanReadSolution));
 
     [RelayCommand]
     private void ToggleChat() => IsChatOpen = !IsChatOpen;

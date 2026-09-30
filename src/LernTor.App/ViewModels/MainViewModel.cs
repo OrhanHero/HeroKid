@@ -881,6 +881,10 @@ public sealed partial class MainViewModel : ObservableObject
 
     partial void OnCurrentViewModelChanged(object? value)
     {
+        // Was eine Ansicht vorgelesen hat, gehört zu ihr: beim Wechsel (auch in den Planer)
+        // verstummt es, statt über der nächsten Ansicht weiterzulaufen.
+        _tts.Stop();
+
         OnPropertyChanged(nameof(CanOpenPlanner));
         OnPropertyChanged(nameof(IsPlannerOpen));
     }
@@ -1508,7 +1512,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         return new NewsViewModel(
             articles, Progress.CompletedNewsArticleIds, OnArticleAnswered, OnNewsSectionCompleted,
-            _homeworkChat, weather, CurrentProfile!.NewsSecondsPerArticle);
+            _homeworkChat, weather, CurrentProfile!.NewsSecondsPerArticle, _tts);
     }
 
     private async void OnArticleAnswered(NewsArticle article, QuestionOutcome outcome, QuizQuestion question)

@@ -552,6 +552,8 @@ public static class Translations
             ["Parent_Rewards_TitleHint"] = L("Belohnung, z.B. \"30 Minuten extra Spielzeit\"", "Ödül, örn. \"30 dakika ekstra oyun süresi\""),
             ["Parent_Rewards_CostHint"] = L("Sterne-Kosten, z.B. 20", "Yıldız bedeli, örn. 20"),
             ["Parent_Rewards_Add"] = L("Hinzufügen", "Ekle"),
+            ["Question_ReadAloud"] = L("🔊 Vorlesen", "🔊 Sesli oku"),
+            ["Question_ReadSolution"] = L("🔊 Richtige Antwort anhören", "🔊 Doğru cevabı dinle"),
             ["Parent_Rewards_EmojiLabel"] = L("Emoji", "Emoji"),
             ["Parent_Rewards_TitleLabel"] = L("Belohnung", "Ödül"),
             ["Parent_Rewards_CostLabel"] = L("Sterne", "Yıldız"),

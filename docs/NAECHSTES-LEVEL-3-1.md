@@ -15,7 +15,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 | Schritt | Stand |
 |---|---|
 | 0 — Was der Testlauf gezeigt hat (Eltern-Bereich, Emojis) | ✅ 30.09.2026: 🔍/🚑/⭐ statt Kästchen, Preflight `emoji-neu`, Login-Knöpfe umbrechen, „Klasse 10“/„Offene Frage“, beschriftete Belohnungsfelder, Inhaltsverzeichnis mit 15 Sprungmarken; neuer Ladetest `ParentSettingsWindowTests` |
-| 1 — 🔊 Jede Frage vorlesen | ⏳ geplant |
+| 1 — 🔊 Jede Frage vorlesen | ✅ 30.09.2026: `SpeechSegmenter` (Core, 37 Tests inkl. Durchlauf über alle Generatoren), 🔊 an Frage und Lösung, Stimmwechsel je Abschnitt (Piper und Windows), Knopf nur mit passender Stimme, Anhalten beim Weiterblättern; Testplan V.31-4 bis V.31-7 |
 | 2 — 📅 Lernkalender in „Mein Fortschritt“ | ⏳ geplant |
 | 3 — Zwei neue Designs als Belohnung | ⏳ geplant |
 | 4 — Lehrplan-Lücken schließen | ⏳ geplant |
@@ -73,8 +73,7 @@ Fertig, wenn: Preflight und Tests grün sind und der Eltern-Bereich in einem Ren
 - **Diktate bleiben, wie sie sind.** Dort ist das Vorlesen die Aufgabe, und der Satz darf nicht sichtbar werden.
 - Fertig, wenn:
   - Segmenter-Tests und Render-Test sind grün.
-  - Der Knopf ist auf den Bildschirmfotos zu sehen.
-  - Der Testplan hat einen Punkt zum Anhören am echten PC.
+  - Der Testplan hat Punkte zum Anhören am echten PC. Auf den Bildschirmfotos der CI fehlt der Knopf in der Regel: dem Windows-Server dort fehlt eine deutsche Stimme, und ohne passende Stimme blendet die Karte ihn aus. Genau so soll es sein.
 
 ## Schritt 2 — 📅 Lernkalender in „Mein Fortschritt“
 

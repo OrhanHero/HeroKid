@@ -3,6 +3,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
+using LernTor.App.Services;
 using LernTor.ContentGen.HomeworkChat;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
@@ -30,6 +31,7 @@ public sealed partial class NewsViewModel : ObservableObject, IPausableStage
     private readonly Action<NewsArticle, QuestionOutcome, QuizQuestion> _onArticleAnswered;
     private readonly Action _onSectionCompleted;
     private readonly IHomeworkHelpChatService _homeworkChat;
+    private readonly TextToSpeechService? _speech;
     private readonly DispatcherTimer _minTimeTimer;
 
     /// <summary>Artikel-IDs, deren Fragen bereits vollständig beantwortet wurden - vorbefüllt mit den
@@ -130,8 +132,10 @@ public sealed partial class NewsViewModel : ObservableObject, IPausableStage
         Action onSectionCompleted,
         IHomeworkHelpChatService homeworkChat,
         KidWeatherReport? weather = null,
-        int minSecondsPerArticle = StudentProfile.DefaultNewsSecondsPerArticle)
+        int minSecondsPerArticle = StudentProfile.DefaultNewsSecondsPerArticle,
+        TextToSpeechService? speech = null)
     {
+        _speech = speech;
         _minSecondsPerArticle = minSecondsPerArticle > 0 ? minSecondsPerArticle : StudentProfile.DefaultNewsSecondsPerArticle;
         Weather = weather;
         _articles = articles;
@@ -186,6 +190,7 @@ public sealed partial class NewsViewModel : ObservableObject, IPausableStage
 
     private void LoadCurrentArticle()
     {
+        _speech?.Stop();
         CurrentQuestions.Clear();
 
         if (CurrentIndex >= _articles.Count)
@@ -201,7 +206,7 @@ public sealed partial class NewsViewModel : ObservableObject, IPausableStage
         CurrentArticle = _articles[CurrentIndex];
         foreach (var question in CurrentArticle.ComprehensionQuestions)
         {
-            CurrentQuestions.Add(new QuestionAnswerViewModel(question, _homeworkChat, OnQuestionSubmitted));
+            CurrentQuestions.Add(new QuestionAnswerViewModel(question, _homeworkChat, OnQuestionSubmitted, speech: _speech));
         }
 
         // CurrentQuestions ist eine ObservableCollection - Count-Änderungen lösen für die

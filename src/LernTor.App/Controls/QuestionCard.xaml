@@ -18,8 +18,21 @@
 
             <!-- Bei einem Diktat wird der Satz NICHT angezeigt - stuende er da, waere es
                  Abschreiben statt Rechtschreiben. Stattdessen der Vorlesen-Knopf. -->
-            <TextBlock Text="{Binding Question.Prompt}" Style="{StaticResource HeadlineText}" FontSize="24" Margin="0,0,0,20"
-                       Visibility="{Binding IsDictation, Converter={StaticResource InverseBoolToVis}}" />
+            <!-- Frage mit 🔊 daneben (3.1): liest Frage und Möglichkeiten vor, englische und
+                 türkische Sätze in ihrer eigenen Stimme. Der Knopf fehlt, wenn es für eine der
+                 Sprachen keine Stimme gibt (CanReadAloud) - und bei Diktaten ganz. -->
+            <Grid Margin="0,0,0,20" Visibility="{Binding IsDictation, Converter={StaticResource InverseBoolToVis}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Question.Prompt}" Style="{StaticResource HeadlineText}" FontSize="24" />
+                <Button Grid.Column="1" Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Question_ReadAloud]}"
+                        Style="{StaticResource OptionButton}" FontSize="14" Padding="12,6" Margin="12,0,0,0"
+                        VerticalAlignment="Top"
+                        Visibility="{Binding CanReadAloud, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding ReadAloudCommand}" />
+            </Grid>
 
             <StackPanel Visibility="{Binding IsDictation, Converter={StaticResource BoolToVis}}" Margin="0,0,0,20">
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Dictation_Prompt]}"
@@ -167,6 +180,12 @@
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Exercise_Incorrect]}"
                            Visibility="{Binding IsCorrect, Converter={StaticResource InverseBoolToVis}}"
                            Foreground="{DynamicResource ErrorBrush}" FontWeight="Bold" FontSize="20" />
+
+                <!-- Wie klingt die richtige Antwort? Nur bei englischen/türkischen Lösungen. -->
+                <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Question_ReadSolution]}"
+                        Style="{StaticResource OptionButton}" FontSize="14" Padding="12,6" HorizontalAlignment="Left"
+                        Visibility="{Binding CanReadSolution, Converter={StaticResource BoolToVis}}"
+                        Command="{Binding ReadSolutionCommand}" />
 
                 <!-- Diktat: den richtigen Satz und die falschen Woerter zeigen. "Leider falsch"
                      allein hilft nach einem Zehn-Wort-Satz niemandem weiter - das Kind muss

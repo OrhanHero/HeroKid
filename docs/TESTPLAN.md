@@ -201,3 +201,19 @@ Bild (Artefakt „Design-Vorschau“), **am echten Bildschirm gesehen hat es noc
 | V.3-7 | Elternteil | Eltern-Bereich öffnen, während ein Kind „Nacht“ gewählt hat | Eltern-Bereich ist hell (Standard); beim Profil steht „🌙 Nacht · …“; „Auf Standard zurücksetzen“ stellt nach dem Schließen wieder Lavendel her | |
 | V.3-8 | Beide Kinder | Profilwahl nach dem Abmelden eines Kindes mit eigenem Design | Profilwahl ist wieder im Standard-Design | |
 
+## Neu seit 30.09.2026 (Version 3.1)
+
+Version 3.1 bringt Funktionen, die man hören und sehen muss ([`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md)).
+Für das Vorlesen sollten im Eltern-Bereich die **natürlichen Vorlesestimmen** installiert sein –
+ohne sie gibt es den 🔊-Knopf nur für Sprachen, für die Windows eine Stimme hat.
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| V.31-1 | Elternteil | Eltern-Bereich öffnen, Passwort-Fenster ansehen | Beide Knöpfe ganz sichtbar, keiner abgeschnitten | |
+| V.31-2 | Elternteil | Im Eltern-Bereich links im Inhaltsverzeichnis „Bericht“, dann „Gefahrenzone“ anklicken | Die Seite springt jeweils zur Überschrift | |
+| V.31-3 | Elternteil | „Datenbank prüfen“, „Erste Hilfe“, Klassenstufe, Belohnungen ansehen | 🔍 und 🚑 statt Kästchen, „Klasse 10“, beschriftete Felder | |
+| V.31-4 | Emirhan | Englisch-Übung: 🔊 neben der Frage drücken | Die deutsche Anweisung klingt deutsch, der englische Satz englisch, dann die Möglichkeiten | |
+| V.31-5 | Emirhan | Nach dem Antworten „🔊 Richtige Antwort anhören“ | Die Lösung wird englisch vorgelesen | |
+| V.31-6 | Batuhan | Türkisch-Übung: 🔊 drücken, dann gleich „Weiter“ | Türkische Stimme; beim Weiterblättern hört das Vorlesen auf | |
+| V.31-7 | Batuhan | Mathe-Aufgabe mit Bruch vorlesen lassen | „drei durch vier“, kein Datum | |
+
