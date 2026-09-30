@@ -8,9 +8,10 @@ Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht u
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
-> **Nächste Version (Plan vom 30.09.2026): 3.0** – wählbare Designs (auch dunkel und mit hohem
-> Kontrast), Schrift und Textgröße je Kind, Bildschirmfotos und Kontrasttests in der CI,
-> Entwicklungsumgebung für jede Sitzung, Fahrplan bis 2028: [`NAECHSTES-LEVEL-3.md`](NAECHSTES-LEVEL-3.md).
+> **Neu (30.09.2026): Version 3.0** ([Release v3.0.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.0.0)) –
+> wählbare Designs (auch dunkel und mit hohem Kontrast), Schrift und Textgröße je Kind,
+> Bildschirmfotos und Kontrasttests in der CI, Entwicklungsumgebung für jede Sitzung. Plan und
+> Fahrplan bis 2028: [`NAECHSTES-LEVEL-3.md`](NAECHSTES-LEVEL-3.md), Aufbau: [`DESIGN.md`](DESIGN.md).
 >
 > **Neu (29.09.2026): Version 2.0** – .NET 10, Meisterschaft je Thema, Abzeichen, eine
 > Fehler-Kartei-Zahl, die stimmt, größere Englisch- und Musikpools, stärkeres Eltern-Passwort,
