@@ -103,6 +103,14 @@ touches `Subject`/`LearningStage` enums, `LearningStageSubjects.Map`,
 `SubjectToTitleConverter`, `ParentSettingsViewModel`'s toggle list, and DE/TR `Translations` — see
 any `Add <Subject> as a new subject` commit for the exact file list.
 
+**Every topic belongs to a Rahmenlehrplan field.** `RahmenlehrplanKatalog`
+(`LernTor.ContentGen/Curriculum`, since 3.2) lists every field of the Berlin curriculum per subject
+and double grade (5/6 → Klasse6, 7/8 → Klasse7, 9/10 → Klasse9) with the topic methods that
+practise it. `RahmenlehrplanAbdeckungTests` fails if a mapped topic is renamed or missing, if the
+number of open fields grows, or if `docs/RAHMENLEHRPLAN.md` is stale (regenerate with
+`LERNTOR_RLP_DOC=1 dotnet test --filter RahmenlehrplanAbdeckungTests`). A new topic goes into the
+catalog in the same commit.
+
 Since curated pools are finite, three repositories in `LernTor.Data` cooperate to keep questions
 feeling fresh across sessions, all funneled into the `recentlySeenPrompts` parameter threaded
 through `ExerciseGeneratorBase.Generate()`/`QuizComposer`: `ActivityLogRepository.GetRecentPromptsAsync`
