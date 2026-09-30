@@ -14,6 +14,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 
 | Schritt | Stand |
 |---|---|
+| 0 — Was der Testlauf gezeigt hat (Eltern-Bereich, Emojis) | ⏳ geplant |
 | 1 — 🔊 Jede Frage vorlesen | ⏳ geplant |
 | 2 — 📅 Lernkalender in „Mein Fortschritt“ | ⏳ geplant |
 | 3 — Zwei neue Designs als Belohnung | ⏳ geplant |
@@ -43,6 +44,24 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 
 ---
 
+## Schritt 0 — Was der Testlauf gezeigt hat
+
+Die Familie hat am 30.09.2026 Bildschirmfotos eines Testlaufs mit 3.0.0 geschickt. Gut sah aus:
+- Systeminfo „LernTor 3.0.0 (677d08c)“ und die natürlichen Stimmen sind installiert.
+- Die automatische Sicherung läuft, und im Fehlerprotokoll stehen nur INFO-Zeilen.
+
+Zu beheben ist, was man auf den Bildern sieht:
+
+| Befund | Ursache | Behebung |
+|---|---|---|
+| Vor „Datenbank prüfen“ und „Erste Hilfe und Notfallwissen“ steht ein leeres Kästchen | 🩻 und 🩺 stammen aus Unicode 12 bzw. 14 (Block U+1FA70–U+1FAFF). WPF zeichnet diese neueren Emojis nicht, auch unter Windows 11 nicht. Dasselbe gilt für 🟢 und 🟡 an den Schwierigkeitsstufen der Nachrichten und für das Abzeichen „Ersthelfer“ | Ältere Emojis (🔍, 🚑, ⭐). Eine neue Preflight-Regel `emoji-neu` verbietet Emojis ab Unicode 12, und `CLAUDE.md` erklärt die Falle |
+| Im Passwort-Fenster ist der rote Knopf „PC entsperren & beenden“ rechts abgeschnitten | Beide Knöpfe liegen in einer 420 px breiten Zeile ohne Umbruch | Die Knöpfe brechen um |
+| Klassenstufe „Klasse10“, Fragetyp „OpenText“ | Die Auswahllisten zeigen die rohen Namen aus dem Code | Lesbare Namen: „Klasse 10“, „Offene Frage“ |
+| Belohnungen: drei leere Eingabefelder ohne Beschriftung | – | Beschriftungen (Emoji, Name, Sterne) |
+| Der Eltern-Bereich ist eine sehr lange Seite (über 30 Abschnitte) | Er ist über die Jahre gewachsen | **Inhaltsverzeichnis** am linken Rand: ein Klick springt zum Abschnitt |
+
+Fertig, wenn: Preflight und Tests grün sind und der Eltern-Bereich in einem Render-Test mit Inhaltsverzeichnis lädt.
+
 ## Schritt 1 — 🔊 Jede Frage vorlesen
 
 - **Ein 🔊-Knopf an jeder Frage** in Übung, Nachrichten und Abschlussquiz. Er liest die Frage und die Antwortmöglichkeiten vor. Ein zweiter Klick hält an. Beim Weiterblättern hört das Vorlesen auf.
@@ -71,12 +90,13 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 
 | Design | Stimmung | Frei mit |
 |---|---|---|
-| **🧊 Gletscher** | hell, kühles Eisblau | „🚀 Fünfhundert richtig“ (`richtig-500`) |
+| **🏔️ Gletscher** | hell, kühles Eisblau | „🚀 Fünfhundert richtig“ (`richtig-500`) |
 | **🌋 Vulkan** | dunkel, Lava-Orange | „🏆 Erstes gemeistertes Thema“ (`meister-1`) |
 
 - Beide bestehen den Kontrasttest (WCAG 2.2 AA) und erscheinen auf den Bildschirmfotos.
 - Die Galerie zeigt bei gesperrten Designs, wie man sie bekommt. Das funktioniert seit 3.0.
 - Die Ids werden nie umbenannt, denn sie sind beim Profil gespeichert.
+- Die Emojis müssen älter als Unicode 12 sein (siehe Schritt 0). 🧊 wäre ein leeres Kästchen, deshalb 🏔️.
 
 ## Schritt 4 — Lehrplan-Lücken schließen
 
