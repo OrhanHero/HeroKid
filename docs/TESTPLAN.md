@@ -155,7 +155,7 @@ sie aber noch niemand. **Vorher eine Sicherung auf USB.**
 | N.3 | Kind | Tag durchspielen | Es kommen **nur** diese Fächer; der Zähler „Fächer x/y“ geht bis zum Ende auf; das Abschlussquiz fragt nur diese Fächer | |
 | N.4 | Emirhan | An zwei NaWi-Tagen hintereinander (Mo für Di, Di für Mi) | Zwei **verschiedene** Fächer aus Bio/Chemie/Physik | |
 | N.5 | Elternteil | Schalter „Fächer des Tages nach dem Stundenplan auswählen“ aus, Eltern-Bereich schließen | Ab der nächsten Etappe kommen wieder alle Fächer | |
-| N.6 | Elternteil | „🩻 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
+| N.6 | Elternteil | „🔍 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
 | N.7 | Elternteil | Klassenstufe eines Kindes testweise ändern und zurückstellen | Rückfrage, dann „✅ Gespeichert“; Sterne und Stundenplan sind danach noch da | |
 | N.8 | Notfall | Eine automatische Sicherung aus `…\LernTor\sicherungen\` über „Sicherung wiederherstellen…“ einspielen | App beendet sich; nach dem Neustart ist alles da, was vor der Sicherung da war | |
 
@@ -200,4 +200,23 @@ Bild (Artefakt „Design-Vorschau“), **am echten Bildschirm gesehen hat es noc
 | V.3-6 | Kind | „Abends ab 19 Uhr dunkel“ einschalten, nach 19 Uhr eine Etappe weiter | Wechselt zu „Nacht“ (spätestens beim nächsten Etappenwechsel) | |
 | V.3-7 | Elternteil | Eltern-Bereich öffnen, während ein Kind „Nacht“ gewählt hat | Eltern-Bereich ist hell (Standard); beim Profil steht „🌙 Nacht · …“; „Auf Standard zurücksetzen“ stellt nach dem Schließen wieder Lavendel her | |
 | V.3-8 | Beide Kinder | Profilwahl nach dem Abmelden eines Kindes mit eigenem Design | Profilwahl ist wieder im Standard-Design | |
+
+## Neu seit 30.09.2026 (Version 3.1)
+
+Version 3.1 bringt Funktionen, die man hören und sehen muss ([`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md)).
+Für das Vorlesen sollten im Eltern-Bereich die **natürlichen Vorlesestimmen** installiert sein –
+ohne sie gibt es den 🔊-Knopf nur für Sprachen, für die Windows eine Stimme hat.
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| V.31-1 | Elternteil | Eltern-Bereich öffnen, Passwort-Fenster ansehen | Beide Knöpfe ganz sichtbar, keiner abgeschnitten | |
+| V.31-2 | Elternteil | Im Eltern-Bereich links im Inhaltsverzeichnis „Bericht“, dann „Gefahrenzone“ anklicken | Die Seite springt jeweils zur Überschrift | |
+| V.31-3 | Elternteil | „Datenbank prüfen“, „Erste Hilfe“, Klassenstufe, Belohnungen ansehen | 🔍 und 🚑 statt Kästchen, „Klasse 10“, beschriftete Felder | |
+| V.31-4 | Emirhan | Englisch-Übung: 🔊 neben der Frage drücken | Die deutsche Anweisung klingt deutsch, der englische Satz englisch, dann die Möglichkeiten | |
+| V.31-5 | Emirhan | Nach dem Antworten „🔊 Richtige Antwort anhören“ | Die Lösung wird englisch vorgelesen | |
+| V.31-6 | Batuhan | Türkisch-Übung: 🔊 drücken, dann gleich „Weiter“ | Türkische Stimme; beim Weiterblättern hört das Vorlesen auf | |
+| V.31-7 | Batuhan | Mathe-Aufgabe mit Bruch vorlesen lassen | „drei durch vier“, kein Datum | |
+| V.31-8 | Beide Kinder | „🏆 Mein Fortschritt“ öffnen | Oben „📅 Deine Lerntage“: gelernte Tage grün mit Häkchen, Wochenenden und Ferien nur umrandet, heute markiert; die Zahl der Lerntage passt zum Abzeichen „Zehn Lerntage“ | |
+| V.31-9 | Beide Kinder | „🎨 Mein Design“ öffnen | Zehn Designs; Galaxie, Gletscher und Vulkan tragen ein 🔒 mit dem Abzeichen, das sie freischaltet (sofern noch nicht verdient) | |
+| V.31-10 | Elternteil | Eltern-Bereich → „Ferien und Feiertage“ mit berlin.de (Senatsverwaltung, „Ferientermine“) vergleichen | Herbst 11.–23.10.2027, Weihnachten 22.–31.12.2027, Winter 31.01.–05.02.2028, Ostern 10.–22.04.2028, frei 26.05.2028, Pfingsten 01.–02.06.2028, Sommer 01.07.–12.08.2028 | |
 

@@ -38,6 +38,36 @@ public partial class ParentSettingsWindow : Window
     private bool _closeConfirmed;
 
     /// <summary>
+    /// Inhaltsverzeichnis (Testlauf 30.09.2026: über 30 Abschnitte auf einer Seite): springt zum
+    /// Abschnitt, dessen Überschrift im <c>Tag</c> der Sprungmarke steht, und stellt sie oben hin.
+    /// BringIntoView allein schöbe sie nur gerade eben ins Bild - meist an den unteren Rand.
+    /// </summary>
+    private void Sprungmarke_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string name } || FindName(name) is not FrameworkElement ziel)
+        {
+            return;
+        }
+
+        try
+        {
+            var oben = ziel.TransformToAncestor(EinstellungenInhalt).Transform(new Point(0, 0)).Y;
+            EinstellungenScroll.ScrollToVerticalOffset(Math.Max(0, oben - 8));
+        }
+        catch (InvalidOperationException)
+        {
+            // Ziel gerade nicht im sichtbaren Baum (z.B. ausgeblendeter Abschnitt): dann wenigstens
+            // so weit scrollen, wie WPF es selbst kann.
+            ziel.BringIntoView();
+        }
+    }
+
+    /// <summary>In einem schmalen Fenster nimmt das Inhaltsverzeichnis den Abschnitten zu viel Platz
+    /// weg - dann wird es ausgeblendet.</summary>
+    private void Fenster_SizeChanged(object sender, SizeChangedEventArgs e) =>
+        Inhaltsverzeichnis.Visibility = e.NewSize.Width >= 900 ? Visibility.Visible : Visibility.Collapsed;
+
+    /// <summary>
     /// Rueckfrage beim Schliessen ueber das X, wenn ungespeicherte Aenderungen offen sind.
     /// Ohne sie gingen Presets, Zeiten und eigene Tipp-Texte stillschweigend verloren - im
     /// Familienbetrieb ist genau das mehrfach passiert.

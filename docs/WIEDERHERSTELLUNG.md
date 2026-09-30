@@ -33,7 +33,7 @@ gerade läuft. Empfehlung: einmal im Monat und vor jedem größeren Update.
 
 ## Datenbank prüfen
 
-Gleicher Abschnitt → **„🩻 Datenbank prüfen“**. Das Ergebnis steht direkt darunter:
+Gleicher Abschnitt → **„🔍 Datenbank prüfen“**. Das Ergebnis steht direkt darunter:
 
 - **✅ in Ordnung**: nichts zu tun.
 - **⚠️ beschädigt**: die Datei repariert sich nicht von selbst. Weiter mit „Sicherung einspielen“.

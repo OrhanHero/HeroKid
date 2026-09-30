@@ -24,6 +24,10 @@ public class PoolReichweiteTests
         { "Deutsch", GradeLevel.Klasse7, 175 },
         { "Gewi", GradeLevel.Klasse7, 175 },
         { "KiWissen", GradeLevel.Klasse7, 78 },
+        // Lehrplan-Lücken, Version 3.1 (docs/NAECHSTES-LEVEL-3-1.md, Schritt 4).
+        { "Biologie", GradeLevel.Klasse6, 155 },
+        { "Kunst", GradeLevel.Klasse7, 115 },
+        { "Politik", GradeLevel.Klasse7, 115 },
     };
 
     [Theory]
@@ -37,6 +41,9 @@ public class PoolReichweiteTests
             "Deutsch" => new GermanGenerator(),
             "Gewi" => new GewiGenerator(),
             "KiWissen" => new KiWissenGenerator(),
+            "Biologie" => new BiologieGenerator(),
+            "Kunst" => new KunstGenerator(),
+            "Politik" => new PolitikGenerator(),
             _ => throw new ArgumentOutOfRangeException(nameof(fach))
         };
 

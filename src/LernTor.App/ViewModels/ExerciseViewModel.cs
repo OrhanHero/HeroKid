@@ -100,6 +100,9 @@ public sealed partial class ExerciseViewModel : ObservableObject, IPausableStage
 
     private void LoadCurrent()
     {
+        // Eine vorgelesene Frage hört mit dem Weiterblättern auf (3.1: jede Frage vorlesen).
+        _speech?.Stop();
+
         if (CurrentIndex >= _questions.Count)
         {
             _minTimeTimer.Stop();

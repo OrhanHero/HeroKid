@@ -34,7 +34,9 @@ public sealed class NewsCategoryToTitleConverter : IValueConverter
     }
 }
 
-/// <summary>Schwierigkeits-Enum → lokalisierter Text mit Ampel-Symbol (🟢/🟡/🔴).</summary>
+/// <summary>Schwierigkeits-Enum → lokalisierter Text mit ein bis drei Sternen. Früher eine
+/// Ampel aus farbigen Kreisen - die sind Emojis ab Unicode 12 und erscheinen in WPF als leeres
+/// Kästchen (siehe CLAUDE.md).</summary>
 public sealed class NewsDifficultyToTitleConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)

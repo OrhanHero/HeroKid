@@ -22,7 +22,7 @@ nachgeführt.
 | 5 — Designs als Belohnung | ✅ 30.09.2026: „Galaxie“ wird mit dem Abzeichen „Zehn Lerntage“ (`lerntage-10`) frei; gesperrte Karten zeigen, wie man sie bekommt |
 | 6 — Entwicklungsumgebung | ✅ 30.09.2026: SessionStart-Hook (`.claude/hooks/session-start.sh`), Devcontainer, `.editorconfig`; beschrieben in `BUILD.md` |
 | 7 — Dokumentation | ✅ 30.09.2026: neu `docs/DESIGN.md`; `CLAUDE.md` (Design-Regeln), `TESTPLAN.md` (V.2-1 bis V.3-8), `BUILD.md` (Umgebungen), `README.md`, `NAECHSTE-SCHRITTE.md` |
-| 8 — Release 3.0.0 | ⏳ Version 3.0.0 gesetzt; Release nach grüner CI und Merge von PR [OrhanHero/HeroKid#8](https://github.com/OrhanHero/HeroKid/pull/8) |
+| 8 — Release 3.0.0 | ✅ 30.09.2026: PR [OrhanHero/HeroKid#8](https://github.com/OrhanHero/HeroKid/pull/8) gemergt, [Release v3.0.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.0.0); offen bleibt die Sichtprüfung der Familie (Testplan V.3) |
 
 ---
 
@@ -203,6 +203,7 @@ Version 3.0.0, Release über den Knopf in Actions, Testplan für die Familie.
 | Wann | Was | Warum |
 |---|---|---|
 | **Oktober 2026** | Version 3.0 (dieser Plan) | Design, Barrierefreiheit, Umgebung |
+| **Oktober 2026** | Version 3.1 – Funktion: Vorlesen jeder Frage, Lernkalender, zwei Belohnungs-Designs, Lehrplan-Lücken (Mathe Kl. 9 Wahrscheinlichkeit, Biologie Kl. 6, Kunst/Politik Kl. 7), Schulkalender 2027/28 – Plan: [`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md) | Der vierte Teil des Auftrags („Funktion“); zwei Punkte aus diesem Fahrplan vorgezogen |
 | **nach 3–4 Wochen Betrieb** | Auswertung: Tageslänge, Abschlussquiz-Schwelle, Fehlerprotokoll | Entscheidet, ob ein Zeitbudget in Minuten nötig ist ([`NAECHSTE-SCHRITTE.md`](NAECHSTE-SCHRITTE.md), Abschnitt 3) |
 | **vor dem 10.11.2026** | 2.1.0 oder 3.0 installiert | .NET 8 läuft aus (erledigt durch 2.0, nur Installation fehlt) |
 | **Winter 2026/27** | Fragen gegenlesen lassen (Türkisch, Englisch), Lehrplan-Lücken schließen: Biologie Kl. 5/6 (Wasserkreislauf, Pflanzen/Tiere, Ernährung), Mathe Kl. 9 Wahrscheinlichkeit | Qualität vor Menge |

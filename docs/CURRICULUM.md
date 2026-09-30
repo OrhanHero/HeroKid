@@ -48,6 +48,7 @@ Spalten (Klasse 6 / 7 / 9), decken über diese Regel aber alle fünf wählbaren 
 | Kombinatorik (systematisches Zählen) | | Quadratische Funktionen (Scheitelpunkt) |
 | | | Exponentielles Wachstum |
 | | | Potenzgesetze |
+| | | Mehrstufige Zufallsversuche (Baumdiagramm, Pfadregeln) – seit 3.1 |
 
 > **Klasse 7 (neu, im Aufbau):** Mathematik hat als erstes Fach einen eigenen Klasse-7-Pool
 > (9 generative Themen nach RLP Sek I, Doppeljahrgang 7/8). Alle anderen Fächer fallen für
@@ -150,8 +151,8 @@ Rahmenlehrplan" weiter unten).
 | Pubertät und Entwicklung | Blut und Blutkreislauf | Gesundheit und Krankheit (Immunologie) |
 | Die Zelle | Ökosystem Wald | Bau und Funktion des Nervensystems |
 | Lebensräume und ihre Bewohner (Nahrungsketten) | Angepasstheit an Lebensräume | Sucht und Suchtprävention |
-| | | Vererbung beim Menschen (Humangenetik) |
-| | | Evolution – Theorien und Stammesgeschichte |
+| Ernährung und Verdauung (seit 3.1) | | Vererbung beim Menschen (Humangenetik) |
+| Blütenpflanzen: Blüte, Bestäubung, Samen (seit 3.1) | | Evolution – Theorien und Stammesgeschichte |
 
 > **Vokabeln**: Zusätzlich zu den Themenpools können Eltern im Eltern-Bereich eigene Wortlisten
 > für Englisch und Türkisch hinterlegen (`VocabularyRepository`). Diese Vokabeln laufen im
@@ -198,8 +199,8 @@ Rahmenlehrplan" weiter unten).
 | Berlin und seine Bezirke | Rechtsstaat und Jugendrecht | Bundestag und Bundesrat |
 | Wahlrecht | Parteien, Wahlen und Föderalismus | Wahlsystem |
 | Armut und Reichtum (Klasse-6-Niveau) | Menschenrechte und internationale Politik | Soziale Marktwirtschaft |
-| Leben in einer globalisierten Welt |  | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
-| Migration und Bevölkerung |  | Konflikte und Konfliktlösungen: internationale Akteure |
+| Leben in einer globalisierten Welt | Medien, Meinung und Öffentlichkeit (seit 3.1) | Demokratie in Deutschland: Willensbildung, Medien und Gefährdungen |
+| Migration und Bevölkerung | Geld, Konsum und Verbraucherschutz (seit 3.1) | Konflikte und Konfliktlösungen: internationale Akteure |
 | Leben in einem Rechtsstaat (Klassenregeln, Jugendschutz, Kinderrechte) |  |  |
 |  |  | Friedenssicherung und Entwicklungspolitik |
 |  |  | Europa in der Welt: Die Europäische Union |
@@ -241,8 +242,8 @@ Rahmenlehrplan" weiter unten).
 | Material, Körper und Raum | Kunstepochen und Bildmedien | Medienkunst und bildhaftes Gestalten |
 | Medien und Verfahren | Bild des Menschen: Figur, Porträt und Inszenierung | Architektur, Raum und Design |
 | Kunst und meine Lebenswelt | Bild der Dinge: Objekt, Plastik und Design | Materialästhetik und Transformation |
-|  |  | Inszenierung und Kuration |
-|  |  | Kulturelle Identität und Vielfalt |
+|  | Comic und Bildgeschichte (seit 3.1) | Inszenierung und Kuration |
+|  | Fotografie und Druckgrafik (seit 3.1) | Kulturelle Identität und Vielfalt |
 
 ## Musik (`MusikGenerator.cs`)
 
@@ -594,7 +595,7 @@ WP 7-10), sind entsprechend alle Themenfelder offen.
 - [x] 2. Größen und Messen (Trigonometrie, Körperberechnungen) (→ `Trigonometrie`, `PyramideKegelKugelVolumen`)
 - [x] 3. Raum und Form (Satz des Thales/Pythagoras) (→ `SatzDesThales`, `SatzDesPythagoras`)
 - [x] 4. Gleichungen und Funktionen (LGS, quadratische/Exponentialfunktionen) (→ `LinearesGleichungssystem`, `QuadratischeFunktionMerkmale`, `Exponentialfunktion`)
-- [ ] 5. Daten und Zufall (Stochastik: mehrstufige Wahrscheinlichkeiten, Baumdiagramme)
+- [x] 5. Daten und Zufall (Stochastik: mehrstufige Wahrscheinlichkeiten, Baumdiagramme) (→ `MehrstufigeZufallsversuche`, seit 3.1)
 - [x] 6. Wahlpflichtmodul A: Wachstumsprozesse (→ `Exponentialfunktion`)
 - [ ] 7. Wahlpflichtmodul B: Darstellende Geometrie (Zweitafelprojektion)
 

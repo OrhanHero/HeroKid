@@ -26,6 +26,99 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,0">
             <StackPanel HorizontalAlignment="Center" MaxWidth="900" MinWidth="560">
 
+                <!-- Lernkalender (3.1): die letzten zwoelf Wochen, eine Spalte je Woche. Bewusst
+                     ohne Serie, die reissen kann. Form UND Farbe unterscheiden die Tage: gelernt =
+                     gefuellt mit Haekchen, Schultag = blass gefuellt, schulfrei = nur Rand. -->
+                <Border Style="{StaticResource CardBorder}" Padding="22,18" Margin="0,0,0,14"
+                        Visibility="{Binding HasCalendar, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Progress_CalendarTitle]}"
+                                   FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding CalendarSummary, Mode=OneWay}" Style="{StaticResource BodyText}"
+                                   FontSize="15" Margin="0,4,0,12" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal">
+                            <ItemsControl ItemsSource="{Binding WeekdayLabels}" Margin="0,0,8,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontSize="12" Height="22" Margin="0,0,0,4"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ItemsControl ItemsSource="{Binding CalendarWeeks}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ItemsControl ItemsSource="{Binding Days}" Margin="0,0,4,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Width="22" Height="22" Margin="0,0,0,4" CornerRadius="5"
+                                                            BorderThickness="2" ToolTip="{Binding ToolTip}">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="{DynamicResource ProgressTrackBrush}" />
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource ProgressTrackBrush}" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Kind}" Value="Gelernt">
+                                                                        <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+                                                                        <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Kind}" Value="Schulfrei">
+                                                                        <Setter Property="Background" Value="Transparent" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Kind}" Value="Zukunft">
+                                                                        <Setter Property="Background" Value="Transparent" />
+                                                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                                        <Setter Property="BorderBrush" Value="{DynamicResource FocusBrush}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Text="✓" FontSize="12" FontWeight="Bold"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource OnColorBrush}">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Kind}" Value="Gelernt">
+                                                                            <Setter Property="Visibility" Value="Visible" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <!-- Legende -->
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Border Width="14" Height="14" CornerRadius="3" Background="{DynamicResource SuccessBrush}" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Progress_Calendar_Gelernt]}"
+                                       FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,16,0" />
+                            <Border Width="14" Height="14" CornerRadius="3" Background="{DynamicResource ProgressTrackBrush}" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Progress_Calendar_Schultag]}"
+                                       FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,16,0" />
+                            <Border Width="14" Height="14" CornerRadius="3" BorderThickness="2"
+                                    BorderBrush="{DynamicResource ProgressTrackBrush}" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Progress_Calendar_Schulfrei]}"
+                                       FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Abzeichen: freigeschaltete farbig (heute neue golden umrandet), offene blass
                      mit dem Hinweis, wie man sie bekommt. Nichts davon verfaellt. -->
                 <Border Style="{StaticResource CardBorder}" Padding="22,18" Margin="0,0,0,14"

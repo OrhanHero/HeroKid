@@ -114,7 +114,11 @@ public sealed class XamlLoadTests
 
         var view = new LernTor.App.Views.ProgressOverviewView
         {
-            DataContext = new LernTor.App.ViewModels.ProgressOverviewViewModel("Test", themen, () => { }, abzeichen)
+            DataContext = new LernTor.App.ViewModels.ProgressOverviewViewModel("Test", themen, () => { }, abzeichen,
+                // Lernkalender (3.1) mit allen vier Arten von Tagen - sonst würde keine Vorlage
+                // mit ihren DataTriggern je geladen.
+                LernTor.Core.Services.LearningCalendar.Build(
+                    new HashSet<DateOnly> { heute, heute.AddDays(-1), heute.AddDays(-9) }, heute))
         };
 
         view.Measure(new Size(1920, 1080));
@@ -126,6 +130,10 @@ public sealed class XamlLoadTests
         Assert.Contains("Bruchrechnen", texte);
         Assert.Contains("Stimme, Gesang und Chor", texte);
         Assert.Contains("👣", texte);
+        Assert.Contains("✓", texte);                          // ein gelernter Tag im Kalender
+        var modell = (LernTor.App.ViewModels.ProgressOverviewViewModel)view.DataContext;
+        Assert.Contains(modell.CalendarSummary, texte);
+        Assert.Equal(12, modell.CalendarWeeks.Count);
     }
 
     /// <summary>Geschafft-Bildschirm mit neuen Abzeichen: die zusaetzliche Zeile darf das

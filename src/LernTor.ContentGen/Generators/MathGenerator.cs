@@ -57,7 +57,8 @@ public sealed class MathGenerator : ExerciseGeneratorBase
                 LinearesGleichungssystem,
                 QuadratischeFunktionMerkmale,
                 Exponentialfunktion,
-                Potenzgesetze
+                Potenzgesetze,
+                MehrstufigeZufallsversuche
             }
         };
 
@@ -1101,6 +1102,83 @@ public sealed class MathGenerator : ExerciseGeneratorBase
             CorrectAnswers = new[] { ergebnis },
             Explanation = $"P(Rot) = günstige : mögliche Ergebnisse = {rote} : {rote + blaue} = {ergebnis} (gekürzt).",
             HelpHint = "Wahrscheinlichkeit = Anzahl günstige Ergebnisse geteilt durch Anzahl aller möglichen Ergebnisse."
+        };
+    }
+
+    // ----- Seit 3.1 (docs/NAECHSTES-LEVEL-3-1.md, Schritt 4): Lücke im Rahmenlehrplan 9/10 -----
+
+    private const string MehrstufigThema = "Mehrstufige Zufallsversuche (Baumdiagramm, Pfadregeln)";
+
+    /// <summary>
+    /// Zwei- oder mehrstufige Zufallsversuche: Ziehen mit und ohne Zurücklegen, zwei Würfel,
+    /// mehrere Münzwürfe. Frische Zahlen wie bei allen Mathe-Themen; Ergebnis als gekürzter Bruch.
+    /// </summary>
+    private static QuizQuestion MehrstufigeZufallsversuche(Random r)
+    {
+        string prompt, erklaerung;
+        int zaehler, nenner;
+
+        switch (r.Next(4))
+        {
+            case 0:
+            {
+                int rot = r.Next(1, 7), blau = r.Next(1, 7), n = rot + blau;
+                zaehler = rot * rot;
+                nenner = n * n;
+                prompt = $"In einer Urne liegen {rot} rote und {blau} blaue Kugeln. Du ziehst zweimal MIT Zurücklegen. " +
+                         "Wie groß ist die Wahrscheinlichkeit, zweimal Rot zu ziehen? (gekürzter Bruch als z/n)";
+                erklaerung = $"Pfadregel: Wahrscheinlichkeiten entlang eines Pfades multiplizieren. " +
+                             $"P(rot, rot) = {rot}/{n} · {rot}/{n} = {zaehler}/{nenner}";
+                break;
+            }
+            case 1:
+            {
+                int rot = r.Next(2, 7), blau = r.Next(1, 7), n = rot + blau;
+                zaehler = rot * (rot - 1);
+                nenner = n * (n - 1);
+                prompt = $"In einer Urne liegen {rot} rote und {blau} blaue Kugeln. Du ziehst zweimal OHNE Zurücklegen. " +
+                         "Wie groß ist die Wahrscheinlichkeit, zweimal Rot zu ziehen? (gekürzter Bruch als z/n)";
+                erklaerung = $"Ohne Zurücklegen ist beim zweiten Zug eine rote Kugel weniger da und insgesamt eine weniger: " +
+                             $"P(rot, rot) = {rot}/{n} · {rot - 1}/{n - 1} = {zaehler}/{nenner}";
+                break;
+            }
+            case 2:
+            {
+                int summe = r.Next(2, 13);
+                zaehler = 6 - Math.Abs(summe - 7);
+                nenner = 36;
+                prompt = $"Du wirfst zwei normale Würfel. Wie groß ist die Wahrscheinlichkeit, dass die Augensumme {summe} ist? " +
+                         "(gekürzter Bruch als z/n)";
+                erklaerung = $"Es gibt 6 · 6 = 36 gleich wahrscheinliche Paare. Genau {zaehler} davon ergeben die Summe {summe}. " +
+                             $"Summenregel: P = {zaehler}/36";
+                break;
+            }
+            default:
+            {
+                int wuerfe = r.Next(2, 6);
+                zaehler = 1;
+                nenner = 1 << wuerfe;
+                prompt = $"Du wirfst eine Münze {wuerfe}-mal. Wie groß ist die Wahrscheinlichkeit, dass jedes Mal Kopf fällt? " +
+                         "(gekürzter Bruch als z/n)";
+                erklaerung = $"Jeder Wurf: P(Kopf) = 1/2. Pfadregel über {wuerfe} Stufen: (1/2)^{wuerfe} = 1/{nenner}";
+                break;
+            }
+        }
+
+        var (z, n2) = Reduce(zaehler, nenner);
+        var ergebnis = n2 == 1 ? $"{z}" : $"{z}/{n2}";
+
+        return new QuizQuestion
+        {
+            Id = NewId(),
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = MehrstufigThema,
+            Type = QuestionType.OpenText,
+            Prompt = prompt,
+            CorrectAnswers = new[] { ergebnis },
+            Explanation = $"{erklaerung} = {ergebnis} (gekürzt).",
+            HelpHint = "Baumdiagramm zeichnen. Pfadregel: entlang eines Pfades multiplizieren. Summenregel: Pfade, die zum Ereignis gehören, addieren."
         };
     }
 }

@@ -144,7 +144,7 @@ public static class AchievementCatalog
         new("ki-kenner", "🤖", "KI-Kenner", "Yapay zeka uzmanı",
             "30 Aufgaben im KI-Bereich richtig lösen", "Yapay zeka bölümünde 30 görevi doğru çöz",
             Subject.KiWissen, f => f.CorrectIn(Subject.KiWissen) >= 30),
-        new("ersthelfer", "🩺", "Ersthelfer", "İlk yardımcı",
+        new("ersthelfer", "🚑", "Ersthelfer", "İlk yardımcı",
             "30 Aufgaben in Erster Hilfe richtig lösen", "İlk yardımda 30 görevi doğru çöz",
             Subject.ErsteHilfe, f => f.CorrectIn(Subject.ErsteHilfe) >= 30),
 

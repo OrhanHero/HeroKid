@@ -12,7 +12,7 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Demokratie, BerlinBezirke, Wahlrecht, ArmutUndReichtumPolitik, GlobalisierteWelt, MigrationPolitik, LebenImRechtsstaat },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { MitbestimmungK7, RechtsstaatUndJugendrecht, ParteienUndWahlen, MenschenrechteInternational },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MitbestimmungK7, RechtsstaatUndJugendrecht, ParteienUndWahlen, MenschenrechteInternational, MedienUndMeinungK7, GeldUndKonsumK7 },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Gewaltenteilung, BundestagBundesrat, Wahlsystem, SozialeMarktwirtschaft, WillensbildungUndMedien, KonflikteInternationaleAkteure, FriedenssicherungUndEntwicklungspolitik, EuropaeischeUnion }
         };
 
@@ -1077,6 +1077,120 @@ public sealed class PolitikGenerator : ExerciseGeneratorBase
             Topic = "Menschenrechte und internationale Politik", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Menschenrechte gelten von Geburt an für alle. Allgemeine Erklärung 1948, Kinderrechtskonvention 1989 (Gleichheit, Kindeswohl, Entwicklung, Beteiligung). UN mit Sicherheitsrat und Vetorecht."
+        };
+    }
+
+    // ----- Seit 3.1 (docs/NAECHSTES-LEVEL-3-1.md, Schritt 4) -----
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MedienUndMeinungListe =
+    {
+        ("Wie unterscheidet sich eine Nachricht von einem Kommentar?", new[] { "Die Nachricht berichtet sachlich, der Kommentar zeigt eine Meinung", "Beide geben nur die persönliche Meinung des Autors wieder", "Der Kommentar ist immer kürzer und noch sachlicher" }, "Die Nachricht berichtet sachlich, der Kommentar zeigt eine Meinung",
+            "Nachrichten beantworten Wer, Was, Wann, Wo; im Kommentar bewertet ein Journalist das Geschehen."),
+        ("Was sind Fake News?", new[] { "Absichtlich falsche Meldungen, die echt aussehen sollen", "Nachrichten, die aus dem Ausland stammen", "Nachrichten, die schon sehr alt sind" }, "Absichtlich falsche Meldungen, die echt aussehen sollen",
+            "Fake News sollen täuschen, etwa um Stimmung zu machen oder Geld mit Klicks zu verdienen."),
+        ("Wie prüfst du am besten, ob eine Meldung stimmt?", new[] { "Quelle prüfen und mit seriösen Medien vergleichen", "Nur die Überschrift genau durchlesen", "Zählen, wie viele Likes sie bekommen hat" }, "Quelle prüfen und mit seriösen Medien vergleichen",
+            "Wer steckt dahinter? Berichten auch andere seriöse Medien? Stimmen Datum und Bilder?"),
+        ("Was bedeutet Pressefreiheit?", new[] { "Medien dürfen ohne staatliche Zensur berichten", "Zeitungen müssen kostenlos verteilt werden", "Jeder Mensch muss täglich Zeitung lesen" }, "Medien dürfen ohne staatliche Zensur berichten",
+            "Pressefreiheit ist ein Grundrecht; der Staat darf nicht vorschreiben, was berichtet wird."),
+        ("In welchem Artikel des Grundgesetzes steht die Meinungs- und Pressefreiheit?", new[] { "Artikel 5", "Artikel 1", "Artikel 20" }, "Artikel 5",
+            "Artikel 5 GG schützt Meinungs-, Presse- und Informationsfreiheit; eine Zensur findet nicht statt."),
+        ("Was ist eine Filterblase?", new[] { "Man sieht online vor allem, was zur eigenen Meinung passt", "Ein Luftfilter, der Viren aus dem Klassenraum holt", "Eine App, die alle Fotos automatisch verschönert" }, "Man sieht online vor allem, was zur eigenen Meinung passt",
+            "Algorithmen zeigen, was uns gefällt - andere Sichtweisen bekommen wir dann seltener zu sehen."),
+        ("Warum nennt man die Medien auch „vierte Gewalt“?", new[] { "Sie kontrollieren und kritisieren die Mächtigen", "Sie beschließen die Gesetze im Parlament", "Sie sprechen die Urteile vor Gericht" }, "Sie kontrollieren und kritisieren die Mächtigen",
+            "Neben Parlament, Regierung und Gerichten decken Medien Missstände auf und informieren die Bürger."),
+        ("Wie wird der öffentlich-rechtliche Rundfunk (z. B. ARD, ZDF) vor allem bezahlt?", new[] { "Über den Rundfunkbeitrag der Haushalte", "Direkt aus der Kasse der Bundesregierung", "Nur über Werbung zwischen den Sendungen" }, "Über den Rundfunkbeitrag der Haushalte",
+            "Der Rundfunkbeitrag soll die Sender unabhängig von Regierung und Werbekunden machen."),
+        ("Was unterscheidet Werbung von Information?", new[] { "Werbung will dich zum Kaufen bewegen", "Werbung berichtet immer völlig neutral", "Werbung ist in Deutschland verboten" }, "Werbung will dich zum Kaufen bewegen",
+            "Werbung zeigt nur die Vorteile eines Produkts - sie will überzeugen, nicht neutral informieren."),
+        ("Was müssen Influencer tun, wenn sie für ein Produkt bezahlt werden?", new[] { "Den Beitrag als Werbung oder Anzeige kennzeichnen", "Das Produkt nach einer Woche zurückgeben", "Einen Teil des Geldes an die Schule spenden" }, "Den Beitrag als Werbung oder Anzeige kennzeichnen",
+            "Schleichwerbung ist verboten: Wer für einen Beitrag Geld oder Geschenke bekommt, muss das offenlegen."),
+        ("Was ist ein Shitstorm?", new[] { "Sehr viele wütende, oft beleidigende Kommentare im Netz", "Ein schweres Unwetter mit Hagel und Sturm", "Eine angemeldete Demonstration auf der Straße" }, "Sehr viele wütende, oft beleidigende Kommentare im Netz",
+            "In einem Shitstorm schaukeln sich Empörung und Beleidigungen gegenseitig hoch."),
+        ("Was ist Hate Speech (Hassrede)?", new[] { "Äußerungen, die Menschen herabwürdigen oder bedrohen", "Eine scharfe, aber sachliche Kritik an einer Idee", "Eine lange Rede von Abgeordneten im Bundestag" }, "Äußerungen, die Menschen herabwürdigen oder bedrohen",
+            "Hassrede richtet sich gegen Menschen wegen Herkunft, Religion oder Aussehen; manche davon ist strafbar."),
+        ("Was kannst du tun, wenn du Hass im Netz siehst?", new[] { "Melden, nicht teilen und Betroffene unterstützen", "Sofort wütend mitkommentieren", "Den Beitrag teilen, damit ihn alle sehen" }, "Melden, nicht teilen und Betroffene unterstützen",
+            "Plattformen müssen gemeldete Hassbeiträge prüfen; Betroffenen hilft es, nicht allein zu sein."),
+        ("Was macht ein Algorithmus in sozialen Netzwerken?", new[] { "Er wählt aus, welche Beiträge du angezeigt bekommst", "Er liest jede Nachricht und schreibt Antworten", "Er ist ein Gesetz gegen Werbung für Kinder" }, "Er wählt aus, welche Beiträge du angezeigt bekommst",
+            "Algorithmen sortieren nach dem, was dich lange auf der Plattform hält."),
+        ("Was bedeutet Meinungsvielfalt?", new[] { "Viele verschiedene Meinungen dürfen öffentlich vertreten werden", "Alle Menschen im Land müssen dieselbe Meinung haben", "Nur die Regierung darf ihre Meinung veröffentlichen" }, "Viele verschiedene Meinungen dürfen öffentlich vertreten werden",
+            "Demokratie lebt davon, dass verschiedene Sichtweisen gehört und gegeneinander abgewogen werden."),
+        ("Was ist ein Leserbrief?", new[] { "Ein Brief, mit dem Leser ihre Meinung an eine Zeitung schicken", "Ein Brief, den die Redaktion an die Regierung schickt", "Eine Rechnung für das Abonnement einer Zeitung" }, "Ein Brief, mit dem Leser ihre Meinung an eine Zeitung schicken",
+            "Im Leserbrief können alle ihre Sicht auf einen Artikel öffentlich machen."),
+        ("Wozu dient das Impressum einer Website?", new[] { "Es zeigt, wer für die Seite verantwortlich ist", "Es zeigt die aktuelle Uhrzeit und das Wetter", "Es ist ein Werbebanner für andere Seiten" }, "Es zeigt, wer für die Seite verantwortlich ist",
+            "Ohne Impressum weiß man nicht, wer hinter einer Seite steht - ein Warnzeichen."),
+        ("Was ist Clickbait?", new[] { "Eine übertriebene Überschrift, die zum Klicken verleiten soll", "Ein besonders sicheres Passwort für soziale Netzwerke", "Eine Suchmaschine nur für Nachrichten aus Berlin" }, "Eine übertriebene Überschrift, die zum Klicken verleiten soll",
+            "„Du wirst nicht glauben, was dann passiert ...“ - dahinter steckt oft wenig Inhalt."),
+        ("Warum ist es problematisch, wenn wenige Firmen die meisten Medien besitzen?", new[] { "Dann bestimmen wenige, welche Meinungen verbreitet werden", "Dann werden alle Zeitungen deutlich billiger", "Dann gibt es automatisch mehr Meinungsvielfalt" }, "Dann bestimmen wenige, welche Meinungen verbreitet werden",
+            "Medienvielfalt ist wichtig, damit nicht einige wenige die öffentliche Meinung lenken."),
+        ("Was ist ein Deepfake?", new[] { "Ein mit KI gefälschtes Video oder Bild, das echt wirkt", "Ein sehr tiefes Loch, das man im Garten gräbt", "Ein unscharfes Foto, das beim Wackeln entsteht" }, "Ein mit KI gefälschtes Video oder Bild, das echt wirkt",
+            "Deepfakes legen Menschen Worte in den Mund, die sie nie gesagt haben - Quelle prüfen!")
+    };
+
+    private static QuizQuestion MedienUndMeinungK7(Random r)
+    {
+        var f = MedienUndMeinungListe[r.Next(MedienUndMeinungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Medien, Meinung und Öffentlichkeit", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nachricht = sachlich, Kommentar = Meinung. Pressefreiheit: Artikel 5 GG. Vor dem Teilen: Quelle, Datum, andere seriöse Medien prüfen. Bezahlte Beiträge müssen als Werbung gekennzeichnet sein."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] GeldUndKonsumListe =
+    {
+        ("Was regelt der sogenannte Taschengeldparagraf?", new[] { "Kinder ab 7 dürfen kleine Käufe mit ihrem Taschengeld selbst tätigen", "Kinder dürfen ab 7 Jahren alles kaufen, auch teure Dinge", "Kinder dürfen vor 18 Jahren gar nichts selbst kaufen" }, "Kinder ab 7 dürfen kleine Käufe mit ihrem Taschengeld selbst tätigen",
+            "Mit 7 Jahren ist man beschränkt geschäftsfähig; Käufe mit dem eigenen Taschengeld sind gültig (§ 110 BGB)."),
+        ("Ab welchem Alter ist man voll geschäftsfähig?", new[] { "Ab 18 Jahren", "Ab 14 Jahren", "Ab 16 Jahren" }, "Ab 18 Jahren",
+            "Mit der Volljährigkeit darf man alle Verträge allein abschließen, zum Beispiel einen Handyvertrag."),
+        ("Was unterscheidet ein Grundbedürfnis von einem Wunsch?", new[] { "Grundbedürfnisse wie Essen und Wohnen sind lebensnotwendig", "Wünsche sind immer wichtiger als Essen und Wohnen", "Zwischen beiden gibt es überhaupt keinen Unterschied" }, "Grundbedürfnisse wie Essen und Wohnen sind lebensnotwendig",
+            "Essen, Kleidung, Wohnen und Gesundheit braucht jeder; ein neues Handyspiel ist ein Wunsch."),
+        ("Was bestimmt auf einem freien Markt den Preis?", new[] { "Angebot und Nachfrage", "Nur der Staat", "Nur das Wetter" }, "Angebot und Nachfrage",
+            "Wollen viele etwas, das knapp ist, steigt der Preis; gibt es viel davon, sinkt er."),
+        ("Was passiert meist mit dem Preis, wenn viele ein knappes Produkt kaufen wollen?", new[] { "Er steigt", "Er sinkt", "Er bleibt gleich" }, "Er steigt",
+            "Beispiel: neue Spielkonsolen sind zum Start knapp und werden teils teurer weiterverkauft."),
+        ("Was ist Inflation?", new[] { "Preise steigen allgemein, das Geld verliert an Wert", "Preise sinken dauerhaft und alles wird billiger", "Löhne werden abgeschafft und durch Gutscheine ersetzt" }, "Preise steigen allgemein, das Geld verliert an Wert",
+            "Bei Inflation bekommt man für denselben Euro weniger Waren als vorher."),
+        ("Was ist ein Budget?", new[] { "Ein Plan für Einnahmen und Ausgaben", "Ein Sparschwein aus Porzellan", "Ein Kredit von der Bank" }, "Ein Plan für Einnahmen und Ausgaben",
+            "Wer ein Budget macht, weiß vorher, wie viel Geld für was übrig bleibt."),
+        ("Was bedeutet Verbraucherschutz?", new[] { "Regeln und Stellen, die Käufer vor Betrug und Gefahren schützen", "Regeln, die Läden vor unfreundlichen Kunden schützen", "Ein Gesetz, das Kindern das Einkaufen verbietet" }, "Regeln und Stellen, die Käufer vor Betrug und Gefahren schützen",
+            "Verbraucherzentralen beraten, und Gesetze regeln etwa Widerruf, Garantie und Produktsicherheit."),
+        ("Wie lange kann man einen Online-Kauf in der EU in der Regel widerrufen?", new[] { "14 Tage", "2 Tage", "1 Jahr" }, "14 Tage",
+            "Beim Kauf im Internet gilt meist ein Widerrufsrecht von 14 Tagen ohne Angabe von Gründen."),
+        ("Was ist eine typische Kostenfalle in Handyspielen?", new[] { "In-App-Käufe, die schnell teuer werden", "Kostenlose Updates für das Spiel", "Der Akku, der zu schnell leer wird" }, "In-App-Käufe, die schnell teuer werden",
+            "Kleine Beträge für Münzen oder Skins summieren sich - Eltern können In-App-Käufe sperren."),
+        ("Was bedeutet nachhaltig einkaufen?", new[] { "So kaufen, dass Umwelt und Menschen geschont werden", "Immer genau das billigste Angebot kaufen", "Möglichst viel auf Vorrat im Keller lagern" }, "So kaufen, dass Umwelt und Menschen geschont werden",
+            "Nachhaltig heißt z. B.: langlebig, regional, fair hergestellt und nur, was man braucht."),
+        ("Was zeigt das Fairtrade-Siegel auf einem Produkt?", new[] { "Die Produzenten wurden fair bezahlt", "Das Produkt ist besonders billig", "Das Produkt ist frisches Bio-Fleisch" }, "Die Produzenten wurden fair bezahlt",
+            "Fairtrade garantiert Bauern etwa bei Kakao oder Bananen Mindestpreise und verbietet ausbeuterische Kinderarbeit."),
+        ("Was sind Steuern?", new[] { "Abgaben an den Staat, der damit z. B. Schulen und Straßen bezahlt", "Gebühren, die man nur für Handyverträge bezahlt", "Geschenke, die der Staat an große Firmen macht" }, "Abgaben an den Staat, der damit z. B. Schulen und Straßen bezahlt",
+            "Mit Steuern finanziert der Staat Schulen, Polizei, Straßen und vieles mehr."),
+        ("Was ist die Mehrwertsteuer?", new[] { "Eine Steuer, die beim Einkaufen im Preis steckt", "Eine Steuer, die nur für neue Autos gilt", "Eine Steuer, die auf das Taschengeld anfällt" }, "Eine Steuer, die beim Einkaufen im Preis steckt",
+            "Auch Kinder zahlen sie: im Preis von Schokolade oder Stiften stecken 7 oder 19 Prozent Mehrwertsteuer."),
+        ("Was ist ein Kredit?", new[] { "Geliehenes Geld, das man mit Zinsen zurückzahlt", "Geld, das man geschenkt bekommt", "Ein Sparbuch für die Enkelkinder" }, "Geliehenes Geld, das man mit Zinsen zurückzahlt",
+            "Wer einen Kredit aufnimmt, zahlt am Ende mehr zurück, als er geliehen hat."),
+        ("Was sind Zinsen beim Sparen?", new[] { "Geld, das die Bank dir für dein gespartes Geld zahlt", "Eine Strafe, die man für zu viel Sparen zahlt", "Eine Gebühr, die jedes Girokonto kostet" }, "Geld, das die Bank dir für dein gespartes Geld zahlt",
+            "Die Bank verleiht dein Erspartes weiter und gibt dir dafür einen Anteil - die Zinsen."),
+        ("Wobei hilft eine Schuldnerberatung?", new[] { "Menschen, die ihre Schulden nicht mehr bezahlen können", "Kindern, die sich Geld für Spiele leihen möchten", "Banken, die Schulden bei Kunden eintreiben" }, "Menschen, die ihre Schulden nicht mehr bezahlen können",
+            "Schuldnerberatungen sind oft kostenlos und helfen, einen Weg aus den Schulden zu finden."),
+        ("Warum gibt es besondere Regeln für Werbung, die sich an Kinder richtet?", new[] { "Kinder durchschauen Werbeabsichten oft noch nicht so gut", "Kinder haben in Deutschland kein eigenes Taschengeld", "Werbung darf Kindern überhaupt nichts zeigen" }, "Kinder durchschauen Werbeabsichten oft noch nicht so gut",
+            "Werbung darf Kinder z. B. nicht direkt zum Kaufen auffordern oder ihre Unerfahrenheit ausnutzen."),
+        ("Was ist ein Abo-Vertrag?", new[] { "Ein Vertrag mit regelmäßigen Zahlungen, bis man kündigt", "Ein einmaliger Kauf ohne weitere Kosten", "Ein Gutschein, den man verschenken kann" }, "Ein Vertrag mit regelmäßigen Zahlungen, bis man kündigt",
+            "Abos für Streaming oder Spiele laufen weiter, bis man kündigt - deshalb Kündigungsfristen beachten."),
+        ("Was bedeutet das Wort „Konsum“?", new[] { "Der Kauf und Verbrauch von Waren und Dienstleistungen", "Das Sparen von Geld auf einem Sparbuch", "Die Herstellung von Waren in einer Fabrik" }, "Der Kauf und Verbrauch von Waren und Dienstleistungen",
+            "Konsumenten sind wir alle, sobald wir etwas kaufen oder nutzen.")
+    };
+
+    private static QuizQuestion GeldUndKonsumK7(Random r)
+    {
+        var f = GeldUndKonsumListe[r.Next(GeldUndKonsumListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Politik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Geld, Konsum und Verbraucherschutz", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Ab 7 beschränkt, ab 18 voll geschäftsfähig (Taschengeldparagraf § 110 BGB). Preis aus Angebot und Nachfrage. Online-Kauf: 14 Tage Widerruf. Kredit kostet Zinsen, Sparen bringt Zinsen."
         };
     }
 }
