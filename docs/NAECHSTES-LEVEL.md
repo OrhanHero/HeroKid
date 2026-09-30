@@ -1,5 +1,9 @@
 # LernTor aufs nächste Level: Plan
 
+> **Nachfolger:** Version 3.0 (Design, Technik, Umgebung, Funktion) ist in
+> [`NAECHSTES-LEVEL-3.md`](NAECHSTES-LEVEL-3.md) geplant. Dort steht auch, warum der unten
+> ausgeschlossene „Neuanstrich“ jetzt doch kommt – mit Bildschirmfotos in der CI als Voraussetzung.
+
 Stand: 29.09.2026. Dieser Plan beschreibt, was als Nächstes gebaut wird, damit LernTor modern
 bleibt und die nächsten Jahre ohne Umbau übersteht. Er ergänzt die Arbeitsliste in
 [`NAECHSTE-SCHRITTE.md`](NAECHSTE-SCHRITTE.md) und die Begründungen in [`PLAN.md`](PLAN.md).
