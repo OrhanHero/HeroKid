@@ -34,6 +34,16 @@ Das fängt alle Fehler, die der Compiler sieht (auch `MC3024` und andere XAML-Ü
 Sekunden statt nach einer CI-Runde. **Nicht** gefangen werden Laufzeitfehler beim Laden der XAML
 (`XamlParseException`) - die finden nur die UI-Tests, und die laufen nur unter Windows.
 
+### Fertige Umgebungen (seit 30.09.2026)
+
+Damit niemand das SDK von Hand installieren muss:
+
+| Wo | Was passiert | Datei |
+|---|---|---|
+| **Claude Code im Web** | Beim Start jeder Sitzung installiert ein Hook `dotnet-sdk-10.0` (falls es fehlt), stellt die Pakete wieder her und setzt `DOTNET_NOLOGO`. Läuft synchron, dauert mit fertigem Container etwa 3 Sekunden. | `.claude/hooks/session-start.sh`, `.claude/settings.json` |
+| **VS Code (Dev Containers) / GitHub Codespaces** | Container mit .NET 10 und Python; beim Anlegen einmal `restore`, `build` und `preflight.py --quick`. | `.devcontainer/devcontainer.json` |
+| **Jeder Editor** | Einrückung (4 Leerzeichen, JSON/YAML 2), LF, UTF-8 ohne BOM, Klammern auf eigener Zeile, `_feld` für private Felder. | `.editorconfig` |
+
 ### Paketversionen
 
 Jede NuGet-Paketversion steht genau einmal in `Directory.Packages.props` (zentrale

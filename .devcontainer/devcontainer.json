@@ -1,0 +1,24 @@
+{
+  // Entwicklungsumgebung für VS Code (Dev Containers) und GitHub Codespaces
+  // (docs/NAECHSTES-LEVEL-3.md, Schritt 6). Baut und testet die ganze Solution unter Linux -
+  // die WPF-App wird dank EnableWindowsTargeting mitkompiliert, AUSFÜHREN lässt sie sich nur
+  // unter Windows (siehe CLAUDE.md und docs/BUILD.md).
+  "name": "LernTor (.NET 10)",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:10.0",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {}
+  },
+  "postCreateCommand": "dotnet restore LernTor.sln && dotnet build LernTor.sln -c Release && python3 scripts/preflight.py --quick",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  },
+  "containerEnv": {
+    "DOTNET_NOLOGO": "1",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+  }
+}

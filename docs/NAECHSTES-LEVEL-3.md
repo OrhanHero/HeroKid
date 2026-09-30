@@ -20,7 +20,7 @@ nachgeführt.
 | 3 — Acht Designs | ✅ 30.09.2026: Paletten in `DesignThemeCatalog`, alle bestehen WCAG 2.2 AA; Lavendel mit lesbareren Grün-/Rot-/Orange-Tönen |
 | 4 — Design-Auswahl für die Kinder | ✅ 30.09.2026: „🎨 Mein Design“ auf der Startseite (`DesignPickerViewModel`), pro Profil gespeichert (`SetDesignAsync`, fünf neue Spalten), Neubewertung bei jedem Etappenwechsel; Eltern-Bereich zeigt und setzt zurück |
 | 5 — Designs als Belohnung | ✅ 30.09.2026: „Galaxie“ wird mit dem Abzeichen „Zehn Lerntage“ (`lerntage-10`) frei; gesperrte Karten zeigen, wie man sie bekommt |
-| 6 — Entwicklungsumgebung | offen |
+| 6 — Entwicklungsumgebung | ✅ 30.09.2026: SessionStart-Hook (`.claude/hooks/session-start.sh`), Devcontainer, `.editorconfig`; beschrieben in `BUILD.md` |
 | 7 — Dokumentation | offen |
 | 8 — Release 3.0.0 | offen |
 
@@ -164,7 +164,7 @@ Satz, wie man sie bekommt.
 Damit jede neue Sitzung – ob Mensch oder KI – sofort bauen und testen kann:
 
 1. **SessionStart-Hook** für Claude Code im Web (`.claude/settings.json` +
-   `scripts/session-start.sh`): installiert `dotnet-sdk-10.0` aus dem Ubuntu-Archiv, wenn es
+   `.claude/hooks/session-start.sh`): installiert `dotnet-sdk-10.0` aus dem Ubuntu-Archiv, wenn es
    fehlt, und stellt die Pakete wieder her. Bisher musste das in jeder Sitzung von Hand passieren.
 2. **Devcontainer** (`.devcontainer/devcontainer.json`) für VS Code und GitHub Codespaces mit
    .NET 10 und Python für die Prüfskripte.

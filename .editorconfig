@@ -1,0 +1,48 @@
+# Einheitliche Formatierung für alle Editoren (VS, VS Code, Rider) - beschreibt, was im Code
+# schon gilt (docs/NAECHSTES-LEVEL-3.md, Schritt 6). Nur Hinweise (suggestion), keine
+# Build-Warnungen: der Build soll davon nicht rot werden.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+# Markdown: zwei Leerzeichen am Zeilenende sind dort ein Zeilenumbruch.
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{json,yml,yaml,csproj,props,targets,xml}]
+indent_size = 2
+
+[*.{cs,xaml}]
+indent_size = 4
+
+[*.cs]
+# Namespaces als Datei-Namespace, wie in allen bestehenden Dateien.
+csharp_style_namespace_declarations = file_scoped:suggestion
+# Klammern auf eigener Zeile (Allman), wie im ganzen Code.
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+# Immer geschweifte Klammern, auch bei einzeiligen if - so ist es im Code.
+csharp_prefer_braces = true:suggestion
+# using-Direktiven außerhalb des Namespace, System zuerst.
+csharp_using_directive_placement = outside_namespace:suggestion
+dotnet_sort_system_directives_first = true
+# Private Felder mit Unterstrich (_db, _onBack) - wie überall im Code.
+dotnet_naming_rule.private_fields_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_underscore.style = underscore_camel
+dotnet_naming_rule.private_fields_underscore.severity = suggestion
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.underscore_camel.required_prefix = _
+dotnet_naming_style.underscore_camel.capitalization = camel_case
+
+# Wichtig: [ObservableProperty]-Felder heißen OHNE Unterstrich (camelCase) - der
+# CommunityToolkit erzeugt daraus die Eigenschaft. preflight.py prüft das
+# (ObservableProperty-Feldname); die Namensregel oben ist deshalb nur ein Hinweis.
