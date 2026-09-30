@@ -63,7 +63,10 @@ public sealed class ParentSettingsWindowTests
             var reihenfolge = ziele.Select(ziel => inhalt.Children.IndexOf((UIElement)fenster.FindName(ziel!)!)).ToList();
             Assert.Equal(reihenfolge.OrderBy(i => i), reihenfolge);
 
-            fenster.Close();
+            // Bewusst KEIN fenster.Close(): das Fenster wurde nie gezeigt, und Schließen beendet
+            // bei ShutdownMode.OnLastWindowClose die geteilte Test-Application - danach schlug
+            // jeder weitere UI-Test mit "Cannot create more than one Application" fehl (CI
+            // 30.09.2026, 30 rote Tests).
         }
 
         try
