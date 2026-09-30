@@ -98,6 +98,20 @@ jobs:
         # Fängt die XamlParseException-Bug-Klasse (kompiliert sauber, crasht erst beim Laden),
         # die kein Unit-Test abdecken kann - siehe tests/LernTor.UiTests.
         run: dotnet test tests/LernTor.UiTests/LernTor.UiTests.csproj --configuration Release --no-build --verbosity normal
+        env:
+          # DesignScreenshotTests legt hier PNGs der wichtigsten Ansichten ab (1366x768, jedes
+          # Design) - das Aussehen ist in der Linux-Entwicklungsumgebung sonst nicht pruefbar.
+          LERNTOR_SCREENSHOT_DIR: ${{ github.workspace }}/design-vorschau
+
+      - name: Design-Vorschau hochladen
+        # Auch bei roten Tests: gerade dann will man sehen, wie es aussah.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Design-Vorschau
+          path: design-vorschau
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Python für Content-Checks einrichten
         uses: actions/setup-python@v5

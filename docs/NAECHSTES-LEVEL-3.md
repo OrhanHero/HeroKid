@@ -14,8 +14,8 @@ nachgeführt.
 
 | Schritt | Stand |
 |---|---|
-| 0 — Release 2.1.0 (Antwortprüfung, +660 Fragen) | offen |
-| 1 — Sehen, was man baut (Bildschirmfotos, Kontrast, Regeln) | offen |
+| 0 — Release 2.1.0 (Antwortprüfung, +660 Fragen) | ⏳ Release-Lauf gestartet 30.09.2026; Version in `Directory.Build.props`/`setup.iss` auf 2.1.0 |
+| 1 — Sehen, was man baut (Bildschirmfotos, Kontrast, Regeln) | 🔨 Bildschirmfotos in der CI (`DesignScreenshotTests`, Artefakt „Design-Vorschau“); Kontrasttest und Preflight-Regeln folgen mit Schritt 2, weil sie die Design-Tokens brauchen |
 | 2 — Design-Fundament | offen |
 | 3 — Acht Designs | offen |
 | 4 — Design-Auswahl für die Kinder | offen |
