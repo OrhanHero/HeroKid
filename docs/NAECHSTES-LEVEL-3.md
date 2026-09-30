@@ -14,15 +14,15 @@ nachgeführt.
 
 | Schritt | Stand |
 |---|---|
-| 0 — Release 2.1.0 (Antwortprüfung, +660 Fragen) | offen |
-| 1 — Sehen, was man baut (Bildschirmfotos, Kontrast, Regeln) | offen |
-| 2 — Design-Fundament | offen |
-| 3 — Acht Designs | offen |
-| 4 — Design-Auswahl für die Kinder | offen |
-| 5 — Designs als Belohnung | offen |
-| 6 — Entwicklungsumgebung | offen |
-| 7 — Dokumentation | offen |
-| 8 — Release 3.0.0 | offen |
+| 0 — Release 2.1.0 (Antwortprüfung, +660 Fragen) | ✅ 30.09.2026: [Release v2.1.0](https://github.com/OrhanHero/HeroKid/releases/tag/v2.1.0) |
+| 1 — Sehen, was man baut (Bildschirmfotos, Kontrast, Regeln) | ✅ 30.09.2026: Bildschirmfotos jeder Ansicht in jedem Design (`DesignScreenshotTests`, Artefakt „Design-Vorschau“), Kontrasttest (`DesignThemeCatalogTests`), Preflight-Regel `design-static`/`design-hexfarbe` |
+| 2 — Design-Fundament | ✅ 30.09.2026: 22 Rollen (`DesignPalette`), 300 Verweise auf `DynamicResource`, `ThemeService`, Schrift- und Textgrößen-Ressource; Eltern-Bereich bleibt immer im Standard-Design |
+| 3 — Acht Designs | ✅ 30.09.2026: Paletten in `DesignThemeCatalog`, alle bestehen WCAG 2.2 AA; Lavendel mit lesbareren Grün-/Rot-/Orange-Tönen |
+| 4 — Design-Auswahl für die Kinder | ✅ 30.09.2026: „🎨 Mein Design“ auf der Startseite (`DesignPickerViewModel`), pro Profil gespeichert (`SetDesignAsync`, fünf neue Spalten), Neubewertung bei jedem Etappenwechsel; Eltern-Bereich zeigt und setzt zurück |
+| 5 — Designs als Belohnung | ✅ 30.09.2026: „Galaxie“ wird mit dem Abzeichen „Zehn Lerntage“ (`lerntage-10`) frei; gesperrte Karten zeigen, wie man sie bekommt |
+| 6 — Entwicklungsumgebung | ✅ 30.09.2026: SessionStart-Hook (`.claude/hooks/session-start.sh`), Devcontainer, `.editorconfig`; beschrieben in `BUILD.md` |
+| 7 — Dokumentation | ✅ 30.09.2026: neu `docs/DESIGN.md`; `CLAUDE.md` (Design-Regeln), `TESTPLAN.md` (V.2-1 bis V.3-8), `BUILD.md` (Umgebungen), `README.md`, `NAECHSTE-SCHRITTE.md` |
+| 8 — Release 3.0.0 | ⏳ Version 3.0.0 gesetzt; Release nach grüner CI und Merge von PR [OrhanHero/HeroKid#8](https://github.com/OrhanHero/HeroKid/pull/8) |
 
 ---
 
@@ -152,9 +152,10 @@ Bildschirmfotos.
 
 ## Schritt 5 — Designs als Belohnung
 
-Anlehnung an ANTON: Abzeichen schalten etwas frei, das man sieht. **Galaxie** wird mit einem
-bestehenden Abzeichen für Ausdauer freigeschaltet (welches, steht nach Durchsicht von
-`AchievementCatalog` im Umsetzungs-Commit). Freigeschaltet bleibt freigeschaltet – die Regel
+Anlehnung an ANTON: Abzeichen schalten etwas frei, das man sieht. **Galaxie** wird mit dem
+bestehenden Abzeichen „📅 Zehn Lerntage“ (`lerntage-10`: an zehn verschiedenen Tagen gelernt,
+keine Serie) freigeschaltet - erreichbar in gut zwei Wochen, ohne dass ein verpasster Tag etwas
+wegnimmt. Freigeschaltet bleibt freigeschaltet – die Regel
 „nichts verfällt“ gilt weiter. Gesperrte Designs zeigen in der Galerie ein Schloss und den
 Satz, wie man sie bekommt.
 
@@ -163,7 +164,7 @@ Satz, wie man sie bekommt.
 Damit jede neue Sitzung – ob Mensch oder KI – sofort bauen und testen kann:
 
 1. **SessionStart-Hook** für Claude Code im Web (`.claude/settings.json` +
-   `scripts/session-start.sh`): installiert `dotnet-sdk-10.0` aus dem Ubuntu-Archiv, wenn es
+   `.claude/hooks/session-start.sh`): installiert `dotnet-sdk-10.0` aus dem Ubuntu-Archiv, wenn es
    fehlt, und stellt die Pakete wieder her. Bisher musste das in jeder Sitzung von Hand passieren.
 2. **Devcontainer** (`.devcontainer/devcontainer.json`) für VS Code und GitHub Codespaces mit
    .NET 10 und Python für die Prüfskripte.

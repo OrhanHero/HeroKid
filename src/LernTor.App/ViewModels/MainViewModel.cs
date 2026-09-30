@@ -200,6 +200,16 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task ShowProfileSelectionAsync()
     {
+        // Die Profilwahl gehört allen Kindern - sie zeigt immer das Standard-Design.
+        try
+        {
+            ThemeService.Instance.ApplyDefault();
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Design", "Standard-Design konnte nicht angewendet werden", ex);
+        }
+
         var profileSelection = new ProfileSelectionViewModel(_profileRepo, _progressRepo, OnProfileSelected);
         CurrentViewModel = profileSelection;
         await profileSelection.InitializeAsync();
@@ -221,9 +231,87 @@ public sealed partial class MainViewModel : ObservableObject
     {
         CurrentProfile = profile;
         ActiveProfileName = profile.Name;
+        await LoadUnlockedAchievementIdsAsync();
+        ApplyProfileDesign();
         Progress = await _progressRepo.LoadOrCreateTodayAsync(profile.Id);
         await RefreshScheduledSubjectsAsync();
         await NavigateToStageAsync(Progress.CurrentStage);
+    }
+
+    /// <summary>Abzeichen des aktiven Profils - entscheiden, welche Designs freigeschaltet sind.</summary>
+    private IReadOnlySet<string> _unlockedAchievementIds = new HashSet<string>();
+
+    private async Task LoadUnlockedAchievementIdsAsync()
+    {
+        try
+        {
+            _unlockedAchievementIds = (await _achievementRepo.GetUnlockedAsync(CurrentProfile!.Id)).Keys.ToHashSet();
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Design", "Abzeichen für die Designs nicht lesbar", ex);
+        }
+    }
+
+    /// <summary>
+    /// Das Design des aktiven Kindes anwenden (docs/DESIGN.md). Darf nie etwas blockieren: ein
+    /// Fehler lässt schlicht das bisherige Design stehen.
+    /// </summary>
+    private void ApplyProfileDesign()
+    {
+        if (CurrentProfile is null)
+        {
+            return;
+        }
+
+        try
+        {
+            ThemeService.Instance.ApplyPreferences(CurrentProfile.Design, _unlockedAchievementIds);
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Design", "Design konnte nicht angewendet werden", ex);
+        }
+    }
+
+    /// <summary>
+    /// "🎨 Mein Design": jede Änderung wird sofort angewendet und gespeichert. Zurück geht es wie
+    /// bei "Mein Fortschritt" auf die Startseite in derselben Rolle (Planer-Zwischenstopp oder nicht).
+    /// </summary>
+    private async void OnOpenDesignRequested(bool plannerPeek)
+    {
+        try
+        {
+            await LoadUnlockedAchievementIdsAsync();
+            var profil = CurrentProfile!;
+            CurrentViewModel = new DesignPickerViewModel(
+                profil.Name,
+                profil.Design,
+                _unlockedAchievementIds,
+                onChanged: neu =>
+                {
+                    profil.Design = neu;
+                    ApplyProfileDesign();
+                    _ = SaveDesignAsync(profil.Id, neu);
+                },
+                onBack: () => ReturnToWelcome(plannerPeek));
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Design", "Design-Auswahl konnte nicht geöffnet werden", ex);
+        }
+    }
+
+    private async Task SaveDesignAsync(string profileId, Core.Design.DesignPreferences design)
+    {
+        try
+        {
+            await _profileRepo.SetDesignAsync(profileId, design);
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.AppLog.Error("Design", "Design-Wahl konnte nicht gespeichert werden", ex);
+        }
     }
 
     /// <summary>Die Schulfaecher, die heute laut Stundenplan dran sind - <c>null</c>, wenn der
@@ -322,6 +410,9 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         await RefreshScheduledSubjectsAsync();
+
+        // Der Eltern-Bereich kann das Design zurückgesetzt haben.
+        ApplyProfileDesign();
     }
 
     private async Task PersistProgressAsync()
@@ -331,6 +422,10 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task NavigateToStageAsync(LearningStage stage)
     {
+        // "Abends dunkel" soll auch in einer Sitzung greifen, die um 18:50 begann: bei jedem
+        // Etappenwechsel neu entscheiden (ThemeService tauscht nur, wenn sich etwas ändert).
+        ApplyProfileDesign();
+
         // Ueber Nacht stehen gelassen: morgens beginnt ein neuer Lerntag, statt dass das Kind den
         // Rest von gestern beendet und damit den heutigen Tag spart (SessionDayRollover).
         if (CurrentProfile is not null && SessionDayRollover.ShouldStartNewDay(Progress.SessionDate, DateTime.Now))
@@ -446,7 +541,8 @@ public sealed partial class MainViewModel : ObservableObject
             practiceSubjects: _scheduledSubjects is null
                 ? null
                 : _scheduledSubjects.Where(fach => !IsSubjectDisabled(fach)).ToHashSet(),
-            onOpenProgress: () => OnOpenProgressRequested(plannerPeek));
+            onOpenProgress: () => OnOpenProgressRequested(plannerPeek),
+            onOpenDesign: () => OnOpenDesignRequested(plannerPeek));
     }
 
     /// <summary>

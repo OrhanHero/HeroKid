@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:vm="clr-namespace:LernTor.App.ViewModels">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
             <StackPanel HorizontalAlignment="Center" MaxWidth="1000">
                 <!-- Header -->
@@ -16,9 +16,9 @@
                 <!-- Fortschrittsring + Statistiken -->
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,0,0,24">
                     <Grid Width="160" Height="160">
-                        <Path Stroke="{StaticResource CardBrush}" StrokeThickness="16"
+                        <Path Stroke="{DynamicResource CardBrush}" StrokeThickness="16"
                               Data="M 80,80 m -60,0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0" />
-                        <Path x:Name="ProgressArc" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="16">
+                        <Path x:Name="ProgressArc" Stroke="{DynamicResource PrimaryBrush}" StrokeThickness="16">
                             <Path.Data>
                                 <PathGeometry>
                                     <PathFigure StartPoint="80,20">
@@ -29,24 +29,24 @@
                             </Path.Data>
                         </Path>
                         <TextBlock Text="{Binding OverallProgress, StringFormat='{}{0:P0}'}"
-                                   FontSize="32" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"
+                                   FontSize="32" FontWeight="Bold" Foreground="{DynamicResource PrimaryBrush}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_ProgressLabel]}"
-                                   FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                    HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,8" />
                     </Grid>
 
                     <StackPanel Orientation="Vertical" Margin="32,0,0,0" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                            <TextBlock Text="{Binding CompletedCount}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
-                            <TextBlock Text=" / " FontSize="20" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="4,0" />
-                            <TextBlock Text="{Binding TotalCount}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
-                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_LessonsLabel]}" FontSize="16" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                            <TextBlock Text="{Binding CompletedCount}" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" />
+                            <TextBlock Text=" / " FontSize="20" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="4,0" />
+                            <TextBlock Text="{Binding TotalCount}" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_LessonsLabel]}" FontSize="16" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                             <TextBlock Text="⭐ " FontSize="18" />
-                            <TextBlock Text="{Binding EarnedStars}" FontSize="24" FontWeight="Bold" Foreground="#FFD700" />
-                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_StarsLabel]}" FontSize="16" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="4,0,0,0" />
+                            <TextBlock Text="{Binding EarnedStars}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_StarsLabel]}" FontSize="16" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="4,0,0,0" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -66,9 +66,9 @@
                             <Border Style="{StaticResource CardBorder}" Margin="8" Width="280">
                                 <StackPanel>
                                     <!-- Status-Header -->
-                                    <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="6,6,0,0" Padding="10,4" HorizontalAlignment="Center" Margin="0,0,0,8">
+                                    <Border Background="{DynamicResource TileLavenderBrush}" CornerRadius="6,6,0,0" Padding="10,4" HorizontalAlignment="Center" Margin="0,0,0,8">
                                         <TextBlock Text="{Binding Lesson.LessonType, Converter={StaticResource TypingLessonTypeToTitleConverter}}"
-                                                   FontWeight="Bold" FontSize="12" Foreground="{StaticResource PrimaryBrush}" />
+                                                   FontWeight="Bold" FontSize="12" Foreground="{DynamicResource PrimaryBrush}" />
                                     </Border>
 
                                     <TextBlock Text="{Binding Title}" Style="{StaticResource HeadlineText}" FontSize="18"
@@ -85,16 +85,16 @@
 
                                     <!-- Stats -->
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
-                                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="6" Padding="8,2" Margin="0,0,8,0">
+                                        <Border Background="{DynamicResource TileMintBrush}" CornerRadius="6" Padding="8,2" Margin="0,0,8,0">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding AccuracyDisplay}" FontWeight="Bold" FontSize="14" Foreground="{StaticResource PrimaryBrush}" />
-                                                <TextBlock Text=" %" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="2,0,0,0" />
+                                                <TextBlock Text="{Binding AccuracyDisplay}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource PrimaryBrush}" />
+                                                <TextBlock Text=" %" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="2,0,0,0" />
                                             </StackPanel>
                                         </Border>
-                                        <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="6" Padding="8,2">
+                                        <Border Background="{DynamicResource TileLavenderBrush}" CornerRadius="6" Padding="8,2">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding WpmDisplay}" FontWeight="Bold" FontSize="14" Foreground="{StaticResource PrimaryBrush}" />
-                                                <TextBlock Text=" WPM" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="2,0,0,0" />
+                                                <TextBlock Text="{Binding WpmDisplay}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource PrimaryBrush}" />
+                                                <TextBlock Text=" WPM" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="2,0,0,0" />
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -128,7 +128,7 @@
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsLocked}" Value="True">
                                                         <Setter Property="Content" Value="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_LessonLocked]}"/>
-                                                        <Setter Property="Background" Value="{StaticResource TextSecondaryBrush}" />
+                                                        <Setter Property="Background" Value="{DynamicResource TextSecondaryBrush}" />
                                                         <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
                                                 </Style.Triggers>

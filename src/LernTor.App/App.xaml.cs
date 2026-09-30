@@ -56,6 +56,17 @@ public partial class App : Application
             args.SetObserved();
         };
 
+        // Standard-Design als eigenes Wörterbuch einhängen (docs/DESIGN.md). Das Design des
+        // Kindes kommt bei der Profilwahl dazu; scheitert hier etwas, bleibt Colors.xaml.
+        try
+        {
+            LernTor.App.Services.ThemeService.Instance.ApplyDefault();
+        }
+        catch (Exception ex)
+        {
+            AppLog.Error("Design", "Standard-Design konnte nicht angewendet werden", ex);
+        }
+
         try
         {
             AppLog.Info("App", $"LernTor startet (Version {typeof(App).Assembly.GetName().Version})");

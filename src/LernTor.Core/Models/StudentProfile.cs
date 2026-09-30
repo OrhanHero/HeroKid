@@ -173,6 +173,14 @@ public sealed class StudentProfile
     /// </summary>
     public HashSet<TrafficSignCategory> DisabledSignCategories { get; set; } = new();
 
+    /// <summary>
+    /// Was das Kind in der Design-Galerie eingestellt hat (Design, Schrift, Textgröße,
+    /// Automatik). Gespeichert über <c>StudentProfileRepository.SetDesignAsync</c> - bewusst
+    /// nicht Teil von <c>ProfileSettings</c>: der Eltern-Bereich darf die Wahl des Kindes beim
+    /// Speichern nicht überschreiben.
+    /// </summary>
+    public global::LernTor.Core.Design.DesignPreferences Design { get; set; } = global::LernTor.Core.Design.DesignPreferences.Default;
+
     public const int DefaultReadingMinutes = 5;
 
     /// <summary>Fünf Zeichen am Tag - eine Minute, die auch an einem vollen Schultag drin ist.</summary>

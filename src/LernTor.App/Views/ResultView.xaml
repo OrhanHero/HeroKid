@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              Loaded="ResultView_Loaded">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <!-- ScrollViewer seit 29.09.2026: auf kleinen Bildschirmen (1366x768) schob jede weitere
              Karte den Freischalten-Knopf naeher an den unteren Rand - und darunter waere er
              unerreichbar gewesen. Der ScrollContentPresenter gibt dem Inhalt mindestens die
@@ -142,7 +142,7 @@
                                                 <Setter Property="Opacity" Value="0.75" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsImprovement, Mode=OneWay}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                                         <Setter Property="FontWeight" Value="Bold" />
                                                         <Setter Property="Opacity" Value="1" />
                                                     </DataTrigger>
@@ -158,7 +158,7 @@
             </Border>
 
             <!-- Belohnungs-Sterne: heute verdient + Gesamtstand (Gamification) -->
-            <Border Background="{StaticResource TileSandBrush}" CornerRadius="14" Padding="18,10"
+            <Border Background="{DynamicResource TileSandBrush}" CornerRadius="14" Padding="18,10"
                     HorizontalAlignment="Center" Margin="0,8,0,16"
                     Visibility="{Binding HasStarsToShow, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{Binding StarsSummary}" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
@@ -167,12 +167,12 @@
             <!-- 🏅 Heute neu freigeschaltete Abzeichen - bewusst EINE Zeile statt einer Karte, damit
                  der Freischalten-Knopf nicht weiter nach unten rutscht. Alle Abzeichen stehen in
                  "Mein Fortschritt". -->
-            <Border Background="{StaticResource AccentBrush}" CornerRadius="14" Padding="18,10" MaxWidth="560"
+            <Border Background="{DynamicResource AccentBrush}" CornerRadius="14" Padding="18,10" MaxWidth="560"
                     HorizontalAlignment="Center" Margin="0,0,0,16"
                     Visibility="{Binding HasNewAchievements, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{Binding NewAchievementsSummary, Mode=OneWay}" Style="{StaticResource BodyText}"
                            FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                           Foreground="{StaticResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
             </Border>
 
             <!-- 🎁 Belohnungen (von den Eltern gepflegt, mit Sternen einlösbar): erreichbare zeigen
@@ -196,7 +196,7 @@
                                                VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0" />
                                     <TextBlock Grid.Column="1" Text="{Binding CostDisplay}" FontSize="14" FontWeight="SemiBold"
                                                VerticalAlignment="Center" Margin="0,0,12,0"
-                                               Foreground="{StaticResource TextSecondaryBrush}" />
+                                               Foreground="{DynamicResource TextSecondaryBrush}" />
                                     <Button Grid.Column="2" Style="{StaticResource TabPillButton}" FontSize="13"
                                             Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Result_Rewards_Redeem]}"
                                             IsEnabled="{Binding CanRedeem}"

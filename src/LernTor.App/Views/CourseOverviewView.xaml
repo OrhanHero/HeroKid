@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -44,14 +44,14 @@
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                                    TextWrapping="Wrap" />
-                                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="10"
+                                        <Border Background="{DynamicResource TileMintBrush}" CornerRadius="10"
                                                 Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center"
                                                 Visibility="{Binding IsRecommended, Converter={StaticResource BoolToVis}}">
                                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_CourseRecommended]}"
                                                        FontSize="11" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                                         </Border>
                                     </StackPanel>
                                     <TextBlock Text="{Binding Intro}" Style="{StaticResource BodyText}"
@@ -76,7 +76,7 @@
         <Button Grid.Row="2" HorizontalAlignment="Center" Margin="0,12,0,28"
                 Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Back]}"
                 Style="{StaticResource RoundedButton}"
-                Background="{StaticResource TextSecondaryBrush}"
+                Background="{DynamicResource TextSecondaryBrush}"
                 Command="{Binding BackCommand}" />
     </Grid>
 </UserControl>

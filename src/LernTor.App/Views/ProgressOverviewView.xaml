@@ -4,7 +4,7 @@
              xmlns:loc="clr-namespace:LernTor.App.Localization">
     <!-- "Mein Fortschritt": Meisterschaft je Thema (TopicMasteryCalculator). Nur Anzeige - kein
          Knopf hier schaltet etwas frei oder ueberspringt etwas. -->
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -32,7 +32,7 @@
                         Visibility="{Binding HasAchievements, Converter={StaticResource BoolToVis}}">
                     <StackPanel>
                         <TextBlock Text="{Binding AchievementsHeadline, Mode=OneWay}" FontSize="22" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
+                                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,10" />
                         <ItemsControl ItemsSource="{Binding Achievements}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -45,16 +45,16 @@
                                             BorderThickness="2">
                                         <Border.Style>
                                             <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
                                                 <Setter Property="BorderBrush" Value="Transparent" />
                                                 <Setter Property="Opacity" Value="0.5" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsUnlocked}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource TileSandBrush}" />
+                                                        <Setter Property="Background" Value="{DynamicResource TileSandBrush}" />
                                                         <Setter Property="Opacity" Value="1" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding IsNew}" Value="True">
-                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource FocusBrush}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -63,7 +63,7 @@
                                             <TextBlock Text="{Binding Emoji}" FontSize="30" HorizontalAlignment="Center" />
                                             <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold"
                                                        TextAlignment="Center" TextWrapping="Wrap" Margin="0,4,0,2"
-                                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                                             <TextBlock Text="{Binding DetailDisplay}" Style="{StaticResource BodyText}"
                                                        FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
                                         </StackPanel>
@@ -107,7 +107,7 @@
 
                                                     <TextBlock Grid.Column="0" Text="{Binding Topic}" FontSize="16"
                                                                TextWrapping="Wrap" VerticalAlignment="Center"
-                                                               Foreground="{StaticResource TextPrimaryBrush}" />
+                                                               Foreground="{DynamicResource TextPrimaryBrush}" />
                                                     <TextBlock Grid.Column="1" Text="{Binding DetailDisplay}"
                                                                Style="{StaticResource BodyText}" FontSize="13"
                                                                VerticalAlignment="Center" Margin="12,0,12,0" />
@@ -118,23 +118,23 @@
                                                             HorizontalAlignment="Stretch">
                                                         <Border.Style>
                                                             <Style TargetType="Border">
-                                                                <Setter Property="Background" Value="{StaticResource TileSandBrush}" />
+                                                                <Setter Property="Background" Value="{DynamicResource TileSandBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding Level}" Value="Vertraut">
-                                                                        <Setter Property="Background" Value="{StaticResource TileLavenderBrush}" />
+                                                                        <Setter Property="Background" Value="{DynamicResource TileLavenderBrush}" />
                                                                     </DataTrigger>
                                                                     <DataTrigger Binding="{Binding Level}" Value="Sicher">
-                                                                        <Setter Property="Background" Value="{StaticResource TileMintBrush}" />
+                                                                        <Setter Property="Background" Value="{DynamicResource TileMintBrush}" />
                                                                     </DataTrigger>
                                                                     <DataTrigger Binding="{Binding Level}" Value="Gemeistert">
-                                                                        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                                        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </Border.Style>
                                                         <TextBlock Text="{Binding LevelDisplay}" FontSize="14" FontWeight="SemiBold"
                                                                    HorizontalAlignment="Center"
-                                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
                                                     </Border>
                                                 </Grid>
                                             </DataTemplate>

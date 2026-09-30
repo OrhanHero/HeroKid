@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:vm="clr-namespace:LernTor.App.ViewModels">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
             <StackPanel HorizontalAlignment="Center" MaxWidth="1200">
                 <!-- Ausstieg aus der laufenden Übung: wer sich verklickt und eine schon bestandene
@@ -25,25 +25,25 @@
                            Style="{StaticResource SubtitleText}" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,20" />
 
                 <!-- Lesson Info -->
-                <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                <Border Background="{DynamicResource TileLavenderBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                     <TextBlock Text="{Binding Lesson.Title}" FontWeight="Bold" FontSize="16" TextAlignment="Center" TextWrapping="Wrap" />
                 </Border>
 
                 <!-- Timer + Fortschritt -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
                     <TextBlock Text="{Binding Elapsed, StringFormat='{}{0:mm\\:ss}'}" FontSize="36" FontWeight="Bold"
-                               Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center" />
-                    <TextBlock Text=" / " FontSize="24" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+                               Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text=" / " FontSize="24" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
                     <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_TimeRemainingHint]}"
                                Style="{StaticResource SubtitleText}" VerticalAlignment="Center" />
 
-                    <TextBlock Text=" | " FontSize="20" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="16,0" />
-                    <TextBlock Text="{Binding ProgressText}" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text=" | " FontSize="20" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="16,0" />
+                    <TextBlock Text="{Binding ProgressText}" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <!-- Fortschrittsbalken -->
                 <ProgressBar Value="{Binding ProgressPercent, Mode=OneWay}" Maximum="1" Height="10" Margin="0,0,0,20"
-                             Foreground="{StaticResource PrimaryBrush}" Background="{StaticResource CardBrush}" />
+                             Foreground="{DynamicResource PrimaryBrush}" Background="{DynamicResource CardBrush}" />
 
                 <!-- Prompt-Karte -->
                 <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
@@ -96,7 +96,7 @@
                 <!-- Eingabefeld -->
                 <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
                     <StackPanel>
-                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="6" Padding="10,4"
+                        <Border Background="{DynamicResource TileMintBrush}" CornerRadius="6" Padding="10,4"
                                 HorizontalAlignment="Center" Margin="0,0,0,8">
                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_YourText]}"
                                        FontWeight="Bold" FontSize="12" />
@@ -109,11 +109,11 @@
                                  TextChanged="InputBox_TextChanged"
                                  PreviewKeyDown="InputBox_PreviewKeyDown" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,4,0">
-                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,16,0">
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,16,0">
                                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Words], Mode=OneWay}" />
                                 <Run Text="{Binding WordCount, Mode=OneWay}" FontWeight="Bold" />
                             </TextBlock>
-                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}">
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
                                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_Chars], Mode=OneWay}" />
                                 <Run Text="{Binding CharCount, Mode=OneWay}" FontWeight="Bold" />
                             </TextBlock>
@@ -124,7 +124,7 @@
                 <!-- Timer + Weiter -->
                 <StackPanel HorizontalAlignment="Center" Margin="0,16,0,0">
                     <TextBlock Text="{Binding RemainingTimeDisplay}" FontSize="40" FontWeight="Bold"
-                               HorizontalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryBrush}"
                                Visibility="{Binding IsCompleted, Converter={StaticResource InverseBoolToVis}}" />
                     <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Typing_TimeRemainingHint]}"
                                Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,4,0,20"

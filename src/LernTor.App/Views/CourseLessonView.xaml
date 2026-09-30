@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center" MaxWidth="820" Margin="24,48,24,32">
 
@@ -16,7 +16,7 @@
                            Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}" />
 
                 <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,16,0,18"
-                        Background="{StaticResource TileLavenderBrush}">
+                        Background="{DynamicResource TileLavenderBrush}">
                     <TextBlock Text="{Binding Intro, Mode=OneWay}" Style="{StaticResource BodyText}"
                                FontSize="15" TextWrapping="Wrap" />
                 </Border>
@@ -35,7 +35,7 @@
 
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="{Binding Heading}" FontSize="17" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                                    TextWrapping="Wrap" Margin="0,0,0,6" />
                                         <TextBlock Text="{Binding Body}" Style="{StaticResource BodyText}"
                                                    FontSize="14" TextWrapping="Wrap" LineHeight="22" />
@@ -53,17 +53,17 @@
 
                 <!-- Merksätze: das, was hängenbleiben soll, wenn sonst nichts bleibt. -->
                 <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,10,0,0"
-                        Background="{StaticResource TileMintBrush}">
+                        Background="{DynamicResource TileMintBrush}">
                     <StackPanel>
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_LessonKeyPoints]}"
                                    FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
                         <ItemsControl ItemsSource="{Binding KeyPoints}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                         <TextBlock Text="✔" FontSize="15" Margin="0,0,8,0"
-                                                   Foreground="{StaticResource SuccessBrush}" />
+                                                   Foreground="{DynamicResource SuccessBrush}" />
                                         <TextBlock Text="{Binding}" Style="{StaticResource BodyText}"
                                                    FontSize="14" TextWrapping="Wrap" MaxWidth="700" />
                                     </StackPanel>
@@ -90,11 +90,11 @@
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_LessonFinishReading]}"
                             Style="{StaticResource RoundedButton}" FontSize="14" Padding="18,8"
                             Margin="0,0,10,0"
-                            Background="{StaticResource TextSecondaryBrush}"
+                            Background="{DynamicResource TextSecondaryBrush}"
                             Command="{Binding FinishReadingCommand}" />
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Back]}"
                             Style="{StaticResource RoundedButton}" FontSize="14" Padding="18,8"
-                            Background="{StaticResource TextSecondaryBrush}"
+                            Background="{DynamicResource TextSecondaryBrush}"
                             Command="{Binding BackCommand}" />
                 </StackPanel>
             </StackPanel>

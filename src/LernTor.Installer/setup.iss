@@ -3,7 +3,7 @@
 ; siehe docs/BUILD.md. Der Publish-Ordner wird hier eingebunden.
 
 #define MyAppName "LernTor"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "3.0.0"
 #define MyAppPublisher "LernTor"
 #define MyAppExeName "LernTor.exe"
 #define PublishDir "..\..\publish\win-x64"

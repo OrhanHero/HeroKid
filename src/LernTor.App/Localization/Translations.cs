@@ -37,6 +37,22 @@ public static class Translations
                 "🔁 Hata kutundan bugün sıra gelen: {0} - ikinci seferde genelde oturur."),
             // "Mein Fortschritt": Meisterschaft je Thema (TopicMasteryCalculator, Vorbild Khan Academy).
             ["Welcome_OpenProgress"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
+            ["Welcome_OpenDesign"] = L("🎨 Mein Design", "🎨 Tasarımım"),
+            ["Design_Title"] = L("🎨 Mein Design", "🎨 Tasarımım"),
+            ["Design_Subtitle"] = L(
+                "Such dir aus, wie LernTor für dich aussieht. Es ändert sich sofort.",
+                "LernTor'un senin için nasıl görüneceğini seç. Hemen değişir."),
+            ["Design_PreviewSample"] = L("Lernen macht Spaß", "Öğrenmek eğlenceli"),
+            ["Design_LockedHint"] = L("🔒 Wird frei mit dem Abzeichen {0}", "🔒 {0} rozetiyle açılır"),
+            ["Design_FontLabel"] = L("Schrift", "Yazı tipi"),
+            ["Design_Font_Standard"] = L("Standard", "Standart"),
+            ["Design_Font_GutLesbar"] = L("Gut lesbar", "Kolay okunur"),
+            ["Design_Font_Verspielt"] = L("Verspielt", "Eğlenceli"),
+            ["Design_TextSizeLabel"] = L("Textgröße", "Yazı boyutu"),
+            ["Design_AutoLabel"] = L("Automatisch dunkel", "Otomatik koyu"),
+            ["Design_FollowWindows"] = L("Wie Windows (hell oder dunkel)", "Windows gibi (açık veya koyu)"),
+            ["Design_DarkInEvening"] = L("Abends ab 19 Uhr dunkel", "Akşam 19'dan sonra koyu"),
+            ["Design_Done"] = L("✔ Fertig", "✔ Tamam"),
             ["Progress_Title"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
             ["Progress_Summary"] = L(
                 "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -27,7 +27,7 @@
 
                 <!-- ============ Tägliche Challenge (der Pflichtteil) ============ -->
                 <Border Style="{StaticResource CardBorder}" Padding="24,20" Margin="0,0,0,20"
-                        Background="{StaticResource TileSandBrush}">
+                        Background="{DynamicResource TileSandBrush}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -37,7 +37,7 @@
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Challenge]}"
                                        FontSize="21" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                             <TextBlock Text="{Binding ChallengeHint, Mode=OneWay}"
                                        Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,4,0,0" />
                         </StackPanel>
@@ -52,7 +52,7 @@
                 <!-- ============ Unterbereich 1: Verkehrszeichen ============ -->
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_AreaSigns]}"
                            FontSize="22" FontWeight="SemiBold" Margin="4,0,0,2"
-                           Foreground="{StaticResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_AreaSignsHint]}"
                            Style="{StaticResource BodyText}" Margin="4,0,0,12" />
 
@@ -75,13 +75,13 @@
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}" />
-                                            <Border Background="{StaticResource TileMintBrush}" CornerRadius="10"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                            <Border Background="{DynamicResource TileMintBrush}" CornerRadius="10"
                                                     Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center"
                                                     Visibility="{Binding IsRecommended, Converter={StaticResource BoolToVis}}">
                                                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Recommended]}"
                                                            FontSize="11" FontWeight="SemiBold"
-                                                           Foreground="{StaticResource TextPrimaryBrush}" />
+                                                           Foreground="{DynamicResource TextPrimaryBrush}" />
                                             </Border>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Description}" Style="{StaticResource BodyText}"
@@ -95,7 +95,7 @@
                                     <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="16,0,0,0">
                                         <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Flashcards]}"
                                                 Style="{StaticResource RoundedButton}" FontSize="14" Padding="16,8"
-                                                Background="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"
+                                                Background="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,6"
                                                 Command="{Binding DataContext.StartFlashcardsCommand,
                                                           RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                 CommandParameter="{Binding}" />
@@ -122,7 +122,7 @@
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_AreaTheory]}"
                                        FontSize="18" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_AreaTheoryHint]}"
                                        Style="{StaticResource BodyText}" FontSize="13" TextWrapping="Wrap"
                                        Margin="0,2,0,0" />
@@ -148,7 +148,7 @@
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_AreaCourse]}"
                                        FontSize="18" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_AreaCourseHint]}"
                                        Style="{StaticResource BodyText}" FontSize="13" TextWrapping="Wrap"
                                        Margin="0,2,0,0" />

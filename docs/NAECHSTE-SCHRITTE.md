@@ -32,6 +32,8 @@ technischer Eleganz.
   [`STUNDENPLAENE-2026-27.md`](STUNDENPLAENE-2026-27.md) in den Eltern-Bereich einfügen.
 - [ ] Bei Batuhan am Original nachsehen: **Ethik** nur Do 6? **Mathe** Fr 6/7 als Doppelstunde?
 - [ ] Nach dem Eintragen **„🩻 Datenbank prüfen“** einmal drücken. Das Ergebnis muss ✅ sein.
+- [ ] **Version 3.0 ansehen**: Testplan [V.2-1 bis V.3-8](TESTPLAN.md#neu-seit-30092026-version-21-und-30), dazu
+  unter Actions das Artefakt „Design-Vorschau“ des letzten Laufs durchblättern.
 - [ ] Die neuen Punkte im Testplan abhaken: [acht vom 28.09.](TESTPLAN.md#neu-seit-28092026) und
   [zehn für Version 2.0](TESTPLAN.md#neu-seit-29092026-version-20), zusammen etwa 45 Minuten.
   Am wichtigsten: **V.2** (Eltern-Passwort geht nach dem Update noch) und **V.7** (der Knopf
@@ -128,7 +130,10 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
 | **Fehler:** offene Antworten galten als richtig, sobald die Lösung *darin vorkam* – „25“ war richtig, wenn „5“ gesucht war, und wer mehrere Formen hintereinander tippte, lag immer richtig. Jetzt muss die Antwort der Lösung entsprechen (Einheiten, „x =“, Artikel, ganzer Lückensatz bleiben erlaubt) | `OpenTextAnswerMatcher` |
 | **Fehler:** bei den binomischen Formeln waren 8 von 9 hinterlegten Lösungen falsch („(x + 9)² = x² + 36x + 81“). Wer richtig rechnete, bekam einen Fehler. Alte Karteikarten werden beim nächsten Abruf repariert | `BinomischeFormel` |
 | **Fehler:** „Groß- und Kleinschreibung“ nahm „auto“ für „Auto“ an – die Schreibung, um die es ging, wurde nicht geprüft | `QuizQuestion.CaseSensitive` |
-| Release-Workflow auch per Knopf (Actions → Release → Run workflow), Release 2.0.0 veröffentlicht | `release.yml` |
+| Release-Workflow auch per Knopf (Actions → Release → Run workflow), Release 2.0.0 und 2.1.0 veröffentlicht | `release.yml` |
+| **Version 3.0 – Designs**: acht Designs (auch dunkel und hoher Kontrast), Schrift und Textgröße je Kind, „wie Windows“/„abends dunkel“, Galaxie als Belohnung; alle Designs erfüllen WCAG 2.2 AA | [`DESIGN.md`](DESIGN.md), Pull Request [OrhanHero/HeroKid#8](https://github.com/OrhanHero/HeroKid/pull/8) |
+| **Technik**: Bildschirmfotos jeder Ansicht in jedem Design in der CI, Kontrasttest, Preflight-Regeln für Design-Ressourcen | `DesignScreenshotTests`, `DesignThemeCatalogTests` |
+| **Umgebung**: SessionStart-Hook (Cloud-Sitzungen bauen sofort), Devcontainer, `.editorconfig` | [`BUILD.md`](BUILD.md) |
 
 ## Erledigt am 29.09.2026 (Version 2.0)
 

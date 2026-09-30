@@ -25,6 +25,14 @@ public sealed partial class WelcomeViewModel : ObservableObject
 
     public bool ShowProgressButton => _onOpenProgress is not null;
 
+    private readonly Action? _onOpenDesign;
+
+    [RelayCommand]
+    private void OpenDesign() => _onOpenDesign?.Invoke();
+
+    /// <summary>"🎨 Mein Design" (docs/NAECHSTES-LEVEL-3.md, Schritt 4).</summary>
+    public bool ShowDesignButton => _onOpenDesign is not null;
+
     /// <summary>Oeffnet die Hausaufgaben-Eingabe. Wie bei den Klausuren auch fuer Kinder:
     /// wer selbst eintraegt, was zu tun ist, hat es schon einmal bewusst gelesen.</summary>
     [RelayCommand]
@@ -131,9 +139,11 @@ public sealed partial class WelcomeViewModel : ObservableObject
         bool dayIsDone = false,
         DateOnly? practiceDay = null,
         IReadOnlySet<Subject>? practiceSubjects = null,
-        Action? onOpenProgress = null)
+        Action? onOpenProgress = null,
+        Action? onOpenDesign = null)
     {
         _onOpenProgress = onOpenProgress;
+        _onOpenDesign = onOpenDesign;
         IsPlannerPeek = isPlannerPeek;
         IsDayDone = dayIsDone;
         Calendar = SchoolCalendar.Today(today ?? DateOnly.FromDateTime(DateTime.Today));

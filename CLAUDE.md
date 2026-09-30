@@ -201,6 +201,22 @@ files are chosen from `LocalLlmModelCatalog` and auto-downloaded to `%LOCALAPPDA
 on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpClient`'s default
 100s timeout previously aborted multi-GB downloads mid-stream — a real bug, not hypothetical).
 
+### Designs (since 3.0, 30.09.2026)
+
+Colours are **roles**, not names: `DesignPalette` (Core) has 22 required roles, `DesignThemeCatalog`
+holds the eight designs, `DesignResourceKeys` maps roles to the old resource keys (`CardBrush` =
+Surface …), and `ThemeService` (App) hangs the chosen design as the LAST merged dictionary into
+`Application.Resources` at runtime. Therefore: **views reference design brushes only via
+`DynamicResource`** (a `StaticResource` keeps the old colour after switching), no `#RRGGBB` and no
+`"White"` in `Views/`/`Controls/` (text on coloured surfaces is `OnColorBrush`) - `preflight.py`
+checks both (`design-static`, `design-hexfarbe`). Every palette must pass
+`DesignContrastRules` (WCAG 2.2: 4.5:1 text, 3:1 graphics) - `DesignThemeCatalogTests`.
+`Colors.xaml` must equal the default design "lavendel" (tested). WPF's default `CheckBox`/
+`RadioButton` do not inherit the window's foreground - implicit styles in `Styles.xaml` fix that.
+The parent area always shows the default design (window-level dictionary). `DesignScreenshotTests`
+renders the main views in every design to PNG; CI uploads them as artifact "Design-Vorschau" -
+look at them after any visual change. Full guide: `docs/DESIGN.md`.
+
 ## Hard-won gotchas (don't reintroduce these)
 
 - **`net10.0-windows` + `UseWPF=true` does NOT get the same implicit global usings as plain

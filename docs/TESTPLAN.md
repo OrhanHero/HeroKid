@@ -178,3 +178,26 @@ Tabelle an (die automatische `-schema.db`-Sicherung entsteht trotzdem von selbst
 | V.8 | Elternteil | Führerschein-Bereich für ein Kind abschalten, „Mein Fortschritt“ ansehen | Die offenen Führerschein-Abzeichen sind verschwunden; schon verdiente bleiben | |
 | V.9 | Elternteil | Bericht → „🏆 Meisterschaft je Fach“ und HTML-Export | Dieselben Zahlen wie beim Kind in „Mein Fortschritt“ | |
 | V.10 | Emirhan / Batuhan | Englisch- bzw. Musikaufgaben der neuen Themen (Simple Past, Pronomen, in/on/at, Notenwerte, Stimme; Second Conditional, Relative Clauses) | Fragen und Erklärungen stimmen – **bitte von jemandem mit gutem Englisch gegenlesen lassen** | |
+
+## Neu seit 30.09.2026 (Version 2.1 und 3.0)
+
+Version 2.1 prüft offene Antworten strenger und korrigiert die binomischen Formeln. Version 3.0
+bringt wählbare Designs ([`DESIGN.md`](DESIGN.md)). Die CI rendert jede Ansicht in jedem Design als
+Bild (Artefakt „Design-Vorschau“), **am echten Bildschirm gesehen hat es noch niemand**.
+**Vorher eine Sicherung auf USB** – 3.0 ergänzt fünf Spalten in der Profiltabelle.
+
+| # | Rolle | Was | Erwartung | ✓ / Beobachtung |
+|---|---|---|---|---|
+| V.2-1 | Batuhan | Mathe: „(x + 3)² = ?“ mit „x² + 6x + 9“ beantworten (auch als „x^2+6x+9“) | Richtig. Eine alte 🔁-Karte zu den binomischen Formeln zeigt jetzt die richtige Lösung | |
+| V.2-2 | Kind | Offene Aufgabe: zwei Formen hintereinander tippen („gelse gelir“) | Falsch – Raten mit mehreren Antworten zählt nicht mehr | |
+| V.2-3 | Kind | Offene Aufgabe mit Zahl: „42 €“ oder „x = 9“ eintippen | Richtig; „142“ für „42“ dagegen falsch | |
+| V.2-4 | Emirhan | Deutsch „Groß- und Kleinschreibung“: „auto“ statt „Auto“ | Falsch – genau das wird dort geübt | |
+| V.3-1 | Kind | Startseite → „🎨 Mein Design“ → „🌊 Ozean“ | Die ganze App wird sofort blau-türkis; „✔ Fertig“ führt zur Startseite zurück | |
+| V.3-2 | Kind | In der Galerie mehrmals zwischen hellen und dunklen Designs wechseln | **Jede** Stelle der Galerie wechselt mit (Überschriften, Karten, Knöpfe, Häkchen-Beschriftungen); nichts bleibt im alten Design stehen | |
+| V.3-3 | Kind | „🌙 Nacht“ wählen, einmal durch Lesen, News, eine Übung und das Abschlussquiz | Alles lesbar; keine weiße Fläche mit weißer Schrift, keine schwarze Schrift auf Dunkel | |
+| V.3-4 | Kind | Schrift „Verspielt“ und Textgröße 120 % | Größer und in Comic-Schrift; auf dem kleinsten Bildschirm ist nichts abgeschnitten, Scrollen ist möglich | |
+| V.3-5 | Kind | „🌌 Galaxie“ vor zehn Lerntagen | Blass mit 🔒 und dem Hinweis auf das Abzeichen „📅 Zehn Lerntage“; lässt sich nicht wählen | |
+| V.3-6 | Kind | „Abends ab 19 Uhr dunkel“ einschalten, nach 19 Uhr eine Etappe weiter | Wechselt zu „Nacht“ (spätestens beim nächsten Etappenwechsel) | |
+| V.3-7 | Elternteil | Eltern-Bereich öffnen, während ein Kind „Nacht“ gewählt hat | Eltern-Bereich ist hell (Standard); beim Profil steht „🌙 Nacht · …“; „Auf Standard zurücksetzen“ stellt nach dem Schließen wieder Lavendel her | |
+| V.3-8 | Beide Kinder | Profilwahl nach dem Abmelden eines Kindes mit eigenem Design | Profilwahl ist wieder im Standard-Design | |
+
