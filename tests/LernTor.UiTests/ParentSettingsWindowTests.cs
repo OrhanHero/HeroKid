@@ -35,6 +35,9 @@ public sealed class ParentSettingsWindowTests
         var ordner = Path.Combine(Path.GetTempPath(), "lerntor-eltern-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(ordner);
         var services = new ServiceCollection();
+        // Das Logging stellt in der App der Host (Host.CreateDefaultBuilder) - Repositories wie
+        // TrafficSignProgressRepository brauchen ILogger<T>.
+        services.AddLogging();
         LernTor.App.App.RegisterServices(services, Path.Combine(ordner, "test.db"), Path.Combine(ordner, "sicherungen"));
 
         using (var provider = services.BuildServiceProvider())
