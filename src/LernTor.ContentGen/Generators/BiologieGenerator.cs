@@ -13,7 +13,7 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
     protected override IReadOnlyDictionary<GradeLevel, IReadOnlyList<TopicFactory>> TopicsByGrade { get; } =
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
-            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung, Zelle, LebensraeumeUndNahrungsketten },
+            [GradeLevel.Klasse6] = new List<TopicFactory> { MenschlicheOrgane, Fotosynthese, Wirbeltierklassen, PubertaetUndEntwicklung, Zelle, LebensraeumeUndNahrungsketten, ErnaehrungUndVerdauung, Bluetenpflanzen },
             [GradeLevel.Klasse7] = new List<TopicFactory> { ZelleUndZellteilung, StoffwechselPflanzeTier, Sinnesorgane, BlutUndKreislauf, OekosystemWald, AngepasstheitLebensraum },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Zellbiologie, Vererbung, Oekosystem, Immunsystem, Nervensystem, SuchtUndSuchtpraevention, Humangenetik, Evolution }
         };
@@ -1127,6 +1127,120 @@ public sealed class BiologieGenerator : ExerciseGeneratorBase
             Topic = "Angepasstheit an Lebensräume", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Angepasstheit = Körperbau und Verhalten passen zum Lebensraum. Gleichwarm (Säuger/Vögel) vs. wechselwarm (Reptilien/Amphibien/Fische). Winterschlaf ≠ Winterruhe ≠ Winterstarre."
+        };
+    }
+
+    // ----- Seit 3.1 (docs/NAECHSTES-LEVEL-3-1.md, Schritt 4) -----
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ErnaehrungListe =
+    {
+        ("Welcher Nährstoff liefert dem Körper vor allem schnell Energie?", new[] { "Kohlenhydrate", "Mineralstoffe", "Vitamine" }, "Kohlenhydrate",
+            "Kohlenhydrate (Stärke, Zucker) werden zu Traubenzucker abgebaut - der schnellste Energielieferant für Muskeln und Gehirn."),
+        ("Wozu braucht der Körper vor allem Eiweiß (Proteine)?", new[] { "Zum Aufbau von Muskeln und Zellen", "Als schnellsten Energielieferanten", "Zum Verdünnen des Blutes im Körper" }, "Zum Aufbau von Muskeln und Zellen",
+            "Eiweiß ist der Baustoff des Körpers: Muskeln, Haut, Haare und Enzyme bestehen daraus."),
+        ("Wo beginnt die Verdauung von Stärke, zum Beispiel aus Brot?", new[] { "Im Mund durch den Speichel", "Erst im Dickdarm durch Bakterien", "In der Speiseröhre durch Säure" }, "Im Mund durch den Speichel",
+            "Speichel enthält ein Enzym, das Stärke schon beim Kauen in Zucker zerlegt - Brot schmeckt nach langem Kauen deshalb süßlich."),
+        ("Was passiert im Magen mit der Nahrung?", new[] { "Sie wird mit Magensaft durchmischt und zersetzt", "Sie wird vollständig ins Blut aufgenommen", "Sie wird zu Stuhl eingedickt und gelagert" }, "Sie wird mit Magensaft durchmischt und zersetzt",
+            "Der Magen knetet den Speisebrei mit Salzsäure und Enzymen; die Säure tötet außerdem viele Keime ab."),
+        ("Wo werden die meisten Nährstoffe ins Blut aufgenommen?", new[] { "Im Dünndarm", "Im Magen", "In der Speiseröhre" }, "Im Dünndarm",
+            "Der Dünndarm ist mehrere Meter lang; durch seine Wand gelangen die zerlegten Nährstoffe ins Blut."),
+        ("Warum hat der Dünndarm unzählige kleine Darmzotten?", new[] { "Sie vergrößern die Fläche für die Aufnahme", "Sie schieben die Nahrung in den Magen zurück", "Sie bilden die Salzsäure für die Verdauung" }, "Sie vergrößern die Fläche für die Aufnahme",
+            "Durch Falten und Zotten ist die innere Oberfläche des Dünndarms etwa so groß wie ein halbes Tennisfeld."),
+        ("Welche Aufgabe haben Ballaststoffe (z. B. aus Vollkornbrot)?", new[] { "Sie regen die Verdauung an und machen satt", "Sie liefern dem Körper die meiste Energie", "Sie bauen feste Knochen und Zähne auf" }, "Sie regen die Verdauung an und machen satt",
+            "Ballaststoffe werden kaum verdaut, quellen im Darm auf und halten ihn in Bewegung."),
+        ("Welche Lebensmittel enthalten besonders viel Eiweiß?", new[] { "Linsen, Eier und Joghurt", "Äpfel, Gurken und Salat", "Zucker, Honig und Saft" }, "Linsen, Eier und Joghurt",
+            "Hülsenfrüchte, Milchprodukte, Eier, Fisch und Fleisch sind gute Eiweißquellen."),
+        ("Welche Lebensmittel enthalten besonders viele Kohlenhydrate?", new[] { "Brot, Reis und Nudeln", "Butter, Öl und Nüsse", "Fisch, Quark und Eier" }, "Brot, Reis und Nudeln",
+            "Getreide und Kartoffeln bestehen zum großen Teil aus Stärke, einem Kohlenhydrat."),
+        ("Was steht in der Ernährungspyramide ganz unten, auf der breitesten Stufe?", new[] { "Getränke wie Wasser und ungesüßter Tee", "Süßigkeiten und Knabberzeug", "Fleisch, Wurst und Speck" }, "Getränke wie Wasser und ungesüßter Tee",
+            "Unten steht, wovon man am meisten braucht: Getränke. Oben, auf der kleinsten Stufe, stehen Süßes und Fettes."),
+        ("Wie viel sollte ein Kind in deinem Alter ungefähr am Tag trinken?", new[] { "Etwa 1 bis 1,5 Liter", "Etwa ein halbes Glas", "Etwa 4 bis 5 Liter" }, "Etwa 1 bis 1,5 Liter",
+            "Kinder von 10 bis 13 Jahren brauchen rund 1,2 Liter Getränke am Tag, bei Hitze und Sport mehr."),
+        ("Welches Getränk ist als Durstlöscher am besten?", new[] { "Wasser oder ungesüßter Tee", "Limonade oder Cola", "Energydrinks oder Eistee" }, "Wasser oder ungesüßter Tee",
+            "Wasser löscht den Durst ohne Zucker. Süße Getränke enthalten oft mehr als zehn Stück Würfelzucker pro Liter."),
+        ("Was machen Enzyme bei der Verdauung?", new[] { "Sie zerlegen Nährstoffe in kleine Bausteine", "Sie geben der Nahrung ihre Farbe", "Sie kühlen den Magen nach dem Essen" }, "Sie zerlegen Nährstoffe in kleine Bausteine",
+            "Enzyme spalten Stärke, Eiweiß und Fett in so kleine Teile, dass sie durch die Darmwand passen."),
+        ("Wofür braucht der Körper Fett?", new[] { "Als Energiespeicher und für manche Vitamine", "Nur damit die Haut glänzt", "Um die Knochen hart zu machen" }, "Als Energiespeicher und für manche Vitamine",
+            "Fett speichert viel Energie; die Vitamine A, D, E und K kann der Körper nur zusammen mit Fett aufnehmen."),
+        ("Welche Aufgabe hat die Galle aus der Leber bei der Verdauung?", new[] { "Sie hilft, Fette zu zerlegen", "Sie mahlt die Nahrung klein", "Sie entzieht dem Stuhl das Wasser" }, "Sie hilft, Fette zu zerlegen",
+            "Gallensaft zerteilt Fett in winzige Tröpfchen, die die Enzyme dann leichter spalten können."),
+        ("Wie entsteht Karies an den Zähnen?", new[] { "Bakterien bilden aus Zucker Säure, die den Zahn angreift", "Kaltes Wasser lässt den Zahnschmelz zerspringen", "Zu viel Zähneputzen löst den Zahnschmelz auf" }, "Bakterien bilden aus Zucker Säure, die den Zahn angreift",
+            "Bakterien im Zahnbelag verwerten Zucker und bilden Säure. Zähneputzen entfernt den Belag."),
+        ("Wie lange dauert es ungefähr, bis Nahrung den ganzen Verdauungsweg durchlaufen hat?", new[] { "Etwa ein bis drei Tage", "Etwa zehn Minuten", "Etwa zwei bis drei Wochen" }, "Etwa ein bis drei Tage",
+            "Im Magen bleibt Essen ein paar Stunden, im Darm deutlich länger - insgesamt meist ein bis drei Tage."),
+        ("Welcher Vitaminmangel führte früher bei Seefahrern zu Skorbut?", new[] { "Vitamin-C-Mangel", "Vitamin-D-Mangel", "Vitamin-K-Mangel" }, "Vitamin-C-Mangel",
+            "Auf langen Reisen fehlten frisches Obst und Gemüse. Sauerkraut und Zitrusfrüchte halfen gegen Skorbut."),
+        ("Wozu braucht der Körper Calcium, zum Beispiel aus Milch?", new[] { "Für feste Knochen und Zähne", "Für die Farbe der Haare", "Zum Sehen in der Dunkelheit" }, "Für feste Knochen und Zähne",
+            "Calcium ist der Hauptbaustein von Knochen und Zähnen; im Wachstum braucht der Körper besonders viel."),
+        ("Was bezeichnet man als Grundumsatz?", new[] { "Die Energie, die der Körper in völliger Ruhe verbraucht", "Die Energie, die man beim Fußballspielen braucht", "Die Energie, die der Körper im Schlaf aufnimmt" }, "Die Energie, die der Körper in völliger Ruhe verbraucht",
+            "Auch in Ruhe arbeiten Herz, Gehirn und Atmung - dafür braucht der Körper den Grundumsatz.")
+    };
+
+    private static QuizQuestion ErnaehrungUndVerdauung(Random r)
+    {
+        var f = ErnaehrungListe[r.Next(ErnaehrungListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Ernährung und Verdauung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Nährstoffe: Kohlenhydrate (Energie), Fette (Speicher), Eiweiß (Baustoff); dazu Vitamine, Mineralstoffe, Ballaststoffe, Wasser. Weg der Nahrung: Mund → Speiseröhre → Magen → Dünndarm (Aufnahme ins Blut) → Dickdarm."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] BluetenListe =
+    {
+        ("Welcher Teil der Blüte bildet den Pollen?", new[] { "Die Staubblätter", "Die Kelchblätter", "Die Kronblätter" }, "Die Staubblätter",
+            "Staubblätter sind die männlichen Blütenteile; in ihren Staubbeuteln entsteht der Pollen."),
+        ("Wie heißt der weibliche Teil der Blüte?", new[] { "Stempel (Fruchtblatt)", "Staubblatt", "Kelchblatt" }, "Stempel (Fruchtblatt)",
+            "Der Stempel besteht aus Narbe, Griffel und Fruchtknoten; im Fruchtknoten liegen die Samenanlagen."),
+        ("Was versteht man unter Bestäubung?", new[] { "Pollen gelangt auf die Narbe einer Blüte", "Die Blüte verliert ihre Kronblätter", "Die Wurzel nimmt Wasser aus dem Boden" }, "Pollen gelangt auf die Narbe einer Blüte",
+            "Bestäubung heißt: Pollen landet auf der Narbe - durch Insekten, Wind oder Wasser."),
+        ("Warum haben viele Blüten bunte Kronblätter und einen Duft?", new[] { "Um Insekten anzulocken", "Um Wasser zu speichern", "Um sich vor Frost zu schützen" }, "Um Insekten anzulocken",
+            "Farbe und Duft zeigen Bienen und Hummeln: hier gibt es Nektar. Dabei nehmen sie Pollen mit."),
+        ("Was geschieht bei der Befruchtung einer Blüte?", new[] { "Eine Zelle aus dem Pollen verschmilzt mit der Eizelle", "Die Kronblätter werden kräftig grün", "Die Blüte öffnet sich jeden Morgen" }, "Eine Zelle aus dem Pollen verschmilzt mit der Eizelle",
+            "Nach der Bestäubung wächst ein Pollenschlauch zur Eizelle; bei der Verschmelzung entsteht der Samen."),
+        ("Aus welchem Teil der Blüte entsteht die Frucht?", new[] { "Aus dem Fruchtknoten", "Aus dem Kelchblatt", "Aus dem Staubbeutel" }, "Aus dem Fruchtknoten",
+            "Nach der Befruchtung wächst der Fruchtknoten zur Frucht heran, etwa zur Kirsche oder zum Apfel."),
+        ("Welche Pflanze wird vor allem durch den Wind bestäubt?", new[] { "Die Hasel", "Der Kirschbaum", "Die Sonnenblume" }, "Die Hasel",
+            "Windblütige Pflanzen wie Hasel, Gräser und Birke haben unscheinbare Blüten und sehr viel leichten Pollen - deshalb Heuschnupfen."),
+        ("Wie verbreitet der Löwenzahn seine Samen?", new[] { "Mit kleinen Schirmchen durch den Wind", "Durch kräftiges Wegschleudern", "Mit Haken im Fell von Tieren" }, "Mit kleinen Schirmchen durch den Wind",
+            "Die Pusteblume trägt viele Früchte mit Flugschirmchen, die der Wind weit weg trägt."),
+        ("Wie verbreitet die Klette ihre Früchte?", new[] { "Mit Haken im Fell von Tieren", "Mit Flügeln durch den Wind", "Durch Schwimmen im Wasser" }, "Mit Haken im Fell von Tieren",
+            "Kletten haken sich an Fell oder Kleidung fest und fallen anderswo ab. Sie waren das Vorbild für den Klettverschluss."),
+        ("Was hat ein Kirschbaum davon, dass Vögel seine Kirschen fressen?", new[] { "Die Samen werden anderswo ausgeschieden", "Der Baum wächst dadurch schneller", "Die Blätter bleiben länger grün" }, "Die Samen werden anderswo ausgeschieden",
+            "Der harte Kern übersteht die Verdauung. So gelangen die Samen an neue Orte - Verbreitung durch Tiere."),
+        ("Was braucht ein Samen, damit er keimt?", new[] { "Wasser, Wärme und Sauerstoff", "Nur Licht und viel Dünger", "Salz und völlige Kälte" }, "Wasser, Wärme und Sauerstoff",
+            "Zum Keimen braucht der Samen Wasser, eine passende Temperatur und Luft; Licht braucht er meist erst danach."),
+        ("Welche Aufgabe hat die Wurzel?", new[] { "Sie hält die Pflanze fest und nimmt Wasser auf", "Sie bildet Pollen und süßen Nektar", "Sie betreibt die meiste Fotosynthese" }, "Sie hält die Pflanze fest und nimmt Wasser auf",
+            "Die Wurzel verankert die Pflanze im Boden und nimmt mit ihren Wurzelhaaren Wasser und Mineralstoffe auf."),
+        ("Wozu dient die Sprossachse (der Stängel)?", new[] { "Sie trägt die Blätter und leitet Wasser", "Sie bildet die Samen der Pflanze", "Sie lockt Insekten mit Duft an" }, "Sie trägt die Blätter und leitet Wasser",
+            "Im Stängel verlaufen Leitungsbahnen: Wasser nach oben, Zucker aus den Blättern in die ganze Pflanze."),
+        ("Was ist Nektar?", new[] { "Ein Zuckersaft, der Insekten anlockt", "Der gelbe Pollen der Blüte", "Das Wasser in der Wurzel" }, "Ein Zuckersaft, der Insekten anlockt",
+            "Nektar ist die Belohnung für Bestäuber. Bienen machen daraus Honig."),
+        ("Wie heißt der obere, klebrige Teil des Stempels?", new[] { "Narbe", "Griffel", "Kelch" }, "Narbe",
+            "An der klebrigen Narbe bleibt der Pollen hängen; der Griffel verbindet sie mit dem Fruchtknoten."),
+        ("Was versteht man unter Selbstbestäubung?", new[] { "Pollen gelangt auf die Narbe derselben Pflanze", "Bienen bestäuben sich gegenseitig", "Die Pflanze wächst ganz ohne Blüten" }, "Pollen gelangt auf die Narbe derselben Pflanze",
+            "Bei Selbstbestäubung kommt der Pollen von derselben Pflanze, bei Fremdbestäubung von einer anderen."),
+        ("Wie vermehren sich Erdbeeren auch ganz ohne Samen?", new[] { "Durch Ausläufer", "Durch Sporen", "Durch Knospen am Blatt" }, "Durch Ausläufer",
+            "Ausläufer wachsen über den Boden und bilden neue Pflänzchen - eine ungeschlechtliche Vermehrung."),
+        ("Welche Aufgabe haben die grünen Kelchblätter?", new[] { "Sie schützen die Blütenknospe", "Sie nehmen Wasser aus dem Boden", "Sie bilden den Pollen der Blüte" }, "Sie schützen die Blütenknospe",
+            "Die Kelchblätter umhüllen die geschlossene Knospe; später sitzen sie meist unter den Kronblättern."),
+        ("Warum sind Bienen für die Landwirtschaft so wichtig?", new[] { "Sie bestäuben viele Obst- und Nutzpflanzen", "Sie düngen den Boden mit Honig", "Sie fressen alle Schädlinge weg" }, "Sie bestäuben viele Obst- und Nutzpflanzen",
+            "Ohne Bestäubung bilden Apfel, Kirsche, Raps und viele andere Pflanzen kaum Früchte."),
+        ("Warum ist die Tulpe schon im zeitigen Frühjahr so früh zu sehen?", new[] { "Sie lebt von Vorräten in ihrer Zwiebel", "Sie braucht gar kein Sonnenlicht", "Sie wächst nur bei Schnee und Frost" }, "Sie lebt von Vorräten in ihrer Zwiebel",
+            "In der Zwiebel sind Nährstoffe aus dem Vorjahr gespeichert - damit kann die Tulpe sofort austreiben.")
+    };
+
+    private static QuizQuestion Bluetenpflanzen(Random r)
+    {
+        var f = BluetenListe[r.Next(BluetenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Biologie, GradeLevel = GradeLevel.Klasse6,
+            Topic = "Blütenpflanzen: Blüte, Bestäubung, Samen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Staubblätter (männlich, Pollen), Stempel mit Narbe, Griffel, Fruchtknoten (weiblich). Bestäubung: Pollen auf die Narbe; Befruchtung: Verschmelzung; aus dem Fruchtknoten wird die Frucht."
         };
     }
 }

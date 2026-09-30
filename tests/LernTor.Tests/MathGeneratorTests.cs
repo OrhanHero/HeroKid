@@ -200,4 +200,30 @@ public class MathGeneratorTests
         Assert.Equal(12, questions.Count);
         Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
+
+    [Fact]
+    public void Mehrstufige_Zufallsversuche_rechnen_richtig_und_kuerzen()
+    {
+        var fragen = new MathGenerator().Generate(GradeLevel.Klasse9, 400, new Random(9))
+            .Where(q => q.Topic.StartsWith("Mehrstufige Zufallsversuche"))
+            .ToList();
+
+        Assert.True(fragen.Count >= 10, $"nur {fragen.Count} Aufgaben");
+        foreach (var frage in fragen)
+        {
+            var loesung = frage.CorrectAnswers.Single();
+            var teile = loesung.Split('/');
+            var z = int.Parse(teile[0]);
+            var n = teile.Length == 2 ? int.Parse(teile[1]) : 1;
+            Assert.Equal(1, System.Numerics.BigInteger.GreatestCommonDivisor(z, n));
+            Assert.InRange((double)z / n, 0.0, 1.0);
+        }
+
+        // Stichprobe mit bekannter Lösung: Augensumme 7 mit zwei Würfeln = 6/36 = 1/6.
+        var sieben = fragen.FirstOrDefault(q => q.Prompt.Contains("Augensumme 7 "));
+        if (sieben is not null)
+        {
+            Assert.Equal("1/6", sieben.CorrectAnswers.Single());
+        }
+    }
 }

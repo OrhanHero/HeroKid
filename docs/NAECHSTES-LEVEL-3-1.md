@@ -18,7 +18,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 | 1 — 🔊 Jede Frage vorlesen | ✅ 30.09.2026: `SpeechSegmenter` (Core, 37 Tests inkl. Durchlauf über alle Generatoren), 🔊 an Frage und Lösung, Stimmwechsel je Abschnitt (Piper und Windows), Knopf nur mit passender Stimme, Anhalten beim Weiterblättern; Testplan V.31-4 bis V.31-7 |
 | 2 — 📅 Lernkalender in „Mein Fortschritt“ | ✅ 30.09.2026: `LearningCalendar` (Core, 6 Tests; Lerntage wie bei den Abzeichen), Karte „📅 Deine Lerntage“ mit 12 Wochen und Legende – gelernt/Schultag/schulfrei auch an der Form erkennbar; Render-Test mit allen Tagesarten, Bildschirmfoto mit Beispieldaten |
 | 3 — Zwei neue Designs als Belohnung | ✅ 30.09.2026: 🏔️ Gletscher (`richtig-500`) und 🌋 Vulkan (`meister-1`), beide bestehen den Kontrasttest; Katalog-Test auf zehn Designs mit drei Belohnungen |
-| 4 — Lehrplan-Lücken schließen | ⏳ geplant |
+| 4 — Lehrplan-Lücken schließen | ✅ 30.09.2026: Mathe Kl. 9 „Mehrstufige Zufallsversuche“ (vier Aufgabenarten, frische Zahlen); Biologie Kl. 6 „Ernährung und Verdauung“, „Blütenpflanzen“; Kunst Kl. 7 „Comic und Bildgeschichte“, „Fotografie und Druckgrafik“; Politik Kl. 7 „Medien, Meinung und Öffentlichkeit“, „Geld, Konsum und Verbraucherschutz“ – 120 neue Fragen, Längen-Bias 37–40 %, Poolgrößen im Test festgehalten |
 | 5 — Schulkalender 2027/28 | ⏳ geplant |
 | 6 — Dokumentation, Version 3.1.0, Release | ⏳ geplant |
 
@@ -104,7 +104,7 @@ Fertig, wenn: Preflight und Tests grün sind und der Eltern-Bereich in einem Ren
 | Mathe Kl. 9 | Mehrstufige Zufallsversuche: Baumdiagramm, Pfadregeln (rechnet mit frischen Zahlen) | Thema neu |
 | Biologie Kl. 6 | „Ernährung und Verdauung“, „Blütenpflanzen“ (je 20) | 120 → 160 |
 | Kunst Kl. 7 | zwei Themen je 20 | 80 → 120 |
-| Politik Kl. 7 | zwei Themen je 20 | 100 → 140 |
+| Politik Kl. 7 | zwei Themen je 20 | 80 → 120 (der Plan nannte 100; gezählt waren es 80) |
 
 Die Qualitätssicherung ist dieselbe wie bei allen Fragen:
 - Der Längen-Bias-Wächter muss bestehen.

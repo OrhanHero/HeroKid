@@ -12,7 +12,7 @@ public sealed class KunstGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { KunstwerkeWahrnehmen, MaterialKoerperRaum, MedienUndVerfahren, KunstUndLebenswelt },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { PerspektiveUndFarbe, KunstepochenUndMedien, BildDesMenschen, BildDerDinge },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { PerspektiveUndFarbe, KunstepochenUndMedien, BildDesMenschen, BildDerDinge, ComicUndBildgeschichte, FotografieUndDruckgrafik },
             [GradeLevel.Klasse9] = new List<TopicFactory> { KunstAlsInterventionUndMahnung, MedienkunstUndBildhaftesGestalten, ArchitekturRaumUndDesign, MaterialaesthetikUndTransformation, InszenierungUndKuration, KulturelleIdentitaetUndVielfalt }
         };
 
@@ -798,6 +798,120 @@ public sealed class KunstGenerator : ExerciseGeneratorBase
             Topic = "Bild der Dinge: Objekt, Plastik und Design", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Plastik wird aufgebaut, Skulptur herausgearbeitet. \"Form follows function\" stammt vom Bauhaus. Readymade: ein Alltagsding wird zur Kunst erklärt. Maßstab 1:10 heißt zehnmal kleiner."
+        };
+    }
+
+    // ----- Seit 3.1 (docs/NAECHSTES-LEVEL-3-1.md, Schritt 4) -----
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] ComicListe =
+    {
+        ("Wie heißt ein einzelnes Bild in einem Comic?", new[] { "Panel", "Kapitel", "Skizze" }, "Panel",
+            "Ein Comic besteht aus Panels, die man der Reihe nach liest."),
+        ("Wie heißt der Zwischenraum zwischen zwei Comic-Bildern?", new[] { "Rinnstein (Gutter)", "Sprechblase", "Blocktext" }, "Rinnstein (Gutter)",
+            "Im Rinnstein passiert, was nicht gezeigt wird - die Leserin ergänzt es im Kopf."),
+        ("Was zeigt eine Gedankenblase mit kleinen Wölkchen?", new[] { "Die Figur denkt etwas, ohne es zu sagen", "Die Figur schreit etwas sehr laut", "Der Erzähler nennt Ort und Uhrzeit" }, "Die Figur denkt etwas, ohne es zu sagen",
+            "Sprechblasen haben einen spitzen Zeiger, Gedankenblasen kleine Kreise zur Figur hin."),
+        ("Was sind Onomatopoesien im Comic?", new[] { "Lautwörter wie „BUMM“ oder „ZACK“", "Die Namen der Zeichner", "Die Rahmen um die Bilder" }, "Lautwörter wie „BUMM“ oder „ZACK“",
+            "Lautmalerei macht Geräusche sichtbar - oft groß, schräg und bunt gezeichnet."),
+        ("Was zeigt eine Totale?", new[] { "Eine ganze Szene mit ihrer Umgebung", "Nur die Augen einer einzigen Figur", "Eine Hand in starker Nahaufnahme" }, "Eine ganze Szene mit ihrer Umgebung",
+            "Die Totale zeigt, wo die Handlung spielt - oft am Anfang einer neuen Szene."),
+        ("Wozu nutzt man eine Großaufnahme eines Gesichts?", new[] { "Um Gefühle deutlich zu zeigen", "Um die ganze Stadt zu zeigen", "Um die Uhrzeit zu verraten" }, "Um Gefühle deutlich zu zeigen",
+            "Nah am Gesicht erkennt man Freude, Angst oder Wut - der Leser fühlt mit."),
+        ("Wie wirkt eine Figur, die aus der Froschperspektive gezeichnet ist?", new[] { "Groß und mächtig", "Winzig und hilflos", "Flach und unwichtig" }, "Groß und mächtig",
+            "Von unten gesehen wirken Figuren bedrohlich oder heldenhaft."),
+        ("Wie wirkt eine Figur aus der Vogelperspektive?", new[] { "Klein oder verloren", "Riesig und stark", "Laut und fröhlich" }, "Klein oder verloren",
+            "Von oben herab gesehen wirkt eine Figur schwach oder allein."),
+        ("Was ist ein Storyboard?", new[] { "Eine gezeichnete Bildfolge zur Planung von Film oder Comic", "Ein fertig gedrucktes Buch mit festem Einband", "Ein großes Holzbrett zum Malen im Freien" }, "Eine gezeichnete Bildfolge zur Planung von Film oder Comic",
+            "Filme und Comics werden vorher Szene für Szene skizziert - das ist das Storyboard."),
+        ("Was zeigen Speedlines (Bewegungslinien)?", new[] { "Schnelle Bewegung", "Wo der Text steht", "Die Fluchtpunkte" }, "Schnelle Bewegung",
+            "Striche hinter einer Figur zeigen, dass sie rennt, fliegt oder springt."),
+        ("Aus welchem Land stammt der Manga?", new[] { "Japan", "Frankreich", "Brasilien" }, "Japan",
+            "Manga ist das japanische Wort für Comic; bekannte Beispiele sind One Piece oder Naruto."),
+        ("In welche Richtung liest man einen klassischen japanischen Manga?", new[] { "Von rechts nach links", "Von links nach rechts", "Von unten nach oben" }, "Von rechts nach links",
+            "Viele Mangas werden auch auf Deutsch in der japanischen Leserichtung gedruckt."),
+        ("Wie nennt man französisch-belgische Comics wie „Asterix“?", new[] { "Bande dessinée", "Manhwa", "Webtoon" }, "Bande dessinée",
+            "„Bande dessinée“ heißt wörtlich „gezeichneter Streifen“ - man spricht auch von der „neunten Kunst“."),
+        ("Was ist eine Graphic Novel?", new[] { "Ein umfangreicher Comic-Roman, oft mit ernster Geschichte", "Ein kurzer Witz in drei Bildern aus der Zeitung", "Eine Zeichentrickserie im Kinderfernsehen" }, "Ein umfangreicher Comic-Roman, oft mit ernster Geschichte",
+            "Graphic Novels erzählen lange Geschichten, etwa über Geschichte oder Flucht."),
+        ("Wozu dient ein Textkasten (Blocktext) im Comic?", new[] { "Er gibt Informationen wie Ort oder Zeit", "Er zeigt, was eine Figur laut sagt", "Er ist nur Schmuck ohne Bedeutung" }, "Er gibt Informationen wie Ort oder Zeit",
+            "Blocktexte sprechen wie ein Erzähler: „Am nächsten Morgen ...“"),
+        ("Was ist eine Karikatur?", new[] { "Eine Zeichnung, die Merkmale übertreibt, oft als Kritik", "Eine ganz genaue Porträtzeichnung nach Foto", "Eine technische Bauzeichnung eines Hauses" }, "Eine Zeichnung, die Merkmale übertreibt, oft als Kritik",
+            "Karikaturen übertreiben Nase, Ohren oder Gesten - in der Zeitung oft, um Politik zu kommentieren."),
+        ("Wie kann ein Comic zeigen, dass viel Zeit vergeht?", new[] { "Durch mehrere Panels oder breitere Abstände", "Nur durch eine Uhr, die im Bild hängt", "Gar nicht, Comics zeigen nur einen Moment" }, "Durch mehrere Panels oder breitere Abstände",
+            "Mehr Panels für dieselbe Szene oder ein breiter Rinnstein dehnen die Zeit."),
+        ("Was ist ein Comic-Strip?", new[] { "Eine kurze Bildfolge, meist in einer Reihe", "Ein Comicheft mit dreihundert Seiten", "Ein einzelnes großes Kinoplakat" }, "Eine kurze Bildfolge, meist in einer Reihe",
+            "Strips wie „Garfield“ erscheinen oft in Zeitungen - drei oder vier Bilder, ein Witz."),
+        ("Was bewirken kräftige Schatten und große schwarze Flächen?", new[] { "Spannung und eine düstere Stimmung", "Eine fröhliche, leichte Stimmung", "Gar keine Wirkung auf den Leser" }, "Spannung und eine düstere Stimmung",
+            "Starker Hell-Dunkel-Kontrast macht Szenen geheimnisvoll oder bedrohlich."),
+        ("Wie nennt man es, eine Figur mit wenigen Strichen erkennbar zu machen?", new[] { "Reduktion (Vereinfachung)", "Schraffur", "Collage" }, "Reduktion (Vereinfachung)",
+            "Bei der Reduktion bleibt nur das Wichtigste - wie bei Emojis oder Piktogrammen.")
+    };
+
+    private static QuizQuestion ComicUndBildgeschichte(Random r)
+    {
+        var f = ComicListe[r.Next(ComicListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Kunst, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Comic und Bildgeschichte", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Panel = Einzelbild, Rinnstein = Lücke dazwischen. Einstellungen: Totale (Überblick) bis Großaufnahme (Gefühl). Froschperspektive macht groß, Vogelperspektive klein."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FotoDruckListe =
+    {
+        ("Was besagt die Drittel-Regel beim Fotografieren?", new[] { "Das Hauptmotiv steht auf einer Drittellinie", "Das Motiv steht immer genau in der Mitte", "Man fotografiert nur ein Drittel des Motivs" }, "Das Hauptmotiv steht auf einer Drittellinie",
+            "Ein Motiv außerhalb der Mitte wirkt meist spannender und ausgewogener."),
+        ("Was ist ein Hochdruck, zum Beispiel ein Linoldruck?", new[] { "Die erhabenen Stellen der Platte drucken", "Die eingeritzten Rillen der Platte drucken", "Farbe wird durch ein Sieb gedrückt" }, "Die erhabenen Stellen der Platte drucken",
+            "Beim Hochdruck wird Farbe auf die stehengebliebenen Stellen gerollt - wie bei einem Stempel."),
+        ("Welche Stellen erscheinen beim Linoldruck auf dem Papier weiß?", new[] { "Die herausgeschnittenen Stellen", "Die stehengebliebenen Stellen", "Alle Stellen gleichmäßig grau" }, "Die herausgeschnittenen Stellen",
+            "Was man herausschneidet, bekommt keine Farbe und bleibt papierweiß."),
+        ("Warum muss man Schrift auf einer Linolplatte spiegelverkehrt schneiden?", new[] { "Weil der Druck das Bild spiegelt", "Weil es so schöner aussieht", "Weil das Linol sonst bricht" }, "Weil der Druck das Bild spiegelt",
+            "Wie bei einem Stempel erscheint auf dem Papier alles seitenverkehrt."),
+        ("Was ist eine Monotypie?", new[] { "Ein Druck, der nur einen einzigen Abzug ergibt", "Ein Druck, der nur eine Farbe haben darf", "Ein Foto, das nur in Schwarz-Weiß existiert" }, "Ein Druck, der nur einen einzigen Abzug ergibt",
+            "„Mono“ heißt eins: die Farbe wird von einer glatten Platte nur einmal abgenommen."),
+        ("Wie funktioniert der Siebdruck?", new[] { "Farbe wird durch ein feines Gewebe gedrückt", "Farbe sitzt in eingeritzten Rillen einer Platte", "Farbe wird mit Wasser vom Papier gewaschen" }, "Farbe wird durch ein feines Gewebe gedrückt",
+            "Mit Siebdruck werden T-Shirts und Plakate bedruckt; Andy Warhol nutzte ihn für seine Bilder."),
+        ("Wie erscheint ein Motiv bei starkem Gegenlicht auf dem Foto?", new[] { "Dunkel, oft als Silhouette", "Besonders hell und farbig", "Völlig durchsichtig und blass" }, "Dunkel, oft als Silhouette",
+            "Kommt das Licht von hinten, sieht man vom Motiv oft nur den dunklen Umriss."),
+        ("Was heißt es, den Bildausschnitt zu wählen?", new[] { "Entscheiden, was aufs Bild kommt und was nicht", "Ein fertiges Foto mit der Schere ausschneiden", "Die Kamera nach dem Foto ausschalten" }, "Entscheiden, was aufs Bild kommt und was nicht",
+            "Mit dem Ausschnitt bestimmt man, was wichtig ist - und lässt anderes bewusst weg."),
+        ("Warum zeigen Fotos in sozialen Medien oft kein echtes Abbild?", new[] { "Filter und Retusche verändern Haut, Formen und Farben", "Handykameras können gar keine echten Farben aufnehmen", "Alle Fotos im Internet werden automatisch gelöscht" }, "Filter und Retusche verändern Haut, Formen und Farben",
+            "Bearbeitete Fotos setzen unrealistische Schönheitsbilder - es lohnt sich, das zu wissen."),
+        ("Was bezeichnet man als Schärfentiefe?", new[] { "Den Bereich im Bild, der scharf erscheint", "Die Tiefe des Wassers auf dem Foto", "Die Größe des Kameragehäuses" }, "Den Bereich im Bild, der scharf erscheint",
+            "Bei geringer Schärfentiefe ist nur das Motiv scharf, der Hintergrund verschwimmt."),
+        ("Was bewirkt ein unscharfer Hintergrund bei einem Porträt?", new[] { "Das Gesicht hebt sich deutlich ab", "Das ganze Bild wird dunkler", "Die Farben verschwinden ganz" }, "Das Gesicht hebt sich deutlich ab",
+            "Der Blick bleibt auf der Person, weil nichts im Hintergrund ablenkt."),
+        ("Was ist ein Fotogramm?", new[] { "Ein Bild, das ohne Kamera auf Fotopapier entsteht", "Ein Foto, das mit dem Handy gemacht wurde", "Eine einzelne Szene aus einem Kinofilm" }, "Ein Bild, das ohne Kamera auf Fotopapier entsteht",
+            "Gegenstände werden auf Fotopapier gelegt und belichtet - ihre Schatten bleiben weiß."),
+        ("Wer darf ein Foto von dir im Internet veröffentlichen?", new[] { "Nur wer dich und deine Eltern vorher gefragt hat", "Jeder, der das Foto selbst gemacht hat", "Jeder, der das Foto im Internet findet" }, "Nur wer dich und deine Eltern vorher gefragt hat",
+            "Das Recht am eigenen Bild schützt dich: ohne Einwilligung darf dein Foto nicht veröffentlicht werden."),
+        ("Wie funktioniert eine Radierung (Tiefdruck)?", new[] { "Die Farbe sitzt in eingeritzten Rillen", "Die erhabenen Stellen der Platte drucken", "Man radiert das Bild mit Gummi aus" }, "Die Farbe sitzt in eingeritzten Rillen",
+            "Beim Tiefdruck wird die Platte abgewischt; nur in den Rillen bleibt Farbe und kommt aufs Papier."),
+        ("Was bedeutet „Komposition“ in einem Bild?", new[] { "Die Anordnung der Bildteile auf der Fläche", "Die Musik, die zu dem Bild gehört", "Der Preis, den das Bild kostet" }, "Die Anordnung der Bildteile auf der Fläche",
+            "Wo was steht, wie groß es ist und wohin der Blick geführt wird - das ist Komposition."),
+        ("Welche Wirkung hat eine starke Diagonale im Bild?", new[] { "Sie wirkt bewegt und dynamisch", "Sie wirkt ruhig und stabil", "Sie hat gar keine Wirkung" }, "Sie wirkt bewegt und dynamisch",
+            "Schräge Linien erzeugen Bewegung; waagrechte wirken ruhig, senkrechte fest."),
+        ("Welche Wirkung haben viele waagrechte Linien, etwa ein Horizont?", new[] { "Ruhe und Stabilität", "Hektik und Unruhe", "Gefahr und Angst" }, "Ruhe und Stabilität",
+            "Waagrechte erinnern an Liegen und Ruhen - Landschaftsbilder wirken dadurch friedlich."),
+        ("Was ist eine Collage?", new[] { "Ein Bild aus aufgeklebten Papieren und Fotos", "Ein Bild, das nur mit Bleistift gezeichnet ist", "Eine Skulptur, die aus Stein gehauen ist" }, "Ein Bild aus aufgeklebten Papieren und Fotos",
+            "Das Wort kommt vom französischen „coller“ = kleben."),
+        ("Was ist typisch für Pop-Art, etwa bei Andy Warhol?", new[] { "Motive aus Werbung, grell und oft wiederholt", "Höhlenmalereien aus der Steinzeit", "Bilder nur in zarten Grautönen" }, "Motive aus Werbung, grell und oft wiederholt",
+            "Pop-Art machte Suppendosen und Stars zur Kunst - oft im Siebdruck, in knalligen Farben."),
+        ("Wie heißt die Platte, von der gedruckt wird?", new[] { "Druckstock", "Zeichenstift", "Abzug" }, "Druckstock",
+            "Der Druckstock (z. B. aus Linol oder Holz) trägt das Motiv; der Abzug ist das gedruckte Blatt.")
+    };
+
+    private static QuizQuestion FotografieUndDruckgrafik(Random r)
+    {
+        var f = FotoDruckListe[r.Next(FotoDruckListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Kunst, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Fotografie und Druckgrafik", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Hochdruck (Linol): erhabene Stellen drucken, alles seitenverkehrt. Tiefdruck (Radierung): Farbe in den Rillen. Siebdruck: durch ein Gewebe. Foto: Drittel-Regel, Diagonale = Bewegung, Waagrechte = Ruhe."
         };
     }
 }
