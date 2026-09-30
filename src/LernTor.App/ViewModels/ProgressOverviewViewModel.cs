@@ -26,10 +26,23 @@ public sealed partial class ProgressOverviewViewModel : ObservableObject
         string profileName,
         IReadOnlyList<TopicMasteryStatus> topics,
         Action onBack,
-        IReadOnlyList<AchievementRowViewModel>? achievements = null)
+        IReadOnlyList<AchievementRowViewModel>? achievements = null,
+        LearningCalendar? calendar = null)
     {
         _onBack = onBack;
         ProfileName = profileName;
+
+        if (calendar is not null)
+        {
+            foreach (var woche in calendar.Weeks)
+            {
+                CalendarWeeks.Add(new LearningWeekViewModel(woche));
+            }
+
+            CalendarSummary = string.Format(
+                LocalizationService.Instance["Progress_CalendarSummary"],
+                calendar.TotalLearningDays, calendar.LearningDaysLastFourWeeks);
+        }
 
         foreach (var abzeichen in achievements ?? Array.Empty<AchievementRowViewModel>())
         {
@@ -72,6 +85,18 @@ public sealed partial class ProgressOverviewViewModel : ObservableObject
 
     public bool HasAchievements => Achievements.Count > 0;
 
+    /// <summary>„📅 Deine Lerntage“: die letzten zwölf Wochen, eine Spalte je Woche (siehe
+    /// <see cref="LearningCalendar"/> - bewusst ohne Serie, die reißen kann).</summary>
+    public ObservableCollection<LearningWeekViewModel> CalendarWeeks { get; } = new();
+
+    public bool HasCalendar => CalendarWeeks.Count > 0;
+
+    public string CalendarSummary { get; } = string.Empty;
+
+    /// <summary>Mo … So links neben den Spalten.</summary>
+    public IReadOnlyList<string> WeekdayLabels { get; } =
+        LocalizationService.Instance["Progress_CalendarWeekdays"].Split(' ');
+
     public string AchievementsHeadline => string.Format(
         LocalizationService.Instance["Badges_Headline"],
         Achievements.Count(a => a.IsUnlocked),
@@ -79,6 +104,35 @@ public sealed partial class ProgressOverviewViewModel : ObservableObject
 
     [RelayCommand]
     private void Back() => _onBack();
+}
+
+/// <summary>Eine Spalte im Lernkalender.</summary>
+public sealed class LearningWeekViewModel
+{
+    public LearningWeekViewModel(LearningCalendarWeek week) =>
+        Days = week.Days.Select(tag => new LearningDayViewModel(tag)).ToList();
+
+    public IReadOnlyList<LearningDayViewModel> Days { get; }
+}
+
+/// <summary>Ein Kästchen im Lernkalender. Die Art steuert Farbe UND Form (gelernt: gefüllt mit
+/// Häkchen, Schultag: gefüllt blass, schulfrei: nur Rand) - Farbe allein reicht nicht, wenn
+/// jemand Farben schlecht unterscheidet.</summary>
+public sealed class LearningDayViewModel
+{
+    public LearningDayViewModel(LearningCalendarDay day)
+    {
+        Kind = day.Kind;
+        IsToday = day.IsToday;
+        var l = LocalizationService.Instance;
+        ToolTip = $"{day.Date:dd.MM.yyyy} – {l[$"Progress_Calendar_{day.Kind}"]}";
+    }
+
+    public LearningDayKind Kind { get; }
+
+    public bool IsToday { get; }
+
+    public string ToolTip { get; }
 }
 
 /// <summary>Eine Fach-Karte in „Mein Fortschritt“.</summary>

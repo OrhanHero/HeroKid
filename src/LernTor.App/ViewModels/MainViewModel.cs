@@ -556,7 +556,7 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             var profileId = CurrentProfile!.Id;
-            var (themen, fakten) = await LoadMasteryAndAchievementFactsAsync();
+            var (themen, fakten, lerntage) = await LoadMasteryAndAchievementFactsAsync();
 
             // Auch hier freischalten, nicht nur auf dem Geschafft-Bildschirm: wer mitten am Tag
             // nachschaut, soll ein eben verdientes Abzeichen schon sehen.
@@ -566,11 +566,16 @@ public sealed partial class MainViewModel : ObservableObject
                 IsAreaAvailable,
                 DateOnly.FromDateTime(DateTime.Today));
 
+            // Lernkalender (3.1): nach der Uhr, nicht nach Progress.SessionDate - er zeigt, an
+            // welchen Kalendertagen gelernt wurde, auch wenn eine Sitzung über Mitternacht lief.
+            var kalender = LearningCalendar.Build(lerntage, DateOnly.FromDateTime(DateTime.Today));
+
             CurrentViewModel = new ProgressOverviewViewModel(
                 CurrentProfile!.Name,
                 themen,
                 onBack: () => ReturnToWelcome(plannerPeek),
-                achievements: abzeichen);
+                achievements: abzeichen,
+                calendar: kalender);
         }
         catch (Exception ex)
         {
@@ -583,7 +588,7 @@ public sealed partial class MainViewModel : ObservableObject
     /// Meisterschaft je Thema und alle Fakten für die Abzeichen in einem Zug - beide brauchen
     /// dieselben Antworten, und die sollen nur einmal geladen werden.
     /// </summary>
-    private async Task<(IReadOnlyList<TopicMasteryStatus> Themen, AchievementFacts Fakten)> LoadMasteryAndAchievementFactsAsync()
+    private async Task<(IReadOnlyList<TopicMasteryStatus> Themen, AchievementFacts Fakten, IReadOnlySet<DateOnly> Lerntage)> LoadMasteryAndAchievementFactsAsync()
     {
         var profileId = CurrentProfile!.Id;
         var antworten = await _activityLogRepo.GetAllAnswersAsync(profileId);
@@ -606,7 +611,7 @@ public sealed partial class MainViewModel : ObservableObject
             TheoryExamsPassed = pruefungen.Count(lauf => lauf.ToResult().Passed),
         };
 
-        return (themen, fakten);
+        return (themen, fakten, LearningCalendar.LearnedDays(antworten));
     }
 
     /// <summary>
@@ -1836,7 +1841,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             try
             {
-                var (_, fakten) = await LoadMasteryAndAchievementFactsAsync();
+                var (_, fakten, _) = await LoadMasteryAndAchievementFactsAsync();
                 neueAbzeichen = await _achievementRepo.UnlockAsync(CurrentProfile.Id, fakten);
             }
             catch (Exception ex)

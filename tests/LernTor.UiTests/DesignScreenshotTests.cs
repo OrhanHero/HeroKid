@@ -121,7 +121,14 @@ public sealed class DesignScreenshotTests
                 new TopicMasteryStatus(Subject.Musik, "Stimme, Gesang und Chor", 2, 2, 1, 0, MasteryLevel.Angefangen),
             }, () => { }, AchievementRowViewModel.BuildList(
                 new Dictionary<string, DateTimeOffset> { ["richtig-10"] = DateTimeOffset.Now },
-                _ => true, DateOnly.FromDateTime(DateTime.Today)))
+                _ => true, DateOnly.FromDateTime(DateTime.Today)),
+                // Lernkalender: an drei von vier Schultagen gelernt, dazu mal am Wochenende.
+                LearningCalendar.Build(
+                    Enumerable.Range(0, 84)
+                        .Select(i => DateOnly.FromDateTime(DateTime.Today).AddDays(-i))
+                        .Where(tag => tag.DayNumber % 4 != 0 && (tag.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday) || tag.DayNumber % 3 == 0))
+                        .ToHashSet(),
+                    DateOnly.FromDateTime(DateTime.Today)))
         }),
         ("07-design-galerie", () => new DesignPickerView
         {

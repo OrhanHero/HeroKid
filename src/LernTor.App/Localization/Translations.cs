@@ -54,6 +54,15 @@ public static class Translations
             ["Design_DarkInEvening"] = L("Abends ab 19 Uhr dunkel", "Akşam 19'dan sonra koyu"),
             ["Design_Done"] = L("✔ Fertig", "✔ Tamam"),
             ["Progress_Title"] = L("🏆 Mein Fortschritt", "🏆 İlerlemem"),
+            ["Progress_CalendarTitle"] = L("📅 Deine Lerntage", "📅 Öğrenme günlerin"),
+            ["Progress_CalendarSummary"] = L(
+                "{0} Lerntage insgesamt · {1} in den letzten vier Wochen",
+                "Toplam {0} öğrenme günü · son dört haftada {1}"),
+            ["Progress_CalendarWeekdays"] = L("Mo Di Mi Do Fr Sa So", "Pt Sa Ça Pe Cu Ct Pz"),
+            ["Progress_Calendar_Gelernt"] = L("gelernt", "öğrendin"),
+            ["Progress_Calendar_Schultag"] = L("Schultag", "okul günü"),
+            ["Progress_Calendar_Schulfrei"] = L("schulfrei", "okul yok"),
+            ["Progress_Calendar_Zukunft"] = L("kommt noch", "henüz gelmedi"),
             ["Progress_Summary"] = L(
                 "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",
                 "🏆 {0} ustalaştın · ✅ {1} emin · 📘 {2} tanıdık · 🌱 {3} başladın"),
