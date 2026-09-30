@@ -8,6 +8,11 @@ Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht u
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
+> **Nächste Version (Plan vom 30.09.2026): 3.1 – Funktion** – jede Frage vorlesen (englische und
+> türkische Sätze in der passenden Stimme), Lernkalender in „Mein Fortschritt“, zwei neue
+> Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28:
+> [`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md).
+>
 > **Neu (30.09.2026): Version 3.0** ([Release v3.0.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.0.0)) –
 > wählbare Designs (auch dunkel und mit hohem Kontrast), Schrift und Textgröße je Kind,
 > Bildschirmfotos und Kontrasttests in der CI, Entwicklungsumgebung für jede Sitzung. Plan und
@@ -21,11 +26,10 @@ technischer Eleganz.
 
 ## 1. Jetzt: die Familie (kein Code nötig)
 
-- [ ] **Pull Request [OrhanHero/HeroKid#1](https://github.com/OrhanHero/HeroKid/pull/1) mergen**
-  und die neue Version installieren: CI-Artefakt `LernTor-win-x64`, oder – nach dem Merge – einen
-  Tag `v2.0.0` setzen, dann liegt das ZIP als GitHub-Release bereit (siehe [`BUILD.md`](BUILD.md),
-  „Release über GitHub“). **Bis zum 10.11.2026**: danach bekommt das alte .NET 8 keine
-  Sicherheitsupdates mehr.
+- [x] ~~Pull Request [OrhanHero/HeroKid#1](https://github.com/OrhanHero/HeroKid/pull/1) mergen
+  und die neue Version installieren~~ – erledigt: Releases v2.0.0, v2.1.0 und
+  [v3.0.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.0.0) liegen auf GitHub. Damit ist
+  auch die Frist 10.11.2026 (Ende von .NET 8) erfüllt.
 - [ ] **Vorher eine Sicherung auf USB** (Eltern-Bereich → „Sicherung erstellen…“). Das Update
   ergänzt eine Spalte und eine Tabelle in der Datenbank; die automatische `-schema.db`-Sicherung
   entsteht zwar von selbst, liegt aber auf derselben Platte.
@@ -33,7 +37,8 @@ technischer Eleganz.
   [`STUNDENPLAENE-2026-27.md`](STUNDENPLAENE-2026-27.md) in den Eltern-Bereich einfügen.
 - [ ] Bei Batuhan am Original nachsehen: **Ethik** nur Do 6? **Mathe** Fr 6/7 als Doppelstunde?
 - [ ] Nach dem Eintragen **„🩻 Datenbank prüfen“** einmal drücken. Das Ergebnis muss ✅ sein.
-- [ ] **Version 3.0 ansehen**: Testplan [V.2-1 bis V.3-8](TESTPLAN.md#neu-seit-30092026-version-21-und-30), dazu
+- [x] **Version 3.0 installiert und angesehen** – Rückmeldung am 30.09.2026: „alles
+  funktioniert“. Zum Nachschlagen: Testplan [V.2-1 bis V.3-8](TESTPLAN.md#neu-seit-30092026-version-21-und-30), dazu
   unter Actions das Artefakt „Design-Vorschau“ des letzten Laufs durchblättern.
 - [ ] Die neuen Punkte im Testplan abhaken: [acht vom 28.09.](TESTPLAN.md#neu-seit-28092026) und
   [zehn für Version 2.0](TESTPLAN.md#neu-seit-29092026-version-20), zusammen etwa 45 Minuten.
@@ -90,7 +95,7 @@ spricht.
 
 | Wann | Was | Wie |
 |---|---|---|
-| **Frühjahr 2027** | Ferien 2027/28 und Feiertage 2028 eintragen (der Kalender endet mit den Sommerferien 2027 bzw. am 26.12.2027) | `SchoolCalendar.cs`, Daten von der Senatsverwaltung; der Eltern-Bereich zeigt das Enddatum an |
+| ~~**Frühjahr 2027**~~ in 3.1 vorgezogen | Ferien 2027/28 und Feiertage 2028 eintragen (der Kalender endet mit den Sommerferien 2027 bzw. am 26.12.2027) | `SchoolCalendar.cs`, Daten von der Senatsverwaltung; der Eltern-Bereich zeigt das Enddatum an |
 | **Sommer 2027** | Klassenstufe wechseln: Batuhan 9 → 10, Emirhan 6 → 7 | Eltern-Bereich → Profil → „Klassenstufe übernehmen“ (seit 28.09.2026; der Hinweis erscheint in den ersten vier Schulwochen von selbst) |
 | **Sommer 2027** | Neue Stundenpläne 2027/28 eintragen | wie oben; `STUNDENPLAENE-2026-27.md` als Vorlage |
 | **vor Sommer 2027** | Klasse-7-Pools nachprüfen, sobald Emirhans Stundenplan für Klasse 7 bekannt ist. Am 30.09.2026 schon ausgebaut: Türkisch 120 → 260, Englisch 120 → 200, Deutsch 120 → 180, Gewi 120 → 180, Musik 80 → 140, KI-Wissen eigener Pool mit 80. Dünn bleiben Kunst (80) und Politik (100) | `pool-reichweite.py` mit Emirhan als Klasse 7 laufen lassen (`KINDER` im Skript anpassen) |
