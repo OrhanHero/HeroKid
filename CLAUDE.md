@@ -204,7 +204,7 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
 ### Designs (since 3.0, 30.09.2026)
 
 Colours are **roles**, not names: `DesignPalette` (Core) has 22 required roles, `DesignThemeCatalog`
-holds the eight designs, `DesignResourceKeys` maps roles to the old resource keys (`CardBrush` =
+holds the ten designs (three of them unlocked by badges), `DesignResourceKeys` maps roles to the old resource keys (`CardBrush` =
 Surface …), and `ThemeService` (App) hangs the chosen design as the LAST merged dictionary into
 `Application.Resources` at runtime. Therefore: **views reference design brushes only via
 `DynamicResource`** (a `StaticResource` keeps the old colour after switching), no `#RRGGBB` and no

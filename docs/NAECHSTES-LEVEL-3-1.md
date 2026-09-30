@@ -17,7 +17,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 | 0 — Was der Testlauf gezeigt hat (Eltern-Bereich, Emojis) | ✅ 30.09.2026: 🔍/🚑/⭐ statt Kästchen, Preflight `emoji-neu`, Login-Knöpfe umbrechen, „Klasse 10“/„Offene Frage“, beschriftete Belohnungsfelder, Inhaltsverzeichnis mit 15 Sprungmarken; neuer Ladetest `ParentSettingsWindowTests` |
 | 1 — 🔊 Jede Frage vorlesen | ✅ 30.09.2026: `SpeechSegmenter` (Core, 37 Tests inkl. Durchlauf über alle Generatoren), 🔊 an Frage und Lösung, Stimmwechsel je Abschnitt (Piper und Windows), Knopf nur mit passender Stimme, Anhalten beim Weiterblättern; Testplan V.31-4 bis V.31-7 |
 | 2 — 📅 Lernkalender in „Mein Fortschritt“ | ✅ 30.09.2026: `LearningCalendar` (Core, 6 Tests; Lerntage wie bei den Abzeichen), Karte „📅 Deine Lerntage“ mit 12 Wochen und Legende – gelernt/Schultag/schulfrei auch an der Form erkennbar; Render-Test mit allen Tagesarten, Bildschirmfoto mit Beispieldaten |
-| 3 — Zwei neue Designs als Belohnung | ⏳ geplant |
+| 3 — Zwei neue Designs als Belohnung | ✅ 30.09.2026: 🏔️ Gletscher (`richtig-500`) und 🌋 Vulkan (`meister-1`), beide bestehen den Kontrasttest; Katalog-Test auf zehn Designs mit drei Belohnungen |
 | 4 — Lehrplan-Lücken schließen | ⏳ geplant |
 | 5 — Schulkalender 2027/28 | ⏳ geplant |
 | 6 — Dokumentation, Version 3.1.0, Release | ⏳ geplant |

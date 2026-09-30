@@ -217,4 +217,5 @@ ohne sie gibt es den 🔊-Knopf nur für Sprachen, für die Windows eine Stimme 
 | V.31-6 | Batuhan | Türkisch-Übung: 🔊 drücken, dann gleich „Weiter“ | Türkische Stimme; beim Weiterblättern hört das Vorlesen auf | |
 | V.31-7 | Batuhan | Mathe-Aufgabe mit Bruch vorlesen lassen | „drei durch vier“, kein Datum | |
 | V.31-8 | Beide Kinder | „🏆 Mein Fortschritt“ öffnen | Oben „📅 Deine Lerntage“: gelernte Tage grün mit Häkchen, Wochenenden und Ferien nur umrandet, heute markiert; die Zahl der Lerntage passt zum Abzeichen „Zehn Lerntage“ | |
+| V.31-9 | Beide Kinder | „🎨 Mein Design“ öffnen | Zehn Designs; Galaxie, Gletscher und Vulkan tragen ein 🔒 mit dem Abzeichen, das sie freischaltet (sofern noch nicht verdient) | |
 

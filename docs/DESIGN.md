@@ -9,7 +9,7 @@ aufgebaut ist, welche Regeln gelten und wie man ein Design hinzufügt. Den Plan 
 
 | Wahl | Möglichkeiten |
 |---|---|
-| **Design** | 💜 Lavendel (Standard), 🌊 Ozean, 🌲 Wald, 🌅 Sonnenuntergang, 🍬 Bonbon, 🌙 Nacht (dunkel), 🔲 Hoher Kontrast, 🌌 Galaxie (dunkel, 🔒 wird frei mit dem Abzeichen „📅 Zehn Lerntage“) |
+| **Design** | 💜 Lavendel (Standard), 🌊 Ozean, 🌲 Wald, 🌅 Sonnenuntergang, 🍬 Bonbon, 🌙 Nacht (dunkel), 🔲 Hoher Kontrast; als Belohnung (🔒): 🌌 Galaxie (dunkel, Abzeichen „📅 Zehn Lerntage“), seit 3.1 🏔️ Gletscher (hell, „🚀 Fünfhundert richtig“) und 🌋 Vulkan (dunkel, „🏆 Erstes gemeistertes Thema“) |
 | **Schrift** | Standard (Segoe UI), Gut lesbar (Verdana), Verspielt (Comic Sans MS) – alles Schriften, die jedes Windows mitbringt |
 | **Textgröße** | 100 %, 110 %, 120 % |
 | **Automatisch dunkel** | „Wie Windows“ (folgt dem hellen/dunklen Modus in den Windows-Einstellungen), „Abends ab 19 Uhr dunkel“ (bis 6 Uhr) – dann gilt „Nacht“, außer das gewählte Design ist schon dunkel |
@@ -26,7 +26,7 @@ LernTor.Core/Design                         LernTor.App
 ─────────────────────────────────           ────────────────────────────────────────
 DesignPalette     22 Farbrollen (#RRGGBB)   Resources/Colors.xaml   Standardwerte = Lavendel
 DesignTheme       Id, Name DE/TR, dunkel?   Services/ThemeService   legt das Design als letztes
-DesignThemeCatalog  die acht Designs                                Wörterbuch in App.Resources
+DesignThemeCatalog  die zehn Designs                                Wörterbuch in App.Resources
 DesignResourceKeys  Rolle → Ressourcenschlüssel                     (DynamicResource wechselt mit)
 DesignContrastRules WCAG-Regeln             ViewModels/DesignPickerViewModel   die Galerie
 DesignPreferences   Wahl des Kindes         Views/DesignPickerView
@@ -78,8 +78,9 @@ Das bisherige Aussehen fiel am 30.09.2026 durch. Grün erreichte auf Weiß 2,5 :
 1. In `DesignThemeCatalog.All` einen Eintrag anhängen: eine neue Id aus Kleinbuchstaben (nie eine bestehende umbenennen, sie ist beim Profil gespeichert), Emoji (keine Flagge, siehe `CLAUDE.md`), Name und Beschreibung auf Deutsch und Türkisch, `IsDark` und alle 22 Rollen. Vergisst man eine Rolle, schlägt der Compiler an (`required`).
 2. Die Farben so wählen, dass die Kontrastregeln erfüllt sind: `dotnet test --filter DesignThemeCatalogTests` nennt jeden Verstoß mit Wert.
 3. Soll ein Abzeichen es freischalten, `UnlockAchievementId` setzen. Der Test prüft, dass es das Abzeichen gibt.
-4. Den Test `Katalog_hat_acht_Designs…` auf die neue Anzahl anpassen.
-5. Nach dem Push die **Bildschirmfotos** ansehen (siehe unten).
+4. Den Test `Katalog_hat_zehn_Designs…` auf die neue Anzahl anpassen.
+5. Ein Emoji wählen, das älter als Unicode 12 ist. Neuere zeichnet WPF als leeres Kästchen, das prüft `preflight.py` (`emoji-neu`).
+6. Nach dem Push die **Bildschirmfotos** ansehen (siehe unten).
 
 ## Bildschirmfotos (Artefakt „Design-Vorschau“)
 

@@ -45,9 +45,13 @@ public sealed class DesignThemeCatalogTests
     }
 
     [Fact]
-    public void Katalog_hat_acht_Designs_mit_eindeutigen_Ids_und_Namen()
+    public void Katalog_hat_zehn_Designs_mit_eindeutigen_Ids_und_Namen()
     {
-        Assert.Equal(8, DesignThemeCatalog.All.Count);
+        Assert.Equal(10, DesignThemeCatalog.All.Count);
+
+        // Drei davon sind Belohnungen (3.0: Galaxie, 3.1: Gletscher und Vulkan).
+        Assert.Equal(new[] { "galaxie", "gletscher", "vulkan" },
+            DesignThemeCatalog.All.Where(t => !t.IsFree).Select(t => t.Id));
         Assert.Equal(DesignThemeCatalog.All.Count, DesignThemeCatalog.All.Select(t => t.Id).Distinct().Count());
         Assert.All(DesignThemeCatalog.All, t =>
         {
