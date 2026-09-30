@@ -6,7 +6,8 @@ namespace LernTor.ContentGen.Generators;
 /// <summary>
 /// KI-Bereich-Generator: KI verstehen und sicher nutzen (kein Rahmenlehrplan-Fach, sondern
 /// Medien-/KI-Kompetenz). Klasse 6 = Grundlagen (Werkzeug-Verständnis, Alltag, Grundregeln),
-/// Klasse 9 = vertieft (Halluzinationen/Fakten-Check, Bias, Deepfakes/Datenschutz).
+/// Klasse 7 = Zwischenstufe (wie KI aus Trainingsdaten lernt, KI oder feste Regel, Falschmeldungen
+/// erkennen, Daten und Privatsphäre), Klasse 9 = vertieft (Halluzinationen/Fakten-Check, Bias, Deepfakes/Datenschutz).
 /// Die Lerntexte dazu liefert KiContentService (Core); die Fragen hier sind die "KI-Checkliste".
 /// Distraktoren sind bewusst ähnlich lang wie die richtige Antwort formuliert
 /// (siehe scripts/check-answer-length-bias.py - "nimm die längste" darf hier nicht funktionieren).
@@ -24,6 +25,13 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
                 KiImAlltag,
                 SichereNutzung,
                 KiRichtigNutzen
+            },
+            [GradeLevel.Klasse7] = new List<TopicFactory>
+            {
+                WieKiLernt,
+                KiOderRegel,
+                FalschmeldungenErkennen,
+                DatenUndPrivatsphaere
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -481,6 +489,230 @@ public sealed class KiWissenGenerator : ExerciseGeneratorBase
             Topic = "Wo KI nicht hingehört", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Die KI kennt dich nicht und hat nichts erlebt. Bei Streit, Angst, Mobbing, Krankheit und wichtigen Entscheidungen sind Menschen zuständig - Eltern, Lehrkräfte, Ärzte. Nummer gegen Kummer: 116 111."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] WieKiLerntListe =
+    {
+        ("Eine KI soll Katzen auf Fotos erkennen. Womit wird sie trainiert?", new[] { "Mit einem einzigen, besonders scharfen Katzenfoto", "Mit vielen Fotos, die mit 'Katze' oder 'keine Katze' beschriftet sind", "Mit einer genauen Textbeschreibung eines Katzenohrs" }, "Mit vielen Fotos, die mit 'Katze' oder 'keine Katze' beschriftet sind",
+            "Die KI bekommt Tausende beschriftete Beispiele. Daraus lernt sie selbst, welche Muster (Ohren, Fell, Augen) zu 'Katze' gehören."),
+        ("Was sind 'Trainingsdaten'?", new[] { "Die Stromrechnung des Rechenzentrums nach dem Training", "Die Liste aller Menschen, die die KI später benutzen", "Die Beispiele, aus denen eine KI ihre Muster lernt" }, "Die Beispiele, aus denen eine KI ihre Muster lernt",
+            "Trainingsdaten sind das 'Lernmaterial' der KI - Texte, Bilder oder Töne. Was darin steckt, prägt alles, was die KI später kann."),
+        ("Warum braucht eine KI beim Lernen so viele Beispiele?", new[] { "Aus wenigen Beispielen erkennt sie keine verlässlichen Muster", "Jedes Beispiel darf laut Gesetz nur ein einziges Mal benutzt werden", "Viele Beispiele machen die Programmdatei der KI größer und schöner" }, "Aus wenigen Beispielen erkennt sie keine verlässlichen Muster",
+            "Ein Muster wird erst sicher, wenn es in vielen verschiedenen Beispielen auftaucht - sonst hält die KI Zufälle für Regeln."),
+        ("Eine KI hat nur Fotos von schwarzen Katzen gesehen. Was passiert bei einer roten Katze?", new[] { "Sie färbt das Foto vor dem Erkennen automatisch schwarz", "Sie erkennt sie womöglich gar nicht als Katze", "Sie erkennt sie sogar besonders sicher als Katze" }, "Sie erkennt sie womöglich gar nicht als Katze",
+            "Eine KI kann nur, was in ihren Daten vorkam. Fehlt Vielfalt im Training, macht sie bei allem Ungewohnten Fehler."),
+        ("Was bedeutet der Merksatz 'Müll rein, Müll raus' beim KI-Training?", new[] { "Eine KI muss jede Woche ihren gesammelten Datenmüll löschen", "Alte Computer gehören nach dem Training in den Elektroschrott", "Schlechte Trainingsdaten führen zu schlechten Ergebnissen" }, "Schlechte Trainingsdaten führen zu schlechten Ergebnissen",
+            "Sind die Beispiele falsch beschriftet, einseitig oder voller Fehler, lernt die KI genau diese Fehler mit."),
+        ("Wie merkt eine KI beim Training, dass sie falschlag?", new[] { "Ihr Ergebnis wird mit der richtigen Lösung verglichen", "Ein Warnton im Rechenzentrum sagt es ihr direkt", "Sie spürt den Fehler wie ein Mensch als Enttäuschung" }, "Ihr Ergebnis wird mit der richtigen Lösung verglichen",
+            "Im Training ist zu jedem Beispiel die Lösung bekannt. Weicht die KI davon ab, wird das als Fehler gezählt - ganz ohne Gefühle."),
+        ("Was passiert im Training, nachdem die KI einen Fehler gemacht hat?", new[] { "Sie wird gelöscht und komplett neu programmiert", "Sie passt ihre inneren Einstellungen ein kleines Stück an", "Der Fehler wird ignoriert, weil er nur einmal passiert ist" }, "Sie passt ihre inneren Einstellungen ein kleines Stück an",
+            "Nach jedem Fehler werden Millionen innerer Zahlen minimal verstellt. Millionenfach wiederholt wird die KI so immer treffsicherer."),
+        ("Warum testet man eine KI mit Beispielen, die sie im Training nie gesehen hat?", new[] { "Weil die alten Beispiele nach dem Training verboten sind", "Um zu prüfen, ob sie Muster gelernt oder nur auswendig gelernt hat", "Damit sie im Test mehr Punkte bekommt als im Training" }, "Um zu prüfen, ob sie Muster gelernt oder nur auswendig gelernt hat",
+            "Wie bei einer Klassenarbeit mit neuen Aufgaben: Erst neue Beispiele zeigen, ob die KI das Prinzip wirklich erkannt hat."),
+        ("Eine KI erkennt alle Übungsfotos perfekt, versagt aber bei neuen. Was ist passiert?", new[] { "Sie hat die Übungsfotos auswendig gelernt statt Muster", "Die neuen Fotos waren zu groß für ihren Speicherplatz", "Sie ist nach dem langen Training einfach müde geworden" }, "Sie hat die Übungsfotos auswendig gelernt statt Muster",
+            "Auswendiglernen hilft nur bei bekannten Aufgaben. Wer (oder was) nur auswendig lernt, scheitert an allem Neuen - bei KI wie bei Menschen."),
+        ("Wer beschriftet oft die Beispielbilder, mit denen eine KI trainiert wird?", new[] { "Menschen, die die Bilder von Hand markieren", "Die Kamera, die das Foto aufgenommen hat", "Die KI selbst, noch bevor sie etwas gelernt hat" }, "Menschen, die die Bilder von Hand markieren",
+            "Hinter vielen KIs steckt viel Handarbeit: Menschen markieren Autos, Ampeln oder Katzen, damit die KI weiß, was richtig ist."),
+        ("Du klickst bei einer Sicherheitsabfrage alle Bilder mit Ampeln an. Was kann damit noch passieren?", new[] { "Deine Klicks schalten echte Ampeln in deiner Stadt um", "Deine Klicks können helfen, eine Bilderkennung zu verbessern", "Deine Klicks werden als Spielstand in deinem Konto gespeichert" }, "Deine Klicks können helfen, eine Bilderkennung zu verbessern",
+            "Solche Abfragen prüfen, ob du ein Mensch bist. Manche Anbieter nutzen die Antworten zusätzlich als Beschriftungen für KI-Training."),
+        ("Warum schreibt eine Sprach-KI manchmal im lockeren Ton von Internet-Foren?", new[] { "Weil sie heimlich selbst in vielen Foren angemeldet ist", "Weil sehr viele Foren-Texte in ihren Trainingsdaten steckten", "Weil der Foren-Ton die offizielle Sprache aller KIs ist" }, "Weil sehr viele Foren-Texte in ihren Trainingsdaten steckten",
+            "Eine Sprach-KI ahmt nach, was sie gelesen hat. Viele Foren-Texte im Training bedeuten: auch deren Ton und deren Fehler."),
+        ("Lernt eine fertige KI aus jedem Gespräch mit dir sofort dazu?", new[] { "Ja - nach jedem Satz wird sie spürbar klüger", "Meist nicht sofort - sie ändert sich erst durch neues Training", "Ja - aber nur, wenn du dich ausdrücklich bedankst" }, "Meist nicht sofort - sie ändert sich erst durch neues Training",
+            "Während des Gesprächs bleibt das Modell gleich. Anbieter können Gespräche aber später für neues Training nutzen - Privates also weglassen."),
+        ("Eine Übersetzungs-KI hat kaum Texte auf Plattdeutsch gesehen. Was ist zu erwarten?", new[] { "Ihre Übersetzungen ins Plattdeutsche sind deutlich schwächer", "Sie übersetzt gerade diese Sprache besonders fehlerfrei", "Sie verweigert jede Übersetzung in diese Sprache" }, "Ihre Übersetzungen ins Plattdeutsche sind deutlich schwächer",
+            "Wenige Beispiele = wenige gelernte Muster. Bei seltenen Sprachen und Dialekten sind KI-Übersetzer deshalb oft unzuverlässig."),
+        ("Eine KI meldet: 'Zu 80 % ein Hund.' Was bedeutet das?", new[] { "Genau 80 Prozent des Fotos zeigen einen Hund", "Sie hält es für wahrscheinlich, kann sich aber irren", "Der Hund ist zu 80 Prozent ausgewachsen" }, "Sie hält es für wahrscheinlich, kann sich aber irren",
+            "KIs rechnen mit Wahrscheinlichkeiten. 80 % heißt: ziemlich sicher - in etwa jedem fünften solchen Fall kann es trotzdem falsch sein."),
+        ("Auf fast allen Wolf-Fotos im Training lag Schnee. Was kann die KI dabei falsch lernen?", new[] { "Dass Schnee im Hintergrund auf einen Wolf hindeutet", "Dass Wölfe im Sommer grundsätzlich nicht existieren", "Dass Hunde niemals im Schnee spazieren gehen dürfen" }, "Dass Schnee im Hintergrund auf einen Wolf hindeutet",
+            "Die KI achtet auf alles, was oft zusammen vorkommt - auch auf Zufälle. Dann hält sie womöglich einen Hund im Schnee für einen Wolf."),
+        ("Eine Gesichtserkennung wurde fast nur mit Erwachsenen trainiert. Wo macht sie eher Fehler?", new[] { "Bei Erwachsenen, weil sie die schon zu gut kennt", "Bei allen Gesichtern gleich oft, egal welches Alter", "Bei Kindergesichtern, die im Training kaum vorkamen" }, "Bei Kindergesichtern, die im Training kaum vorkamen",
+            "Was im Training selten vorkommt, erkennt die KI schlechter. Deshalb müssen Trainingsdaten möglichst viele Gruppen abdecken."),
+        ("Was braucht das Training einer großen KI neben den Daten noch?", new[] { "Sehr viel Rechenleistung und damit viel Strom", "Einen Tresor, in dem die KI nachts ruhen kann", "Eine Lehrkraft, die jede Antwort einzeln benotet" }, "Sehr viel Rechenleistung und damit viel Strom",
+            "Große KIs werden wochenlang auf Tausenden Spezialchips trainiert. Das kostet viel Energie - auch ein Umweltthema."),
+        ("Kann eine KI zuverlässig über etwas Bescheid wissen, das in ihren Daten nie vorkam?", new[] { "Ja - sie ergänzt fehlendes Wissen immer richtig", "Nein - ihr fehlen dafür die passenden Muster", "Ja - sie lädt Fehlendes heimlich aus Büchern" }, "Nein - ihr fehlen dafür die passenden Muster",
+            "Ohne passende Beispiele kann die KI nur raten. Genau dann klingt sie oft trotzdem sicher - also besonders vorsichtig sein."),
+        ("Was ist beim KI-Training ähnlich wie beim Vokabellernen?", new[] { "Man lernt am besten alles in einer einzigen Nacht", "Üben mit vielen Beispielen und Fehler korrigieren", "Man muss sich jedes Wort genau einmal ansehen" }, "Üben mit vielen Beispielen und Fehler korrigieren",
+            "Viele Wiederholungen, Rückmeldung zu Fehlern, Nachbessern - so lernen Menschen Vokabeln und so wird eine KI trainiert.")
+    };
+
+    private static QuizQuestion WieKiLernt(Random r)
+    {
+        var f = WieKiLerntListe[r.Next(WieKiLerntListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.KiWissen, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Wie eine KI lernt (Trainingsdaten)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "KI lernt aus sehr vielen, oft von Menschen beschrifteten Beispielen: Ergebnis mit der Lösung vergleichen, bei Fehlern ein kleines Stück nachstellen - millionenfach. Was in den Daten fehlt oder einseitig ist, kann sie schlecht. Müll rein, Müll raus."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KiOderRegelListe =
+    {
+        ("Eine Ampel schaltet stur alle 60 Sekunden um. Ist das KI?", new[] { "Ja - jede Ampel lernt ständig aus dem Verkehr", "Nein - sie folgt einer festen, programmierten Regel", "Ja - weil sie elektrisch und automatisch gesteuert wird" }, "Nein - sie folgt einer festen, programmierten Regel",
+            "Eine Zeitschaltung macht immer dasselbe, egal was passiert. Das ist ein Programm mit fester Regel - keine KI."),
+        ("Was unterscheidet eine KI von einem 'normalen' Programm?", new[] { "KI lernt ihr Verhalten aus Beispielen statt aus festen Regeln", "KI läuft nur auf besonders teuren Großrechnern in Firmen", "Normale Programme können überhaupt keine Zahlen verarbeiten" }, "KI lernt ihr Verhalten aus Beispielen statt aus festen Regeln",
+            "Beim normalen Programm schreibt ein Mensch jede Regel vor. Bei KI entstehen die 'Regeln' als Muster aus Trainingsdaten."),
+        ("Dein Handy entsperrt sich mit deinem Gesicht. Steckt da KI drin?", new[] { "Nein - es vergleicht nur deine Haarfarbe", "Nein - es misst nur die Helligkeit im Raum", "Ja - sie hat gelernt, Gesichter zu vergleichen" }, "Ja - sie hat gelernt, Gesichter zu vergleichen",
+            "Gesichter sehen je nach Licht, Brille oder Frisur anders aus. Dafür braucht es gelernte Muster - also KI."),
+        ("Ein Taschenrechner rechnet 12 mal 7. Ist das KI?", new[] { "Nein - er rechnet nach festen Rechenregeln", "Ja - er hat Mathe aus Schulbüchern gelernt", "Ja - weil er schneller rechnet als Menschen" }, "Nein - er rechnet nach festen Rechenregeln",
+            "Der Taschenrechner folgt exakten, einprogrammierten Regeln. Er hat nichts gelernt und liefert immer dasselbe Ergebnis."),
+        ("Ein Wecker klingelt jeden Tag um 6:30 Uhr. Warum ist das keine KI?", new[] { "Er hat weder einen Bildschirm noch ein eigenes Mikrofon", "Er macht immer genau das, was eingestellt wurde", "Er ist zu klein für eine eigene KI" }, "Er macht immer genau das, was eingestellt wurde",
+            "Ein Wecker lernt nichts dazu - er führt nur die eingestellte Uhrzeit aus. Größe oder Bildschirm spielen dafür keine Rolle."),
+        ("Warum ist 'schnell' oder 'modern' kein Beweis dafür, dass KI drinsteckt?", new[] { "Auch feste Regeln laufen auf modernen Geräten blitzschnell", "Weil KI grundsätzlich langsamer ist als jedes andere Programm", "Weil moderne Geräte laut Gesetz keine KI enthalten dürfen" }, "Auch feste Regeln laufen auf modernen Geräten blitzschnell",
+            "Tempo und schickes Design sagen nichts darüber, ob ein Gerät etwas gelernt hat oder nur Regeln abarbeitet."),
+        ("Ein Kundenservice-Chat antwortet sofort und rund um die Uhr. Was ist wahrscheinlich?", new[] { "Hunderte Menschen tippen dort ohne jede Pause", "Die Chefin antwortet nachts persönlich vom Handy", "Ein Chatbot antwortet, oft mit KI-Unterstützung" }, "Ein Chatbot antwortet, oft mit KI-Unterstützung",
+            "Blitzschnelle Antworten um drei Uhr nachts stammen meist von Chatbots. Viele nennen das auch - bei wichtigen Fragen nach einem Menschen fragen."),
+        ("Eine Tür öffnet sich, sobald der Bewegungsmelder etwas bemerkt. KI oder feste Regel?", new[] { "Feste Regel - Bewegung erkannt heißt Tür auf", "KI - sie erkennt genau, wer vor der Tür steht", "KI - sie merkt sich jeden einzelnen Besucher" }, "Feste Regel - Bewegung erkannt heißt Tür auf",
+            "'Wenn Bewegung, dann öffnen' ist eine klassische Wenn-dann-Regel. Sie unterscheidet nicht einmal Mensch und Hund."),
+        ("Was kann ein Programm mit festen Regeln besser als eine KI?", new[] { "Es versteht ungenaue Sprache besonders gut", "Es erkennt Katzen auch auf völlig neuen Fotos", "Es verhält sich immer gleich und ist nachvollziehbar" }, "Es verhält sich immer gleich und ist nachvollziehbar",
+            "Feste Regeln sind berechenbar: Man kann genau nachlesen, warum etwas passiert. Bei Kasse, Wecker oder Ampel ist genau das gewünscht."),
+        ("Wofür ist KI besser geeignet als feste Regeln?", new[] { "Für Aufgaben mit vielen Varianten, wie Handschrift lesen", "Für einfache Rechnungen wie zwei plus zwei", "Für eine Uhr, die die aktuelle Zeit anzeigt" }, "Für Aufgaben mit vielen Varianten, wie Handschrift lesen",
+            "Jeder schreibt anders - dafür kann niemand alle Regeln aufschreiben. Aus vielen Beispielen lernt eine KI die Muster trotzdem."),
+        ("Warum kann man für 'Erkenne eine Katze' kaum feste Regeln aufschreiben?", new[] { "Katzen dürfen aus Datenschutzgründen nicht fotografiert werden", "Katzen sehen auf Fotos viel zu unterschiedlich aus", "Regeln in Programmen dürfen keine Tiere erwähnen" }, "Katzen sehen auf Fotos viel zu unterschiedlich aus",
+            "Liegend, springend, getigert, halb verdeckt: Die Varianten sind endlos. Genau hier spielt KI ihre Stärke aus."),
+        ("Eine Spiele-App wirbt mit 'KI-gestützt'. Was solltest du dich fragen?", new[] { "Wie viele Farben hat das Symbol der App?", "Lernt da wirklich etwas oder ist es Werbung?", "Wie alt ist wohl der Entwickler dieser neuen App?" }, "Lernt da wirklich etwas oder ist es Werbung?",
+            "'KI' ist ein beliebtes Werbewort. Manchmal steckt echte KI dahinter, manchmal nur ein paar feste Regeln mit neuem Etikett."),
+        ("Die Sprachsteuerung im Auto versteht 'Mach's wärmer' und 'Heizung höher'. Was zeigt das?", new[] { "Sie kennt für jede Funktion nur genau einen Befehl", "Sie hört auf ein einziges Wort und ignoriert den Rest", "Sie ordnet verschiedene Sätze dank gelernter Muster zu" }, "Sie ordnet verschiedene Sätze dank gelernter Muster zu",
+            "Mit festen Regeln müsste jede Formulierung einzeln einprogrammiert sein. Eine KI erkennt auch neue Formulierungen mit gleichem Sinn."),
+        ("Warum ist es bei einer KI oft schwer zu sagen, WARUM sie etwas entschieden hat?", new[] { "Die Entwickler verraten es aus reiner Höflichkeit nicht", "Ihr Wissen steckt in Millionen Zahlen statt in lesbaren Regeln", "Sie löscht ihre Begründung nach jeder einzelnen Antwort" }, "Ihr Wissen steckt in Millionen Zahlen statt in lesbaren Regeln",
+            "Man spricht von einer 'Black Box': Die gelernten Muster sind über unzählige Zahlen verteilt und lassen sich kaum als Satz ablesen."),
+        ("Ein Getränkeautomat gibt nach dem Münzeinwurf eine Flasche aus. Was steckt dahinter?", new[] { "Eine KI, die deinen Durst an der Stimme genau einschätzt", "Eine feste Abfolge: Geld prüfen, dann ausgeben", "Eine KI, die dein Lieblingsgetränk kennt" }, "Eine feste Abfolge: Geld prüfen, dann ausgeben",
+            "Der Automat arbeitet Schritt für Schritt eine feste Abfolge ab. Zum Verkaufen braucht er nichts zu lernen."),
+        ("Ein Schachprogramm hat durch Millionen Partien gegen sich selbst gelernt. Ist das KI?", new[] { "Ja - es hat seine Spielweise aus Erfahrung gelernt", "Nein - Schach ist doch nur ein altes Brettspiel", "Nein - es kennt schließlich nur 64 Felder" }, "Ja - es hat seine Spielweise aus Erfahrung gelernt",
+            "Das Programm hat aus Sieg und Niederlage gelernt, welche Züge gut sind - niemand hat ihm jeden Zug vorgeschrieben. Das ist KI."),
+        ("Du klickst auf der Schul-Website auf 'Vertretungsplan' und die Tabelle erscheint. Ist das KI?", new[] { "Ja - die Seite ahnt schon, in welche Klasse du gehst", "Nein - der Klick löst immer dieselbe Aktion aus", "Ja - jede Website ist grundsätzlich eine KI" }, "Nein - der Klick löst immer dieselbe Aktion aus",
+            "Ein Link oder Knopf ist eine feste Verknüpfung: Klick hier, zeige das. Da wird nichts gelernt."),
+        ("Die Handy-Tastatur schlägt dir das nächste Wort vor. KI oder feste Regel?", new[] { "Feste Regel - sie zeigt immer dieselben drei Wörter", "Feste Regel - sie sortiert die Wörter nach dem Alphabet", "KI - sie hat gelernt, welche Wörter oft folgen" }, "KI - sie hat gelernt, welche Wörter oft folgen",
+            "Die Wortvorschläge passen sich deinem Satz an. Dahinter steckt ein Modell, das aus vielen Texten gelernt hat, was typischerweise folgt."),
+        ("Was ist ein 'Algorithmus'?", new[] { "Eine genaue Schritt-für-Schritt-Anleitung für eine Aufgabe", "Ein anderes Wort für einen besonders gefährlichen Computervirus", "Ein besonders schneller Prozessor in neuen Handys" }, "Eine genaue Schritt-für-Schritt-Anleitung für eine Aufgabe",
+            "Ein Kochrezept ist auch ein Algorithmus: klare Schritte in fester Reihenfolge. Computer arbeiten ständig mit Algorithmen."),
+        ("Warum ist nicht jeder Algorithmus eine KI?", new[] { "Algorithmen gibt es erst seit der Erfindung der KI", "Viele Algorithmen folgen nur festen Schritten, ohne zu lernen", "Nur Algorithmen mit eigenem Bildschirm und Mikrofon zählen als KI" }, "Viele Algorithmen folgen nur festen Schritten, ohne zu lernen",
+            "Algorithmen gibt es seit Jahrhunderten (z.B. schriftliches Dividieren). KI ist nur die Sorte, die aus Daten lernt.")
+    };
+
+    private static QuizQuestion KiOderRegel(Random r)
+    {
+        var f = KiOderRegelListe[r.Next(KiOderRegelListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.KiWissen, GradeLevel = GradeLevel.Klasse7,
+            Topic = "KI oder feste Regel?", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Feste Regel = das Programm tut immer genau das Eingestellte (Ampel-Timer, Taschenrechner, Wecker). KI = Verhalten aus Beispielen gelernt, stark bei vielen Varianten (Gesichter, Sprache, Handschrift), dafür schwer nachvollziehbar. 'Schnell' oder 'modern' heißt nicht KI."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FalschmeldungenListe =
+    {
+        ("Eine Schlagzeile lautet: 'UNGLAUBLICH! Das verschweigen dir alle!' Was ist das?", new[] { "Ein typisches Lockmittel, um Klicks zu bekommen", "Ein Hinweis auf eine besonders gut geprüfte Meldung", "Die Pflicht-Überschrift für jede echte Eilmeldung" }, "Ein typisches Lockmittel, um Klicks zu bekommen",
+            "Großbuchstaben, Ausrufezeichen und 'Das verschweigen alle' sollen neugierig machen - seriöse Nachrichten brauchen solche Tricks nicht."),
+        ("Was ist 'Clickbait'?", new[] { "Ein Virus, der beim Klicken das Handy sperrt", "Eine Computermaus, die besonders leise und schnell klickt", "Übertriebene Überschriften, die zum Klicken locken" }, "Übertriebene Überschriften, die zum Klicken locken",
+            "Clickbait heißt übersetzt 'Klick-Köder'. Der Artikel hält selten, was die Überschrift verspricht - Hauptsache, du klickst."),
+        ("Ein echtes Foto von 2015 wird als 'heute in Berlin' geteilt. Was ist das Problem?", new[] { "Alte Fotos dürfen im Internet gar nicht mehr gezeigt werden", "Das Bild ist echt, steht aber im falschen Zusammenhang", "Keins - ein echtes Foto sagt immer die ganze Wahrheit" }, "Das Bild ist echt, steht aber im falschen Zusammenhang",
+            "Viele Falschmeldungen nutzen echte Bilder mit falschem Ort oder Datum. Das Foto stimmt - die Geschichte dazu nicht."),
+        ("Warum sollen viele Falschmeldungen Wut oder Angst auslösen?", new[] { "Aufgeregte Menschen teilen schneller und prüfen weniger", "Starke Gefühle machen eine Nachricht automatisch wahrer", "Ruhige Nachrichten werden im Internet grundsätzlich gelöscht" }, "Aufgeregte Menschen teilen schneller und prüfen weniger",
+            "Wer sich aufregt, will es sofort weitersagen. Merkst du starke Gefühle beim Lesen: erst durchatmen, dann prüfen."),
+        ("Eine Meldung hat kein Datum. Warum ist das verdächtig?", new[] { "Man kann nicht erkennen, ob sie aktuell oder uralt ist", "Meldungen ohne Datum stammen immer von Kindern", "Ein Datum fehlt nur bei kurzen Meldungen über Sportergebnisse" }, "Man kann nicht erkennen, ob sie aktuell oder uralt ist",
+            "Alte Meldungen werden gern als neu verbreitet. Seriöse Seiten nennen immer, wann ein Artikel erschienen ist."),
+        ("Eine Web-Adresse sieht fast aus wie die einer bekannten Zeitung, nur mit Zusatz. Was kann das sein?", new[] { "Die offizielle Kinderseite genau dieser bekannten Zeitung", "Eine nachgemachte Seite, die Vertrauen ausnutzen will", "Ein Tippfehler, der trotzdem zur echten Seite führt" }, "Eine nachgemachte Seite, die Vertrauen ausnutzen will",
+            "Fälscher bauen bekannte Seiten mit ähnlicher Adresse nach. Die genaue Adresse zu prüfen lohnt sich immer."),
+        ("Was ist Satire?", new[] { "Eine Nachricht, die vom Staat vorher geprüft wurde", "Absichtlich übertriebener Humor, der Missstände aufs Korn nimmt", "Eine besonders kurze Meldung für Handybildschirme" }, "Absichtlich übertriebener Humor, der Missstände aufs Korn nimmt",
+            "Satire übertreibt bewusst, um zum Nachdenken zu bringen. Sie ist erlaubt und oft witzig - aber keine Nachricht."),
+        ("Jemand teilt einen Satire-Artikel als echte Nachricht. Was ist passiert?", new[] { "Satire ist immer wahr und darf deshalb so geteilt werden", "Der Artikel wurde durch das Teilen zur echten Nachricht", "Der Witz wurde ohne Zusammenhang für wahr gehalten" }, "Der Witz wurde ohne Zusammenhang für wahr gehalten",
+            "Ohne den Hinweis auf die Satire-Seite wirkt der Text wie eine Meldung. So wird aus einem Witz schnell eine Falschmeldung."),
+        ("Was bedeutet 'quer lesen' bei einer fragwürdigen Meldung?", new[] { "In anderen Quellen nachsehen, was dort darüber steht", "Den Artikel Satz für Satz von unten nach oben durchlesen", "Nur Überschrift und Bild genau betrachten" }, "In anderen Quellen nachsehen, was dort darüber steht",
+            "Profis bleiben nicht auf der verdächtigen Seite, sondern öffnen neue Tabs: Was sagen andere, seriöse Quellen dazu?"),
+        ("Ein Screenshot zeigt angeblich den Post eines Fußballstars. Warum ist Vorsicht angebracht?", new[] { "Fußballstars dürfen gar keine Posts veröffentlichen", "Screenshots sind immer unscharf und deshalb ungültig", "Screenshots lassen sich leicht fälschen - prüfe das echte Profil" }, "Screenshots lassen sich leicht fälschen - prüfe das echte Profil",
+            "Einen Screenshot kann man mit wenigen Klicks basteln. Ob der Post echt ist, zeigt nur das Original-Profil."),
+        ("Viele Konten teilen gleichzeitig dieselbe Meldung mit identischem Text. Was kann dahinterstecken?", new[] { "Ein Zufall, der bei wahren Meldungen immer passiert", "Ein Fehler des Handys, das alles doppelt anzeigt", "Bots, die eine Meldung künstlich groß machen sollen" }, "Bots, die eine Meldung künstlich groß machen sollen",
+            "Automatische Konten (Bots) können eine Meldung tausendfach teilen, damit sie wichtig und verbreitet wirkt."),
+        ("Warum ist 'Das haben schon 50.000 Leute geteilt' kein Beweis?", new[] { "Viele Teilungen sagen nichts über die Wahrheit aus", "Erst ab 100.000 Teilungen gilt etwas offiziell als bewiesen", "Oft geteilte Beiträge werden gesetzlich gelöscht" }, "Viele Teilungen sagen nichts über die Wahrheit aus",
+            "Auch Falsches wird massenhaft geteilt - manchmal sogar mehr als Wahres, weil es aufregender ist."),
+        ("Was machen Faktencheck-Redaktionen?", new[] { "Sie löschen jede Nachricht, die ihnen nicht gefällt", "Sie prüfen verbreitete Behauptungen und legen Belege offen", "Sie schreiben Nachrichten, damit diese viral gehen" }, "Sie prüfen verbreitete Behauptungen und legen Belege offen",
+            "Faktenchecker bei Nachrichtenagenturen und Sendern recherchieren Gerüchte und zeigen, woher ihre Belege stammen."),
+        ("Ein Foto zeigt einen Hai auf einer überfluteten Autobahn. Wie prüfst du es?", new[] { "Das Foto vergrößern, bis man den Hai besser erkennt", "Abwarten, ob der Beitrag noch mehr Likes bekommt", "Mit einer Bildersuche nach früheren Versionen suchen" }, "Mit einer Bildersuche nach früheren Versionen suchen",
+            "Solche Bilder tauchen bei Überschwemmungen immer wieder auf. Eine Bildersuche zeigt, wo und wann ein Foto zuerst erschien."),
+        ("Welche Frage hilft bei jeder verdächtigen Meldung?", new[] { "Wie viele Emojis stehen unter dem Beitrag?", "Wie groß ist die Schrift in der Überschrift?", "Wer hat das zuerst veröffentlicht und warum?" }, "Wer hat das zuerst veröffentlicht und warum?",
+            "Den Ursprung zu kennen ist der wichtigste Schritt: Wer steckt dahinter, und hat diese Person ein Interesse daran?"),
+        ("Eine Sprachnachricht warnt: 'Morgen fällt überall die Schule aus, schick das weiter!' Was tust du?", new[] { "Sofort in alle Klassenchats weiterleiten", "Bei der Schule oder auf ihrer Website nachsehen", "Die Nachricht einfach lauter abspielen" }, "Bei der Schule oder auf ihrer Website nachsehen",
+            "Offizielle Infos kommen von der Schule selbst. Wer ungeprüft weiterleitet, macht Falschmeldungen erst groß."),
+        ("Was ist ein Kettenbrief?", new[] { "Ein offizielles Schreiben der Schule an alle Eltern", "Eine Nachricht, die zum Weiterleiten drängt, oft mit Drohung", "Ein Brief, der mit einem Schloss verschlossen ist" }, "Eine Nachricht, die zum Weiterleiten drängt, oft mit Drohung",
+            "'Schick das an zehn Leute, sonst...' - solche Drohungen sind erfunden. Kettenbriefe einfach löschen, nichts passiert."),
+        ("Warum wirken KI-erfundene Nachrichtenseiten oft seriös?", new[] { "Nur seriöse Seiten dürfen überhaupt KI benutzen", "KI-Seiten werden vorher staatlich geprüft", "KI erzeugt in Sekunden Texte im Stil echter Zeitungen" }, "KI erzeugt in Sekunden Texte im Stil echter Zeitungen",
+            "Mit KI lässt sich eine ganze Nachrichtenseite schnell füllen. Guter Stil ist darum kein Beweis mehr - die Quelle zählt."),
+        ("Du hast aus Versehen eine Falschmeldung geteilt. Was ist jetzt richtig?", new[] { "Nichts sagen, damit es möglichst niemand merkt", "Den Beitrag noch einmal an alle weiterschicken", "Den Beitrag löschen und kurz richtigstellen" }, "Den Beitrag löschen und kurz richtigstellen",
+            "Fehler passieren jedem. Wer sie offen korrigiert, stoppt die Verbreitung und bleibt glaubwürdig."),
+        ("Eine Meldung beruft sich auf 'Experten sagen', nennt aber keine Namen. Was ist davon zu halten?", new[] { "Experten nennen aus Prinzip nie ihren Namen", "Ohne Namen und Quelle ist das kaum überprüfbar", "Das Wort 'Experte' garantiert allein schon die Wahrheit" }, "Ohne Namen und Quelle ist das kaum überprüfbar",
+            "Seriöse Berichte sagen, wer etwas behauptet. Anonyme 'Experten' kann niemand nachprüfen - vielleicht gibt es sie gar nicht.")
+    };
+
+    private static QuizQuestion FalschmeldungenErkennen(Random r)
+    {
+        var f = FalschmeldungenListe[r.Next(FalschmeldungenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.KiWissen, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Falschmeldungen erkennen (Fake News)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Stopp vor dem Teilen: Wer hat es zuerst veröffentlicht? Stimmen Datum und Zusammenhang? Berichten seriöse Quellen auch darüber (quer lesen)? Starke Gefühle, Clickbait, viele Teilungen und Screenshots sind keine Belege."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DatenUndPrivatsphaereListe =
+    {
+        ("Was sind 'personenbezogene Daten'?", new[] { "Nur Personalausweis und Geburtsurkunde", "Alle Angaben, die sich einer bestimmten Person zuordnen lassen", "Daten, die ein Computer über sich selbst speichert" }, "Alle Angaben, die sich einer bestimmten Person zuordnen lassen",
+            "Name, Adresse, Foto, Handynummer, Standort - alles, was auf dich zurückführt, sind personenbezogene Daten."),
+        ("Was kann in einer Handy-Fotodatei unsichtbar mitgespeichert sein?", new[] { "Oft Aufnahmeort, Datum und Uhrzeit", "Deine Schulnoten und dein Passwort", "Der Akkustand aller deiner Freunde" }, "Oft Aufnahmeort, Datum und Uhrzeit",
+            "Diese Zusatzinfos heißen Metadaten. Ein Foto kann so verraten, wo du wohnst - manche Apps entfernen sie, verlassen kann man sich darauf nicht."),
+        ("Was bedeutet 'Datensparsamkeit'?", new[] { "Nur so viele Daten angeben, wie wirklich nötig sind", "Möglichst wenig Speicherplatz auf dem Handy belegen", "Einmal im Monat alle Daten vom Handy löschen" }, "Nur so viele Daten angeben, wie wirklich nötig sind",
+            "Was du nicht angibst, kann auch nicht verloren gehen, verkauft oder missbraucht werden."),
+        ("Ab welchem Alter dürfen Jugendliche in Deutschland meist selbst in die Datenverarbeitung durch Online-Dienste einwilligen?", new[] { "Ab 12 Jahren - mit dem ersten eigenen Handy", "Ab 16 Jahren - darunter müssen Eltern zustimmen", "Ab 18 Jahren - erst mit der Volljährigkeit" }, "Ab 16 Jahren - darunter müssen Eltern zustimmen",
+            "Die europäische Datenschutz-Grundverordnung lässt die Länder das Alter festlegen; Deutschland hat 16 Jahre gewählt."),
+        ("Welches Recht hast du nach der Datenschutz-Grundverordnung (DSGVO)?", new[] { "Jede App kostenlos in voller Version zu nutzen", "Fremde Profile ohne deren Erlaubnis einzusehen", "Zu erfahren, welche Daten eine Firma über dich speichert" }, "Zu erfahren, welche Daten eine Firma über dich speichert",
+            "Das Auskunftsrecht: Du darfst jede Firma fragen, was sie über dich gespeichert hat - sie muss antworten."),
+        ("Ein Dienst soll deine alten Daten entfernen. Welches Recht hilft dir dabei?", new[] { "Das Recht auf Löschung deiner Daten", "Das Recht auf kostenlose Updates für alle Apps", "Das Recht auf ein zweites Konto" }, "Das Recht auf Löschung deiner Daten",
+            "Die DSGVO gibt dir ein Recht auf Löschung. Es gibt Ausnahmen, etwa wenn Daten gesetzlich aufbewahrt werden müssen."),
+        ("Warum ist ein öffentliches Profil riskanter als ein privates?", new[] { "Öffentliche Profile kosten jeden Monat eine Gebühr", "Jeder Fremde kann deine Beiträge und Fotos sehen", "Private Profile können gar keine Fotos hochladen" }, "Jeder Fremde kann deine Beiträge und Fotos sehen",
+            "Beim privaten Profil entscheidest du, wer mitliest. Beim öffentlichen kann das jeder - auch Menschen mit schlechten Absichten."),
+        ("Was ist ein 'digitaler Fußabdruck'?", new[] { "Ein Fingerabdruck-Scanner am Handy", "Die Spuren, die du im Netz hinterlässt", "Ein Foto deines Fußes im eigenen Profilbild" }, "Die Spuren, die du im Netz hinterlässt",
+            "Posts, Likes, Kommentare, Suchen: Aus vielen kleinen Spuren entsteht ein Bild von dir, das lange bleiben kann."),
+        ("Warum sagt man: 'Das Internet vergisst nicht'?", new[] { "Einmal Geteiltes kann kopiert und gespeichert werden", "Server dürfen Daten laut Gesetz niemals löschen", "Jeder Beitrag wird zusätzlich im Rathaus ausgedruckt und abgeheftet" }, "Einmal Geteiltes kann kopiert und gespeichert werden",
+            "Du kannst deinen Beitrag löschen - aber nicht die Screenshots und Kopien, die andere schon gemacht haben."),
+        ("Wofür nutzen viele Firmen deine Daten besonders häufig?", new[] { "Um dir Geschenke zum Geburtstag zu schicken", "Um deine Hausaufgaben heimlich zu kontrollieren", "Um dir möglichst passende Werbung zu zeigen" }, "Um dir möglichst passende Werbung zu zeigen",
+            "Je mehr eine Firma über dich weiß, desto gezielter kann sie Werbung zeigen - und damit Geld verdienen."),
+        ("Was sind Cookies im Internet?", new[] { "Kleine Dateien, mit denen Webseiten dich wiedererkennen", "Werbeanzeigen für Kekse auf Einkaufsseiten", "Kleine Viren, die dein Handy langsamer machen" }, "Kleine Dateien, mit denen Webseiten dich wiedererkennen",
+            "Cookies merken sich z.B. deinen Warenkorb - aber auch, welche Seiten du besuchst. Deshalb darfst du oft auswählen, welche erlaubt sind."),
+        ("Ein Cookie-Hinweis bietet 'Alle akzeptieren' oder 'Einstellungen'. Was schützt dich mehr?", new[] { "Alle akzeptieren, dann geht es schneller", "Nur notwendige Cookies erlauben", "Die Seite neu laden, bis der Hinweis weg ist" }, "Nur notwendige Cookies erlauben",
+            "Notwendige Cookies braucht die Seite zum Funktionieren. Werbe- und Tracking-Cookies kannst du meist ablehnen."),
+        ("Du postest ein Foto vor deiner Haustür, auf dem die Hausnummer zu sehen ist. Was ist das Problem?", new[] { "Hausnummern sind urheberrechtlich geschützt", "Fremde können herausfinden, wo du wohnst", "Das Foto wird dadurch automatisch unscharf" }, "Fremde können herausfinden, wo du wohnst",
+            "Straßenschild, Hausnummer, Schul-Logo: Schon kleine Details im Bild können verraten, wo man dich findet."),
+        ("Darfst du ein Foto deiner Freundin einfach öffentlich posten?", new[] { "Ja, wenn du das Foto selbst gemacht hast", "Nur, wenn sie vorher zugestimmt hat", "Ja, solange sie darauf lächelt" }, "Nur, wenn sie vorher zugestimmt hat",
+            "Jeder Mensch hat ein Recht am eigenen Bild. Wer fotografiert hat, spielt dafür keine Rolle - vorher fragen!"),
+        ("Warum ist ein Passwort wie 'Ali2012' schwach?", new[] { "Es enthält zu viele verschiedene Zeichen und Zahlen", "Name und Geburtsjahr lassen sich leicht erraten", "Passwörter mit Zahlen sind nicht erlaubt" }, "Name und Geburtsjahr lassen sich leicht erraten",
+            "Wer deinen Namen und dein Alter kennt, probiert genau so etwas zuerst. Persönliches gehört nicht ins Passwort."),
+        ("Was macht ein sicheres Passwort aus?", new[] { "Kurz, damit man es sich gut merken kann", "Überall gleich, damit man nichts vergisst", "Lang, einzigartig und ohne persönliche Infos" }, "Lang, einzigartig und ohne persönliche Infos",
+            "Lange Passwörter sind schwer zu knacken. Einzigartig heißt: Wird eines gestohlen, sind die anderen Konten trotzdem sicher."),
+        ("Was bringt die Anmeldung mit zwei Faktoren (z.B. Passwort plus Code aufs Handy)?", new[] { "Ein gestohlenes Passwort allein reicht nicht mehr", "Man kann sich damit doppelt so schnell überall anmelden", "Man braucht danach gar kein Passwort mehr" }, "Ein gestohlenes Passwort allein reicht nicht mehr",
+            "Der zweite Faktor ist wie ein zweites Schloss: Ohne dein Handy kommt ein Dieb auch mit Passwort nicht rein."),
+        ("Eine Quiz-App will Name, Schule und Handynummer, bevor sie dein Ergebnis zeigt. Was tust du?", new[] { "Alles eintragen, sonst sieht man das Ergebnis nicht", "Abbrechen - für ein Quiz sind diese Daten unnötig", "Die Handynummer eines Freundes eintragen" }, "Abbrechen - für ein Quiz sind diese Daten unnötig",
+            "Solche Quizze sammeln oft nur Daten. Fremde Daten einzutragen wäre auch keine Lösung - die gehören dir nicht."),
+        ("Warum verrät dein Standort-Verlauf so viel über dich?", new[] { "Er speichert nur das Wetter an deinem Ort", "Er zeigt ausschließlich, wo du Urlaub machst", "Er zeigt, wo du wohnst, lernst und trainierst" }, "Er zeigt, wo du wohnst, lernst und trainierst",
+            "Aus dem Verlauf lässt sich dein ganzer Alltag ablesen: Zuhause, Schule, Fußballverein. Standort nur einschalten, wenn nötig."),
+        ("Warum solltest du dich an öffentlichen Computern, z.B. in der Bibliothek, immer abmelden?", new[] { "Sonst kann die nächste Person dein Konto nutzen", "Sonst wird der Computer automatisch gesperrt", "Sonst werden deine Daten dort ausgedruckt" }, "Sonst kann die nächste Person dein Konto nutzen",
+            "Wer sich nicht abmeldet, lässt die Tür offen: Der Nächste kann in deinem Namen schreiben oder deine Nachrichten lesen.")
+    };
+
+    private static QuizQuestion DatenUndPrivatsphaere(Random r)
+    {
+        var f = DatenUndPrivatsphaereListe[r.Next(DatenUndPrivatsphaereListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.KiWissen, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Daten und Privatsphäre", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Personenbezogene Daten schützen: Datensparsamkeit, privates Profil, keine Adresse oder Standort teilen, fremde Fotos nur mit Zustimmung. DSGVO: Recht auf Auskunft und Löschung, unter 16 willigen die Eltern ein. Lange, einzigartige Passwörter plus zweiter Faktor."
         };
     }
 }

@@ -24,14 +24,14 @@ public sealed class KiWissenTests
     }
 
     [Fact]
-    public void Klasse7_faellt_auf_den_Klasse6_Pool_zurueck()
+    public void Klasse7_hat_einen_eigenen_Pool()
     {
-        // KiWissen hat bewusst nur Klasse-6- und Klasse-9-Pools (Grundlagen/vertieft) -
-        // Klasse-7-Profile bekommen über die Übergangsregel die Grundlagen.
+        // Bis 30.09.2026 fiel Klasse 7 auf die Klasse-6-Grundlagen zurück; seitdem gibt es vier
+        // eigene Themen (Trainingsdaten, KI oder Regel, Falschmeldungen, Datenschutz).
         var questions = _generator.Generate(GradeLevel.Klasse7, 5, new Random(7));
 
         Assert.Equal(5, questions.Count);
-        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse6, q.GradeLevel));
+        Assert.All(questions, q => Assert.Equal(GradeLevel.Klasse7, q.GradeLevel));
     }
 
     [Fact]

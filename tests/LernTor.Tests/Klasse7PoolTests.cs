@@ -10,8 +10,7 @@ namespace LernTor.Tests;
 /// </summary>
 public sealed class Klasse7PoolTests
 {
-    /// <summary>Alle Fächer mit eigenem Klasse-7-Pool. KiWissen fehlt bewusst - der KI-Bereich
-    /// hat nur Klasse 6 und 9 und fällt für Klasse 7 auf Klasse 6 zurück (siehe KiWissenTests).</summary>
+    /// <summary>Alle Fächer mit eigenem Klasse-7-Pool (KiWissen seit 30.09.2026).</summary>
     public static IEnumerable<object[]> GeneratorenMitKlasse7 => new List<object[]>
     {
         new object[] { new MathGenerator() },
@@ -28,7 +27,8 @@ public sealed class Klasse7PoolTests
         new object[] { new EthikGenerator() },
         new object[] { new KunstGenerator() },
         new object[] { new MusikGenerator() },
-        new object[] { new ItgGenerator() }
+        new object[] { new ItgGenerator() },
+        new object[] { new KiWissenGenerator() }
     };
 
     [Theory]

@@ -6,7 +6,8 @@ namespace LernTor.ContentGen.Generators;
 
 /// <summary>
 /// Deutsch-Aufgabengenerator: Grammatik, Rechtschreibung, Zeitformen, Satzglieder (Klasse 6),
-/// Konjunktiv/indirekte Rede, Adverbialsätze, Inhaltsangabe, Argumentieren (Klasse 7)
+/// Konjunktiv/indirekte Rede, Adverbialsätze, Inhaltsangabe, Argumentieren, Plusquamperfekt,
+/// adverbiale Bestimmungen und Attribute (Klasse 7)
 /// sowie Aktiv/Passiv, Satzgefüge, Kommasetzung (Klasse 9), jeweils nach Berliner Rahmenlehrplan.
 /// </summary>
 public sealed class GermanGenerator : ExerciseGeneratorBase
@@ -39,7 +40,10 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
                 SprachlicheBilder,
                 Inhaltsangabe,
                 Argumentieren,
-                Kurzgeschichte
+                Kurzgeschichte,
+                Plusquamperfekt,
+                AdverbialeBestimmungen,
+                Attributarten
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -1747,6 +1751,178 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Topic = "Kurzgeschichten verstehen", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Kurzgeschichte: unvermittelter Anfang, offenes Ende, wenige Figuren, Alltagssituation, oft ein Wendepunkt - jedes Detail kann Bedeutung tragen."
+        };
+    }
+
+    private static readonly (string Satz, string Infinitiv, string Loesung, string Grund)[] PlusquamperfektBeispiele =
+    {
+        ("Nachdem wir den Film im Kino am Potsdamer Platz ___, fuhren wir mit der S-Bahn nach Hause.", "sehen", "gesehen hatten",
+            "\"sehen\" hat ein Akkusativobjekt (den Film) und bildet die Vergangenheit mit \"haben\"."),
+        ("Nachdem Elif ihre Hausaufgaben ___, ging sie zum Volleyballtraining.", "machen", "gemacht hatte",
+            "\"machen\" bildet die Vergangenheit mit \"haben\" (sie hat gemacht)."),
+        ("Weil ich mein Handy zu Hause ___, konnte ich dich nicht anrufen.", "vergessen", "vergessen hatte",
+            "\"vergessen\" bildet die Vergangenheit mit \"haben\"; das Partizip II hat hier kein zusätzliches ge-."),
+        ("Nachdem das Flugzeug in Antalya ___, holte uns Onkel Mehmet vom Flughafen ab.", "landen", "gelandet war",
+            "\"landen\" beschreibt eine Ortsveränderung (vom Himmel auf den Boden) und steht deshalb mit \"sein\"."),
+        ("Weil das Spiel schon ___, durften wir nicht mehr ins Stadion.", "beginnen", "begonnen hatte",
+            "\"beginnen\" bildet die Vergangenheit mit \"haben\" (das Spiel hat begonnen)."),
+        ("Nachdem Can von der Schule nach Hause ___, aß er zuerst etwas.", "kommen", "gekommen war",
+            "\"kommen\" ist ein Verb der Bewegung und steht deshalb mit \"sein\"."),
+        ("Da die U-Bahn gerade ___, mussten wir zehn Minuten auf die nächste warten.", "abfahren", "abgefahren war",
+            "\"abfahren\" ist ein Verb der Bewegung und steht mit \"sein\"; bei trennbaren Verben steht das ge- in der Mitte: ab-ge-fahren."),
+        ("Nachdem Oma den Tee ___, setzten wir uns alle auf den Balkon.", "kochen", "gekocht hatte",
+            "\"kochen\" hat ein Akkusativobjekt (den Tee) und bildet die Vergangenheit mit \"haben\"."),
+        ("Nachdem ich die Vokabeln dreimal ___, konnte ich sie auswendig.", "lesen", "gelesen hatte",
+            "\"lesen\" bildet die Vergangenheit mit \"haben\" (ich habe gelesen)."),
+        ("Weil Ayşe in der Nacht schlecht ___, war sie am Morgen sehr müde.", "schlafen", "geschlafen hatte",
+            "\"schlafen\" beschreibt keine Bewegung und keine Veränderung und steht deshalb mit \"haben\"."),
+        ("Nachdem wir den ganzen Nachmittag durch den Tiergarten ___, taten uns die Füße weh.", "laufen", "gelaufen waren",
+            "\"laufen\" ist ein Verb der Bewegung und steht deshalb mit \"sein\"."),
+        ("Nachdem die Lehrerin die Klassenarbeit ___, wurde es in der Klasse ganz still.", "austeilen", "ausgeteilt hatte",
+            "\"austeilen\" hat ein Akkusativobjekt (die Klassenarbeit) und steht mit \"haben\"; das ge- steht in der Mitte: aus-ge-teilt."),
+        ("Weil Emre den Bus ___, kam er zu spät zur Schule.", "verpassen", "verpasst hatte",
+            "\"verpassen\" hat ein Akkusativobjekt (den Bus) und steht mit \"haben\"; Verben mit der Vorsilbe ver- bekommen kein ge-."),
+        ("Nachdem wir nach Kreuzberg ___, kam ich auf eine neue Schule.", "umziehen", "umgezogen waren",
+            "\"umziehen\" (in eine neue Wohnung) ist ein Ortswechsel und steht deshalb mit \"sein\"."),
+        ("Nachdem Lina vom Fahrrad ___, brachte ihr Vater sie zum Arzt.", "fallen", "gefallen war",
+            "\"fallen\" ist eine Bewegung (von oben nach unten) und steht deshalb mit \"sein\"."),
+        ("Nachdem der Schiedsrichter das Spiel ___, jubelten die Fans von Union.", "abpfeifen", "abgepfiffen hatte",
+            "\"abpfeifen\" hat ein Akkusativobjekt (das Spiel) und steht mit \"haben\"; das ge- steht in der Mitte: ab-ge-pfiffen."),
+        ("Nachdem ich meinem Freund eine Nachricht ___, antwortete er sofort.", "schreiben", "geschrieben hatte",
+            "\"schreiben\" hat ein Akkusativobjekt (eine Nachricht) und bildet die Vergangenheit mit \"haben\"."),
+        ("Weil es die ganze Nacht ___, war der Rasen auf dem Bolzplatz ganz nass.", "regnen", "geregnet hatte",
+            "Wetterverben wie \"regnen\" bilden die Vergangenheit mit \"haben\" (es hat geregnet)."),
+        ("Nachdem alle Gäste ___, räumten wir gemeinsam die Küche auf.", "gehen", "gegangen waren",
+            "\"gehen\" ist ein Verb der Bewegung und steht deshalb mit \"sein\"."),
+        ("Nachdem es draußen dunkel ___, gingen wir vom Spielplatz nach Hause.", "werden", "geworden war",
+            "\"werden\" beschreibt eine Veränderung (hell wird zu dunkel) und steht deshalb mit \"sein\".")
+    };
+
+    private static QuizQuestion Plusquamperfekt(Random r)
+    {
+        var p = PlusquamperfektBeispiele[r.Next(PlusquamperfektBeispiele.Length)];
+
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Plusquamperfekt (Vorvergangenheit)", Type = QuestionType.OpenText,
+            Prompt = $"Setze das Verb \"{p.Infinitiv}\" im Plusquamperfekt ein (beide Wörter): \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung },
+            Explanation = $"Richtig ist \"{p.Loesung}\". Das Plusquamperfekt zeigt, dass etwas VOR einem anderen Ereignis in der Vergangenheit passiert ist - " +
+                          $"deshalb steht es oft nach \"nachdem\". Man bildet es aus \"hatte\" oder \"war\" plus Partizip II. {p.Grund}",
+            HelpHint = "Plusquamperfekt = hatte/war + Partizip II (ich hatte gegessen, wir waren gefahren). \"sein\" bei Bewegung oder Veränderung, sonst meist \"haben\". Im Nebensatz steht das Hilfsverb am Ende."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AdverbialeBestimmungenListe =
+    {
+        ("Welche adverbiale Bestimmung ist \"Nach der Schule\" im Satz \"Nach der Schule treffen wir uns im Görlitzer Park.\"?", new[] { "Adverbiale des Ortes (lokal)", "Adverbiale der Zeit (temporal)", "Adverbiale des Grundes (kausal)" }, "Adverbiale der Zeit (temporal)",
+            "\"Nach der Schule\" antwortet auf die Frage \"Wann treffen wir uns?\" - also eine Zeitangabe. Der Ort steckt in \"im Görlitzer Park\"."),
+        ("Welche adverbiale Bestimmung ist \"seit drei Jahren\" im Satz \"Mein Bruder spielt seit drei Jahren Fußball im Verein.\"?", new[] { "Adverbiale der Zeit (temporal)", "Adverbiale der Art und Weise (modal)", "Adverbiale des Ortes (lokal)" }, "Adverbiale der Zeit (temporal)",
+            "\"seit drei Jahren\" antwortet auf \"Seit wann spielt er?\" - Fragen nach Zeitpunkt oder Dauer führen zur Adverbiale der Zeit."),
+        ("Welche adverbiale Bestimmung ist \"In den Sommerferien\" im Satz \"In den Sommerferien fliegen wir zu Oma nach Izmir.\"?", new[] { "Adverbiale des Grundes (kausal)", "Adverbiale der Art und Weise (modal)", "Adverbiale der Zeit (temporal)" }, "Adverbiale der Zeit (temporal)",
+            "\"In den Sommerferien\" beantwortet \"Wann fliegen wir?\". \"nach Izmir\" wäre dagegen eine Ortsangabe (Wohin?)."),
+        ("Welche adverbiale Bestimmung ist \"Jeden Morgen\" im Satz \"Jeden Morgen fährt Deniz mit der U8 zur Schule.\"?", new[] { "Adverbiale der Art und Weise (modal)", "Adverbiale der Zeit (temporal)", "Adverbiale des Ortes (lokal)" }, "Adverbiale der Zeit (temporal)",
+            "\"Jeden Morgen\" beantwortet \"Wann?\" bzw. \"Wie oft?\" - beides sind Fragen nach der Zeit."),
+        ("Welche adverbiale Bestimmung ist \"auf dem Tempelhofer Feld\" im Satz \"Am Wochenende fahren wir auf dem Tempelhofer Feld Inliner.\"?", new[] { "Adverbiale der Zeit (temporal)", "Adverbiale des Ortes (lokal)", "Adverbiale der Art und Weise (modal)" }, "Adverbiale des Ortes (lokal)",
+            "\"auf dem Tempelhofer Feld\" beantwortet \"Wo fahren wir Inliner?\" - eine Ortsangabe. \"Am Wochenende\" ist die Zeitangabe."),
+        ("Welche adverbiale Bestimmung ist \"nach Antalya\" im Satz \"Im August fliegt Familie Yılmaz nach Antalya.\"?", new[] { "Adverbiale des Ortes (lokal)", "Adverbiale des Grundes (kausal)", "Adverbiale der Zeit (temporal)" }, "Adverbiale des Ortes (lokal)",
+            "\"nach Antalya\" beantwortet \"Wohin fliegt die Familie?\". Auch Richtungsangaben (Wohin? Woher?) zählen zur Adverbiale des Ortes."),
+        ("Welche adverbiale Bestimmung ist \"aus der Bibliothek\" im Satz \"Zeynep holt sich ein Buch aus der Bibliothek.\"?", new[] { "Adverbiale der Art und Weise (modal)", "Adverbiale des Ortes (lokal)", "Adverbiale des Grundes (kausal)" }, "Adverbiale des Ortes (lokal)",
+            "\"aus der Bibliothek\" beantwortet \"Woher holt sie das Buch?\" - die Frage \"Woher?\" gehört zur Adverbiale des Ortes."),
+        ("Welche adverbiale Bestimmung ist \"im Jugendzentrum\" im Satz \"Freitags spielen wir im Jugendzentrum Tischtennis.\"?", new[] { "Adverbiale der Zeit (temporal)", "Adverbiale des Grundes (kausal)", "Adverbiale des Ortes (lokal)" }, "Adverbiale des Ortes (lokal)",
+            "\"im Jugendzentrum\" beantwortet \"Wo spielen wir?\". \"Freitags\" wäre die Zeitangabe im selben Satz."),
+        ("Welche adverbiale Bestimmung ist \"blitzschnell\" im Satz \"Mert rennt blitzschnell über den Schulhof.\"?", new[] { "Adverbiale der Art und Weise (modal)", "Adverbiale der Zeit (temporal)", "Adverbiale des Ortes (lokal)" }, "Adverbiale der Art und Weise (modal)",
+            "\"blitzschnell\" beantwortet \"Wie rennt Mert?\" - die Frage \"Wie?\" führt zur Adverbiale der Art und Weise."),
+        ("Welche adverbiale Bestimmung ist \"mit großer Freude\" im Satz \"Die Kinder packen mit großer Freude ihre Geschenke aus.\"?", new[] { "Adverbiale des Grundes (kausal)", "Adverbiale der Art und Weise (modal)", "Adverbiale der Zeit (temporal)" }, "Adverbiale der Art und Weise (modal)",
+            "\"mit großer Freude\" beschreibt, WIE die Kinder auspacken - also die Art und Weise, nicht den Grund."),
+        ("Welche adverbiale Bestimmung ist \"heimlich\" im Satz \"Aylin schaut während der Stunde heimlich auf ihr Handy.\"?", new[] { "Adverbiale des Ortes (lokal)", "Adverbiale des Grundes (kausal)", "Adverbiale der Art und Weise (modal)" }, "Adverbiale der Art und Weise (modal)",
+            "\"heimlich\" beantwortet \"Wie schaut sie aufs Handy?\". \"während der Stunde\" ist dagegen eine Zeitangabe."),
+        ("Welche adverbiale Bestimmung ist \"sehr konzentriert\" im Satz \"Im Mathetest arbeitet Jonas sehr konzentriert.\"?", new[] { "Adverbiale der Art und Weise (modal)", "Adverbiale des Ortes (lokal)", "Adverbiale der Zeit (temporal)" }, "Adverbiale der Art und Weise (modal)",
+            "\"sehr konzentriert\" beantwortet \"Wie arbeitet Jonas?\" - das ist die Art und Weise."),
+        ("Welche adverbiale Bestimmung ist \"Wegen des BVG-Streiks\" im Satz \"Wegen des BVG-Streiks kamen viele Schüler zu spät.\"?", new[] { "Adverbiale des Grundes (kausal)", "Adverbiale der Zeit (temporal)", "Adverbiale des Ortes (lokal)" }, "Adverbiale des Grundes (kausal)",
+            "\"Wegen des BVG-Streiks\" beantwortet \"Warum kamen sie zu spät?\" - die Präposition \"wegen\" zeigt oft einen Grund an."),
+        ("Welche adverbiale Bestimmung ist \"Vor Aufregung\" im Satz \"Vor Aufregung konnte Selin vor dem Endspiel kaum schlafen.\"?", new[] { "Adverbiale der Zeit (temporal)", "Adverbiale der Art und Weise (modal)", "Adverbiale des Grundes (kausal)" }, "Adverbiale des Grundes (kausal)",
+            "\"Vor Aufregung\" beantwortet \"Warum konnte sie nicht schlafen?\". Vorsicht: \"vor dem Endspiel\" im selben Satz ist eine Zeitangabe."),
+        ("Welche adverbiale Bestimmung ist \"Aus Langeweile\" im Satz \"Aus Langeweile scrollte Ali durch sein Handy.\"?", new[] { "Adverbiale des Grundes (kausal)", "Adverbiale des Ortes (lokal)", "Adverbiale der Art und Weise (modal)" }, "Adverbiale des Grundes (kausal)",
+            "\"Aus Langeweile\" beantwortet \"Warum scrollte er?\" - es nennt den Grund für sein Verhalten."),
+        ("Welche adverbiale Bestimmung ist \"Wegen einer Erkältung\" im Satz \"Wegen einer Erkältung fehlt Lara heute in der Schule.\"?", new[] { "Adverbiale der Art und Weise (modal)", "Adverbiale des Grundes (kausal)", "Adverbiale der Zeit (temporal)" }, "Adverbiale des Grundes (kausal)",
+            "\"Wegen einer Erkältung\" beantwortet \"Warum fehlt Lara?\". \"heute\" ist die Zeitangabe, \"in der Schule\" die Ortsangabe."),
+        ("Mit welchen Fragen findet man eine adverbiale Bestimmung der Zeit?", new[] { "Wann? Wie lange? Seit wann?", "Wo? Wohin? Woher?", "Warum? Weshalb? Wieso?" }, "Wann? Wie lange? Seit wann?",
+            "Zeitangaben antworten auf Wann?, Wie lange?, Seit wann? oder Wie oft?. Wo/Wohin/Woher fragt nach dem Ort, Warum nach dem Grund."),
+        ("Welche Frage führt zu einer adverbialen Bestimmung der Art und Weise?", new[] { "Wo? Wohin? Woher?", "Wie? Auf welche Art?", "Warum? Aus welchem Grund?" }, "Wie? Auf welche Art?",
+            "Die Art und Weise erfragt man mit \"Wie?\" oder \"Auf welche Art?\" - zum Beispiel \"leise\", \"mit Mühe\", \"gemeinsam\"."),
+        ("Welche Präposition leitet häufig eine adverbiale Bestimmung des Grundes ein?", new[] { "neben", "wegen", "seit" }, "wegen",
+            "\"wegen\" nennt einen Grund (wegen des Regens). \"neben\" zeigt meist einen Ort an, \"seit\" eine Zeit."),
+        ("Was ist der Unterschied zwischen \"wegen des Regens\" und \"weil es regnet\"?", new[] { "Das erste ist ein Satzglied, das zweite ein Nebensatz", "Das erste nennt eine Zeit, das zweite einen Grund", "Beides sind Nebensätze mit dem Verb am Ende" }, "Das erste ist ein Satzglied, das zweite ein Nebensatz",
+            "Beide nennen einen Grund. \"wegen des Regens\" hat kein eigenes Verb und ist eine adverbiale Bestimmung (Satzglied); \"weil es regnet\" hat ein gebeugtes Verb und ist ein Adverbialsatz (Nebensatz).")
+    };
+
+    private static QuizQuestion AdverbialeBestimmungen(Random r)
+    {
+        var f = AdverbialeBestimmungenListe[r.Next(AdverbialeBestimmungenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Adverbiale Bestimmungen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Frag nach dem Satzglied: Wann/Wie lange? = Zeit (temporal), Wo/Wohin/Woher? = Ort (lokal), Wie/Auf welche Art? = Art und Weise (modal), Warum/Weshalb? = Grund (kausal)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] AttributeListe =
+    {
+        ("Welche Art von Attribut ist \"neues\" im Satz \"Mein neues Handy hat eine richtig gute Kamera.\"?", new[] { "Genitivattribut", "Adjektivattribut", "Präpositionalattribut" }, "Adjektivattribut",
+            "\"neues\" ist ein Adjektiv, das vor dem Nomen \"Handy\" steht und es genauer beschreibt: Welches Handy? Das neue."),
+        ("Welche Art von Attribut ist \"spannendes\" im Satz \"Gestern haben wir ein spannendes Spiel von Union gesehen.\"?", new[] { "Adjektivattribut", "Apposition", "Relativsatz (Attributsatz)" }, "Adjektivattribut",
+            "\"spannendes\" ist ein gebeugtes Adjektiv direkt vor dem Nomen \"Spiel\" - ein typisches Adjektivattribut."),
+        ("Welche Art von Attribut ist \"kalte\" im Satz \"Nach dem Training trinkt Jonas eine kalte Limo.\"?", new[] { "Präpositionalattribut", "Genitivattribut", "Adjektivattribut" }, "Adjektivattribut",
+            "\"kalte\" ist ein Adjektiv vor dem Nomen \"Limo\" und passt sich ihm in Kasus, Numerus und Genus an."),
+        ("Welche Art von Attribut ist \"meines Bruders\" im Satz \"Das Fahrrad meines Bruders steht im Hof.\"?", new[] { "Genitivattribut", "Adjektivattribut", "Apposition" }, "Genitivattribut",
+            "\"meines Bruders\" steht im Genitiv (Wessen Fahrrad?) und beschreibt das Nomen \"Fahrrad\" genauer."),
+        ("Welche Art von Attribut ist \"der 7b\" im Satz \"Die Klassenfahrt der 7b geht an die Ostsee.\"?", new[] { "Apposition", "Genitivattribut", "Präpositionalattribut" }, "Genitivattribut",
+            "\"der 7b\" beantwortet \"Wessen Klassenfahrt?\" - es steht im Genitiv und hängt am Nomen \"Klassenfahrt\"."),
+        ("Welche Art von Attribut ist \"des Spiels\" im Satz \"Am Ende des Spiels jubelten alle Fans.\"?", new[] { "Relativsatz (Attributsatz)", "Adjektivattribut", "Genitivattribut" }, "Genitivattribut",
+            "\"des Spiels\" steht im Genitiv (Das Ende wessen? Des Spiels.) und gehört fest zum Nomen \"Ende\"."),
+        ("Welche Art von Attribut ist \"mit den roten Haaren\" im Satz \"Das Mädchen mit den roten Haaren ist neu in unserer Klasse.\"?", new[] { "Präpositionalattribut", "Genitivattribut", "Adjektivattribut" }, "Präpositionalattribut",
+            "\"mit den roten Haaren\" beginnt mit einer Präposition (mit) und beschreibt das Nomen \"Mädchen\" genauer: Welches Mädchen?"),
+        ("Welche Art von Attribut ist \"aus Neukölln\" im Satz \"Der Junge aus Neukölln hat das Turnier gewonnen.\"?", new[] { "Apposition", "Präpositionalattribut", "Adjektivattribut" }, "Präpositionalattribut",
+            "\"aus Neukölln\" ist eine Präposition mit Nomen, die direkt beim Nomen \"Junge\" steht und sagt, welcher Junge gemeint ist."),
+        ("Welche Art von Attribut ist \"am Hermannplatz\" im Satz \"Der Dönerladen am Hermannplatz hat bis Mitternacht geöffnet.\"?", new[] { "Relativsatz (Attributsatz)", "Präpositionalattribut", "Genitivattribut" }, "Präpositionalattribut",
+            "\"am Hermannplatz\" (an + dem) ist eine Präpositionalgruppe, die das Nomen \"Dönerladen\" näher bestimmt: Welcher Dönerladen?"),
+        ("Welche Art von Attribut ist \"für das Konzert\" im Satz \"Die Karten für das Konzert waren sofort ausverkauft.\"?", new[] { "Genitivattribut", "Relativsatz (Attributsatz)", "Präpositionalattribut" }, "Präpositionalattribut",
+            "\"für das Konzert\" beginnt mit der Präposition \"für\" und sagt, welche Karten gemeint sind - ein Präpositionalattribut."),
+        ("Welche Art von Attribut ist \"meine beste Freundin\" im Satz \"Ayşe, meine beste Freundin, wohnt im Wedding.\"?", new[] { "Apposition", "Relativsatz (Attributsatz)", "Genitivattribut" }, "Apposition",
+            "\"meine beste Freundin\" ist ein nachgestelltes Nomen, das \"Ayşe\" erklärt. Es steht zwischen Kommas und im selben Kasus - eine Apposition."),
+        ("Welche Art von Attribut ist \"der Kapitän unserer Mannschaft\" im Satz \"Luca, der Kapitän unserer Mannschaft, schoss das erste Tor.\"?", new[] { "Relativsatz (Attributsatz)", "Apposition", "Präpositionalattribut" }, "Apposition",
+            "Es sieht wie ein Relativsatz aus, hat aber kein Verb: \"der Kapitän unserer Mannschaft\" ist ein Nomen mit Artikel, das \"Luca\" erklärt - eine Apposition."),
+        ("Welche Art von Attribut ist \"die Hauptstadt Deutschlands\" im Satz \"Berlin, die Hauptstadt Deutschlands, ist zugleich ein Bundesland.\"?", new[] { "Adjektivattribut", "Genitivattribut", "Apposition" }, "Apposition",
+            "\"die Hauptstadt Deutschlands\" erklärt das Nomen \"Berlin\" genauer, steht zwischen Kommas und im selben Kasus (Nominativ) - eine Apposition."),
+        ("Welche Art von Attribut ist \"der neben mir sitzt\" im Satz \"Der Junge, der neben mir sitzt, kommt aus Izmir.\"?", new[] { "Relativsatz (Attributsatz)", "Apposition", "Präpositionalattribut" }, "Relativsatz (Attributsatz)",
+            "\"der neben mir sitzt\" hat ein eigenes gebeugtes Verb am Ende (sitzt) und beginnt mit dem Relativpronomen \"der\" - ein Relativsatz, der \"Junge\" genauer beschreibt."),
+        ("Welche Art von Attribut ist \"das ich zum Geburtstag bekommen habe\" im Satz \"Das Trikot, das ich zum Geburtstag bekommen habe, ist mir zu groß.\"?", new[] { "Adjektivattribut", "Relativsatz (Attributsatz)", "Genitivattribut" }, "Relativsatz (Attributsatz)",
+            "Der Nebensatz beginnt mit dem Relativpronomen \"das\", endet mit dem gebeugten Verb \"habe\" und beschreibt das Nomen \"Trikot\" - ein Relativsatz."),
+        ("Welche Art von Attribut ist \"in dem wir Basketball spielen\" im Satz \"Der Park, in dem wir Basketball spielen, wird renoviert.\"?", new[] { "Präpositionalattribut", "Genitivattribut", "Relativsatz (Attributsatz)" }, "Relativsatz (Attributsatz)",
+            "Trotz der Präposition \"in\" ist das ein Relativsatz: Er enthält das Relativpronomen \"dem\" und ein gebeugtes Verb am Ende (spielen)."),
+        ("Was ist ein Attribut?", new[] { "Eine Beifügung, die ein Nomen genauer beschreibt", "Ein eigenes Satzglied, das man frei umstellen kann", "Ein Verb, das im Hauptsatz immer an zweiter Stelle steht" }, "Eine Beifügung, die ein Nomen genauer beschreibt",
+            "Ein Attribut ist kein eigenes Satzglied, sondern ein Teil davon: Es hängt an einem Nomen und beschreibt es genauer."),
+        ("Wie erkennt man mit der Umstellprobe ein Attribut?", new[] { "Es bleibt beim Umstellen immer bei seinem Nomen", "Es kann allein an den Satzanfang wandern", "Es verschwindet beim Umstellen aus dem Satz" }, "Es bleibt beim Umstellen immer bei seinem Nomen",
+            "Bei der Umstellprobe wandern ganze Satzglieder. Ein Attribut bewegt sich immer mit seinem Nomen mit: \"Das Mädchen mit den roten Haaren\" bleibt zusammen."),
+        ("Wodurch wird eine Apposition mitten im Satz abgetrennt?", new[] { "Durch einen Doppelpunkt", "Durch zwei Kommas", "Durch Anführungszeichen" }, "Durch zwei Kommas",
+            "Eine nachgestellte Apposition wird mit Kommas abgetrennt - mitten im Satz steht davor und danach ein Komma: \"Luca, unser Kapitän, schoss ein Tor.\""),
+        ("In welchem Kasus steht eine Apposition?", new[] { "Immer im Nominativ", "Im selben Kasus wie ihr Bezugswort", "Immer im Genitiv" }, "Im selben Kasus wie ihr Bezugswort",
+            "Die Apposition passt sich ihrem Bezugswort an: \"Ich treffe Ayşe, meine beste Freundin\" - beide stehen im Akkusativ.")
+    };
+
+    private static QuizQuestion Attributarten(Random r)
+    {
+        var f = AttributeListe[r.Next(AttributeListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Deutsch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Attribute (Beifügungen)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Attribute beschreiben ein Nomen genauer und bleiben beim Umstellen bei ihm: Adjektiv davor (das neue Handy), Genitiv (das Rad meines Bruders), Präposition (der Junge aus Neukölln), Apposition zwischen Kommas, Relativsatz (der Junge, der ...)."
         };
     }
 }

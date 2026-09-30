@@ -1,6 +1,6 @@
 # Nächste Schritte
 
-Stand: 29.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht unten unter
+Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht unten unter
 [Erledigt am 29.09.2026](#erledigt-am-29092026-version-20) und
 [Erledigt am 28.09.2026](#erledigt-am-28092026). Die Begründungen und die ältere Planung stehen in
 [`PLAN.md`](PLAN.md) und [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
@@ -40,8 +40,8 @@ Stundenplan reichen:
 
 | Kind | Fach | Fragen | reicht für |
 |---|---|---:|---:|
-| Emirhan | Türkisch (Kl. 6) | ~~160~~ 260 | ~~5~~ **~8,7 Wochen** |
-| Batuhan | Türkisch (Kl. 9) | ~~200~~ 300 | ~~7~~ **10 Wochen** |
+| Emirhan | Türkisch (Kl. 6) | ~~160~~ ~~260~~ 360 | ~~5~~ ~~8,7~~ **12 Wochen** |
+| Batuhan | Türkisch (Kl. 9) | ~~200~~ ~~300~~ 400 | ~~7~~ ~~10~~ **13,3 Wochen** |
 | Emirhan | Englisch (Kl. 6) | ~~140~~ 200 | ~~8~~ **~11 Wochen** |
 | Emirhan | Musik (Kl. 6) | ~~100~~ 140 | ~~8,3~~ **~11,7 Wochen** |
 | Batuhan | Englisch (Kl. 9) | ~~180~~ 220 | ~~10~~ **~12 Wochen** |
@@ -58,6 +58,10 @@ nach „immer dasselbe“ an.
   Clauses). `PoolReichweiteTests` hält die Poolgrößen fest.
 - [x] `pool-reichweite.py` erneut gelaufen: kein Fach unter 8 Wochen; am kürzesten reicht jetzt
   Türkisch Klasse 6 (8,7 Wochen, jeden Tag dabei).
+- [x] **Türkisch ein zweites Mal erweitert** (30.09.2026): Klasse 6 +100 (İyelik ekleri, Geniş
+  zaman, Emir kipi, Vücut ve sağlık, Karşılaştırma), Klasse 9 +100 (Fiil çatısı, Ek fiil,
+  Paragrafta anlam, Bağlaçlar/Edatlar, Anlatım bozuklukları). Am kürzesten reicht jetzt Englisch
+  Klasse 6 mit 11 Wochen.
 - [ ] Die neuen Englischfragen von jemandem mit gutem Englisch gegenlesen lassen.
 
 Die Türkisch-Fragen sollten von jemandem gegengelesen werden, der Türkisch als Muttersprache
@@ -82,7 +86,7 @@ spricht.
 | **Frühjahr 2027** | Ferien 2027/28 und Feiertage 2028 eintragen (der Kalender endet mit den Sommerferien 2027 bzw. am 26.12.2027) | `SchoolCalendar.cs`, Daten von der Senatsverwaltung; der Eltern-Bereich zeigt das Enddatum an |
 | **Sommer 2027** | Klassenstufe wechseln: Batuhan 9 → 10, Emirhan 6 → 7 | Eltern-Bereich → Profil → „Klassenstufe übernehmen“ (seit 28.09.2026; der Hinweis erscheint in den ersten vier Schulwochen von selbst) |
 | **Sommer 2027** | Neue Stundenpläne 2027/28 eintragen | wie oben; `STUNDENPLAENE-2026-27.md` als Vorlage |
-| **vor Sommer 2027** | Klasse-7-Pools prüfen: Emirhan wechselt in Klasse 7, einige Fächer haben dort nur 80–120 Fragen (KI-Wissen hat keinen eigenen 7er-Pool) | `pool-reichweite.py` mit Emirhan als Klasse 7 laufen lassen (`KINDER` im Skript anpassen) |
+| **vor Sommer 2027** | Klasse-7-Pools nachprüfen, sobald Emirhans Stundenplan für Klasse 7 bekannt ist. Am 30.09.2026 schon ausgebaut: Türkisch 120 → 260, Englisch 120 → 200, Deutsch 120 → 180, Gewi 120 → 180, Musik 80 → 140, KI-Wissen eigener Pool mit 80. Dünn bleiben Kunst (80) und Politik (100) | `pool-reichweite.py` mit Emirhan als Klasse 7 laufen lassen (`KINDER` im Skript anpassen) |
 
 ## 5. Wartbarkeit (kein Zeitdruck)
 

@@ -18,6 +18,12 @@ public class PoolReichweiteTests
         { "Englisch", GradeLevel.Klasse6, 195 },
         { "Englisch", GradeLevel.Klasse9, 215 },
         { "Musik", GradeLevel.Klasse6, 135 },
+        // Klasse-7-Ausbau vom 30.09.2026 (Emirhan wechselt im Sommer 2027 in Klasse 7).
+        { "Englisch", GradeLevel.Klasse7, 195 },
+        { "Musik", GradeLevel.Klasse7, 135 },
+        { "Deutsch", GradeLevel.Klasse7, 175 },
+        { "Gewi", GradeLevel.Klasse7, 175 },
+        { "KiWissen", GradeLevel.Klasse7, 78 },
     };
 
     [Theory]
@@ -28,6 +34,9 @@ public class PoolReichweiteTests
         {
             "Englisch" => new EnglischGenerator(),
             "Musik" => new MusikGenerator(),
+            "Deutsch" => new GermanGenerator(),
+            "Gewi" => new GewiGenerator(),
+            "KiWissen" => new KiWissenGenerator(),
             _ => throw new ArgumentOutOfRangeException(nameof(fach))
         };
 

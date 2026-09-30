@@ -3,7 +3,7 @@ using LernTor.Core.Models;
 
 namespace LernTor.ContentGen.Generators;
 
-/// <summary>Musik nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen/Form/Gattungen/Wirkung/Kultur, seit 29.09.2026 auch Notenwerte/Takt und Stimme/Gesang) und Klasse 9 (vertieft, Harmonielehre bis gesellschaftlicher Kontext).</summary>
+/// <summary>Musik nach Berliner Rahmenlehrplan, Klasse 6 (Grundlagen/Form/Gattungen/Wirkung/Kultur, seit 29.09.2026 auch Notenwerte/Takt und Stimme/Gesang), Klasse 7 (Musiklehre/Medien, Epochen, Instrumente, Musizieren, seit 30.09.2026 auch Tonleitern/Tonarten, Komponisten Barock bis Klassik und Musik der Welt mit Schwerpunkt Türkei) und Klasse 9 (vertieft, Harmonielehre bis gesellschaftlicher Kontext).</summary>
 public sealed class MusikGenerator : ExerciseGeneratorBase
 {
     public override Subject Subject => Subject.Musik;
@@ -12,7 +12,7 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { GrundlagenDerMusik, FormUndGestaltung, GattungenUndGenres, WirkungUndFunktion, MusikImKulturellenKontext, NotenwerteUndTakt, StimmeUndGesang },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { MusiklehreUndMedien, MusikepochenUndStile, InstrumenteUndKlangfarbe, MusizierenUndZusammenspiel },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { MusiklehreUndMedien, MusikepochenUndStile, InstrumenteUndKlangfarbe, MusizierenUndZusammenspiel, TonleiternUndTonarten, KomponistenBarockKlassik, MusikDerWelt },
             [GradeLevel.Klasse9] = new List<TopicFactory> { HarmonielehreUndPartiturlesen, KompositionUndSatzweisen, MedienUndDigitaleProduktion, GattungenDerMusikgeschichte, FilmmusikUndProgrammmusik, MusikImGesellschaftlichenKontext }
         };
 
@@ -854,6 +854,179 @@ public sealed class MusikGenerator : ExerciseGeneratorBase
             Topic = "Musizieren: Rhythmus, Notation und Zusammenspiel", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "4/4 heißt vier Viertel pro Takt. Ganze Note = vier Viertel, Punkt verlängert um die Hälfte. forte laut, piano leise, crescendo lauter werdend. Allegro schnell, Adagio langsam."
+        };
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Klasse 7, Ausbau 30.09.2026: drei Themen à 20 Fragen (Tonleitern/Tonarten, Komponisten
+    // von Barock bis Klassik, Musik der Welt mit Schwerpunkt Türkei). Pool danach 140 Fragen.
+    // ---------------------------------------------------------------------------------------
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] TonleiternUndTonartenListe =
+    {
+        ("Welches Intervall liegt zwischen den Tönen c und g?", new[] { "Eine Quarte", "Eine Quinte", "Eine Sexte" }, "Eine Quinte",
+            "Man zählt beide Töne mit: c-d-e-f-g sind fünf Stufen. Lateinisch quinta heißt \"die fünfte\"."),
+        ("Wie heißt das Intervall zwischen den Tönen c und f?", new[] { "Eine Terz", "Eine Sekunde", "Eine Quarte" }, "Eine Quarte",
+            "c-d-e-f sind vier Stufen, wenn man Anfangs- und Zielton mitzählt - deshalb Quarte, \"die vierte\"."),
+        ("Welches Intervall liegt zwischen zwei benachbarten Stammtönen wie d und e?", new[] { "Eine Sekunde", "Eine Prime", "Eine Terz" }, "Eine Sekunde",
+            "Zwei Nachbartöne sind zwei Stufen, also eine Sekunde. Eine Prime wäre derselbe Ton zweimal."),
+        ("Welche Dur-Tonart kommt ganz ohne Vorzeichen aus?", new[] { "G-Dur", "F-Dur", "C-Dur" }, "C-Dur",
+            "Die C-Dur-Tonleiter besteht nur aus den weißen Klaviertasten. Ihre Halbtonschritte e-f und h-c liegen schon an der richtigen Stelle."),
+        ("Welches Vorzeichen steht bei G-Dur?", new[] { "Ein Kreuz: fis", "Ein b: das b", "Zwei Kreuze: fis und cis" }, "Ein Kreuz: fis",
+            "Damit auch in G-Dur zwischen 7. und 8. Stufe ein Halbton liegt, muss das f zum fis erhöht werden."),
+        ("Welches Vorzeichen steht bei F-Dur?", new[] { "Ein b: aus h wird b", "Ein Kreuz: fis", "Zwei b: b und es" }, "Ein b: aus h wird b",
+            "In F-Dur muss zwischen 3. und 4. Stufe (a und b) ein Halbton liegen - deshalb wird das h zum b erniedrigt."),
+        ("Wie heißt der deutsche Ton h in englischen Noten und Akkordsymbolen?", new[] { "H", "B", "Bb" }, "B",
+            "Im Englischen heißt die Tonreihe C-D-E-F-G-A-B. Das deutsche b heißt dort Bb (B flat). Das ist wichtig, wenn man Akkorde aus Songbooks oder Apps liest."),
+        ("Welche Molltonart ist die Paralleltonart von C-Dur?", new[] { "c-Moll", "a-Moll", "e-Moll" }, "a-Moll",
+            "Die parallele Molltonart beginnt auf der 6. Stufe der Dur-Tonleiter. In C-Dur ist das der Ton a."),
+        ("Warum haben C-Dur und a-Moll dieselben Vorzeichen?", new[] { "Sie klingen beide gleich hell und fröhlich", "Sie benutzen dieselben Töne, nur mit anderem Grundton", "Sie beginnen beide auf demselben Grundton c" }, "Sie benutzen dieselben Töne, nur mit anderem Grundton",
+            "Beide Tonleitern bestehen nur aus weißen Tasten. Weil der Grundton ein anderer ist, liegen die Halbtonschritte an anderen Stellen - das macht den Dur- oder Moll-Klang."),
+        ("Zwischen welchen Stufen liegen in der natürlichen Moll-Tonleiter die Halbtonschritte?", new[] { "Zwischen 3-4 und 7-8", "Zwischen 1-2 und 4-5", "Zwischen 2-3 und 5-6" }, "Zwischen 2-3 und 5-6",
+            "In a-Moll (a-h-c-d-e-f-g-a) liegen die Halbtöne bei h-c (2-3) und e-f (5-6). Der frühe Halbton bei 2-3 macht die kleine Terz und damit den Moll-Klang."),
+        ("Was ist der Leitton in einer Dur-Tonleiter?", new[] { "Die 7. Stufe, die zum Grundton strebt", "Die 5. Stufe, auf der die Dominante steht", "Der tiefste Ton, den ein Chor singt" }, "Die 7. Stufe, die zum Grundton strebt",
+            "Die 7. Stufe liegt nur einen Halbton unter dem Grundton. Das Ohr erwartet deshalb, dass sie sich nach oben auflöst - in C-Dur ist h der Leitton zu c."),
+        ("Aus welchen Tönen besteht der C-Dur-Dreiklang?", new[] { "c - es - g", "c - e - g", "c - f - a" }, "c - e - g",
+            "Ein Dur-Dreiklang schichtet Grundton, große Terz und Quinte: c, e (vier Halbtöne höher) und g."),
+        ("Aus welchen Tönen besteht der a-Moll-Dreiklang?", new[] { "a - c - e", "a - cis - e", "a - d - f" }, "a - c - e",
+            "Moll-Dreiklang = Grundton, kleine Terz, Quinte. Von a zu c sind es drei Halbtöne; mit cis wäre es A-Dur."),
+        ("Was zeigt der Quintenzirkel?", new[] { "Die Tonarten, geordnet nach ihren Vorzeichen", "Die Reihenfolge der Saiten einer Gitarre", "Die Sitzordnung eines großen Orchesters" }, "Die Tonarten, geordnet nach ihren Vorzeichen",
+            "Geht man von C-Dur eine Quinte aufwärts (G, D, A ...), kommt jeweils ein Kreuz dazu; abwärts (F, B ...) jeweils ein b."),
+        ("Wie viele Kreuze hat D-Dur?", new[] { "Eins (nur fis)", "Zwei (fis und cis)", "Drei (fis, cis, gis)" }, "Zwei (fis und cis)",
+            "D-Dur liegt im Quintenzirkel zwei Schritte rechts von C-Dur, also kommen zwei Kreuze dazu: fis und cis."),
+        ("Was bedeutet enharmonische Verwechslung, zum Beispiel bei fis und ges?", new[] { "Zwei Töne, die eine Oktave auseinanderliegen", "Zwei Namen für dieselbe Taste auf dem Klavier", "Ein Ton, der absichtlich falsch gespielt wird" }, "Zwei Namen für dieselbe Taste auf dem Klavier",
+            "fis ist f erhöht, ges ist g erniedrigt - auf dem Klavier landen beide auf derselben schwarzen Taste. Welcher Name passt, hängt von der Tonart ab."),
+        ("Aus wie vielen verschiedenen Tönen besteht eine Dur-Tonleiter?", new[] { "Acht", "Sieben", "Fünf" }, "Sieben",
+            "Die achte Stufe ist wieder der Grundton, nur eine Oktave höher. Deshalb sind es sieben verschiedene Töne."),
+        ("Welches Intervall umfasst genau vier Halbtonschritte, etwa von c nach e?", new[] { "Die kleine Terz", "Die große Terz", "Die reine Quarte" }, "Die große Terz",
+            "Große Terz = vier Halbtöne, kleine Terz = drei Halbtöne. Genau dieser Unterschied trennt Dur von Moll."),
+        ("Was ist eine pentatonische Tonleiter?", new[] { "Eine Tonleiter aus zwölf Halbtonschritten", "Eine Tonleiter aus fünf Tönen ohne Halbtonschritte", "Eine Tonleiter, die nur abwärts gespielt wird" }, "Eine Tonleiter aus fünf Tönen ohne Halbtonschritte",
+            "Penta heißt fünf. Weil keine Halbtöne vorkommen, klingen fast alle Töne gut zusammen - deshalb ist sie beim Improvisieren so beliebt (z. B. nur schwarze Tasten)."),
+        ("Welcher Ton entsteht, wenn man das f um einen Halbton erhöht?", new[] { "fes", "g", "fis" }, "fis",
+            "Ein Kreuz erhöht um einen Halbton, und an den Namen wird -is angehängt: aus f wird fis. Die Endung -es steht dagegen für erniedrigt.")
+    };
+
+    private static QuizQuestion TonleiternUndTonarten(Random r)
+    {
+        var f = TonleiternUndTonartenListe[r.Next(TonleiternUndTonartenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Tonleitern, Intervalle und Tonarten", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Intervalle zählt man mit beiden Tönen: c-e Terz, c-f Quarte, c-g Quinte. C-Dur und a-Moll ohne Vorzeichen, G-Dur ein Kreuz (fis), F-Dur ein b. Halbtöne in Dur bei 3-4 und 7-8, in Moll bei 2-3 und 5-6."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] KomponistenBarockKlassikListe =
+    {
+        ("In welchem Jahr wurden sowohl Johann Sebastian Bach als auch Georg Friedrich Händel geboren?", new[] { "1756", "1685", "1770" }, "1685",
+            "Beide kamen 1685 zur Welt - Bach in Eisenach, Händel in Halle an der Saale, nicht weit voneinander entfernt. 1756 ist Mozarts, 1770 Beethovens Geburtsjahr."),
+        ("In welcher Stadt arbeitete Bach viele Jahre als Thomaskantor?", new[] { "In Wien", "In Leipzig", "In Bonn" }, "In Leipzig",
+            "Als Thomaskantor leitete Bach ab 1723 den Thomanerchor und schrieb Musik für die Leipziger Kirchen - jede Woche eine neue Kantate war zeitweise seine Aufgabe."),
+        ("Für welches Instrument war Bach schon zu Lebzeiten besonders berühmt?", new[] { "Die Gitarre", "Das Schlagzeug", "Die Orgel" }, "Die Orgel",
+            "Bach war ein gefeierter Organist und wurde oft gerufen, um neue Orgeln zu prüfen. Viele seiner Werke sind für die Kirchenorgel geschrieben."),
+        ("In welcher Stadt verbrachte Händel den größten Teil seines Berufslebens?", new[] { "In London", "In Paris", "In Leipzig" }, "In London",
+            "Händel zog nach England, wurde dort britischer Staatsbürger und schrieb Opern und Oratorien für das Londoner Publikum."),
+        ("Aus welchem Werk Händels stammt der berühmte Chor \"Halleluja\"?", new[] { "Aus der Oper Die Zauberflöte", "Aus dem Oratorium Messiah", "Aus der 9. Sinfonie" }, "Aus dem Oratorium Messiah",
+            "Der Messiah (1742) erzählt vom Leben Jesu. Das \"Halleluja\" ist sein bekanntester Chor - die Zauberflöte ist von Mozart, die 9. Sinfonie von Beethoven."),
+        ("Was ist ein Oratorium?", new[] { "Ein großes Werk für Chor, Solisten und Orchester ohne Bühnenhandlung", "Ein kurzes Stück für Klavier, das zwei Personen zusammen spielen", "Eine Oper mit Kostümen, Bühnenbild und Schauspiel" }, "Ein großes Werk für Chor, Solisten und Orchester ohne Bühnenhandlung",
+            "Ein Oratorium erzählt wie eine Oper eine Geschichte, meist eine biblische - aber im Konzert, ohne Kostüme und Bühnenbild."),
+        ("Was ist ein Basso continuo?", new[] { "Eine durchgehende Bassbegleitung im Barock", "Ein besonders tiefer Sänger in der Oper", "Ein Schlusston, der lange ausgehalten wird" }, "Eine durchgehende Bassbegleitung im Barock",
+            "Continuo heißt \"fortlaufend\": Cembalo oder Orgel und ein tiefes Instrument spielen unter fast jedem Barockstück das harmonische Fundament."),
+        ("Welches Tasteninstrument war im Barock typisch, bevor sich das Klavier durchsetzte?", new[] { "Das Keyboard", "Das Cembalo", "Der Synthesizer" }, "Das Cembalo",
+            "Beim Cembalo werden die Saiten angezupft, nicht angeschlagen. Deshalb kann man damit kaum laut und leise spielen - das konnte erst das Klavier (Pianoforte)."),
+        ("Wer komponierte \"Die vier Jahreszeiten\"?", new[] { "Joseph Haydn", "Antonio Vivaldi", "Georg Friedrich Händel" }, "Antonio Vivaldi",
+            "Der Venezianer Vivaldi schrieb diese vier Violinkonzerte im Barock. Man hört darin z. B. Vogelgezwitscher im Frühling und ein Gewitter im Sommer."),
+        ("Wo wurde Wolfgang Amadeus Mozart 1756 geboren?", new[] { "In Wien", "In Salzburg", "In Graz" }, "In Salzburg",
+            "Mozart stammt aus Salzburg, zog aber später nach Wien, wo er seine letzten zehn Lebensjahre verbrachte."),
+        ("Warum nennt man Mozart ein Wunderkind?", new[] { "Er lernte erst als Erwachsener Noten lesen", "Er trat schon als kleines Kind in ganz Europa auf", "Er schrieb ausschließlich Kinderlieder" }, "Er trat schon als kleines Kind in ganz Europa auf",
+            "Schon mit etwa sechs Jahren reiste Mozart mit Vater Leopold und Schwester Nannerl an Fürstenhöfe und spielte dort Klavier und Geige - und komponierte bereits eigene Stücke."),
+        ("Welche Oper stammt von Mozart?", new[] { "Carmen", "Der fliegende Holländer", "Die Zauberflöte" }, "Die Zauberflöte",
+            "Die Zauberflöte wurde 1791 in Wien uraufgeführt, wenige Wochen vor Mozarts Tod. Carmen ist von Bizet, der fliegende Holländer von Wagner."),
+        ("Wie alt wurde Mozart ungefähr?", new[] { "80 Jahre", "18 Jahre", "35 Jahre" }, "35 Jahre",
+            "Mozart lebte von 1756 bis 1791. In diesen gut 35 Jahren schrieb er über 600 Werke - auch deshalb staunt man bis heute über ihn."),
+        ("In welcher Stadt wurde Ludwig van Beethoven 1770 geboren?", new[] { "In Bonn", "In Berlin", "In Hamburg" }, "In Bonn",
+            "Beethoven stammte aus Bonn und zog als junger Mann nach Wien - damals die wichtigste Musikstadt Europas."),
+        ("Welches Schicksal traf Beethoven, der trotzdem weiter komponierte?", new[] { "Er verlor ein Bein im Krieg", "Er verlor nach und nach sein Gehör", "Er erblindete sehr früh" }, "Er verlor nach und nach sein Gehör",
+            "Beethoven wurde immer schwerhöriger und war am Ende fast taub. Die Musik hörte er innerlich - seine 9. Sinfonie schrieb er, als er sie kaum noch hören konnte."),
+        ("Welcher Text wird im Schlusssatz von Beethovens 9. Sinfonie gesungen?", new[] { "Goethes \"Erlkönig\"", "Schillers \"Ode an die Freude\"", "Das \"Deutschlandlied\"" }, "Schillers \"Ode an die Freude\"",
+            "Beethoven vertonte Friedrich Schillers Gedicht über Freude und Brüderlichkeit. Neu war damals, dass in einer Sinfonie plötzlich ein Chor singt."),
+        ("Wofür wird die Melodie der \"Ode an die Freude\" heute genutzt?", new[] { "Als Nationalhymne von Österreich", "Als Titelmusik der Tagesschau", "Als Hymne der Europäischen Union" }, "Als Hymne der Europäischen Union",
+            "Weil der Text von der Verbundenheit aller Menschen handelt, wurde Beethovens Melodie zur Europahymne - gespielt wird sie ohne Worte."),
+        ("Von welchem Komponisten stammt die Melodie der deutschen Nationalhymne?", new[] { "Ludwig van Beethoven", "Joseph Haydn", "Johann Sebastian Bach" }, "Joseph Haydn",
+            "Haydn komponierte die Melodie 1797 als Kaiserhymne für Österreich. Später schrieb Hoffmann von Fallersleben das Lied der Deutschen auf diese Melodie."),
+        ("Wie viele Sinfonien hat Beethoven vollendet?", new[] { "Vier", "Neun", "Einundvierzig" }, "Neun",
+            "Beethoven schrieb neun Sinfonien. Die 5. mit ihrem bekannten Anfangsmotiv \"ta-ta-ta-taaa\" und die 9. mit Chor gehören zu den berühmtesten Werken überhaupt."),
+        ("Womit verdienten Barockkomponisten wie Bach meist ihr Geld?", new[] { "Mit dem Verkauf von Schallplatten", "Mit einer festen Stelle bei Kirche oder Hof", "Mit Werbemusik für Firmen und Geschäfte" }, "Mit einer festen Stelle bei Kirche oder Hof",
+            "Kirchen, Städte und Fürsten stellten Musiker fest an. Sie mussten dafür regelmäßig neue Musik für Gottesdienste oder Feste liefern. Schallplatten gab es erst rund 150 Jahre später.")
+    };
+
+    private static QuizQuestion KomponistenBarockKlassik(Random r)
+    {
+        var f = KomponistenBarockKlassikListe[r.Next(KomponistenBarockKlassikListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Komponisten: Bach, Händel, Mozart, Beethoven", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Barock: Bach (1685, Leipzig, Orgel), Händel (1685, London, Messiah), Vivaldi (Vier Jahreszeiten). Klassik: Mozart (1756-1791, Salzburg/Wien, Zauberflöte), Beethoven (1770 Bonn, taub, 9 Sinfonien, Ode an die Freude)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] MusikDerWeltListe =
+    {
+        ("Was für ein Instrument ist die Bağlama (Saz)?", new[] { "Eine Trommel, die mit zwei Stöcken gespielt wird", "Eine Langhalslaute, deren Saiten gezupft werden", "Eine Flöte aus Schilfrohr, die man längs anbläst" }, "Eine Langhalslaute, deren Saiten gezupft werden",
+            "Die Bağlama hat einen birnenförmigen Körper und einen langen Hals. Sie ist das wichtigste Instrument der türkischen Volksmusik."),
+        ("Womit schlägt man die Saiten der Bağlama meist an?", new[] { "Mit einem Geigenbogen", "Mit einem Plektrum (Mızrap)", "Mit kleinen Holzschlägeln" }, "Mit einem Plektrum (Mızrap)",
+            "Das Mızrap ist ein kleines, biegsames Plättchen. Damit spielt man die schnellen Schlagmuster, die viele Volkslieder antreiben."),
+        ("Wie heißen die zwei Grundschläge auf der Darbuka?", new[] { "Bum und Tschak", "Düm und Tek", "Dong und Ping" }, "Düm und Tek",
+            "Die Namen ahmen den Klang nach: Düm ist der tiefe Schlag, Tek der helle. Aus diesen beiden Schlägen setzen sich die Rhythmen zusammen."),
+        ("Wie klingt der Schlag \"Düm\" auf der Darbuka, und wo wird er gespielt?", new[] { "Hoch, am Rand des Fells geschlagen", "Tief, in der Mitte des Fells geschlagen", "Scheppernd, auf dem Metallkörper geschlagen" }, "Tief, in der Mitte des Fells geschlagen",
+            "In der Fellmitte schwingt die ganze Fläche mit - das ergibt einen tiefen, vollen Ton. Am Rand schwingt nur ein Teil, deshalb klingt \"Tek\" hell."),
+        ("Zu welcher Instrumentengruppe gehört die Darbuka?", new[] { "Zu den Idiophonen (Selbstklingern)", "Zu den Chordophonen (Saiteninstrumenten)", "Zu den Membranophonen (Felltrommeln)" }, "Zu den Membranophonen (Felltrommeln)",
+            "Bei der Darbuka schwingt ein gespanntes Fell (eine Membran). Der Körper aus Ton oder Metall dient nur als Resonanzraum."),
+        ("Was ist die Ney?", new[] { "Eine kleine Handtrommel aus Ton", "Eine Längsflöte aus Schilfrohr", "Eine Laute mit sehr kurzem Hals" }, "Eine Längsflöte aus Schilfrohr",
+            "Die Ney wird schräg am oberen Rand angeblasen. Ihr hauchiger Klang ist typisch für ruhige, nachdenkliche Musik."),
+        ("In welcher Musiktradition spielt die Ney eine zentrale Rolle?", new[] { "In der Marschmusik der Janitscharen", "In der Musik der Mevlevi-Derwische (Sufi-Musik)", "Im türkischen Rap der 1990er Jahre" }, "In der Musik der Mevlevi-Derwische (Sufi-Musik)",
+            "Bei der Sema-Zeremonie der Mevlevi in Konya drehen sich die Derwische zur Musik. Die Ney gilt dort als Stimme der Sehnsucht."),
+        ("Was ist ein Makam in der türkischen Kunstmusik?", new[] { "Ein bestimmter Tanzschritt bei Hochzeiten", "Ein Melodiemodell mit eigener Tonleiter und typischen Wendungen", "Eine Trommel, die im Sitzen gespielt wird" }, "Ein Melodiemodell mit eigener Tonleiter und typischen Wendungen",
+            "Ein Makam legt nicht nur die Töne fest, sondern auch, wie sich die Melodie bewegt und wo sie endet. Jeder Makam hat seine eigene Stimmung."),
+        ("Was ist in vielen Makamen anders als in westlichen Dur- und Moll-Tonleitern?", new[] { "Es gibt überhaupt keine festen Tonhöhen", "Es gibt Tonabstände, die kleiner als ein Halbton sind", "Es werden nur die schwarzen Klaviertasten benutzt" }, "Es gibt Tonabstände, die kleiner als ein Halbton sind",
+            "Solche feinen Tonabstände kann ein Klavier nicht spielen. Deshalb haben Bağlama und Kanun zusätzliche Bünde oder Hebel für diese Zwischentöne."),
+        ("Was bedeutet das türkische Wort \"aksak\" bei Rhythmen wie dem 9/8-Takt?", new[] { "Tanzend", "Hinkend", "Fließend" }, "Hinkend",
+            "Aksak-Rhythmen mischen Zweier- und Dreiergruppen. Weil ein Schlag etwas länger ist, wirkt der Rhythmus wie ein Schritt, der kurz \"hinkt\"."),
+        ("Wie wird der 9/8-Takt in vielen türkischen Liedern gegliedert?", new[] { "3 + 3 + 3", "2 + 2 + 2 + 3", "4 + 4 + 1" }, "2 + 2 + 2 + 3",
+            "Drei kurze Zweiergruppen und eine lange Dreiergruppe ergeben den typischen, leicht stolpernden Schwung, etwa beim Karşılama-Tanz."),
+        ("Was verbanden Musiker wie Barış Manço und Cem Karaca im Anadolu Rock?", new[] { "Osmanische Hofmusik mit reinem Orchesterklang", "Anatolische Volksmusik mit E-Gitarren und Rock", "Deutsche Schlagermusik mit türkischen Texten" }, "Anatolische Volksmusik mit E-Gitarren und Rock",
+            "In den 1960er und 1970er Jahren spielten sie alte Volkslieder mit Rockband-Besetzung. So entstand ein eigener Stil, der bis heute gesampelt und gecovert wird."),
+        ("Welches Instrument gilt als Vorfahre der europäischen Laute?", new[] { "Die Ud aus dem arabischen Raum", "Die Darbuka", "Die Ney" }, "Die Ud aus dem arabischen Raum",
+            "Die Ud kam im Mittelalter über Spanien nach Europa. Sogar das Wort \"Laute\" stammt vom arabischen al-ud ab."),
+        ("Was ist die Kanun?", new[] { "Eine lange, gerade Trompete aus Messing", "Eine gezupfte Zither mit vielen Saiten", "Eine große Trommel für Umzüge" }, "Eine gezupfte Zither mit vielen Saiten",
+            "Die Kanun liegt auf dem Schoß oder einem Tisch und wird mit Fingerringen gezupft. Kleine Hebel verändern die Tonhöhe der Saiten ganz fein."),
+        ("Welche zwei Instrumente spielen in der Türkei traditionell bei Hochzeiten im Freien?", new[] { "Ney und Kanun", "Davul und Zurna", "Kanun und Kemençe" }, "Davul und Zurna",
+            "Die große Trommel Davul und die sehr laute Zurna sind draußen weit zu hören - ideal, um ein ganzes Dorf zum Tanzen zu bringen."),
+        ("Was ist die Zurna?", new[] { "Ein leises Saiteninstrument mit Bogen", "Ein lautes Doppelrohrblattinstrument", "Eine Trommel mit zwei Fellen" }, "Ein lautes Doppelrohrblattinstrument",
+            "Wie bei der Oboe schwingen zwei Rohrblätter gegeneinander. Die Zurna ist aber viel lauter und für Musik im Freien gebaut."),
+        ("Woran erinnert Mozarts \"Rondo alla turca\" (Türkischer Marsch)?", new[] { "An türkische Wiegenlieder für kleine Kinder", "An die Militärmusik der Osmanen (Mehter)", "An die Gebetsrufe von Moscheen in Istanbul" }, "An die Militärmusik der Osmanen (Mehter)",
+            "Die Mehter-Kapellen mit Trommeln, Becken und Zurnas beeindruckten die Europäer. Mozart ahmte ihren stampfenden Marschrhythmus auf dem Klavier nach."),
+        ("Was ist ein Aşık in der anatolischen Volksmusik?", new[] { "Ein Trommler, der bei Umzügen den Takt angibt", "Ein wandernder Volkssänger, der sich auf der Saz begleitet", "Ein Tänzer, der den Halay anführt" }, "Ein wandernder Volkssänger, der sich auf der Saz begleitet",
+            "Aşıks dichten und singen seit Jahrhunderten über Liebe, Heimat und Gerechtigkeit. Ihre Lieder werden mündlich weitergegeben - bis heute."),
+        ("Was ist der Halay?", new[] { "Ein Solotanz, bei dem nur eine Person auf der Bühne ist", "Ein Gruppentanz in einer Reihe, oft bei Hochzeiten", "Ein Gesangsstil ganz ohne festen Rhythmus" }, "Ein Gruppentanz in einer Reihe, oft bei Hochzeiten",
+            "Beim Halay fassen sich die Tanzenden an Händen oder Schultern, vorne führt jemand mit einem Tuch. Davul und Zurna geben den Rhythmus vor."),
+        ("Aus welcher Region stammt die Trommel Djembe?", new[] { "Aus Südamerika", "Aus Nordeuropa", "Aus Westafrika" }, "Aus Westafrika",
+            "Die Djembe kommt aus Westafrika, etwa aus Mali und Guinea. Wie die Darbuka ist sie eine Bechertrommel, die mit bloßen Händen gespielt wird.")
+    };
+
+    private static QuizQuestion MusikDerWelt(Random r)
+    {
+        var f = MusikDerWeltListe[r.Next(MusikDerWeltListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Musik, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Musik der Welt: Türkei und andere Kulturen", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Bağlama/Saz = Langhalslaute, Darbuka = Bechertrommel (Düm tief, Tek hoch), Ney = Schilfflöte der Mevlevi, Makam = Melodiemodell mit Tönen kleiner als ein Halbton, aksak = \"hinkender\" Rhythmus wie 2+2+2+3."
         };
     }
 
