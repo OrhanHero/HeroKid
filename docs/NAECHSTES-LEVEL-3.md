@@ -21,7 +21,7 @@ nachgeführt.
 | 4 — Design-Auswahl für die Kinder | ✅ 30.09.2026: „🎨 Mein Design“ auf der Startseite (`DesignPickerViewModel`), pro Profil gespeichert (`SetDesignAsync`, fünf neue Spalten), Neubewertung bei jedem Etappenwechsel; Eltern-Bereich zeigt und setzt zurück |
 | 5 — Designs als Belohnung | ✅ 30.09.2026: „Galaxie“ wird mit dem Abzeichen „Zehn Lerntage“ (`lerntage-10`) frei; gesperrte Karten zeigen, wie man sie bekommt |
 | 6 — Entwicklungsumgebung | ✅ 30.09.2026: SessionStart-Hook (`.claude/hooks/session-start.sh`), Devcontainer, `.editorconfig`; beschrieben in `BUILD.md` |
-| 7 — Dokumentation | offen |
+| 7 — Dokumentation | ✅ 30.09.2026: neu `docs/DESIGN.md`; `CLAUDE.md` (Design-Regeln), `TESTPLAN.md` (V.2-1 bis V.3-8), `BUILD.md` (Umgebungen), `README.md`, `NAECHSTE-SCHRITTE.md` |
 | 8 — Release 3.0.0 | offen |
 
 ---
