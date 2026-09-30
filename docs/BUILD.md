@@ -122,6 +122,12 @@ git tag v2.0.1
 git push origin v2.0.1
 ```
 
+**Ohne lokales Git** geht es auch im Browser: auf GitHub unter **Actions → Release → Run workflow**
+den Branch (`master`) wählen und die Version ohne „v“ eintragen (z. B. `2.0.1`). Der Workflow baut
+dann genau diesen Stand und legt Tag und Release in einem Schritt an. In beiden Fällen **kein**
+Release vorher über die GitHub-Oberfläche anlegen – sonst scheitert der letzte Schritt, weil es
+das Release schon gibt.
+
 Die Versionsnummer kommt aus dem Tag und erscheint in der **Systeminfo** im Eltern-Bereich
 („LernTor 2.0.1 (245a544)“ – dahinter der Git-Stand, aus dem gebaut wurde). Ohne Tag gilt die
 `<Version>` aus `Directory.Build.props`. Das Release schaltet nichts ein: LernTor fragt nirgends

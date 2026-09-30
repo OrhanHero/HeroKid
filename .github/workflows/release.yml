@@ -5,14 +5,25 @@ name: Release
 # Version liegt - Voraussetzung für ein späteres Auto-Update, schaltet aber selbst nichts ein:
 # die App fragt nirgends nach neuen Versionen.
 #
-# Auslösen:
-#   git tag v2.0.1 && git push origin v2.0.1
+# Auslösen - zwei gleichwertige Wege:
+#   1. git tag v2.0.1 && git push origin v2.0.1
+#   2. ohne lokales Git: auf GitHub unter Actions -> "Release" -> "Run workflow" die Version
+#      (z. B. 2.0.1) eintragen. Der Workflow baut dann den Stand des gewählten Branches und legt
+#      Tag UND Release in einem Schritt an (gh release create --target).
+#   Ein Release NICHT vorher über die GitHub-Oberfläche anlegen - dann scheitert der letzte Schritt,
+#   weil es das Release schon gibt.
 #
 # Die Versionsnummer kommt aus dem Tag und überschreibt <Version> aus Directory.Build.props;
 # sie erscheint danach in der Systeminfo im Eltern-Bereich.
 on:
   push:
     tags: [ "v*" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version ohne v, z. B. 2.0.1 - daraus wird der Tag v2.0.1"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -38,12 +49,18 @@ jobs:
         id: version
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}".TrimStart('v')
+          # Tag-Push: Version steckt im Tag. Manueller Start: Version kommt aus dem Eingabefeld.
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ inputs.version }}".Trim().TrimStart('v')
+          } else {
+            $version = "${{ github.ref_name }}".TrimStart('v')
+          }
           if ($version -notmatch '^\d+\.\d+\.\d+([-.][0-9A-Za-z.-]+)?$') {
-            Write-Error "Tag '${{ github.ref_name }}' ist keine Version wie v2.0.1."
+            Write-Error "'$version' ist keine Version wie 2.0.1."
             exit 1
           }
           "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
 
       - name: Bauen und Unit-Tests
         run: |
@@ -100,4 +117,6 @@ jobs:
 
           Prüfsumme (SHA-256): siehe $zip.sha256
           "@
-          gh release create "${{ github.ref_name }}" $zip "$zip.sha256" --title "LernTor $version" --notes $notes
+          # --target legt den Tag beim manuellen Start auf genau den gebauten Commit an;
+          # bei einem Tag-Push existiert er schon und --target ändert nichts.
+          gh release create "${{ steps.version.outputs.tag }}" $zip "$zip.sha256" --target "${{ github.sha }}" --title "LernTor $version" --notes $notes
