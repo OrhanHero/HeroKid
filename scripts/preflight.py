@@ -747,6 +747,37 @@ def check_flag_emoji() -> None:
                            f"Buchstaben (aus der Tuerkei-Flagge wird 'TR')")
 
 
+# Emojis ab Unicode 12 (2019). Sicher belegt ist der Block "Symbols and Pictographs Extended-A"
+# (U+1FA70-U+1FAFF): am 30.09.2026 zeigten Bildschirmfotos der Familie (Windows 11) vor
+# "Datenbank pruefen" (U+1FA7B) und "Erste Hilfe" (U+1FA7A) nur leere Kaestchen. Die uebrigen
+# Eintraege sind aus Vorsicht dabei - sie sind genauso jung, und ein Kaestchen merkt niemand,
+# bis jemand hinsieht.
+NEUE_EMOJIS = re.compile(
+    "[\U0001FA70-\U0001FAFF"          # Extended-A: Unicode 12 bis 16
+    "\U0001F7E0-\U0001F7F0"           # farbige Kreise und Quadrate (🟢 🟡 ...)
+    "\U0001F90C-\U0001F90F\U0001F93F\U0001F971\U0001F972\U0001F977-\U0001F979\U0001F97B"
+    "\U0001F9A3-\U0001F9AF\U0001F9BA-\U0001F9BF\U0001F9C3-\U0001F9CC\U0001F9CD-\U0001F9CF"
+    "\U0001F6D5-\U0001F6DF\U0001F6FA-\U0001F6FC]")
+
+
+def check_new_emoji() -> None:
+    """Emojis ab Unicode 12 - WPF zeichnet sie als leeres Kaestchen.
+
+    WPF bringt seine eigene Schrift-Zuordnung mit und kennt die neueren Emoji-Bloecke nicht,
+    auch wenn Windows selbst sie laengst darstellt. Kein Compilerfehler, kein Test schlaegt an.
+    """
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cs", ".xaml"} or not path.is_file() or "obj" in path.parts:
+            continue
+
+        for nummer, zeile in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            treffer = NEUE_EMOJIS.search(zeile)
+            if treffer and "NEUE_EMOJIS" not in zeile:
+                report("emoji-neu", path,
+                       f"Zeile {nummer}: {treffer.group(0)} (U+{ord(treffer.group(0)):04X}) ist ein "
+                       f"Emoji ab Unicode 12 - WPF zeigt dafuer ein leeres Kaestchen")
+
+
 def check_full_overwrite_calls() -> None:
     """Der Voll-Ueberschreiber darf keine stillen Vorgabewerte mehr bekommen.
 
@@ -997,6 +1028,7 @@ def main() -> int:
         ("Toolkit-usings (CS0246)", check_toolkit_usings),
         ("Tupel-Feldnamen (CS8126)", check_reserved_tuple_names),
         ("Flaggen-Emoji (WPF)", check_flag_emoji),
+        ("Neue Emojis (WPF)", check_new_emoji),
         ("Voll-Ueberschreiber", check_full_overwrite_calls),
         ("Themen-Klassenstufe", check_topic_grade_stamp),
         ("ObservableProperty-Feldname", check_observable_field_case),

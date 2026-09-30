@@ -3,12 +3,43 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:LernTor.App.Localization"
         Title="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_LoginTitle]}"
-        Width="760" Height="800"
+        Width="1040" Height="800"
+        SizeChanged="Fenster_SizeChanged"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BackgroundBrush}"
         Foreground="{DynamicResource TextPrimaryBrush}"
         FontFamily="{DynamicResource AppFontFamily}">
     <Window.Resources>
+        <!-- Sprungmarken im Inhaltsverzeichnis (Testlauf 30.09.2026: über 30 Abschnitte auf
+             einer Seite). Schlicht wie ein Link, beim Überfahren hinterlegt. -->
+        <Style x:Key="SprungmarkeButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Margin" Value="0,0,0,2" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Flaeche" Background="{TemplateBinding Background}" CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Flaeche" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Flaeche" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Gemeinsame Berichts-Zeile (Label + Ampel-Balken + Quote): genutzt vom Fach-Bericht
              UND der Themen-Heatmap ("Schwächste Themen"), damit beide identisch aussehen. -->
         <DataTemplate x:Key="ReportRowTemplate">
@@ -65,21 +96,65 @@
                        Visibility="{Binding IsFirstTimeSetup, Converter={StaticResource InverseBoolToVis}}" />
             <PasswordBox x:Name="PasswordInput" FontSize="18" Padding="10" KeyDown="PasswordInput_KeyDown" />
             <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorBrush}" Margin="0,8,0,0" TextWrapping="Wrap" />
-            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+            <!-- WrapPanel statt einer Zeile: beide Knöpfe zusammen sind breiter als 420 px, der
+                 rote wurde rechts abgeschnitten (Testlauf 30.09.2026). -->
+            <WrapPanel Margin="0,16,0,0">
                 <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Login]}"
-                        Style="{StaticResource RoundedButton}" Margin="0,0,12,0" HorizontalAlignment="Left"
+                        Style="{StaticResource RoundedButton}" Margin="0,0,12,10" HorizontalAlignment="Left"
                         Click="LoginButton_Click" />
                 <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_UnlockAndExit]}"
                         Style="{StaticResource RoundedButton}" Background="{DynamicResource ErrorBrush}" HorizontalAlignment="Left"
-                        Click="UnlockAndExitButton_Click" />
-            </StackPanel>
+                        Margin="0,0,0,10" Click="UnlockAndExitButton_Click" />
+            </WrapPanel>
         </StackPanel>
 
-        <!-- Eltern-Einstellungen -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
-                      Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVis}}">
-            <StackPanel>
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DisabledSubjects]}"
+        <!-- Eltern-Einstellungen: links das Inhaltsverzeichnis, rechts die Abschnitte. -->
+        <Grid Grid.Row="0" Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer x:Name="Inhaltsverzeichnis" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,20,0">
+                <StackPanel x:Name="Sprungmarken" Width="200">
+                    <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Title]}"
+                               Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="10,0,0,8" />
+                    <Button Tag="AbschnittFaecher" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Faecher]}" />
+                    <Button Tag="AbschnittSchwierigkeit" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Schwierigkeit]}" />
+                    <Button Tag="AbschnittBereiche" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Bereiche]}" />
+                    <Button Tag="AbschnittStundenplan" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Stundenplan]}" />
+                    <Button Tag="AbschnittBericht" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Bericht]}" />
+                    <Button Tag="AbschnittKlausuren" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Klausuren]}" />
+                    <Button Tag="AbschnittNewsFilter" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_NewsFilter]}" />
+                    <Button Tag="AbschnittHausaufgaben" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Hausaufgaben]}" />
+                    <Button Tag="AbschnittNachrichtenquellen" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Nachrichtenquellen]}" />
+                    <Button Tag="AbschnittLesetexte" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Lesetexte]}" />
+                    <Button Tag="AbschnittEigeneAufgaben" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_EigeneAufgaben]}" />
+                    <Button Tag="AbschnittStimmen" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Stimmen]}" />
+                    <Button Tag="AbschnittProtokoll" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Protokoll]}" />
+                    <Button Tag="AbschnittUebungsblatt" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Uebungsblatt]}" />
+                    <Button Tag="AbschnittGefahrenzone" Click="Sprungmarke_Click" Style="{StaticResource SprungmarkeButton}"
+                            Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[ParentNav_Gefahrenzone]}" />
+                </StackPanel>
+            </ScrollViewer>
+
+        <ScrollViewer x:Name="EinstellungenScroll" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="EinstellungenInhalt">
+                <TextBlock x:Name="AbschnittFaecher" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DisabledSubjects]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,0,0,8" />
                 <ItemsControl ItemsSource="{Binding SubjectToggles}">
                     <ItemsControl.ItemsPanel>
@@ -116,7 +191,13 @@
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                     <TextBlock Text="Klassenstufe:" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <ComboBox ItemsSource="{Binding AvailableGradeLevels}" SelectedItem="{Binding EditorGradeLevel}"
-                              Width="120" Padding="6" Margin="0,0,16,0" />
+                              Width="120" Padding="6" Margin="0,0,16,0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource GradeLevelToTitle}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <TextBlock Text="Klasse:" Style="{StaticResource BodyText}" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <TextBox Text="{Binding EditorClassLabel, UpdateSourceTrigger=PropertyChanged}" Width="80"
                              Padding="6" Margin="0,0,16,0" />
@@ -129,7 +210,7 @@
                 <!-- Schwierigkeitsstufen (pro oben gewähltem Profil) - vorkonfigurierte Presets statt
                      freier Eingabe, damit Eltern keinen ungültigen Wert setzen können und kein neuer
                      Build nötig ist, um die Hürden zu verändern. -->
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Difficulty_Title]}"
+                <TextBlock x:Name="AbschnittSchwierigkeit" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Difficulty_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Difficulty_Typing]}"
@@ -575,7 +656,7 @@
                      Getrennt vom globalen Fächer-Schalter, weil ein Elfjähriger und ein
                      Fünfzehnjähriger hier unterschiedlich weit sind. Beide Schalter zählen:
                      aus ist aus, egal welcher es sagt. -->
-                <TextBlock Text="🚗 Führerschein Klasse B (für dieses Kind)"
+                <TextBlock x:Name="AbschnittBereiche" Text="🚗 Führerschein Klasse B (für dieses Kind)"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
                 <TextBlock Style="{StaticResource BodyText}" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,8"
                            Text="Verkehrszeichen mit Karteikarten und Quiz, dazu jeden Tag eine kurze Challenge. Theoriefragen und Theorie-Kurs folgen. Nur die Challenge ist Pflicht - alles andere ist freiwillig." />
@@ -587,7 +668,7 @@
                      Eigener Bereich mit einem einzigen Fragenpool fuer alle Klassenstufen: die
                      fuenf W-Fragen sind mit elf dieselben wie mit fuenfzehn. Pro Profil
                      abschaltbar, weil er den Lerntag um eine Etappe verlaengert. -->
-                <TextBlock Text="🩺 Erste Hilfe und Notfallwissen (für dieses Kind)"
+                <TextBlock Text="🚑 Erste Hilfe und Notfallwissen (für dieses Kind)"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,8" />
                 <TextBlock Style="{StaticResource BodyText}" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,8"
                            Text="Notruf 112, stabile Seitenlage, Wunden, Verbrennungen, Herzdruckmassage, Defibrillator, Verschlucken und Schock. Derselbe Fragenpool für alle Klassenstufen - Erste-Hilfe-Wissen kennt keine Klassenstufen." />
@@ -714,7 +795,7 @@
 
                      Die Uhrzeiten stehen JE PROFIL daneben - die beiden Kinder gehen auf
                      verschiedene Schulen mit verschiedenen Anfangs- und Endzeiten. -->
-                <TextBlock Text="🕘 Stundenplan"
+                <TextBlock x:Name="AbschnittStundenplan" Text="🕘 Stundenplan"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,24,0,4" />
                 <TextBlock Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap"
                            Opacity="0.85" Margin="0,0,0,10"
@@ -897,7 +978,7 @@
 
                 <!-- Wochen-/Monatsbericht: Stärken/Schwächen je Fach (schwächste zuerst), Lerntage,
                      Quiz-Verlauf - für das oben gewählte Profil. -->
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Report_Title]}"
+                <TextBlock x:Name="AbschnittBericht" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Report_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,24,0,8" />
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Report_Days7]}"
@@ -1141,7 +1222,7 @@
                      loest genau das. -->
                 <!-- Klausurkalender: gehoert zum oben gewaehlten Profil. Kinder duerfen selbst
                      eintragen (Herkunft steht an jeder Zeile); hier duerfen die Eltern alles. -->
-                <TextBlock Text="📅 Klausuren (für das oben gewählte Kind)"
+                <TextBlock x:Name="AbschnittKlausuren" Text="📅 Klausuren (für das oben gewählte Kind)"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
                 <TextBlock Text="Ab einer Woche vor dem Termin bekommt das Fach automatisch mehr Übungsaufgaben, je näher desto mehr. Die Kinder sehen einen Countdown auf dem Startbildschirm."
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
@@ -1222,7 +1303,7 @@
 
                 <!-- Jugendschutz-Stufe: die harte Sperre gilt immer, einstellbar ist nur der
                      Umgang mit heiklen, aber lehrplanrelevanten Themen. -->
-                <TextBlock Text="🛡 News-Filter (für das oben gewählte Kind)"
+                <TextBlock x:Name="AbschnittNewsFilter" Text="🛡 News-Filter (für das oben gewählte Kind)"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                     <Button Content="Streng" Style="{StaticResource TabPillButton}"
@@ -1260,7 +1341,7 @@
                 <!-- Hausaufgaben mit Stichtag: gehoeren zum oben gewaehlten Profil. Anders als die
                      eigenen Aufgaben weiter oben werden sie NICHT abgefragt - sie erinnern nur an
                      etwas, das ausserhalb der App zu erledigen ist. -->
-                <TextBlock Text="📒 Hausaufgaben (für das oben gewählte Kind)"
+                <TextBlock x:Name="AbschnittHausaufgaben" Text="📒 Hausaufgaben (für das oben gewählte Kind)"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
                 <TextBlock Text="Erscheinen beim Kind auf dem Startbildschirm und werden dort abgehakt. Überfällige stehen ganz oben und rot."
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
@@ -1331,7 +1412,7 @@
                         Command="{Binding ClearDoneHomeworkCommand}" />
 
                 <!-- Nachrichtenquellen: bisher nur im Code aenderbar - jetzt ohne neuen Build. -->
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_NewsFeeds_Title]}"
+                <TextBlock x:Name="AbschnittNachrichtenquellen" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_NewsFeeds_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_NewsFeeds_Intro]}"
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,6" />
@@ -1376,7 +1457,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_LibraryTitle]}"
+                <TextBlock x:Name="AbschnittLesetexte" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_LibraryTitle]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,20,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ReadingText_LibraryIntro]}"
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" Margin="0,0,0,8" />
@@ -1601,7 +1682,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Title]}"
+                <TextBlock x:Name="AbschnittEigeneAufgaben" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Intro]}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
@@ -1623,11 +1704,23 @@
                     </StackPanel>
                     <StackPanel Margin="0,0,12,0">
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Grade]}" FontSize="13" Margin="0,0,0,4" />
-                        <ComboBox ItemsSource="{Binding AvailableGradeLevels}" SelectedItem="{Binding NewQuestionGrade}" Padding="6" />
+                        <ComboBox ItemsSource="{Binding AvailableGradeLevels}" SelectedItem="{Binding NewQuestionGrade}" Padding="6">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource GradeLevelToTitle}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Type]}" FontSize="13" Margin="0,0,0,4" />
-                        <ComboBox ItemsSource="{Binding AvailableQuestionTypes}" SelectedItem="{Binding NewQuestionType}" Padding="6" />
+                        <ComboBox ItemsSource="{Binding AvailableQuestionTypes}" SelectedItem="{Binding NewQuestionType}" Padding="6">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource QuestionTypeToTitle}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </StackPanel>
                 </UniformGrid>
 
@@ -1737,7 +1830,13 @@
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_CustomQuestions_Grade]}" FontSize="13" Margin="0,0,0,4" />
-                        <ComboBox ItemsSource="{Binding AvailableGradeLevels}" SelectedItem="{Binding ImportGrade}" Padding="6" />
+                        <ComboBox ItemsSource="{Binding AvailableGradeLevels}" SelectedItem="{Binding ImportGrade}" Padding="6">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource GradeLevelToTitle}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </StackPanel>
                 </UniformGrid>
 
@@ -1837,7 +1936,7 @@
                 <!-- Natürliche Vorlesestimmen (Piper, siehe PiperTtsEngine): einmaliger Download,
                      danach liest der Lesen-Abschnitt mit neuronalen Offline-Stimmen für DE/TR/EN
                      vor statt mit der roboterhaften Windows-SAPI-Stimme. -->
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Title]}"
+                <TextBlock x:Name="AbschnittStimmen" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Tts_Intro]}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
@@ -1863,18 +1962,29 @@
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_Intro]}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <!-- Beschriftet: drei leere Felder ohne Überschrift sagten nicht, was hinein gehört
+                     (Testlauf 30.09.2026). Die Tooltips bleiben als Beispiel. -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <TextBox Text="{Binding NewRewardEmoji, UpdateSourceTrigger=PropertyChanged}" Width="60"
-                             ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_EmojiHint]}"
-                             Margin="0,0,8,0" />
-                    <TextBox Text="{Binding NewRewardTitle, UpdateSourceTrigger=PropertyChanged}" Width="320"
-                             ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_TitleHint]}"
-                             Margin="0,0,8,0" />
-                    <TextBox Text="{Binding NewRewardCostText, UpdateSourceTrigger=PropertyChanged}" Width="70"
-                             ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_CostHint]}"
-                             Margin="0,0,8,0" />
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_EmojiLabel]}"
+                                   FontSize="12" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding NewRewardEmoji, UpdateSourceTrigger=PropertyChanged}" Width="70"
+                                 ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_EmojiHint]}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_TitleLabel]}"
+                                   FontSize="12" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding NewRewardTitle, UpdateSourceTrigger=PropertyChanged}" Width="320"
+                                 ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_TitleHint]}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_CostLabel]}"
+                                   FontSize="12" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding NewRewardCostText, UpdateSourceTrigger=PropertyChanged}" Width="80"
+                                 ToolTip="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_CostHint]}" />
+                    </StackPanel>
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Rewards_Add]}"
-                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8"
+                            Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8" VerticalAlignment="Bottom"
                             Command="{Binding AddRewardCommand}" />
                 </StackPanel>
                 <TextBlock Text="{Binding RewardErrorMessage}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,8"
@@ -1919,7 +2029,7 @@
 
                 <!-- Fehlerprotokoll: lokale Log-Dateien (AppLog), z.B. übersprungene News-Feeds,
                      Download-Fehler, Abstürze - komplett lokal, keine Telemetrie. -->
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Title]}"
+                <TextBlock x:Name="AbschnittProtokoll" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,32,0,4" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Log_Intro]}"
                            Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,0,0,12" />
@@ -1957,7 +2067,7 @@
                 <!-- Datenbank pruefen (PRAGMA integrity_check): eine beschaedigte lerntor.db
                      zeigt sich sonst nur als scheinbar zufaelliger Absturz. -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                    <Button Content="🩻 Datenbank prüfen"
+                    <Button Content="🔍 Datenbank prüfen"
                             Style="{StaticResource RoundedButton}" FontSize="14" Padding="14,8"
                             Command="{Binding CheckDatabaseIntegrityCommand}" />
                 </StackPanel>
@@ -1986,7 +2096,7 @@
                      statt, oft ohne PC. Die Loesungen stehen auf einem eigenen Blatt hinter einem
                      harten Seitenumbruch - stuenden sie neben der Aufgabe, waere das Blatt
                      wertlos, weil kein Kind wegsieht. -->
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Worksheet_Title]}"
+                <TextBlock x:Name="AbschnittUebungsblatt" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Worksheet_Title]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,4,0,6" />
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_Worksheet_Intro]}"
                            Style="{StaticResource BodyText}" FontSize="12" Opacity="0.75"
@@ -2050,7 +2160,7 @@
                         Style="{StaticResource OptionButton}" HorizontalAlignment="Left" Margin="0,0,0,20"
                         Command="{Binding OpenAutoBackupFolderCommand}" />
 
-                <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DangerZone]}"
+                <TextBlock x:Name="AbschnittGefahrenzone" Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_DangerZone]}"
                            Style="{StaticResource SubtitleText}" FontWeight="Bold" Margin="0,12,0,8"
                            Foreground="{DynamicResource ErrorBrush}" />
                 <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Parent_ResetAllData]}"
@@ -2058,6 +2168,7 @@
                         HorizontalAlignment="Left" Command="{Binding ResetAllDataCommand}" />
             </StackPanel>
         </ScrollViewer>
+        </Grid>
 
         <!-- Fest verankerte Knopfzeile: immer sichtbar, egal wie weit der Inhalt gescrollt ist. -->
         <Border Grid.Row="1" Background="{DynamicResource BackgroundBrush}" Padding="0,12,0,0"

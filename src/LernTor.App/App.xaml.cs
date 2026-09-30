@@ -151,86 +151,8 @@ public partial class App : Application
         }
 
         _host = Host.CreateDefaultBuilder()
-            .ConfigureServices((_, services) =>
-            {
-                // Singleton statt Scoped: einfache Single-User-Desktop-App ohne parallele Requests,
-                // ViewModels (Singletons) greifen direkt auf die Repositories zu.
-                services.AddDbContext<LernTorDbContext>(options =>
-                    options.UseSqlite($"Data Source={LernTorDbContext.GetDefaultDbPath()}"),
-                    ServiceLifetime.Singleton);
-
-                services.AddSingleton<HttpClient>();
-
-                // Wetter-Widget im News-Bereich (Open-Meteo, kostenlos/ohne Schlüssel; bei
-                // Fehlschlag bleibt das Widget einfach ausgeblendet).
-                services.AddSingleton<WeatherService>();
-                services.AddSingleton<ITextSimplifier, RuleBasedTextSimplifier>();
-                services.AddSingleton<IComprehensionQuestionGenerator, HeuristicComprehensionQuestionGenerator>();
-                // Offline-Fallback: liefert bei Netzausfall die Feeds des letzten erfolgreichen
-                // Abrufs (max. 48h alt), damit die News-Stufe den Kiosk-Ablauf nie blockiert.
-                services.AddSingleton<FeedCache>();
-                services.AddSingleton<RssNewsService>();
-
-                services.AddSingleton<QuizComposer>();
-                services.AddSingleton<ProgressGateService>();
-                services.AddSingleton<ScoringService>();
-
-                services.AddSingleton<ProgressRepository>();
-                services.AddSingleton<ActivityLogRepository>();
-                services.AddSingleton<SettingsRepository>();
-                services.AddSingleton<StudentProfileRepository>();
-                services.AddSingleton<DatabaseMaintenanceRepository>();
-                services.AddSingleton(_ => new AutoBackupService(LernTorDbContext.GetAutoBackupDirectory()));
-                services.AddSingleton<CustomQuestionRepository>();
-                services.AddSingleton<CustomReadingTextRepository>();
-                services.AddSingleton<VocabularyRepository>();
-                services.AddSingleton<HomeworkTaskRepository>();
-                services.AddSingleton<ExamEntryRepository>();
-                services.AddSingleton<TrafficSignProgressRepository>();
-                services.AddSingleton<TheoryProgressRepository>();
-                services.AddSingleton<CourseProgressRepository>();
-                services.AddSingleton<TimetableRepository>();
-                services.AddSingleton<ReviewQuestionRepository>();
-                services.AddSingleton<MasteredPromptRepository>();
-                services.AddSingleton<AchievementRepository>();
-                services.AddSingleton<ArchivedArticleRepository>();
-                services.AddSingleton<RewardRepository>();
-                services.AddSingleton<TypingProgressRepository>();
-                services.AddSingleton<TypingExerciseService>();
-
-                services.AddSingleton<KioskLockService>();
-
-                // Gemeinsame LLM-Infrastruktur (siehe README): komplett lokal, keine Cloud-Anbindung.
-                // LocalLlmOptions wird von ParentSettingsViewModel beim Laden der Einstellungen befüllt, da
-                // die DI-Container schon vor dem Laden der AppSettings aus der DB aufgebaut werden.
-                // LocalLlmModelHost lädt das Modell nur einmal (lädt bei Bedarf sogar automatisch ein
-                // Standardmodell herunter) und wird sowohl vom Lehrer-Import als auch vom KI-Lernchat
-                // genutzt, damit beide Features es nicht unabhängig voneinander doppelt im RAM halten.
-                services.AddSingleton<LocalLlmOptions>();
-                services.AddSingleton<LocalLlmModelHost>();
-
-                // Automatisches Einlesen von Lehrer-Unterlagen.
-                services.AddSingleton<ITeacherDocumentTextExtractor, PdfPigTextExtractor>();
-                services.AddSingleton<ITeacherDocumentTextExtractor, OpenXmlWordTextExtractor>();
-                services.AddSingleton<ITeacherQuestionSuggester, LocalLlmQuestionSuggester>();
-                services.AddSingleton<TeacherDocumentImportService>();
-
-                // KI-Lernchat für Kinder (siehe README).
-                services.AddSingleton<IHomeworkHelpChatService, LocalLlmHomeworkHelpChatService>();
-
-                // Vorlesefunktion im Lesen-Abschnitt (komplett offline): natürliche Piper-Stimmen,
-                // sofern im Eltern-Bereich heruntergeladen, sonst Windows-SAPI als Rückfall.
-                // Singleton, damit die Sprachausgabe nur einmal initialisiert wird; Host-Dispose
-                // räumt sie beim Beenden ab.
-                services.AddSingleton<PiperTtsEngine>();
-                services.AddSingleton<TextToSpeechService>();
-
-                services.AddSingleton<MainViewModel>();
-                services.AddSingleton<MainWindow>();
-
-                services.AddTransient<ParentSettingsViewModel>();
-                services.AddTransient<ParentSettingsWindow>();
-            })
+            .ConfigureServices((_, services) => RegisterServices(
+                services, LernTorDbContext.GetDefaultDbPath(), LernTorDbContext.GetAutoBackupDirectory()))
             .Build();
 
         await _host.StartAsync();
@@ -370,5 +292,91 @@ public partial class App : Application
         }
 
         base.OnExit(e);
+    }
+
+    /// <summary>
+    /// Alle Dienste der App. Eigene Methode, damit die UI-Tests den Eltern-Bereich mit
+    /// denselben Registrierungen, aber einer Wegwerf-Datenbank aufbauen können - sonst lädt
+    /// kein Test dessen XAML, und ein Laufzeitfehler darin fiele erst den Eltern auf.
+    /// </summary>
+    public static void RegisterServices(IServiceCollection services, string dbPath, string autoBackupDirectory)
+    {
+        // Singleton statt Scoped: einfache Single-User-Desktop-App ohne parallele Requests,
+        // ViewModels (Singletons) greifen direkt auf die Repositories zu.
+        services.AddDbContext<LernTorDbContext>(options =>
+            options.UseSqlite($"Data Source={dbPath}"),
+            ServiceLifetime.Singleton);
+
+        services.AddSingleton<HttpClient>();
+
+        // Wetter-Widget im News-Bereich (Open-Meteo, kostenlos/ohne Schlüssel; bei
+        // Fehlschlag bleibt das Widget einfach ausgeblendet).
+        services.AddSingleton<WeatherService>();
+        services.AddSingleton<ITextSimplifier, RuleBasedTextSimplifier>();
+        services.AddSingleton<IComprehensionQuestionGenerator, HeuristicComprehensionQuestionGenerator>();
+        // Offline-Fallback: liefert bei Netzausfall die Feeds des letzten erfolgreichen
+        // Abrufs (max. 48h alt), damit die News-Stufe den Kiosk-Ablauf nie blockiert.
+        services.AddSingleton<FeedCache>();
+        services.AddSingleton<RssNewsService>();
+
+        services.AddSingleton<QuizComposer>();
+        services.AddSingleton<ProgressGateService>();
+        services.AddSingleton<ScoringService>();
+
+        services.AddSingleton<ProgressRepository>();
+        services.AddSingleton<ActivityLogRepository>();
+        services.AddSingleton<SettingsRepository>();
+        services.AddSingleton<StudentProfileRepository>();
+        services.AddSingleton<DatabaseMaintenanceRepository>();
+        services.AddSingleton(_ => new AutoBackupService(autoBackupDirectory));
+        services.AddSingleton<CustomQuestionRepository>();
+        services.AddSingleton<CustomReadingTextRepository>();
+        services.AddSingleton<VocabularyRepository>();
+        services.AddSingleton<HomeworkTaskRepository>();
+        services.AddSingleton<ExamEntryRepository>();
+        services.AddSingleton<TrafficSignProgressRepository>();
+        services.AddSingleton<TheoryProgressRepository>();
+        services.AddSingleton<CourseProgressRepository>();
+        services.AddSingleton<TimetableRepository>();
+        services.AddSingleton<ReviewQuestionRepository>();
+        services.AddSingleton<MasteredPromptRepository>();
+        services.AddSingleton<AchievementRepository>();
+        services.AddSingleton<ArchivedArticleRepository>();
+        services.AddSingleton<RewardRepository>();
+        services.AddSingleton<TypingProgressRepository>();
+        services.AddSingleton<TypingExerciseService>();
+
+        services.AddSingleton<KioskLockService>();
+
+        // Gemeinsame LLM-Infrastruktur (siehe README): komplett lokal, keine Cloud-Anbindung.
+        // LocalLlmOptions wird von ParentSettingsViewModel beim Laden der Einstellungen befüllt, da
+        // die DI-Container schon vor dem Laden der AppSettings aus der DB aufgebaut werden.
+        // LocalLlmModelHost lädt das Modell nur einmal (lädt bei Bedarf sogar automatisch ein
+        // Standardmodell herunter) und wird sowohl vom Lehrer-Import als auch vom KI-Lernchat
+        // genutzt, damit beide Features es nicht unabhängig voneinander doppelt im RAM halten.
+        services.AddSingleton<LocalLlmOptions>();
+        services.AddSingleton<LocalLlmModelHost>();
+
+        // Automatisches Einlesen von Lehrer-Unterlagen.
+        services.AddSingleton<ITeacherDocumentTextExtractor, PdfPigTextExtractor>();
+        services.AddSingleton<ITeacherDocumentTextExtractor, OpenXmlWordTextExtractor>();
+        services.AddSingleton<ITeacherQuestionSuggester, LocalLlmQuestionSuggester>();
+        services.AddSingleton<TeacherDocumentImportService>();
+
+        // KI-Lernchat für Kinder (siehe README).
+        services.AddSingleton<IHomeworkHelpChatService, LocalLlmHomeworkHelpChatService>();
+
+        // Vorlesefunktion im Lesen-Abschnitt (komplett offline): natürliche Piper-Stimmen,
+        // sofern im Eltern-Bereich heruntergeladen, sonst Windows-SAPI als Rückfall.
+        // Singleton, damit die Sprachausgabe nur einmal initialisiert wird; Host-Dispose
+        // räumt sie beim Beenden ab.
+        services.AddSingleton<PiperTtsEngine>();
+        services.AddSingleton<TextToSpeechService>();
+
+        services.AddSingleton<MainViewModel>();
+        services.AddSingleton<MainWindow>();
+
+        services.AddTransient<ParentSettingsViewModel>();
+        services.AddTransient<ParentSettingsWindow>();
     }
 }

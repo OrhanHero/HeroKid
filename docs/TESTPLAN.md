@@ -155,7 +155,7 @@ sie aber noch niemand. **Vorher eine Sicherung auf USB.**
 | N.3 | Kind | Tag durchspielen | Es kommen **nur** diese Fächer; der Zähler „Fächer x/y“ geht bis zum Ende auf; das Abschlussquiz fragt nur diese Fächer | |
 | N.4 | Emirhan | An zwei NaWi-Tagen hintereinander (Mo für Di, Di für Mi) | Zwei **verschiedene** Fächer aus Bio/Chemie/Physik | |
 | N.5 | Elternteil | Schalter „Fächer des Tages nach dem Stundenplan auswählen“ aus, Eltern-Bereich schließen | Ab der nächsten Etappe kommen wieder alle Fächer | |
-| N.6 | Elternteil | „🩻 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
+| N.6 | Elternteil | „🔍 Datenbank prüfen“ | ✅ mit Datum und Uhrzeit | |
 | N.7 | Elternteil | Klassenstufe eines Kindes testweise ändern und zurückstellen | Rückfrage, dann „✅ Gespeichert“; Sterne und Stundenplan sind danach noch da | |
 | N.8 | Notfall | Eine automatische Sicherung aus `…\LernTor\sicherungen\` über „Sicherung wiederherstellen…“ einspielen | App beendet sich; nach dem Neustart ist alles da, was vor der Sicherung da war | |
 

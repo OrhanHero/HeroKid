@@ -36,7 +36,7 @@ technischer Eleganz.
 - [ ] **Stundenpläne eintragen**: Text und Zeitraster aus
   [`STUNDENPLAENE-2026-27.md`](STUNDENPLAENE-2026-27.md) in den Eltern-Bereich einfügen.
 - [ ] Bei Batuhan am Original nachsehen: **Ethik** nur Do 6? **Mathe** Fr 6/7 als Doppelstunde?
-- [ ] Nach dem Eintragen **„🩻 Datenbank prüfen“** einmal drücken. Das Ergebnis muss ✅ sein.
+- [ ] Nach dem Eintragen **„🔍 Datenbank prüfen“** einmal drücken. Das Ergebnis muss ✅ sein.
 - [x] **Version 3.0 installiert und angesehen** – Rückmeldung am 30.09.2026: „alles
   funktioniert“. Zum Nachschlagen: Testplan [V.2-1 bis V.3-8](TESTPLAN.md#neu-seit-30092026-version-21-und-30), dazu
   unter Actions das Artefakt „Design-Vorschau“ des letzten Laufs durchblättern.
@@ -169,7 +169,7 @@ Schritt einzeln durch die CI auf `windows-latest` gebaut und getestet.
 | 2.2 | Abschlussquiz fragt nur die geübten Fächer ab (folgt aus 2.0) | `SubjectAvailability` |
 | 4.2 | **CI wiederhergestellt** (war am 17.08. gelöscht worden) | `.github/workflows/build.yml` |
 | 1.1 | Sicherung → Zerstören → Wiederherstellen als Test, auch mit älterem Schema | `BackupRestoreTests` |
-| 1.2 | Knopf „🩻 Datenbank prüfen“ (`PRAGMA integrity_check`) | Eltern-Bereich |
+| 1.2 | Knopf „🔍 Datenbank prüfen“ (`PRAGMA integrity_check`) | Eltern-Bereich |
 | 1.3 | Notfall-Anleitung | [`WIEDERHERSTELLUNG.md`](WIEDERHERSTELLUNG.md) |
 | — | **Fehler:** „Alle Daten zurücksetzen“ ließ 6 Tabellen stehen | Tabellenliste kommt jetzt aus dem EF-Modell |
 | — | **Fehler:** „Profil löschen“ ließ Stundenplan, Fehler-Kartei, Vokabeln usw. verwaist liegen | ebenso |

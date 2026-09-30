@@ -16,6 +16,8 @@
             <conv:EmptyStringToVisibilityConverter x:Key="EmptyStringToVis" />
             <conv:SubjectToBrushConverter x:Key="SubjectToBrush" />
             <conv:SubjectToTitleConverter x:Key="SubjectToTitle" />
+            <conv:GradeLevelToTitleConverter x:Key="GradeLevelToTitle" />
+            <conv:QuestionTypeToTitleConverter x:Key="QuestionTypeToTitle" />
             <conv:ProfileToSubtitleConverter x:Key="ProfileToSubtitle" />
             <conv:FormatWithArgConverter x:Key="FormatWithArg" />
             <conv:EqualsToSelectedTagConverter x:Key="EqualsToSelectedTag" />

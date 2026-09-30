@@ -14,7 +14,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 
 | Schritt | Stand |
 |---|---|
-| 0 — Was der Testlauf gezeigt hat (Eltern-Bereich, Emojis) | ⏳ geplant |
+| 0 — Was der Testlauf gezeigt hat (Eltern-Bereich, Emojis) | ✅ 30.09.2026: 🔍/🚑/⭐ statt Kästchen, Preflight `emoji-neu`, Login-Knöpfe umbrechen, „Klasse 10“/„Offene Frage“, beschriftete Belohnungsfelder, Inhaltsverzeichnis mit 15 Sprungmarken; neuer Ladetest `ParentSettingsWindowTests` |
 | 1 — 🔊 Jede Frage vorlesen | ⏳ geplant |
 | 2 — 📅 Lernkalender in „Mein Fortschritt“ | ⏳ geplant |
 | 3 — Zwei neue Designs als Belohnung | ⏳ geplant |

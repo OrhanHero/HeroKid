@@ -373,7 +373,10 @@ look at them after any visual change. Full guide: `docs/DESIGN.md`.
   `DataTemplate` (styles, `DataTrigger`s on enums, converters) is ever loaded — a runtime error
   there stays invisible. For any view with non-trivial item templates, add a `[WpfFact]` that sets
   a ViewModel with sample data, measures/arranges and asserts a rendered text (pattern:
-  `Fortschritt_rendert_alle_Stufen_mit_Daten`).
+  `Fortschritt_rendert_alle_Stufen_mit_Daten`). The parent area (`ParentSettingsWindow`) needs its
+  ViewModel from DI and was loaded by no test at all until 30.09.2026; `ParentSettingsWindowTests`
+  now builds it through `App.RegisterServices` with a throw-away database - extend that test when
+  the parent area gets new templates.
 - **An exception in an `async void` handler or `async () => …` lambda ends up in the global
   crash handler, which restarts the app in kiosk mode.** Wrap navigation callbacks that await
   (e.g. `ReturnToWelcome`, `OnOpenProgressRequested`) in try/catch and log. On the result screen
@@ -401,6 +404,14 @@ look at them after any visual change. Full guide: `docs/DESIGN.md`.
   Use a non-flag emoji for anything language- or country-flavoured.
   `scripts/preflight.py` now checks for it (`flaggen-emoji`) — including inside comments, so
   don't paste a flag into an explanatory comment either.
+- **WPF draws newer emoji as an empty box — even on Windows 11.** WPF ships its own font
+  fallback table and does not know the emoji blocks added since Unicode 12 (2019). The family's
+  screenshots of 3.0.0 (30.09.2026) showed a box in front of "Datenbank prüfen" (🩻 U+1FA7B) and
+  "Erste Hilfe" (🩺 U+1FA7A); the "Ersthelfer" badge and the news difficulty dots (🟢 🟡) had the
+  same problem. Everything compiles and every test is green — only a screenshot of the running
+  app shows it. Use an older emoji (🔍, 🚑, ⭐). `scripts/preflight.py` checks it (`emoji-neu`,
+  the whole U+1FA70–U+1FAFF block plus the other Unicode-12+ code points) — check an emoji there
+  before choosing one for a new design or badge (🧊 would have been a box too).
 - **Static field initializers across `partial` class files have no defined order.** Building an
   aggregate field from arrays declared in sibling partial files (`TrafficSignCatalog`) can read
   them before they are populated — the compiler flags it as `CS8604`, a *warning*, so the build
