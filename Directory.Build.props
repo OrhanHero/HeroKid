@@ -10,7 +10,7 @@
          den Git-Stand automatisch an ("2.0.0+245a544…"). Der Release-Workflow ueberschreibt sie
          aus dem Tag (v2.0.1 -> 2.0.1), siehe .github/workflows/release.yml.
          2.0: .NET 10, Meisterschaft je Thema, Abzeichen. -->
-    <Version>2.1.0</Version>
+    <Version>3.0.0</Version>
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
