@@ -7,7 +7,8 @@ namespace LernTor.ContentGen.Generators;
 /// Englisch als Fremdsprache, Klasse 6 (Grundlagen), Klasse 7 (Aufbau) und Klasse 9 (vertieft).
 /// Klasse 6 hat seit 29.09.2026 zehn Themen (neu: Simple Past, Pronomen, in/on/at), Klasse 9
 /// elf (neu: Second Conditional, Relative Clauses) - vorher reichten beide Pools bei der Übung nach
-/// Stundenplan nur acht bis zehn Wochen.
+/// Stundenplan nur acht bis zehn Wochen. Klasse 7 hat seit 30.09.2026 zehn Themen (neu: adverbs
+/// of manner, question tags, Modalverben, Wortschatz Freundschaft/Handy/Medien).
 /// </summary>
 public sealed class EnglischGenerator : ExerciseGeneratorBase
 {
@@ -25,7 +26,8 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             [GradeLevel.Klasse7] = new List<TopicFactory>
             {
                 SimplePastVsPastProgressive, GoingToUndWillFuture, ComparativeSuperlative,
-                SomeAnyMuchMany, FreizeitUndReisen, GrossbritannienLandeskunde
+                SomeAnyMuchMany, FreizeitUndReisen, GrossbritannienLandeskunde,
+                AdverbsOfManner, QuestionTags, ModalVerbs, FreundschaftUndMedien
             },
             [GradeLevel.Klasse9] = new List<TopicFactory>
             {
@@ -840,6 +842,160 @@ public sealed class EnglischGenerator : ExerciseGeneratorBase
             Topic = "Großbritannien (Landeskunde)", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Landeskunde UK: London/Thames/Big Ben/Tube, Union Jack, Linksverkehr, pound sterling, Edinburgh, Stonehenge, Schuluniformen."
+        };
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Klasse 7, Ausbau 30.09.2026: vier Themen à 20 Fragen (Green Line 3: adverbs of manner,
+    // question tags, modal verbs, Wortschatz Freundschaft/Handy/Medien).
+    // ---------------------------------------------------------------------------------------
+
+    // Bewusst keine Adverbien, die wie das Adjektiv lauten (fast, hard): die offene Eingabe gilt
+    // als richtig, wenn die Antwort die Lösung enthält - "fastly" enthielte "fast".
+    private static readonly (string Satz, string Loesung, string Regel)[] AdverbListe =
+    {
+        ("She sings very ___ (beautiful).", "beautifully", "Das Adverb beschreibt, WIE sie singt. Man hängt -ly an das Adjektiv: beautiful - beautifully."),
+        ("Please speak ___ (quiet), the baby is sleeping.", "quietly", "\"quietly\" sagt, wie man sprechen soll - Adverb der Art und Weise: quiet + -ly."),
+        ("My dad drives very ___ (careful).", "carefully", "Adjektive auf -ful bekommen einfach -ly: careful - carefully (mit zwei l)."),
+        ("The children waited ___ (patient) for the bus.", "patiently", "Das Adverb beschreibt das Verb \"waited\": patient + -ly = patiently."),
+        ("Emre plays football really ___ (good).", "well", "\"good\" hat ein unregelmäßiges Adverb: good - well. \"goodly\" gibt es nicht."),
+        ("The dog barked ___ (angry) at the postman.", "angrily", "Endet das Adjektiv auf Konsonant + y, wird y zu i: angry - angrily."),
+        ("My grandma smiled ___ (happy) when we arrived.", "happily", "Konsonant + y: y wird zu i, dann -ly: happy - happily."),
+        ("With the map on my phone, I found the way ___ (easy).", "easily", "Konsonant + y: y wird zu i, dann -ly: easy - easily."),
+        ("The teacher spoke ___ (slow), so everyone understood her.", "slowly", "Das Adverb sagt, WIE die Lehrerin sprach: slow + -ly = slowly."),
+        ("Ayşe answered all the questions ___ (correct).", "correctly", "\"correctly\" beschreibt das Verb \"answered\": correct + -ly."),
+        ("He ran ___ (quick) to catch the bus.", "quickly", "Das Adverb beschreibt, wie er rannte: quick + -ly = quickly."),
+        ("Please close the door ___ (gentle).", "gently", "Adjektive auf -le verlieren das e und bekommen -y: gentle - gently."),
+        ("It rained ___ (heavy) all day in Berlin.", "heavily", "Konsonant + y: y wird zu i, dann -ly: heavy - heavily."),
+        ("Our team played ___ (bad) and lost 0:3.", "badly", "Das Adverb von \"bad\" ist regelmäßig: bad - badly."),
+        ("The fans shouted ___ (loud) in the stadium.", "loudly", "Das Adverb beschreibt, wie die Fans riefen: loud + -ly = loudly."),
+        ("Deniz speaks Turkish and German ___ (perfect).", "perfectly", "Das Adverb beschreibt das Verb \"speaks\": perfect + -ly = perfectly."),
+        ("The boy looked ___ (sad) at his broken phone.", "sadly", "Hier beschreibt das Wort, WIE er schaute (look at = anschauen), also Adverb: sad + -ly."),
+        ("My little brother is sleeping ___ (peaceful).", "peacefully", "Adjektive auf -ful bekommen -ly: peaceful - peacefully (mit zwei l)."),
+        ("The kids played ___ (noisy) in the park.", "noisily", "Konsonant + y: y wird zu i, dann -ly: noisy - noisily."),
+        ("Please answer my question ___ (honest).", "honestly", "Das Adverb beschreibt, wie man antworten soll: honest + -ly = honestly.")
+    };
+
+    private static QuizQuestion AdverbsOfManner(Random r)
+    {
+        var p = AdverbListe[r.Next(AdverbListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Adverbien der Art und Weise (adverbs of manner)", Type = QuestionType.OpenText,
+            Prompt = $"Setze das Adverb ein: \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Adverbien beschreiben, WIE jemand etwas tut: Adjektiv + -ly (slow - slowly). y wird zu i (happy - happily), -le wird zu -ly (gentle - gently), good - well."
+        };
+    }
+
+    private static readonly (string Satz, string Loesung, string Regel)[] QuestionTagListe =
+    {
+        ("It's cold today, ___?", "isn't it", "Positiver Satz mit \"is\" - das Anhängsel ist verneint: isn't it?"),
+        ("You like pizza, ___?", "don't you", "Im Satz steht kein Hilfsverb (Simple Present) - man nimmt do/does: you like → don't you?"),
+        ("Your sister lives in Kreuzberg, ___?", "doesn't she", "Simple Present mit she (lives) - das Anhängsel bildet man mit doesn't: doesn't she?"),
+        ("They aren't at home, ___?", "are they", "Verneinter Satz (aren't) - das Anhängsel ist positiv: are they?"),
+        ("He can swim, ___?", "can't he", "Das Hilfsverb \"can\" wird im Anhängsel wiederholt und verneint: can't he?"),
+        ("You didn't forget your keys, ___?", "did you", "Verneinter Satz im Simple Past (didn't) - das Anhängsel ist positiv: did you?"),
+        ("We went to Antalya last summer, ___?", "didn't we", "Simple Past ohne Hilfsverb (went) - man nimmt did, verneint: didn't we?"),
+        ("Your brother plays football, ___?", "doesn't he", "Simple Present mit he (plays) - Anhängsel mit doesn't: doesn't he?"),
+        ("Tom isn't very tall, ___?", "is he", "Verneinter Satz (isn't) - das Anhängsel ist positiv: is he?"),
+        ("You will help me, ___?", "won't you", "Positiver Satz mit \"will\" - verneintes Anhängsel mit won't: won't you?"),
+        ("The film was great, ___?", "wasn't it", "Positiver Satz mit \"was\" - verneintes Anhängsel: wasn't it?"),
+        ("Your parents were at the parents' evening, ___?", "weren't they", "Positiver Satz mit \"were\" - verneintes Anhängsel: weren't they?"),
+        ("She has got a new phone, ___?", "hasn't she", "Positiver Satz mit \"has got\" - man wiederholt has, verneint: hasn't she?"),
+        ("You don't eat meat, ___?", "do you", "Verneinter Satz (don't) - das Anhängsel ist positiv: do you?"),
+        ("Lena can't come tomorrow, ___?", "can she", "Verneinter Satz (can't) - das Anhängsel ist positiv: can she?"),
+        ("They have finished their homework, ___?", "haven't they", "Positiver Satz mit \"have\" (Present Perfect) - verneintes Anhängsel: haven't they?"),
+        ("Emre won't be late, ___?", "will he", "Verneinter Satz (won't) - das Anhängsel ist positiv: will he?"),
+        ("It wasn't your fault, ___?", "was it", "Verneinter Satz (wasn't) - das Anhängsel ist positiv: was it?"),
+        ("You're from Berlin, ___?", "aren't you", "Positiver Satz mit \"are\" ('re) - verneintes Anhängsel: aren't you?"),
+        ("We should leave now, ___?", "shouldn't we", "Das Hilfsverb \"should\" wird wiederholt und verneint: shouldn't we?")
+    };
+
+    private static QuizQuestion QuestionTags(Random r)
+    {
+        var p = QuestionTagListe[r.Next(QuestionTagListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Frageanhängsel (question tags)", Type = QuestionType.OpenText,
+            Prompt = $"Ergänze das Frageanhängsel (question tag): \"{p.Satz}\"",
+            CorrectAnswers = new[] { p.Loesung }, Explanation = p.Regel,
+            HelpHint = "Positiver Satz → verneintes Anhängsel (It's cold, isn't it?), verneinter Satz → positives Anhängsel (You don't smoke, do you?). Ohne Hilfsverb nimmt man do/does/did."
+        };
+    }
+
+    private static readonly (string Satz, string[] Optionen, string Antwort, string Erklaerung)[] ModalverbListe =
+    {
+        ("You ___ use your phone during the test. It's not allowed.", new[] { "must", "mustn't", "needn't" }, "mustn't", "\"mustn't\" = nicht dürfen (Verbot). Achtung: \"needn't\" hieße nur \"muss nicht\"."),
+        ("It's Sunday tomorrow, so we ___ get up early.", new[] { "don't have to", "mustn't", "have to" }, "don't have to", "\"don't have to\" = nicht müssen - es ist nicht nötig, aber auch nicht verboten."),
+        ("You ___ wear a helmet on the go-kart track. It's the rule.", new[] { "needn't", "can't", "must" }, "must", "\"must\" drückt eine Pflicht oder Regel aus: Du musst einen Helm tragen."),
+        ("My sister ___ help at home every Saturday. Mum says so.", new[] { "have to", "has to", "must to" }, "has to", "Bei he/she/it heißt es \"has to\". \"must to\" gibt es nicht - nach must steht die Grundform ohne to."),
+        ("You ___ bring any food. There will be enough at the party.", new[] { "mustn't", "must", "needn't" }, "needn't", "\"needn't\" = nicht brauchen/nicht müssen. \"mustn't\" wäre ein Verbot - das ist hier nicht gemeint."),
+        ("Last week I ___ stay at home because I was ill.", new[] { "must", "had to", "will" }, "had to", "\"must\" hat keine Vergangenheitsform - man nimmt \"had to\"."),
+        ("Pupils ___ run in the corridors. It's dangerous.", new[] { "don't have to", "mustn't", "needn't" }, "mustn't", "Ein Verbot drückt man mit \"mustn't\" aus. \"don't have to\" und \"needn't\" bedeuten nur \"nicht müssen\"."),
+        ("You ___ take off your shoes when you go into a mosque.", new[] { "needn't", "can", "have to" }, "have to", "\"have to\" = müssen - hier eine feste Regel in der Moschee."),
+        ("He ___ go to school today - it's a holiday.", new[] { "mustn't", "doesn't have to", "has to" }, "doesn't have to", "An einem Feiertag muss er nicht zur Schule: \"doesn't have to\" (bei he/she/it mit does)."),
+        ("I ___ finish my homework now, or I can't go to football training.", new[] { "needn't", "mustn't", "must" }, "must", "\"must\" = müssen - es ist nötig, sonst darf er nicht zum Training."),
+        ("You ___ tell anyone my secret! Promise?", new[] { "needn't", "mustn't", "must" }, "mustn't", "\"mustn't\" = nicht dürfen - hier eine dringende Bitte: Du darfst es niemandem sagen!"),
+        ("We ___ hurry. The train only leaves in two hours.", new[] { "must", "have to", "don't have to" }, "don't have to", "Es ist genug Zeit - wir müssen uns nicht beeilen: \"don't have to\"."),
+        ("Do you ___ wear a school uniform in Berlin?", new[] { "need", "have to", "must" }, "have to", "Fragen mit \"do\" bildet man mit \"have to\": Do you have to …? \"Do you must\" ist falsch."),
+        ("Cars ___ stop at a red light.", new[] { "must", "mustn't", "needn't" }, "must", "An einer roten Ampel muss man halten - Pflicht: \"must\"."),
+        ("___ I open the window? It's so hot in here.", new[] { "Does", "Have", "Shall" }, "Shall", "Mit \"Shall I …?\" bietet man etwas an: Soll ich das Fenster öffnen?"),
+        ("You look tired. You ___ go to bed earlier.", new[] { "should", "mustn't", "needn't" }, "should", "\"should\" = sollte - ein Ratschlag, keine Pflicht."),
+        ("Oh no, it's 7:50! I ___ run, or I'll miss the bus.", new[] { "needn't", "have to", "can't" }, "have to", "\"have to\" = müssen - es ist nötig, sonst verpasst er den Bus."),
+        ("Visitors ___ feed the animals at the zoo. There's a sign.", new[] { "mustn't", "needn't", "must" }, "mustn't", "Ein Schild verbietet das Füttern - Verbot: \"mustn't\"."),
+        ("She ___ buy a new bike - her old one still works fine.", new[] { "has to", "doesn't need to", "mustn't" }, "doesn't need to", "Es ist nicht nötig: \"doesn't need to\" (= needn't). \"mustn't\" wäre ein Verbot."),
+        ("My parents say I ___ be home by 8 o'clock.", new[] { "has to", "having to", "have to" }, "have to", "Bei I/you/we/they heißt es \"have to\", nur bei he/she/it \"has to\".")
+    };
+
+    private static QuizQuestion ModalVerbs(Random r)
+    {
+        var q = ModalverbListe[r.Next(ModalverbListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Modalverben (must, mustn't, needn't, have to)", Type = QuestionType.MultipleChoice,
+            Prompt = $"Welches Modalverb passt? \"{q.Satz}\"",
+            Options = q.Optionen, CorrectAnswers = new[] { q.Antwort }, Explanation = q.Erklaerung,
+            HelpHint = "must/have to = müssen. mustn't = nicht dürfen (Verbot)! needn't/don't have to = nicht müssen. Vergangenheit: had to. should = sollte (Rat)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] FreundschaftMedienListe =
+    {
+        ("Was bedeutet \"to make friends\" auf Deutsch?", new[] { "Freunde verlieren", "Freunde finden", "Freunde besuchen" }, "Freunde finden", "\"to make friends\" = Freundschaften schließen, Freunde finden."),
+        ("Was bedeutet \"to fall out with someone\" auf Deutsch?", new[] { "sich in jemanden verlieben", "mit jemandem ausgehen", "sich mit jemandem zerstreiten" }, "sich mit jemandem zerstreiten", "\"to fall out with someone\" = sich mit jemandem zerstreiten. Verlieben wäre \"to fall in love\"."),
+        ("Was bedeutet \"to trust someone\" auf Deutsch?", new[] { "jemandem vertrauen", "jemandem misstrauen", "jemanden verlassen" }, "jemandem vertrauen", "\"to trust\" = vertrauen; \"trust\" ist auch das Nomen: das Vertrauen."),
+        ("Was bedeutet \"a charger\" auf Deutsch?", new[] { "ein Kopfhörer", "ein Ladegerät", "eine Handyhülle" }, "ein Ladegerät", "\"to charge\" = aufladen, also ist \"a charger\" das Ladegerät."),
+        ("Was bedeutet \"to download an app\" auf Deutsch?", new[] { "eine App löschen", "eine App bewerten", "eine App herunterladen" }, "eine App herunterladen", "\"down\" + \"load\" = herunterladen. Das Gegenteil ist \"to upload\" (hochladen)."),
+        ("Was bedeutet \"to log in\" auf Deutsch?", new[] { "sich abmelden", "sich anmelden", "sich umziehen" }, "sich anmelden", "\"to log in\" = sich anmelden, \"to log out\" = sich abmelden."),
+        ("Was bedeutet \"a screen\" auf Deutsch?", new[] { "ein Bildschirm", "eine Tastatur", "ein Lautsprecher" }, "ein Bildschirm", "\"screen\" = Bildschirm; \"keyboard\" wäre die Tastatur, \"speaker\" der Lautsprecher."),
+        ("Was bedeutet \"to text someone\" auf Deutsch?", new[] { "jemandem eine Nachricht schreiben", "jemanden anrufen", "jemandem einen Brief schicken" }, "jemandem eine Nachricht schreiben", "\"to text\" = eine (Handy-)Nachricht schreiben. Anrufen heißt \"to call\"."),
+        ("Was bedeutet \"to share a video\" auf Deutsch?", new[] { "ein Video drehen", "ein Video teilen", "ein Video löschen" }, "ein Video teilen", "\"to share\" = teilen - man schickt oder zeigt das Video anderen."),
+        ("Was bedeutet \"to keep a secret\" auf Deutsch?", new[] { "ein Geheimnis verraten", "ein Geheimnis erfinden", "ein Geheimnis bewahren" }, "ein Geheimnis bewahren", "\"to keep\" = behalten, bewahren. Verraten hieße \"to tell a secret\"."),
+        ("Was bedeutet \"to be jealous\" auf Deutsch?", new[] { "schüchtern sein", "eifersüchtig sein", "verantwortlich sein" }, "eifersüchtig sein", "\"jealous\" = eifersüchtig oder neidisch."),
+        ("Was bedeutet \"reliable\" auf Deutsch?", new[] { "zuverlässig", "neugierig", "hilfsbereit" }, "zuverlässig", "\"reliable\" kommt von \"to rely on\" (sich verlassen auf) - auf einen reliable friend kann man sich verlassen."),
+        ("Was bedeutet \"to turn off your phone\" auf Deutsch?", new[] { "das Handy aufladen", "das Handy ausschalten", "das Handy verlieren" }, "das Handy ausschalten", "\"to turn off\" = ausschalten, \"to turn on\" = einschalten."),
+        ("Was bedeutet \"My battery is dead.\" auf Deutsch?", new[] { "Mein Handy ist kaputt.", "Mein Akku ist voll.", "Mein Akku ist leer." }, "Mein Akku ist leer.", "\"dead\" heißt hier nicht \"tot\", sondern: Der Akku ist leer."),
+        ("Was bedeutet \"screen time\" auf Deutsch?", new[] { "Schlafenszeit", "Bildschirmzeit", "Freizeit" }, "Bildschirmzeit", "\"screen time\" = die Zeit, die man vor Handy, Tablet oder Fernseher verbringt."),
+        ("Was bedeutet \"to post a photo\" auf Deutsch?", new[] { "ein Foto ausdrucken", "ein Foto löschen", "ein Foto hochladen/posten" }, "ein Foto hochladen/posten", "\"to post\" = etwas im Internet veröffentlichen, z. B. in sozialen Netzwerken."),
+        ("Was bedeutet \"a group chat\" auf Deutsch?", new[] { "eine Sprachnachricht", "ein Gruppenchat", "ein Klassenfoto" }, "ein Gruppenchat", "\"group chat\" = ein Chat mit mehreren Leuten, z. B. der Klassenchat."),
+        ("Was bedeutet \"to apologise\" auf Deutsch?", new[] { "sich bedanken", "sich beschweren", "sich entschuldigen" }, "sich entschuldigen", "\"to apologise\" = sich entschuldigen (I apologise = Es tut mir leid). Sich bedanken wäre \"to thank\"."),
+        ("Was bedeutet \"to have something in common\" auf Deutsch?", new[] { "etwas gern verschenken", "etwas gemeinsam haben", "etwas oft verlieren" }, "etwas gemeinsam haben", "\"in common\" = gemeinsam: We have a lot in common = Wir haben viel gemeinsam."),
+        ("Was bedeutet \"to cheer someone up\" auf Deutsch?", new[] { "jemanden auslachen", "jemanden anfeuern", "jemanden aufmuntern" }, "jemanden aufmuntern", "\"to cheer someone up\" = aufmuntern. Anfeuern heißt \"to cheer someone on\".")
+    };
+
+    private static QuizQuestion FreundschaftUndMedien(Random r)
+    {
+        var f = FreundschaftMedienListe[r.Next(FreundschaftMedienListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Englisch, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Wortschatz: Freundschaft, Handy und Medien", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Wortschatz Freundschaft und Handy: make friends, fall out, trust, apologise, cheer up; charger, screen, download, log in, text, post, share."
         };
     }
 

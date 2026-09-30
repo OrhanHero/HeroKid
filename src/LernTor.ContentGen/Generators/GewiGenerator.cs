@@ -6,6 +6,9 @@ namespace LernTor.ContentGen.Generators;
 /// <summary>
 /// Gesellschaftswissenschaften (Gewi) - kombiniert Geschichte/Erdkunde/Politik-Grundlagen,
 /// wie im Berliner Rahmenlehrplan für die Grundschule/frühe Sekundarstufe üblich.
+/// Klasse 7 (9 Themen à 20 = 180 Fragen): Armut und Gerechtigkeit, Europa und EU, Migration,
+/// Konsum, Medien, Nachhaltigkeit sowie Islamische Welt im Mittelalter/Osmanisches Reich,
+/// Demokratie in Berlin (Land und Bezirk) und Leben auf Burg und im Kloster.
 /// </summary>
 public sealed class GewiGenerator : ExerciseGeneratorBase
 {
@@ -15,7 +18,7 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
         new Dictionary<GradeLevel, IReadOnlyList<TopicFactory>>
         {
             [GradeLevel.Klasse6] = new List<TopicFactory> { Epochen, Himmelsrichtungen, Kinderrechte, Ernaehrung, WasserAlsRessource, StadtUndVielfalt, EuropaGrenzenlos, TourismusUndMobilitaet, DemokratieUndMitbestimmung },
-            [GradeLevel.Klasse7] = new List<TopicFactory> { ArmutUndGerechtigkeit, EuropaUndEU, MigrationUndVielfalt, KonsumUndVerantwortung, MedienUndDigitalesLeben, NachhaltigkeitUndKlima },
+            [GradeLevel.Klasse7] = new List<TopicFactory> { ArmutUndGerechtigkeit, EuropaUndEU, MigrationUndVielfalt, KonsumUndVerantwortung, MedienUndDigitalesLeben, NachhaltigkeitUndKlima, IslamischeWeltUndOsmanen, DemokratieInBerlin, BurgUndKloster },
             [GradeLevel.Klasse9] = new List<TopicFactory> { Grundgesetz, Wirtschaftskreislauf, MedienGesellschaft }
         };
 
@@ -1024,6 +1027,174 @@ public sealed class GewiGenerator : ExerciseGeneratorBase
             Topic = "Nachhaltigkeit und Klima", Type = QuestionType.MultipleChoice,
             Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
             HelpHint = "Drei Dimensionen: Ökologie, Ökonomie, Soziales. Treibhauseffekt durch CO2 aus fossilen Brennstoffen. Pariser Abkommen: möglichst unter 1,5 Grad. Suffizienz schlägt reine Effizienz (Rebound-Effekt)."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] IslamischeWeltUndOsmanenListe =
+    {
+        ("In welcher Stadt wurde der Prophet Mohammed um 570 geboren?", new[] { "Medina", "Mekka", "Bagdad" }, "Mekka",
+            "Mohammed wurde um 570 in Mekka auf der Arabischen Halbinsel geboren. Deshalb ist Mekka bis heute die wichtigste Stadt des Islam und Ziel der Pilgerfahrt."),
+        ("Was bezeichnet die Hidschra im Jahr 622?", new[] { "Mohammeds Auswanderung von Mekka nach Medina", "Den Bau der ersten Moschee in Jerusalem", "Die Eroberung von Damaskus durch Muslime" }, "Mohammeds Auswanderung von Mekka nach Medina",
+            "622 zog Mohammed mit seinen Anhängern von Mekka nach Medina. Mit diesem Jahr beginnt die islamische Zeitrechnung - daran sieht man, wie wichtig das Ereignis war."),
+        ("Welche Stadt wurde 762 gegründet und wurde zu einem Zentrum der Wissenschaft?", new[] { "Kairo", "Damaskus", "Bagdad" }, "Bagdad",
+            "Der Kalif al-Mansur gründete Bagdad 762 als neue Hauptstadt. Weil dort Gelehrte aus vielen Ländern zusammenkamen, wurde die Stadt zu einem Zentrum von Wissenschaft und Handel."),
+        ("Was war das \"Haus der Weisheit\" in Bagdad?", new[] { "Ein Ort, an dem Gelehrte Bücher sammelten und übersetzten", "Ein Palast, in dem der Kalif Feste feierte", "Eine Festung zum Schutz der Stadtmauer" }, "Ein Ort, an dem Gelehrte Bücher sammelten und übersetzten",
+            "Im Haus der Weisheit wurden Schriften aus dem Griechischen, Persischen und Indischen ins Arabische übersetzt. So blieb antikes Wissen erhalten und wurde weiterentwickelt."),
+        ("Welche Zahlenschreibweise gelangte über die arabische Welt nach Europa?", new[] { "Die römischen Zahlzeichen I, V und X", "Die Ziffern 0 bis 9 mit der Null", "Das Zählen mit Knoten in Schnüren" }, "Die Ziffern 0 bis 9 mit der Null",
+            "Die Ziffern stammen ursprünglich aus Indien, arabische Gelehrte verbreiteten sie weiter. Deshalb heißen sie bei uns \"arabische Ziffern\". Mit der Null lässt sich viel leichter rechnen als mit römischen Zahlen."),
+        ("Von welchem Gelehrten aus Bagdad leitet sich das Wort \"Algorithmus\" ab?", new[] { "Harun ar-Raschid", "Ibn Battuta", "al-Chwarizmi" }, "al-Chwarizmi",
+            "Der Mathematiker al-Chwarizmi schrieb im 9. Jahrhundert in Bagdad wichtige Rechenbücher. Aus seinem Namen wurde in Europa das Wort \"Algorithmus\" - eine feste Schrittfolge zum Lösen einer Aufgabe."),
+        ("Wofür war Ibn Sina (in Europa Avicenna genannt) vor allem berühmt?", new[] { "Als Arzt mit einem großen Lehrbuch der Medizin", "Als Seefahrer, der Afrika als Erster umsegelte", "Als Baumeister vieler Moscheen in Istanbul" }, "Als Arzt mit einem großen Lehrbuch der Medizin",
+            "Ibn Sina (um 980-1037) schrieb den \"Kanon der Medizin\". Das Buch war so gut, dass es in Europa jahrhundertelang an Universitäten benutzt wurde."),
+        ("Welche Stadt in Al-Andalus gehörte im 10. Jahrhundert zu den größten Städten Europas?", new[] { "Madrid", "Córdoba", "Lissabon" }, "Córdoba",
+            "Unter muslimischer Herrschaft war Córdoba im 10. Jahrhundert eine riesige Stadt mit Moscheen, Bibliotheken und Bädern - viel größer als die meisten Städte nördlich der Alpen."),
+        ("Wie gelangte die Papierherstellung aus China nach Europa?", new[] { "Über die islamische Welt bis nach Spanien", "Über Seefahrer, die aus Amerika kamen", "Durch Wikinger aus dem hohen Norden" }, "Über die islamische Welt bis nach Spanien",
+            "Im 8. Jahrhundert lernten Menschen in Samarkand und Bagdad, Papier herzustellen. Über Nordafrika und Spanien kam das Wissen später nach Europa - Papier war viel billiger als Pergament."),
+        ("Nach wem ist das Osmanische Reich benannt?", new[] { "Nach dem Gründer Osman I.", "Nach der Hauptstadt Osmaniye", "Nach dem ersten Kalifen Omar" }, "Nach dem Gründer Osman I.",
+            "Osman I. war ein Herrscher im Nordwesten Anatoliens. Seine Nachfolger nannten sich nach ihm \"Osmanen\" - daher der Name des Reiches."),
+        ("Ungefähr wann entstand das Osmanische Reich in Anatolien?", new[] { "Um das Jahr 1600", "Um das Jahr 800", "Um das Jahr 1300" }, "Um das Jahr 1300",
+            "Um 1300 begann Osman I. im Nordwesten Anatoliens ein kleines Fürstentum aufzubauen. Daraus wuchs in den folgenden Jahrhunderten ein Großreich auf drei Kontinenten."),
+        ("Welche Stadt eroberten die Osmanen im Jahr 1453?", new[] { "Konstantinopel", "Bagdad", "Wien" }, "Konstantinopel",
+            "1453 eroberten die Osmanen Konstantinopel. Die Stadt wurde ihre Hauptstadt und heißt heute Istanbul - die größte Stadt der Türkei."),
+        ("Welcher Sultan eroberte 1453 Konstantinopel?", new[] { "Süleyman der Prächtige", "Mehmed II.", "Osman I." }, "Mehmed II.",
+            "Sultan Mehmed II. eroberte die Stadt mit 21 Jahren. Deshalb trägt er in der Türkei den Beinamen \"Fatih\", der Eroberer."),
+        ("Welches Reich endete mit der Eroberung Konstantinopels 1453?", new[] { "Das Weströmische Reich", "Das Heilige Römische Reich", "Das Byzantinische Reich" }, "Das Byzantinische Reich",
+            "Konstantinopel war die Hauptstadt des Byzantinischen (Oströmischen) Reiches. Das Weströmische Reich war schon fast 1000 Jahre früher, 476, untergegangen."),
+        ("Was geschah nach 1453 mit der Hagia Sophia in Istanbul?", new[] { "Sie wurde zu einer Moschee umgewandelt", "Sie wurde abgerissen und neu gebaut", "Sie wurde der Palast des Sultans" }, "Sie wurde zu einer Moschee umgewandelt",
+            "Die Hagia Sophia wurde 537 als Kirche gebaut. Nach der Eroberung 1453 wurde sie zur Moschee, 1934 zum Museum und 2020 wieder zur Moschee. Ihre Geschichte spiegelt die Geschichte der Stadt."),
+        ("Unter welchem Sultan erreichte das Osmanische Reich im 16. Jahrhundert seine größte Macht?", new[] { "Mehmed II., dem Eroberer", "Süleyman I., dem Prächtigen", "Osman I., dem Gründer" }, "Süleyman I., dem Prächtigen",
+            "Süleyman regierte von 1520 bis 1566. Das Reich reichte damals vom Balkan bis nach Nordafrika und in den Nahen Osten. In der Türkei heißt er auch \"Kanuni\", der Gesetzgeber."),
+        ("Welche Stadt belagerten die Osmanen 1529 und 1683 ohne Erfolg?", new[] { "Wien", "Berlin", "Rom" }, "Wien",
+            "Zweimal standen osmanische Heere vor Wien, konnten die Stadt aber nicht erobern. Nach 1683 verlor das Osmanische Reich in Europa nach und nach Gebiete."),
+        ("Welcher Baumeister errichtete für Sultan Süleyman die Süleymaniye-Moschee in Istanbul?", new[] { "Piri Reis", "Mimar Sinan", "Evliya Çelebi" }, "Mimar Sinan",
+            "Mimar Sinan war der berühmteste Architekt des Osmanischen Reiches und baute viele Moscheen und Brücken. Piri Reis war Seefahrer, Evliya Çelebi ein Reiseschriftsteller."),
+        ("Wofür ist der osmanische Seefahrer Piri Reis bekannt?", new[] { "Für eine Weltkarte von 1513, die schon Teile Amerikas zeigt", "Für den Bau der großen Brücke über den Bosporus", "Für die erste Umsegelung der ganzen Erde" }, "Für eine Weltkarte von 1513, die schon Teile Amerikas zeigt",
+            "Piri Reis zeichnete 1513 eine Karte, für die er auch Karten von Kolumbus nutzte. Sie zeigt, wie schnell sich Wissen über die neuen Seewege verbreitete."),
+        ("Welcher Staat wurde 1923 nach dem Ende des Osmanischen Reiches gegründet?", new[] { "Die Republik Syrien", "Die Republik Ägypten", "Die Republik Türkei" }, "Die Republik Türkei",
+            "Nach dem Ersten Weltkrieg zerfiel das Osmanische Reich. Am 29. Oktober 1923 rief Mustafa Kemal (Atatürk) die Republik Türkei aus, Hauptstadt wurde Ankara.")
+    };
+
+    private static QuizQuestion IslamischeWeltUndOsmanen(Random r)
+    {
+        var f = IslamischeWeltUndOsmanenListe[r.Next(IslamischeWeltUndOsmanenListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Islamische Welt im Mittelalter und Osmanisches Reich", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "622 Hidschra (Beginn der islamischen Zeitrechnung), Bagdad als Wissenszentrum, um 1300 Osman I., 1453 Eroberung Konstantinopels durch Mehmed II., Blütezeit unter Süleyman, 1923 Republik Türkei."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] DemokratieInBerlinListe =
+    {
+        ("Wie heißt die Landesregierung von Berlin?", new[] { "Der Senat", "Der Bundesrat", "Der Magistrat" }, "Der Senat",
+            "Die Regierung des Landes Berlin heißt Senat. Sie besteht aus dem Regierenden Bürgermeister und den Senatorinnen und Senatoren."),
+        ("Wo hat der Regierende Bürgermeister von Berlin seinen Amtssitz?", new[] { "Im Reichstagsgebäude", "Im Roten Rathaus", "Im Schloss Bellevue" }, "Im Roten Rathaus",
+            "Das Rote Rathaus in Mitte ist Sitz des Senats. Im Reichstagsgebäude tagt der Bundestag, im Schloss Bellevue wohnt der Bundespräsident."),
+        ("Wer wählt den Regierenden Bürgermeister von Berlin?", new[] { "Die Berliner direkt an der Wahlurne", "Der Bundestag in einer Sitzung", "Das Berliner Abgeordnetenhaus" }, "Das Berliner Abgeordnetenhaus",
+            "Die Berlinerinnen und Berliner wählen das Abgeordnetenhaus, und die Abgeordneten wählen dann den Regierenden Bürgermeister - ähnlich wie der Bundestag den Kanzler wählt."),
+        ("Wie oft wird das Berliner Abgeordnetenhaus regulär gewählt?", new[] { "Alle vier Jahre", "Alle fünf Jahre", "Alle zwei Jahre" }, "Alle fünf Jahre",
+            "Die Wahlperiode des Abgeordnetenhauses dauert fünf Jahre. Der Bundestag wird dagegen alle vier Jahre gewählt."),
+        ("Wie heißt das gewählte Parlament eines Berliner Bezirks?", new[] { "Bezirksverordnetenversammlung (BVV)", "Bezirkstag der Stadtverordneten", "Kiezrat der Einwohnerschaft" }, "Bezirksverordnetenversammlung (BVV)",
+            "Jeder der zwölf Bezirke hat eine BVV. Sie wird am selben Tag wie das Abgeordnetenhaus gewählt und kontrolliert das Bezirksamt."),
+        ("Ab welchem Alter darf man in Berlin die Bezirksverordnetenversammlung wählen?", new[] { "Ab 18 Jahren", "Ab 14 Jahren", "Ab 16 Jahren" }, "Ab 16 Jahren",
+            "Bei den Wahlen zu den Bezirksverordnetenversammlungen dürfen in Berlin schon 16-Jährige wählen. Wer in der 9. oder 10. Klasse ist, kann also bald mitbestimmen."),
+        ("Wer darf in Berlin neben Deutschen die Bezirksverordnetenversammlung mitwählen?", new[] { "Alle, die seit fünf Jahren in Berlin wohnen", "Niemand, dort wählen nur deutsche Bürger", "Bürgerinnen und Bürger anderer EU-Staaten" }, "Bürgerinnen und Bürger anderer EU-Staaten",
+            "Bei Bezirkswahlen dürfen auch Menschen aus anderen EU-Ländern wählen. Wer zum Beispiel nur einen türkischen Pass hat, darf nicht wählen - das geht erst nach einer Einbürgerung."),
+        ("Wer wählt in Berlin den Bezirksbürgermeister oder die Bezirksbürgermeisterin?", new[] { "Die Bezirksverordnetenversammlung", "Der Senat im Roten Rathaus", "Die Einwohner in einer Direktwahl" }, "Die Bezirksverordnetenversammlung",
+            "Der Bezirksbürgermeister wird von den Bezirksverordneten gewählt, nicht direkt vom Volk. So hängt er vom Vertrauen der BVV ab."),
+        ("Worüber stimmten die Berlinerinnen und Berliner 2014 in einem Volksentscheid ab?", new[] { "Ob das Tempelhofer Feld unbebaut bleibt", "Ob der Flughafen BER gebaut werden soll", "Ob die Bezirke neu eingeteilt werden" }, "Ob das Tempelhofer Feld unbebaut bleibt",
+            "2014 entschied eine Mehrheit, dass das Tempelhofer Feld frei bleibt. Das zeigt: In Berlin kann das Volk selbst über ein Gesetz entscheiden."),
+        ("Was muss in Berlin einem Volksentscheid vorausgehen?", new[] { "Ein erfolgreiches Volksbegehren mit genug Unterschriften", "Eine Zustimmung des Bundespräsidenten zum Thema", "Ein Beschluss des Bundestages in Berlin" }, "Ein erfolgreiches Volksbegehren mit genug Unterschriften",
+            "Erst sammeln Bürgerinnen und Bürger Unterschriften. Kommen im Volksbegehren genug zusammen, dürfen alle Wahlberechtigten im Volksentscheid abstimmen."),
+        ("Wie viele Stimmen hat das Land Berlin im Bundesrat?", new[] { "3 Stimmen", "6 Stimmen", "4 Stimmen" }, "4 Stimmen",
+            "Die Zahl der Stimmen im Bundesrat hängt von der Einwohnerzahl ab (3 bis 6). Berlin hat mit rund 3,8 Millionen Einwohnern 4 Stimmen."),
+        ("Welches Dokument ist die oberste rechtliche Grundlage des Landes Berlin?", new[] { "Die Hausordnung des Roten Rathauses", "Die Verfassung von Berlin", "Das Bezirksgesetz der Stadt" }, "Die Verfassung von Berlin",
+            "Jedes Bundesland hat eine eigene Verfassung. Die Verfassung von Berlin regelt zum Beispiel, wie Abgeordnetenhaus und Senat arbeiten - sie muss aber zum Grundgesetz passen."),
+        ("Wie nennt man die Mitglieder des Berliner Senats, die jeweils einen Bereich wie Bildung leiten?", new[] { "Senatorinnen und Senatoren", "Ministerpräsidentinnen", "Bezirksverordnete" }, "Senatorinnen und Senatoren",
+            "In anderen Bundesländern heißen sie Ministerinnen und Minister. In Berlin (und auch in Hamburg und Bremen) heißen sie Senatorinnen und Senatoren."),
+        ("Wer leitet im Bezirksamt neben dem Bezirksbürgermeister Bereiche wie Jugend oder Ordnungsamt?", new[] { "Senatorinnen und Senatoren", "Bezirksstadträtinnen und -stadträte", "Abgeordnete des Bundestages" }, "Bezirksstadträtinnen und -stadträte",
+            "Das Bezirksamt besteht aus dem Bezirksbürgermeister und den Bezirksstadträten. Jeder von ihnen ist für bestimmte Ämter im Bezirk zuständig."),
+        ("Wo beantragt man in Berlin zum Beispiel einen Personalausweis?", new[] { "Im Bürgeramt des Bezirks", "Im Abgeordnetenhaus", "Beim Bundesrat" }, "Im Bürgeramt des Bezirks",
+            "Viele Aufgaben des Alltags erledigen die Bezirke, zum Beispiel über die Bürgerämter. Das Abgeordnetenhaus macht Gesetze, stellt aber keine Ausweise aus."),
+        ("In welchem Gebäude tagt das Berliner Abgeordnetenhaus?", new[] { "Im Roten Rathaus in Mitte", "Im ehemaligen Preußischen Landtag", "Im Reichstagsgebäude am Spreebogen" }, "Im ehemaligen Preußischen Landtag",
+            "Seit 1993 tagt das Abgeordnetenhaus im früheren Preußischen Landtag in der Niederkirchnerstraße. Das Rote Rathaus ist Sitz des Senats, der Reichstag der des Bundestages."),
+        ("Was ist ein Einwohnerantrag in einem Berliner Bezirk?", new[] { "Einwohner sammeln Unterschriften, damit die BVV ein Thema berät", "Ein Antrag auf einen Platz in einer Schule im Bezirk", "Eine Bewerbung für einen Sitz im Abgeordnetenhaus" }, "Einwohner sammeln Unterschriften, damit die BVV ein Thema berät",
+            "Mit genug Unterschriften muss sich die BVV mit einem Anliegen befassen. Unterschreiben dürfen Einwohner ab 16 Jahren - auch ohne deutschen Pass."),
+        ("Wie hoch ist in Berlin die Sperrklausel bei den Wahlen zur Bezirksverordnetenversammlung?", new[] { "5 Prozent", "3 Prozent", "10 Prozent" }, "3 Prozent",
+            "Eine Partei braucht mindestens 3 Prozent der Stimmen, um in eine BVV einzuziehen. Beim Abgeordnetenhaus und beim Bundestag sind es 5 Prozent."),
+        ("Wie viele Stimmen hat man bei der Wahl zum Berliner Abgeordnetenhaus?", new[] { "Eine Stimme", "Zwei Stimmen", "Drei Stimmen" }, "Zwei Stimmen",
+            "Mit der Erststimme wählt man eine Person im eigenen Wahlkreis, mit der Zweitstimme eine Partei. Wie bei der Bundestagswahl."),
+        ("Warum wurde die Berliner Abgeordnetenhauswahl 2023 wiederholt?", new[] { "Weil 2021 zu wenige Menschen gewählt hatten", "Wegen vieler Pannen bei der Wahl im Jahr 2021", "Weil der Senat das Ergebnis nicht wollte" }, "Wegen vieler Pannen bei der Wahl im Jahr 2021",
+            "2021 gab es lange Schlangen und fehlende Stimmzettel. Das Berliner Verfassungsgericht erklärte die Wahl deshalb für ungültig - freie und ordnungsgemäße Wahlen sind ein Kern der Demokratie.")
+    };
+
+    private static QuizQuestion DemokratieInBerlin(Random r)
+    {
+        var f = DemokratieInBerlinListe[r.Next(DemokratieInBerlinListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Demokratie in Berlin: Land, Bezirk und Beteiligung", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Land Berlin: Abgeordnetenhaus (alle 5 Jahre gewählt) wählt den Regierenden Bürgermeister, Regierung = Senat im Roten Rathaus. Bezirk: BVV (Wahl ab 16, auch EU-Bürger) wählt das Bezirksamt."
+        };
+    }
+
+    private static readonly (string Frage, string[] Optionen, string Antwort, string Erklaerung)[] BurgUndKlosterListe =
+    {
+        ("Wie heißt der höchste und stärkste Turm einer Burg, in den man sich zuletzt zurückzog?", new[] { "Palas", "Zwinger", "Bergfried" }, "Bergfried",
+            "Der Bergfried war der dickste und höchste Turm. Sein Eingang lag oft hoch über dem Boden - so war er die letzte Zuflucht, wenn Feinde schon in der Burg waren."),
+        ("Was war der Palas einer Burg?", new[] { "Das Wohn- und Saalgebäude des Burgherrn", "Der Wehrgang oben auf der Burgmauer", "Der Graben rund um die ganze Burg" }, "Das Wohn- und Saalgebäude des Burgherrn",
+            "Im Palas wohnte die Familie des Burgherrn, dort gab es den großen Saal für Feste und Gäste. Er war das repräsentative Hauptgebäude."),
+        ("Wozu diente die Zugbrücke einer Burg?", new[] { "Sie diente als Zuschauertribüne bei den großen Ritterturnieren", "Man zog sie hoch, damit Feinde nicht über den Graben kamen", "Über sie brachte man Wasser in die Burg" }, "Man zog sie hoch, damit Feinde nicht über den Graben kamen",
+            "Die Zugbrücke führte über den Burggraben. Bei Gefahr wurde sie hochgezogen und verschloss zugleich das Tor."),
+        ("Warum wurden viele Burgen auf Bergen oder Felsen gebaut?", new[] { "Man sah Feinde früh und sie kamen schwer heran", "Auf Bergen war Bauen billiger als im Tal", "Oben gab es mehr Wasser als in Tälern" }, "Man sah Feinde früh und sie kamen schwer heran",
+            "Von oben konnte man das Land überblicken und Angreifer früh erkennen. Steile Hänge machten einen Angriff mühsam. In flachen Gegenden baute man dafür Wasserburgen."),
+        ("Warum war ein tiefer Brunnen in einer Burg so wichtig?", new[] { "Ohne Wasser hielt man keine Belagerung durch", "Er diente als Gefängnis für gefangene Gegner der Burg", "Er war der Ort für Taufen der Kinder" }, "Ohne Wasser hielt man keine Belagerung durch",
+            "Bei einer Belagerung war die Burg von der Außenwelt abgeschnitten. Wer kein Wasser mehr hatte, musste schnell aufgeben - deshalb gruben die Menschen Brunnen oft sehr tief in den Fels."),
+        ("Wozu dienten die schmalen Schlitze (Schießscharten) in einer Burgmauer?", new[] { "Um aus der Deckung heraus zu schießen", "Um frische Luft in die Räume zu lassen", "Um Botschaften nach draußen zu reichen" }, "Um aus der Deckung heraus zu schießen",
+            "Durch die schmalen Öffnungen konnten Verteidiger mit Bogen oder Armbrust schießen, während sie selbst kaum getroffen werden konnten."),
+        ("Wie nannte man in einer Burg den Bereich zwischen zwei Mauern, in dem Angreifer festsaßen?", new[] { "Kemenate", "Zwinger", "Palas" }, "Zwinger",
+            "Wer die äußere Mauer überwand, stand im Zwinger vor der nächsten Mauer - und war von oben ungeschützt. Die Kemenate war ein beheizbarer Wohnraum."),
+        ("Warum verloren Burgen ab dem 15. und 16. Jahrhundert an Bedeutung?", new[] { "Weil die meisten Ritter lieber in Klöstern lebten", "Weil es keine Steine mehr zum Bauen gab", "Weil Kanonen die Mauern zerstören konnten" }, "Weil Kanonen die Mauern zerstören konnten",
+            "Mit Schießpulver und Kanonen konnten Angreifer auch dicke Mauern durchbrechen. Burgen boten keinen sicheren Schutz mehr, viele verfielen oder wurden zu Schlössern umgebaut."),
+        ("In welcher Reihenfolge wurde ein adliger Junge zum Ritter ausgebildet?", new[] { "Page, dann Knappe, dann Ritter", "Knappe, dann Page, dann Ritter", "Ritter, dann Knappe, dann Page" }, "Page, dann Knappe, dann Ritter",
+            "Mit etwa sieben Jahren kam ein Junge als Page an einen fremden Hof, mit etwa 14 wurde er Knappe und diente einem Ritter. Erst als junger Erwachsener wurde er selbst Ritter."),
+        ("Wie nannte man die feierliche Aufnahme eines Knappen in den Ritterstand?", new[] { "Lehnseid", "Krönung", "Ritterschlag" }, "Ritterschlag",
+            "Beim Ritterschlag wurde der Knappe feierlich zum Ritter erhoben. Den Lehnseid schwor dagegen ein Vasall seinem Lehnsherrn, die Krönung betraf Könige."),
+        ("Was war ein Turnier im Mittelalter?", new[] { "Ein Kampfspiel, bei dem Ritter ihr Können zeigten", "Ein Gericht, das über Streit unter Rittern urteilte", "Eine Wallfahrt von Rittern nach Jerusalem" }, "Ein Kampfspiel, bei dem Ritter ihr Können zeigten",
+            "Bei Turnieren übten Ritter den Kampf zu Pferd und zeigten ihr Können vor Publikum. Es gab Ruhm und Preise - aber auch viele Verletzungen."),
+        ("Warum trugen Ritter ein Wappen auf Schild und Umhang?", new[] { "Weil die Farben sie besser vor Pfeilen schützten", "Damit man sie unter dem Helm erkennen konnte", "Weil die Kirche es ihnen so vorschrieb" }, "Damit man sie unter dem Helm erkennen konnte",
+            "In voller Rüstung mit geschlossenem Helm sahen alle Ritter gleich aus. Das Wappen zeigte, wer dahintersteckte. Später führten auch Familien und Städte Wappen - Berlin zum Beispiel den Bären."),
+        ("Welcher Leitsatz fasst die Regel des heiligen Benedikt für das Klosterleben zusammen?", new[] { "Carpe diem - nutze den Tag", "Ora et labora - bete und arbeite", "Veni, vidi, vici - ich kam, sah, siegte" }, "Ora et labora - bete und arbeite",
+            "Benedikt von Nursia schrieb im 6. Jahrhundert eine Regel für Mönche. Der Tag bestand aus Gebet und Arbeit - viele Klöster in Europa lebten danach."),
+        ("Wer leitete ein Männerkloster?", new[] { "Der Abt", "Der Graf", "Der Bischof" }, "Der Abt",
+            "Ein Männerkloster wurde von einem Abt geleitet, ein Frauenkloster von einer Äbtissin. Der Bischof war für ein ganzes Bistum zuständig."),
+        ("Was war das Skriptorium in einem Kloster?", new[] { "Der gemeinsame Schlafsaal, in dem alle Mönche nachts ruhten", "Die Schreibstube, in der Bücher abgeschrieben wurden", "Der Keller für Wein und Vorräte" }, "Die Schreibstube, in der Bücher abgeschrieben wurden",
+            "Weil es noch keinen Buchdruck gab, schrieben Mönche Bücher mit der Hand ab. Für ein einziges Buch brauchte man oft Monate."),
+        ("Welche drei Versprechen (Gelübde) legten Mönche und Nonnen ab?", new[] { "Armut, Ehelosigkeit und Gehorsam", "Fasten, Pilgern und Schweigen", "Tapferkeit, Treue und Ehre" }, "Armut, Ehelosigkeit und Gehorsam",
+            "Wer ins Kloster eintrat, versprach, nichts Eigenes zu besitzen, nicht zu heiraten und dem Abt oder der Äbtissin zu gehorchen. Tapferkeit, Treue und Ehre waren Ideale der Ritter."),
+        ("Was ist ein Kreuzgang in einem Kloster?", new[] { "Ein überdachter Gang rund um einen Innenhof", "Ein Weg mit Kreuzen hinauf zu einer Burg", "Die Kreuzung zweier Straßen vor dem Kloster" }, "Ein überdachter Gang rund um einen Innenhof",
+            "Der Kreuzgang verband Kirche, Speisesaal und Schlafsaal. Hier gingen die Mönche und Nonnen zum Beten, Lesen und Nachdenken."),
+        ("Wie nennt man die festen Gebetszeiten, die den Tag im Kloster gliederten?", new[] { "Die Fastenzeit", "Der Ablass", "Das Stundengebet" }, "Das Stundengebet",
+            "Mehrmals am Tag und sogar nachts kamen die Mönche und Nonnen zum Gebet zusammen. Diese festen Zeiten gaben dem Klosteralltag einen genauen Rhythmus."),
+        ("Welche Äbtissin schrieb im 12. Jahrhundert berühmte Werke über Heilkunde und Pflanzen?", new[] { "Elisabeth von Thüringen", "Hildegard von Bingen", "Kaiserin Theophanu" }, "Hildegard von Bingen",
+            "Hildegard von Bingen (1098-1179) leitete ein Kloster und schrieb über Medizin, Pflanzen und Glauben. Sie zeigt, dass Frauen im Kloster Bildung erlangen konnten."),
+        ("Warum hatten viele Klöster große Kräutergärten?", new[] { "Um die Kräuter teuer an die Ritter zu verkaufen", "Weil Mönche nur Kräuter essen durften", "Um mit Heilpflanzen Kranke zu versorgen" }, "Um mit Heilpflanzen Kranke zu versorgen",
+            "Klöster pflegten Kranke und Arme. Mit Kräutern wie Salbei oder Kamille stellten sie Heilmittel her - viele Pflanzen nutzen wir noch heute als Tee.")
+    };
+
+    private static QuizQuestion BurgUndKloster(Random r)
+    {
+        var f = BurgUndKlosterListe[r.Next(BurgUndKlosterListe.Length)];
+        return new QuizQuestion
+        {
+            Id = NewId(), Subject = Subject.Gewi, GradeLevel = GradeLevel.Klasse7,
+            Topic = "Leben auf der Burg und im Kloster (Mittelalter)", Type = QuestionType.MultipleChoice,
+            Prompt = f.Frage, Options = f.Optionen, CorrectAnswers = new[] { f.Antwort }, Explanation = f.Erklaerung,
+            HelpHint = "Burg: Bergfried als letzte Zuflucht, Palas zum Wohnen, Zugbrücke und Zwinger zur Verteidigung; Ausbildung Page - Knappe - Ritter. Kloster: \"Ora et labora\", Abt/Äbtissin, Skriptorium, Gelübde Armut, Ehelosigkeit, Gehorsam."
         };
     }
 }

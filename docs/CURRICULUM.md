@@ -65,15 +65,15 @@ Spalten (Klasse 6 / 7 / 9), decken über diese Regel aber alle fünf wählbaren 
 | Groß- und Kleinschreibung | Inhaltsangabe | "dass" oder "das" |
 | Steigerung von Adjektiven | Argumentieren und Erörtern | Wortarten (vertieft) |
 | Satzarten | Kurzgeschichten verstehen | Textsorten unterscheiden |
-| Wortbildung | | Aufbau eines Dramas |
-| Balladen und Jugendbücher | | Figurencharakterisierung |
-| Sach- und Gebrauchstexte auswerten | | Argumentation und Quellenkritik |
-| Texte in medialer Form (Wiki, E-Mail, TV) | | Filmanalyse |
-| Schreibformen | | Rede, Debatte und Bewerbung |
-| Gesprächsformen und Präsentieren | | Satzbau und Sprachwissen |
-| | | Wortbedeutung und Sprachwandel |
-| | | Novelle |
-| | | Parabel |
+| Wortbildung | **Plusquamperfekt (Vorvergangenheit)** *(neu 30.09.2026)* | Aufbau eines Dramas |
+| Balladen und Jugendbücher | **Adverbiale Bestimmungen** *(neu)* | Figurencharakterisierung |
+| Sach- und Gebrauchstexte auswerten | **Attribute (Beifügungen)** *(neu)* | Argumentation und Quellenkritik |
+| Texte in medialer Form (Wiki, E-Mail, TV) |  | Filmanalyse |
+| Schreibformen |  | Rede, Debatte und Bewerbung |
+| Gesprächsformen und Präsentieren |  | Satzbau und Sprachwissen |
+|  |  | Wortbedeutung und Sprachwandel |
+|  |  | Novelle |
+|  |  | Parabel |
 
 ## Türkisch (`TurkishGenerator.cs`)
 
@@ -85,20 +85,26 @@ Spalten (Klasse 6 / 7 / 9), decken über diese Regel aber alle fünf wählbaren 
 | Zıt Anlamlı Kelimeler (Antonyme) | Noktalama İşaretleri | Fiilimsi (Partizip/Verbalnomen) |
 | Doğa ve Çevre (Natur und Umwelt) – Wortschatz | Metin Türleri (Textsorten) | Kimlik ve Gelecek (Identität und Zukunft) – Wortschatz |
 | Aile ve Günlük Yaşam (Familie und Alltag) – Wortschatz | Medya ve İletişim – Wortschatz | Türk Tarihi ve Gelenekleri (Geschichte und Traditionen) |
-| Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | | Türkiye'nin Coğrafyası (Geografie der Türkei) |
-| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | | Alltag, Konsum und türkische Kultur – Wortschatz |
-| Çoğul Eki -ler/-lar (Plural) *(neu 28.09.2026)* | | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
-| Hâl Ekleri -e/-de/-den (Wohin, wo, woher) *(neu)* | | Schule, Ausbildung und Berufswelt – Wortschatz |
-| Soru Eki mi/mı/mu/mü (Fragepartikel) *(neu)* | | Söz Sanatları (Stilmittel) *(neu 28.09.2026)* |
-| Sayılar, Günler ve Aylar (Zahlen und Zeit) – Wortschatz *(neu)* | | Ses Olayları (Lautveränderungen) *(neu)* |
-| Kısa Metin Anlama (Leseverstehen) *(neu)* | | Sözcükte Anlam: Gerçek, Mecaz, Terim *(neu)* |
-| | | Cümle Türleri (Satzarten) *(neu)* |
-| | | Türk Edebiyatından Yazarlar ve Eserler *(neu)* |
+| Okul ve Toplum (Schule und Gesellschaft) – Wortschatz | **Zarflar (Adverbien)** *(neu 30.09.2026)* | Türkiye'nin Coğrafyası (Geografie der Türkei) |
+| Türk Kültürü ve Gelenekleri (Kultur und Traditionen) | **Zamirler (Pronomen)** *(neu)* | Alltag, Konsum und türkische Kultur – Wortschatz |
+| Çoğul Eki -ler/-lar (Plural) *(neu 28.09.2026)* | **Şart Kipi -se/-sa (wenn/falls)** *(neu)* | Gesellschaft und öffentliches Leben (Klasse-9-Niveau) – Wortschatz |
+| Hâl Ekleri -e/-de/-den (Wohin, wo, woher) *(neu)* | **Gereklilik Kipi -meli/-malı (müssen/sollen)** *(neu)* | Schule, Ausbildung und Berufswelt – Wortschatz |
+| Soru Eki mi/mı/mu/mü (Fragepartikel) *(neu)* | **Yapım Ekleri ve Birleşik Kelimeler (Wortbildung)** *(neu)* | Söz Sanatları (Stilmittel) *(neu 28.09.2026)* |
+| Sayılar, Günler ve Aylar (Zahlen und Zeit) – Wortschatz *(neu)* | **Hikâye Unsurları (Elemente einer Erzählung)** *(neu)* | Ses Olayları (Lautveränderungen) *(neu)* |
+| Kısa Metin Anlama (Leseverstehen) *(neu)* | **Berlin'de Günlük Yaşam (Arzt, Verkehr, Behörde) – Wortschatz** *(neu)* | Sözcükte Anlam: Gerçek, Mecaz, Terim *(neu)* |
+| **İyelik Ekleri (Possessivsuffixe)** *(neu 30.09.2026)* |  | Cümle Türleri (Satzarten) *(neu)* |
+| **Geniş Zaman (Aorist)** *(neu)* |  | Türk Edebiyatından Yazarlar ve Eserler *(neu)* |
+| **Emir Kipi ve Rica (Imperativ, Bitten)** *(neu)* |  | **Fiil Çatısı (Aktiv/Passiv, transitiv/intransitiv)** *(neu 30.09.2026)* |
+| **Vücut ve Sağlık (Körper und Gesundheit) – Wortschatz** *(neu)* |  | **Ek Fiil (Kopula -dır/-dı/-mış/-sa)** *(neu)* |
+| **Sıfatlarda Karşılaştırma: daha, en, kadar** *(neu)* |  | **Paragrafta Anlam (Thema, Hauptgedanke)** *(neu)* |
+|  |  | **Bağlaçlar ve Edatlar (de/da, ki, ile …)** *(neu)* |
+|  |  | **Anlatım Bozuklukları (Ausdrucksfehler)** *(neu)* |
 
 Die Erweiterung vom 28.09.2026 (+100 Fragen je Stufe) folgt aus `scripts/pool-reichweite.py`:
 Türkisch ist bei der Fächerauswahl nach Stundenplan jeden Tag dabei und war mit 160 bzw. 200
 Fragen nach 5–7 Wochen einmal durch; jetzt reicht es für Klasse 6 knapp 9, für Klasse 9 zehn
-Wochen.
+Wochen. Die zweite Erweiterung vom 30.09.2026 bringt Klasse 6 auf 360 (12 Wochen), Klasse 7 auf
+260 und Klasse 9 auf 400 Fragen (13,3 Wochen).
 
 ## Physik (`PhysikGenerator.cs`)
 
@@ -164,11 +170,11 @@ Rahmenlehrplan" weiter unten).
 | Individuum und Lebenswelt: Alltag und Familie | some/any und much/many | Identität, Lebensentwürfe und Zukunft |
 | Gesellschaft: Schule und Zusammenleben | Freizeit und Reisen (Wortschatz) | Gesellschaft, Medien und Vielfalt |
 | Kultur und historischer Hintergrund | Großbritannien (Landeskunde) | Umwelt und Nachhaltigkeit |
-| Natur und Umwelt | | Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) |
-| **Simple Past: regelmäßige und unregelmäßige Verben** *(neu 29.09.2026)* | | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
-| **Possessivbegleiter und Objektpronomen** *(neu)* | | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
-| **Präpositionen in, on, at** *(neu)* | | **Second Conditional** *(neu 29.09.2026)* |
-| | | **Relative Clauses** *(neu)* |
+| Natur und Umwelt | **Adverbs of manner** *(neu 30.09.2026)* | Alltag, Konsum und Wohnwelt (Werbung, Verbraucherschutz) |
+| **Simple Past: regelmäßige und unregelmäßige Verben** *(neu 29.09.2026)* | **Question tags** *(neu)* | Schule, Ausbildung und Arbeitswelt (Bewerbung) |
+| **Possessivbegleiter und Objektpronomen** *(neu)* | **Modalverben: must, mustn't, needn't, have to** *(neu)* | Kultur und historischer Hintergrund (Klasse-9-Niveau) |
+| **Präpositionen in, on, at** *(neu)* | **Wortschatz: Freundschaft, Handy und Medien** *(neu)* | **Second Conditional** *(neu 29.09.2026)* |
+|  |  | **Relative Clauses** *(neu)* |
 
 ## Gesellschaftswissenschaften / Gewi (`GewiGenerator.cs`)
 
@@ -180,9 +186,9 @@ Rahmenlehrplan" weiter unten).
 | Ernährung – wie werden Menschen satt? | Konsum und Verantwortung |  |
 | Wasser – nur Natur oder in Menschenhand? | Medien und digitales Leben |  |
 | Stadt und städtische Vielfalt | Nachhaltigkeit und Klima |  |
-| Europa – grenzenlos? |  |  |
-| Tourismus und Mobilität – schneller, weiter, klüger? |  |  |
-| Demokratie und Mitbestimmung |  |  |
+| Europa – grenzenlos? | **Islamische Welt im Mittelalter und Osmanisches Reich** *(neu 30.09.2026)* |  |
+| Tourismus und Mobilität – schneller, weiter, klüger? | **Demokratie in Berlin: Land, Bezirk und Beteiligung** *(neu)* |  |
+| Demokratie und Mitbestimmung | **Leben auf der Burg und im Kloster** *(neu)* |  |
 
 ## Politik (`PolitikGenerator.cs`)
 
@@ -246,9 +252,9 @@ Rahmenlehrplan" weiter unten).
 | Form und Gestaltung | Musikepochen und Stilrichtungen | Komposition und Satzweisen |
 | Gattungen und Genres | Instrumentenkunde und Klangfarbe | Medien und digitale Produktion |
 | Wirkung und Funktion | Musizieren: Rhythmus, Notation und Zusammenspiel | Gattungen und Genres der Musikgeschichte |
-| Musik im kulturellen Kontext |  | Filmmusik und Programmmusik |
-| **Notenwerte, Pausen und Takt** *(neu 29.09.2026)* |  | Musik im kulturellen und gesellschaftlichen Kontext |
-| **Stimme, Gesang und Chor** *(neu)* |  |  |
+| Musik im kulturellen Kontext | **Tonleitern, Intervalle und Tonarten** *(neu 30.09.2026)* | Filmmusik und Programmmusik |
+| **Notenwerte, Pausen und Takt** *(neu 29.09.2026)* | **Komponisten: Bach, Händel, Mozart, Beethoven** *(neu)* | Musik im kulturellen und gesellschaftlichen Kontext |
+| **Stimme, Gesang und Chor** *(neu)* | **Musik der Welt: Türkei und andere Kulturen** *(neu)* |  |
 
 ## Geschichte (`GeschichteGenerator.cs`)
 
@@ -275,7 +281,7 @@ Rahmenlehrplan" weiter unten).
 
 > Kein Rahmenlehrplan-Fach, sondern KI-/Medienkompetenz als eigener Modulbereich: erst fünf
 > Lernmodule (Texte in `KiContentService`, DE/TR), dann die "KI-Checkliste" als normale Übung.
-> Klasse 7 nutzt über die Übergangsregel den Klasse-6-Pool. Distraktoren sind bewusst
+> Klasse 7 hat seit 30.09.2026 einen eigenen Pool (vorher Rückfall auf Klasse 6). Distraktoren sind bewusst
 > längen-balanciert (siehe `scripts/check-answer-length-bias.py`).
 >
 > Die Lernmodule bauen aufeinander auf: **Was ist KI?** (Werkzeug, kein Wesen) → **KI im Alltag**
@@ -291,12 +297,12 @@ Rahmenlehrplan" weiter unten).
 > dauerhaft der Hinweis, dass die KI sich irren kann und man die Aufgabe erst selbst versuchen
 > soll (`Exercise_AiDisclaimer`) - dort, wo das Kind die KI tatsächlich benutzt.
 
-| Klasse 6 | Klasse 9 |
-|---|---|
-| Wie KI funktioniert | Halluzinationen und Fakten-Check |
-| KI im Alltag | Bias und Verantwortung |
-| KI-Checkliste: Sicher nutzen | Wo KI nicht hingehört |
-| KI richtig nutzen | Deepfakes und Datenschutz |
+| Klasse 6 | Klasse 7 | Klasse 9 |
+|---|---|---|
+| Wie KI funktioniert | **Wie eine KI lernt (Trainingsdaten)** *(neu 30.09.2026)* | Halluzinationen und Fakten-Check |
+| KI im Alltag | **KI oder feste Regel?** *(neu)* | Bias und Verantwortung |
+| KI-Checkliste: Sicher nutzen | **Falschmeldungen erkennen** *(neu)* | Wo KI nicht hingehört |
+| KI richtig nutzen | **Daten und Privatsphäre** *(neu)* | Deepfakes und Datenschutz |
 
 ## News (`LernTor.News`)
 
