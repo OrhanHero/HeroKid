@@ -185,6 +185,58 @@ public sealed class ReviewQuestionRepositoryTests : IDisposable
         Assert.Equal(3, await repo.GetDueCountAsync("p1"));
     }
 
+    [Fact]
+    public async Task Alte_Karteikarte_mit_falscher_binomischer_Loesung_wird_repariert()
+    {
+        using var db = CreateContext();
+        var repo = new ReviewQuestionRepository(db);
+        var alt = new QuizQuestion
+        {
+            Id = "binom",
+            Subject = Subject.Mathematik,
+            GradeLevel = GradeLevel.Klasse9,
+            Topic = "Binomische Formeln",
+            Prompt = "Multipliziere aus (1. bzw. 2. binomische Formel): (x + 9)² = ?",
+            Type = QuestionType.OpenText,
+            CorrectAnswers = new[] { "x² + 36x + 81" }, // so hat der alte Generator gerechnet
+            Explanation = "(x+9)² = x² + 2·x·9 + 9² = x² + 36x + 81"
+        };
+        await repo.RecordOutcomeAsync("p1", alt, wasCorrect: false);
+        Backdate(db, days: 1);
+
+        var frage = Assert.Single(await repo.GetDueQuestionsAsync("p1", Subject.Mathematik, 3));
+
+        Assert.Equal(new[] { "x² + 18x + 81" }, frage.CorrectAnswers);
+        Assert.True(frage.CheckAnswer("x² + 18x + 81"));
+        Assert.EndsWith("x² + 18x + 81", frage.Explanation);
+        Assert.Contains("18x", db.ReviewQuestions.Single().CorrectAnswersJson); // dauerhaft gespeichert
+    }
+
+    [Fact]
+    public async Task Gross_Kleinschreibung_bleibt_in_der_Kartei_streng()
+    {
+        using var db = CreateContext();
+        var repo = new ReviewQuestionRepository(db);
+        await repo.RecordOutcomeAsync("p1", new QuizQuestion
+        {
+            Id = "gk",
+            Subject = Subject.Deutsch,
+            GradeLevel = GradeLevel.Klasse6,
+            Topic = "Groß- und Kleinschreibung",
+            Prompt = "Setze das Wort in Klammern richtig geschrieben ein: \"das ___ (auto) ist rot.\"",
+            Type = QuestionType.OpenText,
+            CorrectAnswers = new[] { "Auto" },
+            Explanation = "Nomen werden großgeschrieben.",
+            CaseSensitive = true
+        }, wasCorrect: false);
+        Backdate(db, days: 1);
+
+        var frage = Assert.Single(await repo.GetDueQuestionsAsync("p1", Subject.Deutsch, 3));
+
+        Assert.True(frage.CaseSensitive);
+        Assert.False(frage.CheckAnswer("auto"));
+    }
+
     /// <summary>Setzt LastAnsweredAt aller Einträge um <paramref name="days"/> Tage zurück -
     /// simuliert den Folgetag, ohne echte Wartezeit.</summary>
     private static void Backdate(LernTorDbContext db, int days)

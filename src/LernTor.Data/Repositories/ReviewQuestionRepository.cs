@@ -1,6 +1,7 @@
 using System.Text.Json;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
+using LernTor.Core.Services;
 using LernTor.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,7 +60,8 @@ public sealed class ReviewQuestionRepository
                     ImageUrl = question.ImageUrl,
                     ExplanationImageUrl = question.ExplanationImageUrl,
                     ExplanationImageCaption = question.ExplanationImageCaption,
-                    RequiresTurkishCharacters = question.RequiresTurkishCharacters
+                    RequiresTurkishCharacters = question.RequiresTurkishCharacters,
+                    CaseSensitive = question.CaseSensitive
                 };
                 _db.ReviewQuestions.Add(entity);
             }
@@ -100,6 +102,11 @@ public sealed class ReviewQuestionRepository
         var entities = await _db.ReviewQuestions
             .Where(r => r.ProfileId == profileId && r.Subject == subjectName)
             .ToListAsync(cancellationToken);
+
+        if (KorrigiereBinomischeFormeln(entities))
+        {
+            await _db.SaveChangesAsync(cancellationToken);
+        }
 
         var today = DateTime.Today;
 
@@ -148,6 +155,34 @@ public sealed class ReviewQuestionRepository
         return result;
     }
 
+    /// <summary>
+    /// Karteikarten zu (x ± b)² aus der Zeit vor dem 30.09.2026 tragen meist eine falsche Lösung
+    /// (siehe <see cref="BinomischeFormel"/>). Sie werden hier beim Abruf repariert statt
+    /// gelöscht: die Aufgabe selbst war in Ordnung, und das Kind soll sie mit der richtigen
+    /// Lösung wiedersehen. Liefert, ob etwas geändert wurde.
+    /// </summary>
+    private static bool KorrigiereBinomischeFormeln(IEnumerable<ReviewQuestionEntity> entities)
+    {
+        var geaendert = false;
+        foreach (var entity in entities.Where(e => e.Topic == BinomischeFormel.Thema))
+        {
+            if (!BinomischeFormel.TryKorrigieren(entity.Prompt, out var loesung, out var erklaerung))
+            {
+                continue;
+            }
+
+            var richtig = JsonSerializer.Serialize(new[] { loesung }, JsonOptions.Default);
+            if (entity.CorrectAnswersJson != richtig)
+            {
+                entity.CorrectAnswersJson = richtig;
+                entity.Explanation = erklaerung;
+                geaendert = true;
+            }
+        }
+
+        return geaendert;
+    }
+
     private static QuizQuestion ToQuestion(ReviewQuestionEntity entity) => new()
     {
         Id = entity.QuestionId,
@@ -163,6 +198,7 @@ public sealed class ReviewQuestionRepository
         ImageUrl = entity.ImageUrl,
         ExplanationImageUrl = entity.ExplanationImageUrl,
         ExplanationImageCaption = entity.ExplanationImageCaption,
-        RequiresTurkishCharacters = entity.RequiresTurkishCharacters
+        RequiresTurkishCharacters = entity.RequiresTurkishCharacters,
+        CaseSensitive = entity.CaseSensitive
     };
 }

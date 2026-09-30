@@ -270,6 +270,8 @@ public sealed class GermanGenerator : ExerciseGeneratorBase
             Topic = "Groß- und Kleinschreibung",
             Type = QuestionType.OpenText,
             Prompt = $"Setze das Wort in Klammern richtig geschrieben ein: \"{g.Satz}\"",
+            // Genau die Schreibung ist hier die Aufgabe - "auto" darf für "Auto" nicht zählen.
+            CaseSensitive = true,
             CorrectAnswers = new[] { g.Loesung },
             Explanation = $"Richtig: \"{g.Loesung}\". Regel: {g.Regel}",
             HelpHint = "Nomen (auch zusammengesetzte) und Wochentage werden großgeschrieben, Adjektive/Verben normalerweise klein."

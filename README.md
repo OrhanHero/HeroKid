@@ -21,6 +21,7 @@ Kindes aus: geübt wird, was am nächsten Schultag dran ist, plus Türkisch (sie
 
 | Dokument | Inhalt |
 |---|---|
+| [docs/NAECHSTES-LEVEL-3.md](docs/NAECHSTES-LEVEL-3.md) | **Plan vom 30.09.2026 (Version 3.0)**: wählbare Designs, Schrift und Textgröße, Bildschirmfotos und Kontrasttests in der CI, Entwicklungsumgebung, Fahrplan bis 2028 |
 | [docs/NAECHSTES-LEVEL.md](docs/NAECHSTES-LEVEL.md) | **Plan vom 29.09.2026**: .NET 10, Abzeichen, Meisterschaft je Thema, größere Pools |
 | [docs/NAECHSTE-SCHRITTE.md](docs/NAECHSTE-SCHRITTE.md) | **Was als Nächstes zu tun ist**, und was am 28.09.2026 erledigt wurde |
 | [docs/WIEDERHERSTELLUNG.md](docs/WIEDERHERSTELLUNG.md) | Notfall: Sicherung einspielen, App startet nicht, Kiosk lösen |

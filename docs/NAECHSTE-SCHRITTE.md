@@ -8,6 +8,10 @@ Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht u
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
+> **Nächste Version (Plan vom 30.09.2026): 3.0** – wählbare Designs (auch dunkel und mit hohem
+> Kontrast), Schrift und Textgröße je Kind, Bildschirmfotos und Kontrasttests in der CI,
+> Entwicklungsumgebung für jede Sitzung, Fahrplan bis 2028: [`NAECHSTES-LEVEL-3.md`](NAECHSTES-LEVEL-3.md).
+>
 > **Neu (29.09.2026): Version 2.0** – .NET 10, Meisterschaft je Thema, Abzeichen, eine
 > Fehler-Kartei-Zahl, die stimmt, größere Englisch- und Musikpools, stärkeres Eltern-Passwort,
 > Systeminfo. Plan und Begründung: [`NAECHSTES-LEVEL.md`](NAECHSTES-LEVEL.md).
@@ -115,6 +119,16 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
   Ein Auto-Update wäre der erste Netzzugriff der App außer News und Wetter.
 
 ---
+
+## Erledigt am 30.09.2026
+
+| Was | Wo |
+|---|---|
+| **+660 Fragen**: Türkisch Kl. 6/7/9, Klasse 7 Englisch/Deutsch/Gewi/Musik, KI-Wissen Kl. 7 | Pull Request [OrhanHero/HeroKid#6](https://github.com/OrhanHero/HeroKid/pull/6) |
+| **Fehler:** offene Antworten galten als richtig, sobald die Lösung *darin vorkam* – „25“ war richtig, wenn „5“ gesucht war, und wer mehrere Formen hintereinander tippte, lag immer richtig. Jetzt muss die Antwort der Lösung entsprechen (Einheiten, „x =“, Artikel, ganzer Lückensatz bleiben erlaubt) | `OpenTextAnswerMatcher` |
+| **Fehler:** bei den binomischen Formeln waren 8 von 9 hinterlegten Lösungen falsch („(x + 9)² = x² + 36x + 81“). Wer richtig rechnete, bekam einen Fehler. Alte Karteikarten werden beim nächsten Abruf repariert | `BinomischeFormel` |
+| **Fehler:** „Groß- und Kleinschreibung“ nahm „auto“ für „Auto“ an – die Schreibung, um die es ging, wurde nicht geprüft | `QuizQuestion.CaseSensitive` |
+| Release-Workflow auch per Knopf (Actions → Release → Run workflow), Release 2.0.0 veröffentlicht | `release.yml` |
 
 ## Erledigt am 29.09.2026 (Version 2.0)
 
