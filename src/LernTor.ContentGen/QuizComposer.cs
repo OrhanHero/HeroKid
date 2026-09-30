@@ -33,6 +33,9 @@ public sealed class QuizComposer
         _generators = generators;
     }
 
+    /// <summary>Die Generatoren, aus denen die Aufgaben kommen (für den Rahmenlehrplan-Stand).</summary>
+    public IReadOnlyList<IExerciseGenerator> Generators => _generators;
+
     /// <summary>
     /// Baut das Abschlussquiz aus allen NICHT deaktivierten Fachbereichen. Die Fragenzahl pro Fach
     /// wird so verteilt, dass in Summe GENAU <paramref name="targetTotalQuestions"/> Fragen

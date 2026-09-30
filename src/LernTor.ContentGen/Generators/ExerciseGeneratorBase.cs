@@ -95,5 +95,34 @@ public abstract class ExerciseGeneratorBase : IExerciseGenerator
         return questions;
     }
 
+    /// <summary>
+    /// Themennamen, die jede Themen-Methode einer Klassenstufe in ihre Fragen schreibt - der
+    /// Rahmenlehrplan-Katalog kennt die Methoden, das Aktivitätsprotokoll nur die Namen
+    /// (<see cref="Curriculum.RahmenlehrplanStand"/>). Mehrere Stichproben, weil manche Themen
+    /// je nach Aufgabe einen anderen Namen tragen.
+    /// </summary>
+    public IReadOnlyDictionary<string, IReadOnlySet<string>> TopicNamesByMethod(GradeLevel grade, int samples = 12)
+    {
+        var result = new Dictionary<string, IReadOnlySet<string>>();
+        if (!TopicsByGrade.TryGetValue(grade, out var topics))
+        {
+            return result;
+        }
+
+        var random = new Random(6);
+        foreach (var topic in topics)
+        {
+            var names = new HashSet<string>(StringComparer.Ordinal);
+            for (var i = 0; i < samples; i++)
+            {
+                names.Add(topic(random).Topic);
+            }
+
+            result[topic.Method.Name] = names;
+        }
+
+        return result;
+    }
+
     protected static string NewId() => Guid.NewGuid().ToString("N");
 }

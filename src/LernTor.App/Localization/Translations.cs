@@ -90,6 +90,12 @@ public static class Translations
             ["Parent_Report_MasteryRow"] = L(
                 "🏆 {0} gemeistert · ✅ {1} sicher · 📘 {2} vertraut · 🌱 {3} angefangen",
                 "🏆 {0} ustalaşılmış · ✅ {1} emin · 📘 {2} tanıdık · 🌱 {3} başlanmış"),
+            ["Parent_Report_Curriculum"] = L(
+                "📚 Rahmenlehrplan Berlin je Fach (Klassenstufe des Kindes)",
+                "📚 Derslere göre Berlin öğretim planı (çocuğun sınıf seviyesi)"),
+            ["Parent_Report_CurriculumRow"] = L(
+                "{0} von {1} Themenfeldern in LernTor, davon {2} geübt",
+                "{1} konu alanından {0} tanesi LernTor'da, {2} tanesi çalışıldı"),
             ["Welcome_Homework"] = L(
                 "📒 Hausaufgaben: {0} noch offen",
                 "📒 Ev ödevleri: {0} tane açık"),

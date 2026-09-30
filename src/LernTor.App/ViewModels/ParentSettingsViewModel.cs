@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using LernTor.App.Localization;
 using LernTor.App.Services;
 using LernTor.ContentGen;
+using LernTor.ContentGen.Curriculum;
 using LernTor.ContentGen.Llm;
 using LernTor.ContentGen.TeacherImport;
 using LernTor.Core.Enums;
@@ -1291,6 +1292,8 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
         RewardRedemptions.Clear();
         MasteryReportRows.Clear();
         OnPropertyChanged(nameof(HasMasteryReportData));
+        CurriculumReportRows.Clear();
+        OnPropertyChanged(nameof(HasCurriculumReportData));
         _reportActivity = Array.Empty<ActivityLogEntity>();
 
         if (SelectedProfile is null)
@@ -1315,19 +1318,32 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
             RewardRedemptions.Add(redemption);
         }
 
-        await LoadMasteryReportAsync(SelectedProfile.Id);
+        await LoadMasteryReportAsync(SelectedProfile.Id, SelectedProfile.GradeLevel);
 
         // 30 Tage einmal laden - die 7/30-Tage-Umschaltung filtert danach nur noch in-memory.
         _reportActivity = await _activityLogRepo.GetActivitySinceAsync(SelectedProfile.Id, TimeSpan.FromDays(30));
         RebuildReport();
     }
 
-    private async Task LoadMasteryReportAsync(string profileId)
+    private async Task LoadMasteryReportAsync(string profileId, GradeLevel gradeLevel)
     {
         var loc = LocalizationService.Instance;
+        var antworten = await _activityLogRepo.GetAllAnswersAsync(profileId);
         var themen = TopicMasteryCalculator.Calculate(
-            await _activityLogRepo.GetAllAnswersAsync(profileId),
+            antworten,
             await _masteredPromptRepo.GetReviewPassedPromptsAsync(profileId));
+
+        // Rahmenlehrplan je Fach (RahmenlehrplanStand): passt LernTor zum Unterricht dieser Klasse?
+        foreach (var stand in RahmenlehrplanStand.Berechne(
+                     gradeLevel, _quizComposer.Generators, antworten.Select(a => (a.Subject, a.Topic))))
+        {
+            CurriculumReportRows.Add(new ReportExportRow(
+                stand.Bezeichnung,
+                string.Format(loc["Parent_Report_CurriculumRow"], stand.Abgedeckt, stand.Themenfelder, stand.Geuebt),
+                Rate: stand.Abgedeckt == 0 ? 0 : (double)stand.Geuebt / stand.Abgedeckt));
+        }
+
+        OnPropertyChanged(nameof(HasCurriculumReportData));
 
         foreach (var fach in themen.GroupBy(thema => thema.Subject))
         {
@@ -1456,6 +1472,15 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
     public ObservableCollection<ReportExportRow> MasteryReportRows { get; } = new();
 
     public bool HasMasteryReportData => MasteryReportRows.Count > 0;
+
+    /// <summary>
+    /// Rahmenlehrplan je Fach (docs/NAECHSTES-LEVEL-3-2.md, Schritt 5): wie viele Themenfelder der
+    /// Doppeljahrgangsstufe des Kindes LernTor übt und wie viele davon das Kind schon geübt hat.
+    /// Wie die Meisterschaft über alle Antworten seit Beginn.
+    /// </summary>
+    public ObservableCollection<ReportExportRow> CurriculumReportRows { get; } = new();
+
+    public bool HasCurriculumReportData => CurriculumReportRows.Count > 0;
 
     [ObservableProperty]
     private int reportDays = 7;
@@ -1652,6 +1677,7 @@ public sealed partial class ParentSettingsViewModel : ObservableObject
                 .Select(row => new ReportExportRow(row.Label, row.RateDisplay, row.Rate))
                 .ToList()),
             new(loc["Parent_Report_Mastery"], MasteryReportRows.ToList()),
+            new(loc["Parent_Report_Curriculum"], CurriculumReportRows.ToList()),
             new("⏱ Lernzeit je Fach", SubjectTimeRows
                 .Select(row => new ReportExportRow(
                     row.SubjectLabel,
