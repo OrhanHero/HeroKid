@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -24,7 +24,7 @@
                        FontSize="15" TextAlignment="Center" Margin="0,4,0,0" />
             <TextBlock Text="{Binding Reason, Mode=OneWay}" Style="{StaticResource BodyText}"
                        FontSize="14" TextAlignment="Center" TextWrapping="Wrap" Margin="0,10,0,0"
-                       Foreground="{StaticResource ErrorBrush}"
+                       Foreground="{DynamicResource ErrorBrush}"
                        Visibility="{Binding HasReason, Converter={StaticResource BoolToVis}}" />
         </StackPanel>
 
@@ -38,7 +38,7 @@
 
                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_ExamMistakes]}"
                            FontSize="20" FontWeight="SemiBold" Margin="4,8,0,10"
-                           Foreground="{StaticResource TextPrimaryBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            Visibility="{Binding HasMistakes, Converter={StaticResource BoolToVis}}" />
 
                 <!-- Jede falsche Frage einzeln, mit Begründung. Das ist der Ertrag des
@@ -63,12 +63,12 @@
                                                    FontSize="12" Opacity="0.8" />
                                         <TextBlock Text="{Binding Prompt}" FontSize="16" FontWeight="SemiBold"
                                                    TextWrapping="Wrap" Margin="0,2,0,8"
-                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
 
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_ExamYourAnswer]}"
                                                        Style="{StaticResource BodyText}" FontSize="13"
-                                                       FontWeight="SemiBold" Foreground="{StaticResource ErrorBrush}" />
+                                                       FontWeight="SemiBold" Foreground="{DynamicResource ErrorBrush}" />
                                             <TextBlock Text=": " Style="{StaticResource BodyText}" FontSize="13" />
                                         </StackPanel>
                                         <TextBlock Text="{Binding ChosenDisplay}" Style="{StaticResource BodyText}"
@@ -77,7 +77,7 @@
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_ExamCorrectAnswer]}"
                                                        Style="{StaticResource BodyText}" FontSize="13"
-                                                       FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" />
+                                                       FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
                                             <TextBlock Text=": " Style="{StaticResource BodyText}" FontSize="13" />
                                         </StackPanel>
                                         <TextBlock Text="{Binding CorrectDisplay}" Style="{StaticResource BodyText}"
@@ -105,7 +105,7 @@
                     Command="{Binding RepeatCommand}" />
             <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Back]}"
                     Style="{StaticResource RoundedButton}"
-                    Background="{StaticResource TextSecondaryBrush}"
+                    Background="{DynamicResource TextSecondaryBrush}"
                     Command="{Binding BackCommand}" />
         </StackPanel>
     </Grid>

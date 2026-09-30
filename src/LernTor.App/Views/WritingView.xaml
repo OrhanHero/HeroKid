@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
             <StackPanel HorizontalAlignment="Center" MaxWidth="1000">
                 <TextBlock Text="✍️" FontSize="60" HorizontalAlignment="Center" Margin="0,0,0,12" />
@@ -49,7 +49,7 @@
                 <!-- Prompt-Karte -->
                 <Border Style="{StaticResource CardBorder}">
                     <StackPanel>
-                        <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="6" Padding="10,3"
+                        <Border Background="{DynamicResource TileLavenderBrush}" CornerRadius="6" Padding="10,3"
                                 HorizontalAlignment="Center" Margin="0,0,0,8">
                             <TextBlock Text="{Binding Prompt.Title}" FontWeight="Bold" FontSize="12" />
                         </Border>
@@ -61,7 +61,7 @@
                 <!-- Schreibbereich -->
                 <Border Style="{StaticResource CardBorder}" Margin="0,20,0,0">
                     <StackPanel>
-                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="6" Padding="10,3"
+                        <Border Background="{DynamicResource TileMintBrush}" CornerRadius="6" Padding="10,3"
                                 HorizontalAlignment="Center" Margin="0,0,0,8">
                             <TextBlock Text="✍️ Dein Text" FontWeight="Bold" FontSize="12" />
                         </Border>
@@ -76,11 +76,11 @@
                                  crasht beim Laden gegen die Read-Only-Quellen (Localization-Indexer,
                                  Zähler-Properties) - siehe "Hard-won gotchas" in CLAUDE.md; von den
                                  XamlLoadTests in CI gefangen. -->
-                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,16,0">
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,16,0">
                                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Words], Mode=OneWay}" />
                                 <Run Text="{Binding WordCount, Mode=OneWay}" FontWeight="Bold" />
                             </TextBlock>
-                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}">
+                            <TextBlock Style="{StaticResource BodyText}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
                                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_Chars], Mode=OneWay}" />
                                 <Run Text="{Binding CharCount, Mode=OneWay}" FontWeight="Bold" />
                             </TextBlock>
@@ -91,7 +91,7 @@
                 <!-- Timer + Weiter-Button -->
                 <StackPanel HorizontalAlignment="Center" Margin="0,28,0,0">
                     <TextBlock Text="{Binding RemainingTimeDisplay}" FontSize="40" FontWeight="Bold"
-                               HorizontalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryBrush}"
                                Visibility="{Binding CanContinue, Converter={StaticResource InverseBoolToVis}}" />
                     <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Writing_TimeRemainingHint]}"
                                Style="{StaticResource BodyText}" TextAlignment="Center" Margin="0,4,0,20"

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -36,7 +36,7 @@
             <!-- Mindest-Lernzeit-Countdown (siehe ExerciseViewModel): sichtbar, solange die
                  Mindestzeit läuft - das Kind sieht, dass Warten gewollt ist, kein Fehler. -->
             <TextBlock HorizontalAlignment="Center" Margin="0,0,0,8" FontSize="15"
-                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
                        Visibility="{Binding ShowLockCountdown, Converter={StaticResource BoolToVis}}">
                 <TextBlock.Text>
                     <MultiBinding Converter="{StaticResource FormatWithArg}">

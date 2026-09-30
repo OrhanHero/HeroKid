@@ -6,7 +6,9 @@
         Height="560" MinHeight="380"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="{DynamicResource AppFontFamily}">
     <!-- Gleicher Aufbau wie der Klausur-Dialog: Inhalt scrollt, Knopfzeile bleibt unten
          verankert. Ein Fenster fester Hoehe hatte dort die Knoepfe abgeschnitten. -->
     <Grid Margin="24">
@@ -39,7 +41,7 @@
 
         <StackPanel Grid.Row="1" Margin="0,12,0,0">
             <TextBlock x:Name="ErrorText" Style="{StaticResource BodyText}" FontSize="12"
-                       Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap"
+                       Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap"
                        Margin="0,0,0,8" Visibility="Collapsed" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

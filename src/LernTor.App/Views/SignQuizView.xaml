@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
 
         <!-- ===================== Laufendes Quiz ===================== -->
         <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -37,13 +37,13 @@
                                     <Style TargetType="Button" BasedOn="{StaticResource OptionButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsCorrectAnswer}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                                 <Setter Property="Opacity" Value="1" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsWrongChoice}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                                 <Setter Property="Opacity" Value="1" />
                                             </DataTrigger>
                                         </Style.Triggers>

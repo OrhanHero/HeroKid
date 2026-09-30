@@ -934,6 +934,46 @@ def check_hardcoded_subject_counts() -> None:
                    f"Zeile {zeile}: feste Zahl gegen {m.group(1)} - veraltet beim naechsten Fach")
 
 
+def _design_brush_keys() -> set[str]:
+    """Pinsel-Schluessel der Design-Rollen, gelesen aus DesignResourceKeys.cs (Core)."""
+    quelle = SRC / "LernTor.Core" / "Design" / "DesignResourceKeys.cs"
+    if not quelle.exists():
+        return set()
+    return set(re.findall(r'new Keys\("[A-Za-z]+", "[A-Za-z]+", "([A-Za-z]+)"\)', quelle.read_text(encoding="utf-8")))
+
+
+def check_design_resources() -> None:
+    """Design-Pinsel nur per DynamicResource, keine festen Farben in Ansichten.
+
+    Seit 3.0 (30.09.2026) legt ThemeService das gewaehlte Design zur Laufzeit ueber die App.
+    Eine Stelle mit {StaticResource PrimaryBrush} behielte beim Umschalten die alte Farbe -
+    kein Compilerfehler, kein Testfehler, nur eine falsche Farbe im dunklen Design. Eine feste
+    Farbe (#RRGGBB oder "White") in einer Ansicht ebenso. Ausnahmen: Colors.xaml (dort sind die
+    Standardwerte definiert) und die Fingerfarben der Tipp-Tastatur (feste Lernfarben).
+    """
+    pinsel = _design_brush_keys()
+    if not pinsel:
+        return
+    muster = re.compile(r"\{StaticResource (" + "|".join(sorted(pinsel)) + r")\}")
+    for path in sorted((SRC / "LernTor.App").rglob("*.xaml")):
+        if "obj" in path.parts or "bin" in path.parts or path.name == "Colors.xaml":
+            continue
+        ansicht = path.parent.name in {"Views", "Controls"}
+        for nummer, zeile in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if muster.search(zeile):
+                report("design-static", path,
+                       f"Zeile {nummer}: Design-Pinsel per StaticResource - wechselt beim "
+                       f"Umschalten des Designs nicht mit (DynamicResource verwenden)")
+            if ansicht and re.search(r'"#[0-9A-Fa-f]{6,8}"', zeile):
+                report("design-hexfarbe", path,
+                       f"Zeile {nummer}: feste Farbe in einer Ansicht - eine Design-Rolle "
+                       f"verwenden (docs/DESIGN.md)")
+            if ansicht and re.search(r'(Foreground|Value)="White"', zeile) and "FingerName" not in zeile:
+                report("design-hexfarbe", path,
+                       f"Zeile {nummer}: 'White' fest eingetragen - auf Farbflaechen "
+                       f"{{DynamicResource OnColorBrush}} verwenden")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--quick", action="store_true",
@@ -961,6 +1001,7 @@ def main() -> int:
         ("Themen-Klassenstufe", check_topic_grade_stamp),
         ("ObservableProperty-Feldname", check_observable_field_case),
         ("Feste Fachzahlen in Tests", check_hardcoded_subject_counts),
+        ("Design-Ressourcen", check_design_resources),
     ]
     if not args.quick:
         checks += [

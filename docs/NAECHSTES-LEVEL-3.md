@@ -15,9 +15,9 @@ nachgeführt.
 | Schritt | Stand |
 |---|---|
 | 0 — Release 2.1.0 (Antwortprüfung, +660 Fragen) | ⏳ Release-Lauf gestartet 30.09.2026; Version in `Directory.Build.props`/`setup.iss` auf 2.1.0 |
-| 1 — Sehen, was man baut (Bildschirmfotos, Kontrast, Regeln) | 🔨 Bildschirmfotos in der CI (`DesignScreenshotTests`, Artefakt „Design-Vorschau“); Kontrasttest und Preflight-Regeln folgen mit Schritt 2, weil sie die Design-Tokens brauchen |
-| 2 — Design-Fundament | offen |
-| 3 — Acht Designs | offen |
+| 1 — Sehen, was man baut (Bildschirmfotos, Kontrast, Regeln) | ✅ 30.09.2026: Bildschirmfotos jeder Ansicht in jedem Design (`DesignScreenshotTests`, Artefakt „Design-Vorschau“), Kontrasttest (`DesignThemeCatalogTests`), Preflight-Regel `design-static`/`design-hexfarbe` |
+| 2 — Design-Fundament | ✅ 30.09.2026: 22 Rollen (`DesignPalette`), 300 Verweise auf `DynamicResource`, `ThemeService`, Schrift- und Textgrößen-Ressource; Eltern-Bereich bleibt immer im Standard-Design |
+| 3 — Acht Designs | ✅ 30.09.2026: Paletten in `DesignThemeCatalog`, alle bestehen WCAG 2.2 AA; Lavendel mit lesbareren Grün-/Rot-/Orange-Tönen |
 | 4 — Design-Auswahl für die Kinder | offen |
 | 5 — Designs als Belohnung | offen |
 | 6 — Entwicklungsumgebung | offen |

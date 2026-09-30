@@ -1,11 +1,14 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using LernTor.App.Services;
 using LernTor.App.ViewModels;
 using LernTor.App.Views;
 using LernTor.ContentGen.HomeworkChat;
+using LernTor.Core.Design;
 using LernTor.Core.Enums;
 using LernTor.Core.Models;
 using LernTor.Core.Services;
@@ -122,21 +125,83 @@ public sealed class DesignScreenshotTests
         }),
     };
 
+    /// <summary>
+    /// Jede Ansicht in jedem Design (Dateiname: Design_Ansicht.png), dazu das Standard-Design in
+    /// 120 % Textgröße - der Fall, in dem auf 1366 × 768 am ehesten etwas abgeschnitten wird.
+    /// </summary>
     [WpfFact]
-    public void Wichtige_Ansichten_als_Bildschirmfotos()
+    public void Wichtige_Ansichten_in_jedem_Design_als_Bildschirmfotos()
     {
         EnsureAppResourcesLoaded();
         var ordner = Zielordner();
 
-        foreach (var (name, ansicht) in Ansichten())
+        try
         {
-            var datei = Path.Combine(ordner, $"{name}.png");
-            var bild = Fotografiere(ansicht(), 1.0);
-            Speichere(bild, datei);
+            foreach (var theme in DesignThemeCatalog.All)
+            {
+                ThemeService.Instance.Apply(theme, DesignFont.Standard, 1.0);
+                foreach (var (name, ansicht) in Ansichten())
+                {
+                    Fotografiere(ordner, $"{theme.Id}_{name}", ansicht(), 1.0);
+                }
+            }
 
-            Assert.True(new FileInfo(datei).Length > 5_000, $"{name}: das Bild ist verdächtig klein - leer gezeichnet?");
-            Assert.True(HatInhalt(bild), $"{name}: das Bild ist einfarbig - nichts gezeichnet?");
+            ThemeService.Instance.Apply(DesignThemeCatalog.Default, DesignFont.GutLesbar, 1.2);
+            foreach (var (name, ansicht) in Ansichten())
+            {
+                Fotografiere(ordner, $"lavendel-120-verdana_{name}", ansicht(), 1.2);
+            }
         }
+        finally
+        {
+            ThemeService.Instance.ApplyDefault();
+        }
+    }
+
+    /// <summary>
+    /// Das Design liegt vor Colors.xaml: eine Ansicht, die danach entsteht, bekommt seine Farben
+    /// und Schrift, und wiederholtes Umschalten stapelt keine Wörterbücher. (Dass eine schon offene
+    /// Ansicht umfärbt, ist die Aufgabe von DynamicResource - preflight.py prüft die Schreibweise,
+    /// WPF benachrichtigt dafür aber nur Elemente in einem Fenster; das prüft der Testplan V.3-2.)
+    /// </summary>
+    [WpfFact]
+    public void Design_liegt_vor_Colors_xaml_und_stapelt_nicht()
+    {
+        EnsureAppResourcesLoaded();
+        var vorher = Application.Current.Resources.MergedDictionaries.Count;
+
+        try
+        {
+            var nacht = DesignThemeCatalog.Find(DesignThemeCatalog.DarkId);
+            ThemeService.Instance.Apply(nacht, DesignFont.Verspielt, 1.1);
+            ThemeService.Instance.Apply(nacht, DesignFont.Verspielt, 1.1);
+
+            var rahmen = new Border();
+            rahmen.SetResourceReference(Border.BackgroundProperty, "BackgroundBrush");
+            Assert.Equal(ThemeService.ToColor(nacht.Palette.Background), ((SolidColorBrush)rahmen.Background).Color);
+            Assert.Equal(ThemeService.ToColor(nacht.Palette.OnColor), ((SolidColorBrush)Application.Current.FindResource("OnColorBrush")).Color);
+            Assert.Equal("Comic Sans MS", ((FontFamily)Application.Current.FindResource("AppFontFamily")).Source);
+            Assert.Equal(1.1, ThemeService.Instance.TextScale, 3);
+            Assert.True(Application.Current.Resources.MergedDictionaries.Count <= vorher + 1);
+        }
+        finally
+        {
+            ThemeService.Instance.ApplyDefault();
+        }
+
+        var danach = new Border();
+        danach.SetResourceReference(Border.BackgroundProperty, "BackgroundBrush");
+        Assert.Equal(ThemeService.ToColor(DesignThemeCatalog.Default.Palette.Background), ((SolidColorBrush)danach.Background).Color);
+    }
+
+    private static void Fotografiere(string ordner, string name, FrameworkElement ansicht, double skalierung)
+    {
+        var datei = Path.Combine(ordner, $"{name}.png");
+        var bild = Fotografiere(ansicht, skalierung);
+        Speichere(bild, datei);
+
+        Assert.True(new FileInfo(datei).Length > 5_000, $"{name}: das Bild ist verdächtig klein - leer gezeichnet?");
+        Assert.True(HatInhalt(bild), $"{name}: das Bild ist einfarbig - nichts gezeichnet?");
     }
 
     /// <summary>
@@ -157,7 +222,10 @@ public sealed class DesignScreenshotTests
                 Child = ansicht
             }
         };
+        // Wie MainWindow: Hintergrund, Schriftfarbe und Schrift des Designs erben alle Kinder.
         rahmen.SetResourceReference(Border.BackgroundProperty, "BackgroundBrush");
+        rahmen.SetResourceReference(TextElement.ForegroundProperty, "TextPrimaryBrush");
+        rahmen.SetResourceReference(TextElement.FontFamilyProperty, "AppFontFamily");
         TextOptions.SetTextFormattingMode(rahmen, TextFormattingMode.Display);
 
         rahmen.Measure(new Size(Breite, Hoehe));

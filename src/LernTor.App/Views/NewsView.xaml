@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -23,24 +23,24 @@
                     Visibility="{Binding HasWeather, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
                     <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_WeatherTitle]}"
-                               FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+                               FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
                     <StackPanel Orientation="Horizontal" Margin="0,4,0,2">
                         <TextBlock Text="{Binding WeatherTempDisplay}" FontSize="26" FontWeight="Bold" Margin="0,0,10,0" />
                         <TextBlock Text="{Binding WeatherRangeDisplay}" FontSize="14"
-                                   Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                   Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                     </StackPanel>
                     <TextBlock Text="{Binding WeatherDescription}" FontSize="14" TextWrapping="Wrap" />
                     <TextBlock Text="{Binding WeatherTip}" FontSize="13" TextWrapping="Wrap" Margin="0,4,0,0"
-                               Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" />
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontStyle="Italic" />
                 </StackPanel>
             </Border>
 
             <StackPanel Grid.Column="0" Margin="0,0,16,0">
-            <TextBlock Style="{StaticResource HeadlineText}" Foreground="{StaticResource NewsBrush}">
+            <TextBlock Style="{StaticResource HeadlineText}" Foreground="{DynamicResource NewsBrush}">
                 <Run Text="📰 " />
                 <Run Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Stage_News], Mode=OneWay}" />
             </TextBlock>
-            <Rectangle Style="{StaticResource HeaderAccentBar}" Fill="{StaticResource NewsBrush}" />
+            <Rectangle Style="{StaticResource HeaderAccentBar}" Fill="{DynamicResource NewsBrush}" />
             <TextBlock Style="{StaticResource SubtitleText}" Margin="0,8,0,0">
                 <Run Text="{Binding DisplayIndex, Mode=OneWay}" />
                 <Run Text=" / " />
@@ -69,13 +69,13 @@
                         <Border Width="30" Height="30" CornerRadius="15" Margin="0,0,6,0">
                             <Border.Style>
                                 <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{StaticResource ProgressTrackBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource ProgressTrackBrush}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsDone}" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -86,16 +86,16 @@
                                            Visibility="{Binding IsDone, Converter={StaticResource InverseBoolToVis}}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                                    <Setter Property="Foreground" Value="White" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                                <TextBlock Text="✓" FontSize="14" FontWeight="Bold" Foreground="White"
+                                <TextBlock Text="✓" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource OnColorBrush}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Visibility="{Binding IsDone, Converter={StaticResource BoolToVis}}" />
                             </Grid>
@@ -121,13 +121,13 @@
 
                         <!-- Info-Chips: Rubrik (Emoji + Name), Lesedauer, Schwierigkeitsgrad -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                            <Border Background="{StaticResource TileLavenderBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
+                            <Border Background="{DynamicResource TileLavenderBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
                                 <TextBlock FontSize="13" FontWeight="SemiBold">
                                     <Run Text="{Binding CurrentArticle.CategoryEmoji, Mode=OneWay}" />
                                     <Run Text="{Binding CurrentArticle.Category, Converter={StaticResource NewsCategoryToTitle}, Mode=OneWay}" />
                                 </TextBlock>
                             </Border>
-                            <Border Background="{StaticResource TileMintBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
+                            <Border Background="{DynamicResource TileMintBrush}" CornerRadius="12" Padding="10,4" Margin="0,0,8,0">
                                 <TextBlock FontSize="13" FontWeight="SemiBold">
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{StaticResource FormatWithArg}">
@@ -137,12 +137,12 @@
                                     </TextBlock.Text>
                                 </TextBlock>
                             </Border>
-                            <Border Background="{StaticResource TileSandBrush}" CornerRadius="12" Padding="10,4">
+                            <Border Background="{DynamicResource TileSandBrush}" CornerRadius="12" Padding="10,4">
                                 <TextBlock FontSize="13" FontWeight="SemiBold"
                                            Text="{Binding CurrentArticle.Difficulty, Converter={StaticResource NewsDifficultyToTitle}, Mode=OneWay}" />
                             </Border>
                             <!-- 📍-Bezirks-Chip (nur wenn ein Berliner Bezirk erkannt wurde) -->
-                            <Border Background="{StaticResource TileRoseBrush}" CornerRadius="12" Padding="10,4" Margin="8,0,0,0"
+                            <Border Background="{DynamicResource TileRoseBrush}" CornerRadius="12" Padding="10,4" Margin="8,0,0,0"
                                     Visibility="{Binding CurrentArticle.BerlinDistrict, Converter={StaticResource NullToVis}}">
                                 <TextBlock FontSize="13" FontWeight="SemiBold">
                                     <Run Text="📍 " /><Run Text="{Binding CurrentArticle.BerlinDistrict, Mode=OneWay}" />
@@ -153,7 +153,7 @@
                         <TextBlock Text="{Binding CurrentArticle.SimplifiedSummary}" Style="{StaticResource BodyText}" />
 
                         <!-- Schwierige Wörter, sofort erklärt (KidTermGlossary) -->
-                        <Border Background="{StaticResource TileMintBrush}" CornerRadius="14" Padding="16" Margin="0,12,0,0"
+                        <Border Background="{DynamicResource TileMintBrush}" CornerRadius="14" Padding="16" Margin="0,12,0,0"
                                 Visibility="{Binding HasExplainedTerms, Converter={StaticResource BoolToVis}}">
                             <StackPanel>
                                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[News_ExplainedTerms]}"
@@ -198,7 +198,7 @@
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,32">
             <!-- Mindest-Lesezeit-Countdown (siehe NewsViewModel): sichtbar, solange die Zeit läuft. -->
             <TextBlock HorizontalAlignment="Center" Margin="0,0,0,8" FontSize="15"
-                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
                        Visibility="{Binding ShowLockCountdown, Converter={StaticResource BoolToVis}}">
                 <TextBlock.Text>
                     <MultiBinding Converter="{StaticResource FormatWithArg}">

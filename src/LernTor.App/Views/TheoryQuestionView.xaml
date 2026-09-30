@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center" MaxWidth="760" Margin="24,48,24,32">
 
@@ -26,7 +26,7 @@
                 <Border Style="{StaticResource CardBorder}" Padding="20,16" Margin="0,0,0,10">
                     <StackPanel>
                         <TextBlock Text="{Binding Prompt, Mode=OneWay}" FontSize="19" FontWeight="SemiBold"
-                                   TextWrapping="Wrap" Foreground="{StaticResource TextPrimaryBrush}" />
+                                   TextWrapping="Wrap" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <!-- Wie viele Antworten richtig sind, steht NICHT dran - das wüsste man
                              in der Prüfung auch nicht. -->
                         <TextBlock Style="{StaticResource BodyText}" FontSize="13" Margin="0,6,0,0"
@@ -58,22 +58,22 @@
                                     <Style TargetType="Button" BasedOn="{StaticResource OptionButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsChosen}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsCorrectAnswer}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                                 <Setter Property="Opacity" Value="1" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsWrongChoice}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                                 <Setter Property="Opacity" Value="1" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMissed}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                                 <Setter Property="Opacity" Value="1" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -116,7 +116,7 @@
                 <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Fs_Back]}"
                         Style="{StaticResource RoundedButton}" HorizontalAlignment="Center" Margin="0,24,0,0"
                         FontSize="14" Padding="18,8"
-                        Background="{StaticResource TextSecondaryBrush}"
+                        Background="{DynamicResource TextSecondaryBrush}"
                         Command="{Binding BackCommand}" />
             </StackPanel>
         </ScrollViewer>

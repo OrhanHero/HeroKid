@@ -14,6 +14,12 @@ public partial class ParentSettingsWindow : Window
     {
         InitializeComponent();
 
+        // Der Eltern-Bereich zeigt immer das Standard-Design, egal was das Kind gerade gewählt
+        // hat: Fenster-Ressourcen gehen bei DynamicResource vor denen der App. So sehen Eltern
+        // immer dieselbe, geprüfte Oberfläche - auch wenn das Kind "Galaxie" eingestellt hat.
+        Resources.MergedDictionaries.Add(LernTor.App.Services.ThemeService.BuildResources(
+            LernTor.Core.Design.DesignThemeCatalog.Default.Palette, LernTor.Core.Design.DesignFont.Standard));
+
         _viewModel = viewModel;
         DataContext = _viewModel;
         _viewModel.RequestClose += () => Dispatcher.Invoke(() =>

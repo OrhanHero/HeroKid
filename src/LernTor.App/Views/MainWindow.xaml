@@ -4,13 +4,16 @@
         xmlns:vm="clr-namespace:LernTor.App.ViewModels"
         xmlns:views="clr-namespace:LernTor.App.Views"
         xmlns:loc="clr-namespace:LernTor.App.Localization"
+        xmlns:svc="clr-namespace:LernTor.App.Services"
         Title="LernTor"
         WindowStyle="None"
         WindowState="Maximized"
         ResizeMode="NoResize"
         Topmost="True"
         ShowInTaskbar="False"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="{DynamicResource AppFontFamily}">
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:PauseModeViewModel}">
@@ -82,11 +85,18 @@
     </Window.Resources>
 
     <Grid>
-        <ContentControl Content="{Binding CurrentViewModel}" />
+        <!-- Textgröße des Kindes (100/110/120 %): skaliert den ganzen Inhalt statt 505 einzelner
+             Schriftgrößen - siehe ThemeService. -->
+        <ContentControl Content="{Binding CurrentViewModel}">
+            <ContentControl.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding Source={x:Static svc:ThemeService.Instance}, Path=TextScale}"
+                                ScaleY="{Binding Source={x:Static svc:ThemeService.Instance}, Path=TextScale}" />
+            </ContentControl.LayoutTransform>
+        </ContentControl>
 
         <!-- Datum/Uhrzeit (PC-Systemuhr), immer sichtbar, unauffällig -->
         <TextBlock Text="{Binding CurrentDateTimeDisplay}"
-                   FontFamily="Segoe UI" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"
+                   FontFamily="{DynamicResource AppFontFamily}" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,12" Opacity="0.7" />
 
         <!-- Etappen der heutigen Session (Lesen → News → Fächer → Quiz), sichtbar sobald ein Profil
@@ -104,33 +114,33 @@
                     <Border CornerRadius="14" Padding="12,5" Margin="3,0">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="{StaticResource CardBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource CardBrush}" />
                                 <Setter Property="Opacity" Value="0.75" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+                                        <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
                                         <Setter Property="Opacity" Value="1" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsDone}" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                        <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
                                         <Setter Property="Opacity" Value="0.9" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="✓ " FontSize="13" FontWeight="Bold" Foreground="White"
+                            <TextBlock Text="✓ " FontSize="13" FontWeight="Bold" Foreground="{DynamicResource OnColorBrush}"
                                        Visibility="{Binding IsDone, Converter={StaticResource BoolToVis}}" />
                             <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="SemiBold">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsDone}" Value="True">
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Foreground" Value="{DynamicResource OnColorBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -143,7 +153,7 @@
         </ItemsControl>
 
         <!-- Aktives Profil, dauerhaft sichtbar sobald eins gewählt/erstellt wurde -->
-        <TextBlock FontFamily="Segoe UI" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"
+        <TextBlock FontFamily="{DynamicResource AppFontFamily}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}"
                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="16,12" Opacity="0.85"
                    Visibility="{Binding ActiveProfileName, Converter={StaticResource EmptyStringToVis}}">
             <TextBlock.Text>
@@ -163,7 +173,7 @@
                 HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Margin="12,0,0,12" Padding="14,7" FontSize="13"
                 Style="{StaticResource RoundedButton}"
-                Background="{StaticResource TextSecondaryBrush}"
+                Background="{DynamicResource TextSecondaryBrush}"
                 Opacity="0.85"
                 Visibility="{Binding CanOpenPlanner, Converter={StaticResource BoolToVis}}"
                 Command="{Binding OpenPlannerCommand}" />
@@ -181,10 +191,10 @@
              Profil, unten links der Planer und unten rechts der Eltern-Zugang. -->
         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom"
                 Margin="0,0,0,12" Padding="14,7" CornerRadius="12"
-                Background="{StaticResource ErrorBrush}" Opacity="0.9"
+                Background="{DynamicResource ErrorBrush}" Opacity="0.9"
                 Visibility="{Binding KioskSkipNotice, Converter={StaticResource EmptyStringToVis}}">
             <TextBlock Text="{Binding KioskSkipNotice, Mode=OneWay}"
-                       FontSize="13" FontWeight="SemiBold" Foreground="White"
+                       FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource OnColorBrush}"
                        TextWrapping="Wrap" MaxWidth="640" TextAlignment="Center" />
         </Border>
 

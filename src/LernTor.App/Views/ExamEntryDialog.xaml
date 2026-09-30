@@ -6,7 +6,9 @@
         Height="640" MinHeight="420"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="{DynamicResource AppFontFamily}">
     <!-- Bewusst schlicht und gross geschrieben: dieses Fenster benutzen auch die Kinder, und es
          oeffnet sich mitten im Kiosk-Betrieb. Kein Loeschen, kein Bearbeiten fremder Eintraege -
          nur "neuen Termin anlegen".
@@ -51,7 +53,7 @@
 
         <StackPanel Grid.Row="1" Margin="0,12,0,0">
             <TextBlock x:Name="ErrorText" Style="{StaticResource BodyText}" FontSize="12"
-                       Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap"
+                       Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap"
                        Margin="0,0,0,8" Visibility="Collapsed" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

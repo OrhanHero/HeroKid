@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:loc="clr-namespace:LernTor.App.Localization"
              xmlns:controls="clr-namespace:LernTor.App.Controls">
-    <Grid Background="{StaticResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Style="{StaticResource FadeInOnLoad}">
 
         <!-- Profil-Dashboard -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="960"
                     Visibility="{Binding IsCreatingNewProfile, Converter={StaticResource InverseBoolToVis}}">
             <TextBlock Text="{Binding Greeting}" FontSize="26" FontWeight="SemiBold"
-                       Foreground="{StaticResource TextSecondaryBrush}" TextAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" TextAlignment="Center"
                        HorizontalAlignment="Center" Margin="0,0,0,4" />
             <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_Title]}"
                        Style="{StaticResource HeadlineText}" FontSize="36" TextAlignment="Center"
@@ -30,16 +30,16 @@
                                 <!-- Pastell-Hintergrund rotiert über die Kacheln (AlternationIndex liegt
                                      auf dem ContentPresenter, dem Container des Templates). -->
                                 <Style TargetType="Button" BasedOn="{StaticResource ProfileTileButton}">
-                                    <Setter Property="Background" Value="{StaticResource TileLavenderBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource TileLavenderBrush}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource TemplatedParent}}" Value="1">
-                                            <Setter Property="Background" Value="{StaticResource TileSandBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource TileSandBrush}" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource TemplatedParent}}" Value="2">
-                                            <Setter Property="Background" Value="{StaticResource TileMintBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource TileMintBrush}" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource TemplatedParent}}" Value="3">
-                                            <Setter Property="Background" Value="{StaticResource TileRoseBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource TileRoseBrush}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -50,13 +50,13 @@
                                 <Grid Width="104" Height="104" Margin="0,0,0,12">
                                     <controls:ProgressArc Fraction="{Binding ProgressFraction}"
                                                           StrokeThickness="7"
-                                                          TrackBrush="{StaticResource ProgressTrackBrush}">
+                                                          TrackBrush="{DynamicResource ProgressTrackBrush}">
                                         <controls:ProgressArc.Style>
                                             <Style TargetType="controls:ProgressArc">
-                                                <Setter Property="Stroke" Value="{StaticResource PrimaryBrush}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource PrimaryBrush}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsDoneToday}" Value="True">
-                                                        <Setter Property="Stroke" Value="{StaticResource SuccessBrush}" />
+                                                        <Setter Property="Stroke" Value="{DynamicResource SuccessBrush}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -72,10 +72,10 @@
                                 <TextBlock Text="{Binding Profile, Converter={StaticResource ProfileToSubtitle}}"
                                            Style="{StaticResource SubtitleText}" FontSize="14" TextAlignment="Center" />
                                 <TextBlock Text="{Binding StarsDisplay}" FontSize="14" FontWeight="SemiBold"
-                                           Foreground="{StaticResource TextPrimaryBrush}" TextAlignment="Center" Margin="0,6,0,0"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" TextAlignment="Center" Margin="0,6,0,0"
                                            Visibility="{Binding HasStars, Converter={StaticResource BoolToVis}}" />
                                 <TextBlock Text="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_DoneToday]}"
-                                           FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}"
+                                           FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}"
                                            TextAlignment="Center" Margin="0,6,0,0"
                                            Visibility="{Binding IsDoneToday, Converter={StaticResource BoolToVis}}" />
                             </StackPanel>
@@ -150,13 +150,13 @@
                 <RadioButton Content="Klasse 9" IsChecked="{Binding NewProfileIsGrade9}" FontSize="16" Margin="0,4" />
                 <RadioButton Content="Klasse 10" IsChecked="{Binding NewProfileIsGrade10}" FontSize="16" Margin="0,4,0,16" />
 
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,12" />
 
                 <StackPanel Orientation="Horizontal">
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_CreateButton]}"
                             Style="{StaticResource RoundedButton}" Margin="0,0,12,0" Command="{Binding CreateProfileCommand}" />
                     <Button Content="{Binding Source={x:Static loc:LocalizationService.Instance}, Path=[Profile_CancelButton]}"
-                            Style="{StaticResource RoundedButton}" Background="{StaticResource TextSecondaryBrush}"
+                            Style="{StaticResource RoundedButton}" Background="{DynamicResource TextSecondaryBrush}"
                             Command="{Binding CancelCreateFormCommand}" />
                 </StackPanel>
             </StackPanel>

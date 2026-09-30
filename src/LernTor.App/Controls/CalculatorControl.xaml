@@ -4,8 +4,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-    <Border Background="{StaticResource CardBrush}" CornerRadius="12" Padding="12" MaxWidth="320" HorizontalAlignment="Left"
-            BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1">
+    <Border Background="{DynamicResource CardBrush}" CornerRadius="12" Padding="12" MaxWidth="320" HorizontalAlignment="Left"
+            BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="1">
         <StackPanel>
             <!-- Modus-Umschalter: Dezimal-Taschenrechner vs. Bruchrechner -->
             <UniformGrid Columns="2" Margin="0,0,0,8">
@@ -17,7 +17,7 @@
 
             <!-- Dezimal-Taschenrechner -->
             <StackPanel x:Name="DecimalPanel">
-                <Border Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
                     <TextBlock x:Name="DisplayText" Text="0" FontSize="26" FontWeight="Bold"
                                HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" />
                 </Border>
@@ -82,7 +82,7 @@
                 <Button Content="= Berechnen" Click="FractionEquals_Click" Style="{StaticResource OptionButton}"
                         HorizontalAlignment="Stretch" Margin="0,0,0,8" />
 
-                <Border Background="{StaticResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
                     <TextBlock x:Name="FractionResultText" Text="0" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" />
                 </Border>
 
