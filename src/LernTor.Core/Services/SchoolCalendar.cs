@@ -92,7 +92,32 @@ public static class SchoolCalendar
         Tag(2027, 5, 17, "Pfingstmontag"),
         Tag(2027, 10, 3, "Tag der Deutschen Einheit"),
         Tag(2027, 12, 25, "1. Weihnachtsfeiertag"),
-        Tag(2027, 12, 26, "2. Weihnachtsfeiertag")
+        Tag(2027, 12, 26, "2. Weihnachtsfeiertag"),
+
+        // ---------- Schuljahr 2027/28 (eingetragen am 30.09.2026, Version 3.1) ----------
+        // Quelle: Senatsverwaltung für Bildung, Jugend und Familie, "Ferientermine" auf berlin.de.
+        // Die Seite war aus der Entwicklungsumgebung nicht direkt abrufbar; die Termine stammen
+        // aus deren Suchergebnissen, stimmen mit einer zweiten Quelle und den Wochentagen überein
+        // (SchoolCalendarTests) und stehen im Testplan zum Abgleich durch die Familie.
+        Zeitraum(2027, 10, 11, 2027, 10, 23, "Herbstferien", CalendarEntryKind.Ferien),
+        Zeitraum(2027, 12, 22, 2027, 12, 31, "Weihnachtsferien", CalendarEntryKind.Ferien),
+        Zeitraum(2028, 1, 31, 2028, 2, 5, "Winterferien", CalendarEntryKind.Ferien),
+        Zeitraum(2028, 4, 10, 2028, 4, 22, "Osterferien", CalendarEntryKind.Ferien),
+        Zeitraum(2028, 5, 26, 2028, 5, 26, "Unterrichtsfreier Tag", CalendarEntryKind.UnterrichtsfreierTag),
+        Zeitraum(2028, 6, 1, 2028, 6, 2, "Pfingstferien", CalendarEntryKind.Ferien),
+        Zeitraum(2028, 7, 1, 2028, 8, 12, "Sommerferien", CalendarEntryKind.Ferien),
+
+        // ---------- Feiertage 2028 (Ostersonntag 16.04.2028) ----------
+        Tag(2028, 1, 1, "Neujahr"),
+        Tag(2028, 3, 8, "Internationaler Frauentag"),
+        Tag(2028, 4, 14, "Karfreitag"),
+        Tag(2028, 4, 17, "Ostermontag"),
+        Tag(2028, 5, 1, "Tag der Arbeit"),
+        Tag(2028, 5, 25, "Christi Himmelfahrt"),
+        Tag(2028, 6, 5, "Pfingstmontag"),
+        Tag(2028, 10, 3, "Tag der Deutschen Einheit"),
+        Tag(2028, 12, 25, "1. Weihnachtsfeiertag"),
+        Tag(2028, 12, 26, "2. Weihnachtsfeiertag")
     };
 
     private static SchoolCalendarEntry Tag(int jahr, int monat, int tag, string name) =>

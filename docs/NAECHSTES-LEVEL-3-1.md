@@ -19,7 +19,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 | 2 — 📅 Lernkalender in „Mein Fortschritt“ | ✅ 30.09.2026: `LearningCalendar` (Core, 6 Tests; Lerntage wie bei den Abzeichen), Karte „📅 Deine Lerntage“ mit 12 Wochen und Legende – gelernt/Schultag/schulfrei auch an der Form erkennbar; Render-Test mit allen Tagesarten, Bildschirmfoto mit Beispieldaten |
 | 3 — Zwei neue Designs als Belohnung | ✅ 30.09.2026: 🏔️ Gletscher (`richtig-500`) und 🌋 Vulkan (`meister-1`), beide bestehen den Kontrasttest; Katalog-Test auf zehn Designs mit drei Belohnungen |
 | 4 — Lehrplan-Lücken schließen | ✅ 30.09.2026: Mathe Kl. 9 „Mehrstufige Zufallsversuche“ (vier Aufgabenarten, frische Zahlen); Biologie Kl. 6 „Ernährung und Verdauung“, „Blütenpflanzen“; Kunst Kl. 7 „Comic und Bildgeschichte“, „Fotografie und Druckgrafik“; Politik Kl. 7 „Medien, Meinung und Öffentlichkeit“, „Geld, Konsum und Verbraucherschutz“ – 120 neue Fragen, Längen-Bias 37–40 %, Poolgrößen im Test festgehalten |
-| 5 — Schulkalender 2027/28 | ⏳ geplant |
+| 5 — Schulkalender 2027/28 | ✅ 30.09.2026: Ferien 2027/28 und Feiertage 2028 in `SchoolCalendar`; Tests prüfen Wochentage, Ostern 2028 (Gaußsche Osterformel) und den Schulstart 14.08.2028; Abgleich mit berlin.de im Testplan V.31-10 |
 | 6 — Dokumentation, Version 3.1.0, Release | ⏳ geplant |
 
 ---

@@ -95,7 +95,7 @@ spricht.
 
 | Wann | Was | Wie |
 |---|---|---|
-| ~~**Frühjahr 2027**~~ in 3.1 vorgezogen | Ferien 2027/28 und Feiertage 2028 eintragen (der Kalender endet mit den Sommerferien 2027 bzw. am 26.12.2027) | `SchoolCalendar.cs`, Daten von der Senatsverwaltung; der Eltern-Bereich zeigt das Enddatum an |
+| **Frühjahr 2028** | Ferien 2028/29 und Feiertage 2029 eintragen (seit 3.1 reicht der Kalender bis zu den Sommerferien 2028 bzw. bis 26.12.2028) | `SchoolCalendar.cs`, Daten von der Senatsverwaltung; der Eltern-Bereich zeigt das Enddatum an |
 | **Sommer 2027** | Klassenstufe wechseln: Batuhan 9 → 10, Emirhan 6 → 7 | Eltern-Bereich → Profil → „Klassenstufe übernehmen“ (seit 28.09.2026; der Hinweis erscheint in den ersten vier Schulwochen von selbst) |
 | **Sommer 2027** | Neue Stundenpläne 2027/28 eintragen | wie oben; `STUNDENPLAENE-2026-27.md` als Vorlage |
 | **vor Sommer 2027** | Klasse-7-Pools nachprüfen, sobald Emirhans Stundenplan für Klasse 7 bekannt ist. Am 30.09.2026 schon ausgebaut: Türkisch 120 → 260, Englisch 120 → 200, Deutsch 120 → 180, Gewi 120 → 180, Musik 80 → 140, KI-Wissen eigener Pool mit 80. Mit 3.1 dazu: Kunst 80 → 120, Politik 80 → 120 (vorher hier irrtümlich mit 100 angegeben), Biologie Kl. 6 120 → 160 | `pool-reichweite.py` mit Emirhan als Klasse 7 laufen lassen (`KINDER` im Skript anpassen) |

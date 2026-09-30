@@ -218,4 +218,5 @@ ohne sie gibt es den 🔊-Knopf nur für Sprachen, für die Windows eine Stimme 
 | V.31-7 | Batuhan | Mathe-Aufgabe mit Bruch vorlesen lassen | „drei durch vier“, kein Datum | |
 | V.31-8 | Beide Kinder | „🏆 Mein Fortschritt“ öffnen | Oben „📅 Deine Lerntage“: gelernte Tage grün mit Häkchen, Wochenenden und Ferien nur umrandet, heute markiert; die Zahl der Lerntage passt zum Abzeichen „Zehn Lerntage“ | |
 | V.31-9 | Beide Kinder | „🎨 Mein Design“ öffnen | Zehn Designs; Galaxie, Gletscher und Vulkan tragen ein 🔒 mit dem Abzeichen, das sie freischaltet (sofern noch nicht verdient) | |
+| V.31-10 | Elternteil | Eltern-Bereich → „Ferien und Feiertage“ mit berlin.de (Senatsverwaltung, „Ferientermine“) vergleichen | Herbst 11.–23.10.2027, Weihnachten 22.–31.12.2027, Winter 31.01.–05.02.2028, Ostern 10.–22.04.2028, frei 26.05.2028, Pfingsten 01.–02.06.2028, Sommer 01.07.–12.08.2028 | |
 

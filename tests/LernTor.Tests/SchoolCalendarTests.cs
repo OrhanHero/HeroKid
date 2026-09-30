@@ -12,7 +12,8 @@ public sealed class SchoolCalendarTests
     [Fact]
     public void Alle_eingetragenen_Termine_sind_vorhanden()
     {
-        Assert.Equal(21, SchoolCalendar.All.Count);
+        // 21 bis zum Sommer 2027, seit 3.1 dazu 7 Ferientermine 2027/28 und 10 Feiertage 2028.
+        Assert.Equal(38, SchoolCalendar.All.Count);
     }
 
     [Fact]
@@ -53,8 +54,51 @@ public sealed class SchoolCalendarTests
     {
         // Ohne diese Grenze wuerde die Startseite nach dem letzten Termin stillschweigend
         // nichts mehr anzeigen, und niemand wuesste, dass nachzutragen ist.
-        Assert.Equal(new DateOnly(2027, 8, 14), SchoolCalendar.LastVacationDay);
-        Assert.Equal(new DateOnly(2027, 12, 26), SchoolCalendar.LastHolidayDay);
+        Assert.Equal(new DateOnly(2028, 8, 12), SchoolCalendar.LastVacationDay);
+        Assert.Equal(new DateOnly(2028, 12, 26), SchoolCalendar.LastHolidayDay);
+    }
+
+    /// <summary>Schuljahr 2027/28 (3.1): Ferien beginnen montags (oder nach Plan an einem
+    /// anderen festen Tag) und enden samstags bzw. vor einem Wochenende - ein vertippter Tag
+    /// fiele hier auf.</summary>
+    [Theory]
+    [InlineData(2027, 10, 11, DayOfWeek.Monday, 2027, 10, 23, DayOfWeek.Saturday)]
+    [InlineData(2027, 12, 22, DayOfWeek.Wednesday, 2027, 12, 31, DayOfWeek.Friday)]
+    [InlineData(2028, 1, 31, DayOfWeek.Monday, 2028, 2, 5, DayOfWeek.Saturday)]
+    [InlineData(2028, 4, 10, DayOfWeek.Monday, 2028, 4, 22, DayOfWeek.Saturday)]
+    [InlineData(2028, 6, 1, DayOfWeek.Thursday, 2028, 6, 2, DayOfWeek.Friday)]
+    [InlineData(2028, 7, 1, DayOfWeek.Saturday, 2028, 8, 12, DayOfWeek.Saturday)]
+    public void Ferien_2027_28_stimmen_mit_den_Wochentagen(int vj, int vm, int vt, DayOfWeek vonTag, int bj, int bm, int bt, DayOfWeek bisTag)
+    {
+        var von = new DateOnly(vj, vm, vt);
+        var bis = new DateOnly(bj, bm, bt);
+        Assert.Equal(vonTag, von.DayOfWeek);
+        Assert.Equal(bisTag, bis.DayOfWeek);
+        Assert.Contains(SchoolCalendar.All, e => e.Kind == CalendarEntryKind.Ferien && e.Start == von && e.End == bis);
+    }
+
+    [Fact]
+    public void Bewegliche_Feiertage_2028_folgen_aus_Ostern()
+    {
+        // Ostersonntag 2028 nach der Gaußschen Osterformel (Gregorianisch).
+        var ostern = Ostersonntag(2028);
+        Assert.Equal(new DateOnly(2028, 4, 16), ostern);
+
+        Assert.NotNull(SchoolCalendar.HolidayOn(ostern.AddDays(-2)));   // Karfreitag
+        Assert.NotNull(SchoolCalendar.HolidayOn(ostern.AddDays(1)));    // Ostermontag
+        Assert.NotNull(SchoolCalendar.HolidayOn(ostern.AddDays(39)));   // Himmelfahrt
+        Assert.NotNull(SchoolCalendar.HolidayOn(ostern.AddDays(50)));   // Pfingstmontag
+        Assert.Equal(new DateOnly(2028, 8, 14), SchoolCalendar.SchoolYearStart(new DateOnly(2028, 9, 1)));
+    }
+
+    private static DateOnly Ostersonntag(int jahr)
+    {
+        int a = jahr % 19, b = jahr / 100, c = jahr % 100, d = b / 4, e = b % 4;
+        int f = (b + 8) / 25, g = (b - f + 1) / 3, h = (19 * a + b - d - g + 15) % 30;
+        int i = c / 4, k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+        int m = (a + 11 * h + 22 * l) / 451;
+        int monat = (h + l - 7 * m + 114) / 31, tag = (h + l - 7 * m + 114) % 31 + 1;
+        return new DateOnly(jahr, monat, tag);
     }
 
     [Theory]
@@ -96,7 +140,7 @@ public sealed class SchoolCalendarTests
     [Fact]
     public void Die_Weihnachtsferien_gehen_ueber_den_Jahreswechsel()
     {
-        var ferien = SchoolCalendar.All.Single(eintrag => eintrag.Name == "Weihnachtsferien");
+        var ferien = SchoolCalendar.All.First(eintrag => eintrag.Name == "Weihnachtsferien");
 
         Assert.Equal(2026, ferien.Start.Year);
         Assert.Equal(2027, ferien.End.Year);
@@ -141,7 +185,7 @@ public sealed class SchoolCalendarTests
         Assert.True(einheit.FallsOnWeekend);
 
         // Der Frauentag 2027 faellt dagegen auf einen Montag.
-        var frauentag = SchoolCalendar.All.Single(eintrag => eintrag.Name == "Internationaler Frauentag");
+        var frauentag = SchoolCalendar.All.Single(eintrag => eintrag.Name == "Internationaler Frauentag" && eintrag.Start.Year == 2027);
 
         Assert.False(frauentag.FallsOnWeekend);
     }
