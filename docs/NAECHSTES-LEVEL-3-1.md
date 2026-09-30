@@ -20,6 +20,7 @@ Es gelten dieselben Regeln wie bei 2.0 und 3.0:
 | 3 — Zwei neue Designs als Belohnung | ✅ 30.09.2026: 🏔️ Gletscher (`richtig-500`) und 🌋 Vulkan (`meister-1`), beide bestehen den Kontrasttest; Katalog-Test auf zehn Designs mit drei Belohnungen |
 | 4 — Lehrplan-Lücken schließen | ✅ 30.09.2026: Mathe Kl. 9 „Mehrstufige Zufallsversuche“ (vier Aufgabenarten, frische Zahlen); Biologie Kl. 6 „Ernährung und Verdauung“, „Blütenpflanzen“; Kunst Kl. 7 „Comic und Bildgeschichte“, „Fotografie und Druckgrafik“; Politik Kl. 7 „Medien, Meinung und Öffentlichkeit“, „Geld, Konsum und Verbraucherschutz“ – 120 neue Fragen, Längen-Bias 37–40 %, Poolgrößen im Test festgehalten |
 | 5 — Schulkalender 2027/28 | ✅ 30.09.2026: Ferien 2027/28 und Feiertage 2028 in `SchoolCalendar`; Tests prüfen Wochentage, Ostern 2028 (Gaußsche Osterformel) und den Schulstart 14.08.2028; Abgleich mit berlin.de im Testplan V.31-10 |
+| 7 — Prüfung am echten PC | ✅ 30.09.2026: Testplan V.31-1 bis V.31-10 von der Familie geprüft – „alles richtig“ (Vorlesen, Ferien 2027/28 mit berlin.de abgeglichen) |
 | 6 — Dokumentation, Version 3.1.0, Release | ✅ 30.09.2026: PR [OrhanHero/HeroKid#9](https://github.com/OrhanHero/HeroKid/pull/9) gemergt, [Release v3.1.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.1.0); offen bleibt der Testplan V.31 am echten PC |
 
 ---

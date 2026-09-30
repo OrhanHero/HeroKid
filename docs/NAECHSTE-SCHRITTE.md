@@ -8,6 +8,11 @@ Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht u
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
+> **Nächste Version (Plan vom 30.09.2026): 3.2 – Rahmenlehrplan**: jedes Themenfeld des Berliner
+> Rahmenlehrplans für 5/6, 7/8 und 9/10 im Code verzeichnet und per Test mit den Fragen verknüpft,
+> Klasse 7/8 und 9/10 vollständig, Rahmenlehrplan-Abdeckung im Eltern-Bericht:
+> [`NAECHSTES-LEVEL-3-2.md`](NAECHSTES-LEVEL-3-2.md).
+>
 > **Neu (30.09.2026): Version 3.1 – Funktion** ([Release v3.1.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.1.0)) – jede Frage vorlesen (englische und
 > türkische Sätze in der passenden Stimme), Lernkalender in „Mein Fortschritt“, zwei neue
 > Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28:

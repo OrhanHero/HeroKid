@@ -22,6 +22,7 @@ Kindes aus: geübt wird, was am nächsten Schultag dran ist, plus Türkisch (sie
 | Dokument | Inhalt |
 |---|---|
 | [docs/DESIGN.md](docs/DESIGN.md) | **Designs (seit 3.0)**: Farbrollen, Kontrastregeln, ein Design hinzufügen, Bildschirmfotos der CI |
+| [docs/NAECHSTES-LEVEL-3-2.md](docs/NAECHSTES-LEVEL-3-2.md) | **Plan vom 30.09.2026 (Version 3.2 – Rahmenlehrplan)**: jedes Themenfeld des Berliner Rahmenlehrplans 5/6, 7/8, 9/10 im Code verzeichnet und getestet, Klasse 7/8 und 9/10 vollständig, Abdeckung im Eltern-Bericht |
 | [docs/NAECHSTES-LEVEL-3-1.md](docs/NAECHSTES-LEVEL-3-1.md) | **Version 3.1 – Funktion (Plan und Stand)**: jede Frage vorlesen (auch englische und türkische Sätze in der richtigen Stimme), Lernkalender, zwei neue Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28 |
 | [docs/NAECHSTES-LEVEL-3.md](docs/NAECHSTES-LEVEL-3.md) | **Plan vom 30.09.2026 (Version 3.0)**: wählbare Designs, Schrift und Textgröße, Bildschirmfotos und Kontrasttests in der CI, Entwicklungsumgebung, Fahrplan bis 2028 |
 | [docs/NAECHSTES-LEVEL.md](docs/NAECHSTES-LEVEL.md) | **Plan vom 29.09.2026**: .NET 10, Abzeichen, Meisterschaft je Thema, größere Pools |
