@@ -56,6 +56,12 @@ public static class RahmenlehrplanKatalog
     /// „Rahmenlehrplan 1–10 kompakt“ (2017), bisher in docs/CURRICULUM.md.</summary>
     public const string QuelleFamilienDokument = "Familien-Dokument + RLP kompakt 2017";
 
+    /// <summary>Quelle der Einträge 7/8 und der Klasse-10-Ergänzungen: Teil C ist aus der
+    /// Entwicklungsumgebung gesperrt, deshalb stammen Nummer und Titel aus Suchergebnissen des
+    /// Bildungsservers und aus schulinternen Curricula nach dem Berliner Rahmenlehrplan. Noch
+    /// nicht am Original geprüft - nach Freigabe abgleichen (docs/NAECHSTES-LEVEL-3-2.md).</summary>
+    public const string QuelleSuche = "Suchergebnisse Teil C, nicht am Original geprüft";
+
     public static IReadOnlyList<RlpThemenfeld> Alle { get; } = new RlpThemenfeld[]
     {
         new(RlpStufe.Stufe5_6, "Deutsch", "Vertiefung von Lese-/Schreibstrategien sowie sicheres Anwenden von Rechtschreibregeln", RlpStatus.Abgedeckt,
