@@ -8,7 +8,7 @@ Stand: 30.09.2026. Diese Seite ist die Arbeitsliste. Was erledigt wurde, steht u
 Die Reihenfolge richtet sich nach dem, was die Kinder als Nächstes merken würden, nicht nach
 technischer Eleganz.
 
-> **Version 3.1 – Funktion** (fertig, Release nach dem Merge) – jede Frage vorlesen (englische und
+> **Neu (30.09.2026): Version 3.1 – Funktion** ([Release v3.1.0](https://github.com/OrhanHero/HeroKid/releases/tag/v3.1.0)) – jede Frage vorlesen (englische und
 > türkische Sätze in der passenden Stimme), Lernkalender in „Mein Fortschritt“, zwei neue
 > Belohnungs-Designs, Lehrplan-Lücken, Schulkalender 2027/28:
 > [`NAECHSTES-LEVEL-3-1.md`](NAECHSTES-LEVEL-3-1.md).
