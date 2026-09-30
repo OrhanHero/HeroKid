@@ -391,6 +391,18 @@ on first use via a dedicated `HttpClient` with no timeout (the shared app `HttpC
   still passes and the breakage would be a runtime `NullReferenceException` or a silently empty
   catalog. Wrap the aggregate in `Lazy<T>` so it is built on first access, after the static
   constructor has run.
+- **Open-text answers used to be checked with `Contains` - "25" was correct when "5" was asked,
+  "gelse gelir geliyor" passed every Turkish tense task, "kitabımız" passed for "kitabım".**
+  Since 30.09.2026 `QuizQuestion.CheckAnswer` delegates to `OpenTextAnswerMatcher` (Core): the
+  answer must *equal* a solution, with only guess-proof tolerances (case, whitespace, trailing
+  punctuation, Turkish letters without a Turkish keyboard, a unit after a number, `x =` before
+  it, a leading article, or the whole gap sentence from the prompt). Never reintroduce a
+  substring check; `OpenTextAnswerMatcherTests` runs every generator's open questions with a
+  "shotgun" answer. `QuizQuestion.CaseSensitive` (persisted in the Fehler-Kartei) makes the
+  German capitalisation topic actually check capitalisation. The same audit found the binomial
+  formula generator computing `2·a·b` with a random, unused `a` - eight of nine stored solutions
+  were wrong; `BinomischeFormel` (Core) is now the single source and repairs old Fehler-Kartei
+  cards on read.
 - Enum values serialized via `System.Text.Json` default to numeric encoding — reordering/adding
   enum members then silently reinterprets old saved data. `LernTor.Data.JsonOptions.Default`
   (a shared `JsonSerializerOptions` with `JsonStringEnumConverter`) is used for anything persisting

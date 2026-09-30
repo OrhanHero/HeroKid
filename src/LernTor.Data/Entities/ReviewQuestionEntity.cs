@@ -34,6 +34,10 @@ public sealed class ReviewQuestionEntity
     public string? ExplanationImageCaption { get; set; }
     public bool RequiresTurkishCharacters { get; set; }
 
+    /// <summary>Siehe <c>QuizQuestion.CaseSensitive</c> - ohne diese Spalte würde eine
+    /// Groß-/Kleinschreibungs-Aufgabe als Wiederholung plötzlich jede Schreibung akzeptieren.</summary>
+    public bool CaseSensitive { get; set; }
+
     /// <summary>Wie oft insgesamt falsch beantwortet - sortiert die fälligsten zuerst.</summary>
     public int WrongCount { get; set; }
 

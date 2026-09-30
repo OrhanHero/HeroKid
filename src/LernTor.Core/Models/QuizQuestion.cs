@@ -1,4 +1,3 @@
-using System.Text;
 using LernTor.Core.Enums;
 using LernTor.Core.Services;
 
@@ -16,7 +15,11 @@ public sealed class QuizQuestion
     /// <summary>Antwortoptionen bei MultipleChoice/TrueFalse. Leer bei OpenText.</summary>
     public IReadOnlyList<string> Options { get; init; } = Array.Empty<string>();
 
-    /// <summary>Korrekte Antwort(en). Bei OpenText: akzeptierte Stichworte (case-insensitive, eine reicht).</summary>
+    /// <summary>
+    /// Korrekte Antwort(en). Bei OpenText: akzeptierte Lösungen, eine reicht. Seit 30.09.2026
+    /// muss die Eingabe einer davon entsprechen, statt sie nur zu enthalten - welche Abweichungen
+    /// erlaubt sind, steht in <see cref="OpenTextAnswerMatcher"/>.
+    /// </summary>
     public required IReadOnlyList<string> CorrectAnswers { get; init; }
 
     /// <summary>Ausführliche Erklärung / Lösungsweg, wird nach Beantwortung gezeigt.</summary>
@@ -55,6 +58,13 @@ public sealed class QuizQuestion
     /// </summary>
     public bool RequiresTurkishCharacters { get; init; }
 
+    /// <summary>
+    /// Offene Antwort nur mit richtiger Groß-/Kleinschreibung richtig - für Aufgaben, bei denen
+    /// genau das geübt wird (Deutsch: Groß- und Kleinschreibung). Sonst ist "auto" für "Auto"
+    /// ebenso richtig wie für jede andere Aufgabe.
+    /// </summary>
+    public bool CaseSensitive { get; init; }
+
     public bool CheckAnswer(string givenAnswer)
     {
         if (string.IsNullOrWhiteSpace(givenAnswer))
@@ -63,7 +73,7 @@ public sealed class QuizQuestion
         }
 
         var trimmedGiven = givenAnswer.Trim();
-        var normalizedGiven = ToLatinKeyboardForm(trimmedGiven);
+        var normalizedGiven = OpenTextAnswerMatcher.Lateinisch(trimmedGiven);
 
         return Type switch
         {
@@ -73,37 +83,10 @@ public sealed class QuizQuestion
             QuestionType.Diktat => DictationEvaluator
                 .Evaluate(CorrectAnswers.FirstOrDefault(), trimmedGiven).IsPerfect,
             QuestionType.OpenText => CorrectAnswers.Any(correct =>
-                trimmedGiven.Contains(correct, StringComparison.OrdinalIgnoreCase) ||
-                normalizedGiven.Contains(ToLatinKeyboardForm(correct), StringComparison.Ordinal)),
+                OpenTextAnswerMatcher.Matches(correct, trimmedGiven, Prompt, CaseSensitive)),
             _ => CorrectAnswers.Any(correct =>
                 string.Equals(correct, trimmedGiven, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(ToLatinKeyboardForm(correct), normalizedGiven, StringComparison.Ordinal))
+                string.Equals(OpenTextAnswerMatcher.Lateinisch(correct), normalizedGiven, StringComparison.Ordinal))
         };
-    }
-
-    /// <summary>
-    /// Vereinfacht Sonderzeichen (v.a. türkisch: ç ğ ı İ ş, dazu ö ü) auf ihre nächste auf einer
-    /// deutschen Tastatur eingebbare Näherung und wandelt in Kleinbuchstaben um. Wird nur als
-    /// zusätzlicher Vergleich genutzt (Kinder ohne türkische Tastatur können trotzdem antworten),
-    /// die exakte Schreibweise wird weiterhin zuerst geprüft.
-    /// </summary>
-    private static string ToLatinKeyboardForm(string text)
-    {
-        var builder = new StringBuilder(text.Length);
-        foreach (var ch in text)
-        {
-            builder.Append(ch switch
-            {
-                'ç' or 'Ç' => 'c',
-                'ğ' or 'Ğ' => 'g',
-                'ı' or 'İ' => 'i',
-                'ş' or 'Ş' => 's',
-                'ö' or 'Ö' => 'o',
-                'ü' or 'Ü' => 'u',
-                _ => ch
-            });
-        }
-
-        return builder.ToString().ToLowerInvariant().Trim();
     }
 }

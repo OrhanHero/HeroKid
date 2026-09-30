@@ -506,31 +506,23 @@ public sealed class MathGenerator : ExerciseGeneratorBase
 
     private static QuizQuestion BinomischeFormel(Random r)
     {
-        int a = r.Next(1, 10);
+        // Die Aufgabe ist immer (x ± b)², das Mittelglied also 2·b - bis 30.09.2026 stand hier
+        // 2·a·b mit einem zufälligen a, und die Lösung war meist falsch (siehe BinomischeFormel).
         int b = r.Next(1, 10);
         bool plus = r.Next(2) == 0;
-        int aa = a * a;
-        int twoAb = 2 * a * b;
-        int bb = b * b;
-
-        string aufgabe = plus ? $"(x + {b})²" : $"(x - {b})²";
-        string loesung = plus
-            ? $"x² + {twoAb}x + {bb}"
-            : $"x² - {twoAb}x + {bb}";
+        var (aufgabe, loesung, erklaerung) = LernTor.Core.Services.BinomischeFormel.Quadrat(b, plus);
 
         return new QuizQuestion
         {
             Id = NewId(),
             Subject = Subject.Mathematik,
             GradeLevel = GradeLevel.Klasse9,
-            Topic = "Binomische Formeln",
+            Topic = LernTor.Core.Services.BinomischeFormel.Thema,
             Type = QuestionType.OpenText,
             Prompt = $"Multipliziere aus (1. bzw. 2. binomische Formel): {aufgabe} = ?",
             CorrectAnswers = new[] { loesung },
-            Explanation = plus
-                ? $"(x+{b})² = x² + 2·x·{b} + {b}² = x² + {twoAb}x + {bb}"
-                : $"(x-{b})² = x² - 2·x·{b} + {b}² = x² - {twoAb}x + {bb}",
-            HelpHint = "1./2. binomische Formel: (a±b)² = a² ± 2ab + b². Hier ist a = x."
+            Explanation = erklaerung,
+            HelpHint = "1./2. binomische Formel: (a±b)² = a² ± 2ab + b². Hier ist a = x. Das ² tippst du mit AltGr+2 oder als ^2."
         };
     }
 

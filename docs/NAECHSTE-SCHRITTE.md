@@ -116,6 +116,16 @@ jeder hat ein Risiko, das ein Test nur teilweise abdeckt.
 
 ---
 
+## Erledigt am 30.09.2026
+
+| Was | Wo |
+|---|---|
+| **+660 Fragen**: Türkisch Kl. 6/7/9, Klasse 7 Englisch/Deutsch/Gewi/Musik, KI-Wissen Kl. 7 | Pull Request [OrhanHero/HeroKid#6](https://github.com/OrhanHero/HeroKid/pull/6) |
+| **Fehler:** offene Antworten galten als richtig, sobald die Lösung *darin vorkam* – „25“ war richtig, wenn „5“ gesucht war, und wer mehrere Formen hintereinander tippte, lag immer richtig. Jetzt muss die Antwort der Lösung entsprechen (Einheiten, „x =“, Artikel, ganzer Lückensatz bleiben erlaubt) | `OpenTextAnswerMatcher` |
+| **Fehler:** bei den binomischen Formeln waren 8 von 9 hinterlegten Lösungen falsch („(x + 9)² = x² + 36x + 81“). Wer richtig rechnete, bekam einen Fehler. Alte Karteikarten werden beim nächsten Abruf repariert | `BinomischeFormel` |
+| **Fehler:** „Groß- und Kleinschreibung“ nahm „auto“ für „Auto“ an – die Schreibung, um die es ging, wurde nicht geprüft | `QuizQuestion.CaseSensitive` |
+| Release-Workflow auch per Knopf (Actions → Release → Run workflow), Release 2.0.0 veröffentlicht | `release.yml` |
+
 ## Erledigt am 29.09.2026 (Version 2.0)
 
 Alles im Pull Request [OrhanHero/HeroKid#1](https://github.com/OrhanHero/HeroKid/pull/1), jeder
