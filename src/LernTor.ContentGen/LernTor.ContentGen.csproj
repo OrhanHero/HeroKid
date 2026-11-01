@@ -14,6 +14,7 @@
          Version 1.7.0 mit expliziten Sub-Paketen (Versionen in Directory.Packages.props),
          um NU1603-Warnungen durch fehlende Abhängigkeiten (Core, Tokens, Fonts, Tokenization)
          bei der alten 0.1.9-alpha zu vermeiden. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="10.0.14" />
     <PackageReference Include="UglyToad.PdfPig" />
     <PackageReference Include="UglyToad.PdfPig.Core" />
     <PackageReference Include="UglyToad.PdfPig.Tokens" />
